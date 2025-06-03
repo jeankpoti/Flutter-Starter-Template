@@ -6,12 +6,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:math_ai/features/account/presentation/sign_up_page.dart';
+import 'package:math_ai/features/solve_math/data/repository/gemini_solve_math_repo.dart';
+import 'package:math_ai/features/solve_math/domain/respository/firebase_collection_repo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'features/account/data/repository/account_repo.dart';
 import 'features/account/presentation/account_cubit.dart';
 import 'features/account/presentation/reset_password_page.dart';
 import 'features/account/presentation/sign_in_page.dart';
+import 'features/solve_math/data/repository/firebase_math_repo.dart';
+import 'features/solve_math/domain/models/collection.dart';
+import 'features/solve_math/presentation/collections_details_page.dart';
+import 'features/solve_math/presentation/collections_page.dart';
+import 'features/solve_math/presentation/firebase_collection_cubit.dart';
+import 'features/solve_math/presentation/solve_math_cubit.dart';
 import 'features/subscription/data/repository/revenue_cat_repository.dart';
 import 'features/subscription/presentation/subscription_cubit.dart';
 import 'features/subscription/presentation/subscription_page.dart';
@@ -27,11 +35,19 @@ void main() async {
   // Initialize Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
+  // Initialize Gemini Service
+  final geminiService = GeminiSolveMathRepo();
+
   // Initialize RevenueCat
   final subscriptionRepository = RevenueCatRepository();
   await subscriptionRepository.initialize();
 
+  // Initialize repositories in parallel
+  await Future.wait([geminiService.initialize()]);
+
   final accountRepo = FirebaseRepo();
+
+  final firebaseMathRepo = FirebaseMathRepo();
 
   final prefs = await SharedPreferences.getInstance();
   final isDarkMode = prefs.getBool('isDarkMode') ?? false;
@@ -40,9 +56,12 @@ void main() async {
     MultiBlocProvider(
       providers: [
         BlocProvider<ThemeCubit>(create: (context) => ThemeCubit(isDarkMode)),
-
         BlocProvider<AccountCubit>(
           create: (context) => AccountCubit(accountRepo),
+        ),
+
+        BlocProvider<SolveMathCubit>(
+          create: (context) => SolveMathCubit(geminiService, firebaseMathRepo),
         ),
 
         BlocProvider<SubscriptionCubit>(
@@ -81,6 +100,9 @@ enum AppRoute {
   signInPage,
   signUpPage,
   resetPasswordPage,
+
+  collectionsPage,
+  collectionsDetailsPage,
 
   subscriptionPage,
 
@@ -145,6 +167,22 @@ final GoRouter _router = GoRouter(
       name: AppRoute.onboardingPage.name,
       builder: (context, state) => const OnboardingPage(),
     ),
+
+    GoRoute(
+      path: '/collections',
+      name: AppRoute.collectionsPage.name,
+      builder: (context, state) => const CollectionsPage(),
+    ),
+
+    GoRoute(
+      path: '/collectionsDetails',
+      name: AppRoute.collectionsDetailsPage.name,
+      builder: (context, state) {
+        Collection collection =
+            state.extra as Collection; // -> casting is important
+        return CollectionsDetailsPage(collection: collection);
+      },
+    ),
     GoRoute(
       path: '/',
       builder: (context, state) {
@@ -175,9 +213,6 @@ final GoRouter _router = GoRouter(
                     body: Center(child: CircularProgressIndicator()),
                   );
                 }
-
-                log('${snapshot.data}');
-                print('${snapshot.data}');
 
                 if (snapshot.hasData) {
                   // Get animals on first load
