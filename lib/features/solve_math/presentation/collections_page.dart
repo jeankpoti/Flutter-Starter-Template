@@ -31,12 +31,12 @@ class _CollectionsPageState extends State<CollectionsPage> {
     // Initial data fetch
     // Ensure Cubit is accessible. If provided above this widget, this is okay.
     // Use addPostFrameCallback to ensure build context is ready if cubit is provided by a parent that might rebuild.
-    // WidgetsBinding.instance.addPostFrameCallback((_) {
-    //   if (mounted) {
-    // Check if the widget is still in the tree
-    // context.read<FirebaseAnimalCubit>().getAnimals();
-    //   }
-    // });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        // Check if the widget is still in the tree
+        context.read<FirebaseCollectionCubit>().getCollections();
+      }
+    });
 
     _scrollController.addListener(_onScroll);
   }
@@ -52,7 +52,7 @@ class _CollectionsPageState extends State<CollectionsPage> {
       // Check if scrolled to near the bottom
       if (_scrollController.position.pixels >=
           _scrollController.position.maxScrollExtent - 200) {
-        context.read<FirebaseCollectionCubit>().loadMoreAnimals();
+        context.read<FirebaseCollectionCubit>().loadMoreCollections();
       }
     });
   }
@@ -72,7 +72,9 @@ class _CollectionsPageState extends State<CollectionsPage> {
 
   Future<void> _refreshData() async {
     // The Cubit's getAnimals method with isRefresh=true will handle resetting state.
-    await context.read<FirebaseCollectionCubit>().getAnimals(isRefresh: true);
+    await context.read<FirebaseCollectionCubit>().getCollections(
+      isRefresh: true,
+    );
   }
 
   @override
@@ -90,7 +92,7 @@ class _CollectionsPageState extends State<CollectionsPage> {
     );
 
     return Scaffold(
-      appBar: AppBarWidget(title: 'Collections'),
+      appBar: AppBarWidget(title: 'Recent Problems'),
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: _refreshData,
@@ -105,7 +107,7 @@ class _CollectionsPageState extends State<CollectionsPage> {
                   ..hideCurrentSnackBar()
                   ..showSnackBar(
                     const SnackBar(
-                      content: Text('Could not load more animals.'),
+                      content: Text('Could not load more problems.'),
                     ),
                   );
               }
@@ -128,7 +130,7 @@ class _CollectionsPageState extends State<CollectionsPage> {
                         onPressed:
                             () => context
                                 .read<FirebaseCollectionCubit>()
-                                .getAnimals(isRefresh: true),
+                                .getCollections(isRefresh: true),
                         child: const Text('Try Again'),
                       ),
                     ],
@@ -142,13 +144,13 @@ class _CollectionsPageState extends State<CollectionsPage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text('Failed to load more animals'),
+                      const Text('Failed to load more problems'),
                       ElevatedButton(
                         onPressed:
                             () =>
                                 context
                                     .read<FirebaseCollectionCubit>()
-                                    .loadMoreAnimals(),
+                                    .loadMoreCollections(),
                         child: const Text('Retry'),
                       ),
                     ],
@@ -171,7 +173,7 @@ class _CollectionsPageState extends State<CollectionsPage> {
                         ),
                         child: const Center(
                           child: BodyMediumTextWidget(
-                            text: 'No animals found! Pull to refresh.',
+                            text: 'No solved problems yet! Solve your first math problem to see it here.',
                           ),
                         ),
                       ),

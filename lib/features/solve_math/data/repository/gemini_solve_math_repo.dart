@@ -4,6 +4,8 @@ import 'dart:typed_data';
 import 'dart:async';
 
 import '../../domain/respository/solve_math_repo.dart';
+import '../../../settings/data/preferences_service.dart';
+import '../../../settings/domain/models/math_level.dart';
 
 class GeminiSolveMathRepo implements SolveMathRepo {
   static final GeminiSolveMathRepo _instance = GeminiSolveMathRepo._internal();
@@ -23,7 +25,7 @@ class GeminiSolveMathRepo implements SolveMathRepo {
     if (!_isInitialized) {
       try {
         _model = FirebaseAI.googleAI().generativeModel(
-          model: 'gemini-2.0-flash',
+          model: 'gemini-2.5-flash',
         );
         _isInitialized = true;
       } catch (e) {
@@ -48,7 +50,87 @@ class GeminiSolveMathRepo implements SolveMathRepo {
     return await _model.generateContent(contentItems);
   }
 
-  // Method to identify animals from an image
+  // Method to solve math problems from text input
+  @override
+  Future<String> solveMathWithText(String textInput) async {
+    if (!_isInitialized) {
+      throw Exception(
+        'GeminiService not initialized. Call initialize() first.',
+      );
+    }
+
+    try {
+      // Get user's math level preference
+      final prefs = await PreferencesService.getInstance();
+      final mathLevel = prefs.getMathLevel();
+      
+      final prompt = _buildAgeAppropriatePrompt(textInput.trim(), mathLevel);
+
+      final response = await generateTextContent(prompt);
+      return response.text ?? 'Unable to solve the math problem';
+    } catch (e) {
+      print('Error solving math problem: $e');
+      return 'Error: Failed to solve the math problem. Please try again.';
+    }
+  }
+
+  String _buildAgeAppropriatePrompt(String mathProblem, MathLevel level) {
+    final basePrompt = '''You are a math tutor AI. Solve this math problem and provide a complete solution.
+
+Problem: $mathProblem
+
+Please follow this format:
+1. **Problem**: Restate the math problem clearly
+2. **Solution Steps**: Show detailed step-by-step solution
+3. **Final Answer**: Use the format "The final answer is \$\\boxed{answer}\$"
+
+${level.toPromptContext()}
+
+Requirements:
+- Show ALL working steps clearly
+- Use LaTeX math notation inside \$ symbols (e.g., \$x^2 + 1\$, \$\\frac{1}{2}\$)
+- For final answers, always use \$\\boxed{answer}\$ format
+- For word problems, identify given information first
+- Double-check your calculations
+
+Examples of proper formatting:
+- Simple: The final answer is \$\\boxed{42}\$
+- Fraction: The final answer is \$\\boxed{\\frac{3}{4}}\$
+- Expression: The final answer is \$\\boxed{2x + 5}\$
+
+Make the explanation appropriate for ${level.displayName} level students.''';
+
+    return basePrompt;
+  }
+
+  String _buildImagePrompt(MathLevel level) {
+    return '''You are a math tutor AI. Analyze this image containing a math problem and provide a complete solution.
+
+Please follow this format:
+1. **Problem**: State what math problem you see
+2. **Solution Steps**: Show detailed step-by-step solution
+3. **Final Answer**: Use the format "The final answer is \$\\boxed{answer}\$"
+
+${level.toPromptContext()}
+
+Requirements:
+- Show ALL working steps clearly
+- Use LaTeX math notation inside \$ symbols (e.g., \$x^2 + 1\$, \$\\frac{1}{2}\$)
+- For final answers, always use \$\\boxed{answer}\$ format
+- If the image is unclear, ask for a clearer photo
+- If no math problem is visible, politely explain what you see instead
+- For word problems, identify given information first
+- Double-check your calculations
+
+Examples of proper formatting:
+- Simple: The final answer is \$\\boxed{42}\$
+- Fraction: The final answer is \$\\boxed{\\frac{3}{4}}\$
+- Expression: The final answer is \$\\boxed{2x + 5}\$
+
+Make the explanation appropriate for ${level.displayName} level students.''';
+  }
+
+  // Method to solve math from image
   @override
   Future<String> solveMath(dynamic imageInput) async {
     if (!_isInitialized) {
@@ -79,21 +161,13 @@ class GeminiSolveMathRepo implements SolveMathRepo {
         );
       }
 
+      // Get user's math level preference for image solving too
+      final prefs = await PreferencesService.getInstance();
+      final mathLevel = prefs.getMathLevel();
+
       // Create the image part with the bytes
-
       final imagePart = InlineDataPart('image/jpeg', imageBytes);
-      final prompt = TextPart(
-        '''What animal is this? Provide a detailed description including danger, species, 
-      habitat, interesting facts and fun facts. 
-
-      Please provide the information in a clear, concise manner and medium length.
-
-      Tell the user if the image is not clear enough to identify the animal.
-      If the image is not an animal, please let the user know and never let the user know what is in the image if it is not an animal.
-
-      Just tell user this is not an animal if the image is not an animal.
-        ''',
-      );
+      final prompt = TextPart(_buildImagePrompt(mathLevel));
 
       // Convert file to bytes first
       // final imageBytes = await imageFile!.readAsBytes(); I
@@ -104,10 +178,10 @@ class GeminiSolveMathRepo implements SolveMathRepo {
 
       // Generate content
       final response = await _model.generateContent(content);
-      return response.text ?? 'Unable to identify the animal';
+      return response.text ?? 'Unable to solve the math problem';
     } catch (e) {
-      print('Error identifying animal: $e');
-      return 'Error: Failed to identify the animal';
+      print('Error solving math problem: $e');
+      return 'Error: Failed to solve the math problem. Please try again with a clearer image.';
     }
   }
 }

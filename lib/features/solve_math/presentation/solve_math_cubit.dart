@@ -10,24 +10,33 @@ import 'solve_math_state.dart';
 
 class SolveMathCubit extends Cubit<SolveMathState> {
   final SolveMathRepo solveMathRepo;
-
   final FirebaseCollectionRepo firebaseCollectionRepo;
 
   SolveMathCubit(this.solveMathRepo, this.firebaseCollectionRepo)
     : super(const SolveMathState());
 
-  Future<void> solveMath(dynamic imageInput) async {
+  Future<void> solveMath(dynamic input) async {
     emit(state.copyWith(isIdentifying: true));
     try {
-      final result = await solveMathRepo.solveMath(imageInput);
+      String result;
+      
+      // Check if input is text (String) and call appropriate method
+      if (input is String && input.trim().isNotEmpty) {
+        result = await solveMathRepo.solveMathWithText(input.trim());
+      } else {
+        result = await solveMathRepo.solveMath(input);
+      }
+      
+      print('SolveMathCubit: Got result, saving collection...');
 
-      //  final firebaseAnimalCubit = context.read<FirebaseAnimalCubit>();
       final collection = Collection(
-        imagePath: imageInput?.path ?? '',
+        imagePath: input is File ? input.path : '',
         imageUrl: '',
-        description: result,
+        solution: result,
       );
+      
       await firebaseCollectionRepo.saveCollection(collection);
+      print('SolveMathCubit: Collection saved successfully');
 
       emit(
         state.copyWith(result: result, isIdentifying: false, isSuccess: true),
@@ -35,8 +44,9 @@ class SolveMathCubit extends Cubit<SolveMathState> {
     } catch (e) {
       emit(
         state.copyWith(
-          result: 'Error identifying animal',
+          result: 'Error solving math problem. Please check your internet connection and try again.',
           isIdentifying: false,
+          isError: true,
         ),
       );
     }
@@ -44,7 +54,7 @@ class SolveMathCubit extends Cubit<SolveMathState> {
 
   Future<void> shareResult(File imageFile, String result) async {
     try {
-      final String text = "Animal Identification Result:\n\n$result";
+      final String text = "Math Problem Solution:\n\n$result";
 
       if (imageFile != null) {
         final params = ShareParams(text: text, files: [XFile(imageFile.path)]);

@@ -21,28 +21,26 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
   final List<OnboardingItem> _onboardingItems = [
     OnboardingItem(
-      title: 'Identify Any Animal',
+      title: 'Solve Math Problems Instantly',
       description:
-          'Take a photo or upload an image to instantly identify animals with our advanced AI technology',
+          'Take a photo of any math problem and get step-by-step solutions powered by advanced AI',
       animationAsset: 'assets/images/fox2.png',
       backgroundColor: Colors.black,
       textColor: Colors.white,
     ),
     OnboardingItem(
-      title: 'Learn Fascinating Facts',
+      title: 'Learn Step-by-Step',
       description:
-          'Discover interesting facts about animals, their habitats, and behaviors',
+          'Understand the solution process with detailed explanations and mathematical concepts',
       animationAsset: 'assets/images/facts.png',
-      // animationAsset: 'assets/animations/animal_facts.json',
       backgroundColor: Colors.white,
       textColor: Colors.black,
     ),
     OnboardingItem(
-      title: 'Test Your Knowledge',
+      title: 'Photo Tips for Best Results',
       description:
-          'Challenge yourself with fun quizzes and become an animal expert',
+          'Ensure good lighting, clear text, and stable camera for accurate problem recognition',
       animationAsset: 'assets/images/quiz.png',
-      // animationAsset: 'assets/animations/animal_quiz.json',
       backgroundColor: Colors.white,
       textColor: Colors.black,
     ),
@@ -264,18 +262,18 @@ class _OnboardingPageState extends State<OnboardingPage> {
         const SizedBox(height: 16),
         _buildFeatureItem(
           Icons.check_circle,
-          'Unlimited animal identifications',
+          'Unlimited math problem solutions',
           textColor,
         ),
         _buildFeatureItem(Icons.check_circle, 'No advertisements', textColor),
         _buildFeatureItem(
           Icons.check_circle,
-          'Exclusive animal facts and content',
+          'Advanced problem types support',
           textColor,
         ),
         _buildFeatureItem(
           Icons.check_circle,
-          'Advanced quiz challenges',
+          'Solution history and favorites',
           textColor,
         ),
         const SizedBox(height: 24),

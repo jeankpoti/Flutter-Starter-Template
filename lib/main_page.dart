@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-import 'features/collection/presentation/collection_page.dart';
+import 'features/solve_math/presentation/collections_page.dart';
 import 'features/solve_math/presentation/home_page.dart';
 import 'settings_page.dart';
 import 'theme/theme_cubit.dart';
@@ -41,15 +41,15 @@ class _MainPageState extends State<MainPage> {
     items.add(
       BottomNavigationBarItem(
         backgroundColor: Theme.of(context).colorScheme.surface,
-        icon: Icon(CupertinoIcons.camera),
-        label: 'Home',
+        icon: Icon(CupertinoIcons.function),
+        label: 'Solve',
       ),
     );
     items.add(
       BottomNavigationBarItem(
         backgroundColor: Theme.of(context).colorScheme.surface,
-        icon: Icon(CupertinoIcons.photo_on_rectangle),
-        label: 'Collections',
+        icon: Icon(CupertinoIcons.time),
+        label: 'History',
       ),
     );
 
@@ -64,16 +64,16 @@ class _MainPageState extends State<MainPage> {
     // Navigation Rail Items - ensure they match the same number as bottom nav items
     railItems.add(
       NavigationRailDestination(
-        icon: Icon(CupertinoIcons.camera),
-        selectedIcon: Icon(CupertinoIcons.camera),
-        label: BodySmallTextWidget(text: 'Home'),
+        icon: Icon(CupertinoIcons.function),
+        selectedIcon: Icon(CupertinoIcons.function),
+        label: BodySmallTextWidget(text: 'Solve'),
       ),
     );
     railItems.add(
       NavigationRailDestination(
-        icon: Icon(CupertinoIcons.photo_on_rectangle),
-        selectedIcon: Icon(CupertinoIcons.photo_on_rectangle),
-        label: BodySmallTextWidget(text: 'Collections'),
+        icon: Icon(CupertinoIcons.time),
+        selectedIcon: Icon(CupertinoIcons.time),
+        label: BodySmallTextWidget(text: 'History'),
       ),
     );
 
@@ -88,7 +88,7 @@ class _MainPageState extends State<MainPage> {
   }
 
   List<Widget> _buildScreens() {
-    return [const HomePage(), const CollectionPage(), const SettingsPage()];
+    return [const HomePage(), const CollectionsPage(), const SettingsPage()];
   }
 
   @override

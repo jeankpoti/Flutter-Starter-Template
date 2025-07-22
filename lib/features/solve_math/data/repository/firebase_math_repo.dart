@@ -15,15 +15,16 @@ class FirebaseMathRepo implements FirebaseCollectionRepo {
 
   final user = FirebaseAuth.instance.currentUser;
 
-  CollectionReference get _collection => firestore.collection('animals');
+  CollectionReference get _collection => firestore.collection('homework');
 
   @override
   Future<CollectionFetchResult> getCollections({
     DocumentSnapshot?
     lastDocument, // Pass the last document of the previous page
-    int limit = 10, // Number of animals to fetch per page
+    int limit = 10, // Number of problems to fetch per page
   }) async {
     try {
+      print('FirebaseMathRepo: Getting collections for user: ${user?.uid}');
       if (user != null) {
         final userId = user!.uid;
         Query query = _collection
@@ -41,29 +42,32 @@ class FirebaseMathRepo implements FirebaseCollectionRepo {
         }
 
         final snapshot = await query.limit(limit).get();
+        print('FirebaseMathRepo: Found ${snapshot.docs.length} documents');
 
-        final animals =
-            snapshot.docs
-                .map(
-                  (doc) => Collection.fromJson(
-                    {'id': doc.id, ...doc.data() as Map<String, dynamic>},
-                    //  doc.id, // Pass the document ID to your model
-
-                    //   doc.data() as Map<String, dynamic>,
-                  ),
-                )
-                .toList();
+        final collections =
+            snapshot.docs.map((doc) {
+              print(
+                'FirebaseMathRepo: Processing doc ${doc.id}: ${doc.data()}',
+              );
+              return Collection.fromJson({
+                'id': doc.id,
+                ...doc.data() as Map<String, dynamic>,
+              });
+            }).toList();
 
         final DocumentSnapshot? newLastDocument =
             snapshot.docs.isNotEmpty ? snapshot.docs.last : null;
 
+        print('FirebaseMathRepo: Returning ${collections.length} collections');
         return CollectionFetchResult(
-          collections: animals,
+          collections: collections,
           lastDocument: newLastDocument,
         );
+      } else {
+        print('FirebaseMathRepo: No user logged in');
       }
     } catch (e) {
-      print('Error fetching animals in Repo: $e');
+      print('Error fetching collections in Repo: $e');
       // Rethrow or handle as per your app's error strategy
       rethrow;
     }
@@ -79,12 +83,12 @@ class FirebaseMathRepo implements FirebaseCollectionRepo {
 
         final docRef = _collection.doc();
 
-        // Store animal data with image URL placeholder
-        Map<String, dynamic> animalData = {
+        // Store collection data with image URL placeholder
+        Map<String, dynamic> collectionData = {
           ...collection.toJson(),
           'userId': userId,
           'id': docRef.id,
-          // 'createdAt': FieldValue.serverTimestamp(),
+          'createdAt': FieldValue.serverTimestamp(),
         };
 
         // If we have an image file path
@@ -97,14 +101,12 @@ class FirebaseMathRepo implements FirebaseCollectionRepo {
 
           if (imageUrl != null) {
             // Update animal data with the image URL
-            animalData['imageUrl'] = imageUrl;
+            collectionData['imageUrl'] = imageUrl;
           }
         }
 
-        await docRef.set({'id': docRef.id});
-
-        // Save to Firestore
-        await docRef.set(animalData);
+        // Save to Firestore (single set operation)
+        await docRef.set(collectionData);
       }
     } catch (e) {
       rethrow; // Rethrow to handle in the UI
@@ -119,7 +121,7 @@ class FirebaseMathRepo implements FirebaseCollectionRepo {
           '${userId}_${DateTime.now().millisecondsSinceEpoch}_${path.basename(imageFile.path)}';
 
       // Create storage reference
-      final storageRef = storage.ref().child('animal_images/$fileName');
+      final storageRef = storage.ref().child('homework_images/$fileName');
 
       // Upload the file
       final uploadTask = storageRef.putFile(imageFile);

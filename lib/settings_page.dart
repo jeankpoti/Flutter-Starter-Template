@@ -14,6 +14,8 @@ import 'common_widgets/settings_list_tile.dart';
 import 'features/account/presentation/account_cubit.dart';
 import 'features/account/presentation/account_state.dart';
 import 'features/account/presentation/reset_password_page.dart';
+import 'features/settings/data/preferences_service.dart';
+import 'features/settings/domain/models/math_level.dart';
 import 'features/subscription/presentation/subscription_page.dart';
 import 'main.dart';
 import 'theme/theme_cubit.dart';
@@ -28,11 +30,38 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   // Keep local UI-only state for the theme switch
   bool _isDarkMode = false;
+  MathLevel _selectedLevel = MathLevel.highSchool;
+  bool _isLoadingMathLevel = true;
 
   @override
   void initState() {
     super.initState();
-    // Load the todos when this page is first built
+    _loadCurrentMathLevel();
+  }
+
+  Future<void> _loadCurrentMathLevel() async {
+    final prefs = await PreferencesService.getInstance();
+    setState(() {
+      _selectedLevel = prefs.getMathLevel();
+      _isLoadingMathLevel = false;
+    });
+  }
+
+  Future<void> _saveMathLevel(MathLevel level) async {
+    final prefs = await PreferencesService.getInstance();
+    await prefs.setMathLevel(level);
+    setState(() {
+      _selectedLevel = level;
+    });
+    
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Math level updated to ${level.displayName}'),
+          backgroundColor: Theme.of(context).colorScheme.secondary,
+        ),
+      );
+    }
   }
 
   @override
@@ -77,11 +106,14 @@ class _SettingsPageState extends State<SettingsPage> {
                   spacing: 10,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    // Math Level Section
+                    _buildMathLevelSection(),
+                    
                     SettingsListTile(
                       text: 'Change theme',
                       icon: Icon(
                         Icons.brightness_4,
-                        color: Theme.of(context).colorScheme.primary,
+                        color: Theme.of(context).colorScheme.secondary,
                       ),
                       switcher: Switch(
                         value: _isDarkMode,
@@ -99,7 +131,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         text: 'Sign out',
                         icon: Icon(
                           Icons.logout,
-                          color: Theme.of(context).colorScheme.primary,
+                          color: Theme.of(context).colorScheme.secondary,
                         ),
                         onTap: () async {
                           await accountCubit.signOut();
@@ -109,7 +141,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       text: 'Get Premium',
                       icon: Icon(
                         Icons.logout,
-                        color: Theme.of(context).colorScheme.primary,
+                        color: Theme.of(context).colorScheme.secondary,
                       ),
                       onTap:
                           () => PersistentNavBarNavigator.pushNewScreen(
@@ -124,7 +156,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       text: 'Rate Us',
                       icon: Icon(
                         Icons.star,
-                        color: Theme.of(context).colorScheme.primary,
+                        color: Theme.of(context).colorScheme.secondary,
                       ),
                       onTap: () async {
                         const url =
@@ -145,7 +177,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       text: 'Share with Friends',
                       icon: Icon(
                         Icons.share,
-                        color: Theme.of(context).colorScheme.primary,
+                        color: Theme.of(context).colorScheme.secondary,
                       ),
                       onTap: () {
                         Share.share(
@@ -157,7 +189,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       text: 'Privacy Policy & Terms of Use',
                       icon: Icon(
                         Icons.privacy_tip,
-                        color: Theme.of(context).colorScheme.primary,
+                        color: Theme.of(context).colorScheme.secondary,
                       ),
                       onTap: () async {
                         const url =
@@ -181,7 +213,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       text: 'Support',
                       icon: Icon(
                         Icons.description,
-                        color: Theme.of(context).colorScheme.primary,
+                        color: Theme.of(context).colorScheme.secondary,
                       ),
                       onTap: () async {
                         const url =
@@ -211,7 +243,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           ListTile(
                             leading: Icon(
                               Icons.person,
-                              color: Theme.of(context).colorScheme.primary,
+                              color: Theme.of(context).colorScheme.secondary,
                             ),
                             title: const BodyMediumTextWidget(
                               text: 'Delete Account',
@@ -243,23 +275,23 @@ class _SettingsPageState extends State<SettingsPage> {
                                             color:
                                                 Theme.of(
                                                   context,
-                                                ).colorScheme.primary,
+                                                ).colorScheme.secondary,
                                           ),
                                           cursorColor:
                                               Theme.of(
                                                 context,
-                                              ).colorScheme.primary,
+                                              ).colorScheme.secondary,
                                           decoration: InputDecoration(
                                             hintText: 'Type DELETE',
                                             fillColor:
                                                 Theme.of(
                                                   context,
-                                                ).colorScheme.primary,
+                                                ).colorScheme.secondary,
                                             labelStyle: TextStyle(
                                               color:
                                                   Theme.of(
                                                     context,
-                                                  ).colorScheme.primary,
+                                                  ).colorScheme.secondary,
                                             ),
                                             focusColor: Colors.white,
                                             hintStyle:
@@ -271,7 +303,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                                 color:
                                                     Theme.of(
                                                       context,
-                                                    ).colorScheme.primary,
+                                                    ).colorScheme.secondary,
                                               ),
                                             ),
                                             focusedBorder: UnderlineInputBorder(
@@ -279,7 +311,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                                 color:
                                                     Theme.of(
                                                       context,
-                                                    ).colorScheme.primary,
+                                                    ).colorScheme.secondary,
                                               ),
                                             ),
                                           ),
@@ -338,7 +370,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             text: 'Reset Password',
                             icon: Icon(
                               Icons.logout,
-                              color: Theme.of(context).colorScheme.primary,
+                              color: Theme.of(context).colorScheme.secondary,
                             ),
                             onTap:
                                 () => Navigator.push(
@@ -355,6 +387,112 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
               );
             },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMathLevelSection() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainer,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.school,
+                color: Theme.of(context).colorScheme.secondary,
+                size: 24,
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'Math Level',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Choose your education level for personalized explanations',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+            ),
+          ),
+          const SizedBox(height: 16),
+          if (_isLoadingMathLevel)
+            const Center(child: CircularProgressIndicator())
+          else
+            Column(
+              children: MathLevel.values.map((level) => _buildLevelOption(level)).toList(),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLevelOption(MathLevel level) {
+    final isSelected = _selectedLevel == level;
+    
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: InkWell(
+        onTap: () => _saveMathLevel(level),
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          decoration: BoxDecoration(
+            color: isSelected 
+                ? Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.3)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: isSelected 
+                  ? Theme.of(context).colorScheme.secondary
+                  : Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+              width: isSelected ? 1.5 : 1,
+            ),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      level.displayName,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                        color: isSelected 
+                            ? Theme.of(context).colorScheme.secondary
+                            : Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ),
+                    Text(
+                      level.ageRange,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (isSelected)
+                Icon(
+                  Icons.check_circle,
+                  color: Theme.of(context).colorScheme.secondary,
+                  size: 20,
+                ),
+            ],
           ),
         ),
       ),

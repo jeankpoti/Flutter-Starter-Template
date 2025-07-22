@@ -137,7 +137,7 @@ class _ListTileWidgetState extends State<ListTileWidget> {
                   spacing: 20,
                   children: [
                     BodyMediumTextWidget(
-                      text: widget.collection.description ?? '',
+                      text: widget.collection.solution ?? '',
                       maxLine: 3,
                     ),
                     BodyMediumTextWidget(

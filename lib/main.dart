@@ -10,6 +10,8 @@ import 'package:math_ai/features/solve_math/data/repository/gemini_solve_math_re
 import 'package:math_ai/features/solve_math/domain/respository/firebase_collection_repo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'main_page_wrapper.dart';
+
 import 'features/account/data/repository/account_repo.dart';
 import 'features/account/presentation/account_cubit.dart';
 import 'features/account/presentation/reset_password_page.dart';
@@ -64,6 +66,10 @@ void main() async {
           create: (context) => SolveMathCubit(geminiService, firebaseMathRepo),
         ),
 
+        BlocProvider<FirebaseCollectionCubit>(
+          create: (context) => FirebaseCollectionCubit(firebaseMathRepo),
+        ),
+
         BlocProvider<SubscriptionCubit>(
           create: (context) => SubscriptionCubit(subscriptionRepository),
         ),
@@ -82,7 +88,7 @@ class MyApp extends StatelessWidget {
       builder: (context, currentTheme) {
         return MaterialApp.router(
           debugShowCheckedModeBanner: true,
-          title: 'Snap Animal',
+          title: 'Math AI',
           theme: currentTheme,
           routerConfig: _router,
           // home: SigninPage(),
@@ -218,7 +224,7 @@ final GoRouter _router = GoRouter(
                   // Get animals on first load
                   // context.read<FirebaseMathCubit>().getAnimals();
 
-                  return MainPage();
+                  return const MainPageWrapper();
                 } else {
                   return const SignInPage();
                 }

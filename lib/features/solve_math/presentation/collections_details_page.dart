@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter/services.dart';
+import 'package:share_plus/share_plus.dart';
+import '../../../common_widgets/math_markdown_widget.dart';
+import 'home_page.dart';
 
 import '../../../common_widgets/app_bar_widget.dart';
 import '../../../common_widgets/body_small_text_widget.dart';
+import '../../../common_widgets/elevated_button_widget.dart';
 import '../../../utils/responsive.dart';
 import '../domain/models/collection.dart';
 
@@ -22,7 +26,7 @@ class CollectionsDetailsPage extends StatelessWidget {
     final isTablet = Responsive.isTablet(context);
 
     return Scaffold(
-      appBar: AppBarWidget(title: 'Animals Details'),
+      appBar: AppBarWidget(title: 'Problems Details'),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Center(
@@ -69,18 +73,81 @@ class CollectionsDetailsPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 45),
 
-                  MarkdownBody(
-                    data: collection.description ?? '',
-                    selectable: true,
-                    styleSheet: MarkdownStyleSheet.fromTheme(
-                      Theme.of(context),
-                    ).copyWith(
-                      p: Theme.of(context).textTheme.bodyMedium,
-                      h1: Theme.of(context).textTheme.titleLarge,
-                      h2: Theme.of(context).textTheme.titleMedium,
-                      h3: Theme.of(context).textTheme.titleSmall,
-                      listBullet: Theme.of(context).textTheme.bodyMedium,
-                    ),
+                  MathMarkdownWidget(data: collection.solution ?? ''),
+
+                  const SizedBox(height: 32),
+
+                  // Copy and Share buttons
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButtonWidget(
+                          text: 'Copy Solution',
+                          onPressed: () async {
+                            try {
+                              await Clipboard.setData(
+                                ClipboardData(text: collection.solution ?? ''),
+                              );
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Solution copied to clipboard!',
+                                    ),
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                              }
+                            } catch (e) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Unable to copy solution'),
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                              }
+                            }
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: ElevatedButtonWidget(
+                          text: 'Share Solution',
+                          onPressed: () async {
+                            try {
+                              final String shareText =
+                                  "Math Problem Solution:\n\n${collection.solution ?? ''}";
+
+                              if (collection.imageUrl != null &&
+                                  collection.imageUrl!.isNotEmpty) {
+                                // Share with image if available
+                                await Share.share(
+                                  shareText,
+                                  subject: 'Math Problem Solution',
+                                );
+                              } else {
+                                // Share text only
+                                await Share.share(
+                                  shareText,
+                                  subject: 'Math Problem Solution',
+                                );
+                              }
+                            } catch (e) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Unable to share solution'),
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                              }
+                            }
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -96,7 +163,7 @@ class CollectionsDetailsPage extends StatelessWidget {
           bottom: 32.0,
         ),
         child: BodySmallTextWidget(
-          text: 'Snap Animal AI can make mistakes, so double check it!',
+          text: 'Math AI can make mistakes, so double check the solution!',
           textAlign: TextAlign.center,
         ),
       ),

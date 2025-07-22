@@ -1,29 +1,34 @@
 import 'package:equatable/equatable.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Collection extends Equatable {
   final String? id;
   final String? imageUrl;
   final String? imagePath;
-  final String? description;
+  final String? solution;
   final DateTime? createdAt;
 
   Collection({
     this.id,
     required this.imageUrl,
     this.imagePath,
-    this.description,
+    this.solution,
     DateTime? createdAt,
   }) : createdAt = createdAt ?? DateTime.now();
 
   // For local or remote serialization
   factory Collection.fromJson(Map<String, dynamic> json) {
     return Collection(
-      id: json['id'] as String,
-      imageUrl: json['imageUrl'] as String,
-      description: json['description'] as String?,
+      id: json['id'] as String?,
+      imageUrl: json['imageUrl'] as String? ?? '',
+      solution: json['solution'] as String?,
       createdAt:
           json['createdAt'] != null
-              ? DateTime.parse(json['createdAt'] as String)
+              ? (json['createdAt'] is Timestamp 
+                  ? (json['createdAt'] as Timestamp).toDate()
+                  : json['createdAt'] is String 
+                      ? DateTime.parse(json['createdAt'] as String)
+                      : (json['createdAt'] as DateTime))
               : null,
     );
   }
@@ -32,7 +37,7 @@ class Collection extends Equatable {
     return {
       // 'id': id,
       'imageUrl': imageUrl,
-      'description': description,
+      'solution': solution,
       'createdAt': createdAt?.toIso8601String(),
     };
   }
@@ -42,13 +47,13 @@ class Collection extends Equatable {
     // String? id,
     String? imageUrl,
     String? imagePath,
-    String? description,
+    String? solution,
   }) {
     return Collection(
       // id: id ?? this.id,
       imageUrl: imageUrl ?? this.imageUrl,
       imagePath: imagePath ?? this.imagePath,
-      description: description ?? this.description,
+      solution: solution ?? this.solution,
       createdAt: createdAt ?? createdAt,
     );
   }
@@ -57,5 +62,5 @@ class Collection extends Equatable {
   String toString() => 'Collection(id: $id, imageUrl: $imageUrl)';
 
   @override
-  List<Object?> get props => [imageUrl, imagePath, description, createdAt];
+  List<Object?> get props => [imageUrl, imagePath, solution, createdAt];
 }

@@ -13,7 +13,7 @@ class FirebaseCollectionCubit extends Cubit<FirebaseCollectionState> {
     : super(FirebaseCollectionState());
 
   // Fetches the initial set of animals or refreshes the list
-  Future<void> getAnimals({bool isRefresh = false}) async {
+  Future<void> getCollections({bool isRefresh = false}) async {
     if (isRefresh) {
       // For pull-to-refresh, reset everything
       emit(
@@ -65,7 +65,7 @@ class FirebaseCollectionCubit extends Cubit<FirebaseCollectionState> {
   bool _isFetchingMore = false;
 
   // Fetches the next page of animals
-  Future<void> loadMoreAnimals() async {
+  Future<void> loadMoreCollections() async {
     // Prevent multiple "load more" requests simultaneously or if no more data
     if (_isFetchingMore ||
         state.isLoadingMore ||
@@ -125,7 +125,7 @@ class FirebaseCollectionCubit extends Cubit<FirebaseCollectionState> {
   //   }
   // }
 
-  Future<void> saveAnimal(Collection collection) async {
+  Future<void> saveCollection(Collection collection) async {
     emit(state.copyWith(isLoading: true));
     try {
       await firebaseCollectionRepo.saveCollection(collection);

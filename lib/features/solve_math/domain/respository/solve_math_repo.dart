@@ -6,6 +6,7 @@ Here we define what the app can do
 
 abstract class SolveMathRepo {
   Future<String> solveMath(dynamic imageInput);
+  Future<String> solveMathWithText(String textInput);
 }
 
 /*
