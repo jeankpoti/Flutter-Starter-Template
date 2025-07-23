@@ -2,9 +2,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
-import '../../../common_widgets/app_bar_widget.dart';
 import '../data/services/study_plan_service.dart';
 import '../data/services/quiz_service.dart';
+import '../data/repository/study_material_repository.dart';
+import '../data/repository/study_plan_repository.dart';
 import '../domain/models/study_material.dart' as study;
 import '../domain/models/study_plan.dart';
 import '../domain/models/quiz.dart';
@@ -23,10 +24,13 @@ class _StudyPageState extends State<StudyPage> with SingleTickerProviderStateMix
   final ImagePicker _picker = ImagePicker();
   final StudyPlanService _studyPlanService = StudyPlanService();
   final QuizService _quizService = QuizService();
+  final StudyMaterialRepository _materialRepository = StudyMaterialRepository();
+  final StudyPlanRepository _planRepository = StudyPlanRepository();
   
   List<study.StudyMaterial> _studyMaterials = [];
-  StudyPlan? _currentStudyPlan;
+  List<StudyPlan> _studyPlans = [];
   bool _isProcessing = false;
+  String? _processingPlanId;
 
   @override
   void initState() {
@@ -39,8 +43,50 @@ class _StudyPageState extends State<StudyPage> with SingleTickerProviderStateMix
     try {
       await _studyPlanService.initialize();
       await _quizService.initialize();
+      
+      // Load persisted data
+      await _loadPersistedData();
     } catch (e) {
       debugPrint('Error initializing services: $e');
+    }
+  }
+
+  Future<void> _loadPersistedData() async {
+    try {
+      setState(() {
+        _isProcessing = true;
+      });
+
+      // Load study materials and plans in parallel
+      final futures = await Future.wait([
+        _materialRepository.getUserMaterials(),
+        _planRepository.getUserPlans(),
+      ]);
+
+      final materials = futures[0] as List<study.StudyMaterial>;
+      final plans = futures[1] as List<StudyPlan>;
+
+      setState(() {
+        _studyMaterials = materials;
+        _studyPlans = plans;
+        _isProcessing = false;
+      });
+
+      debugPrint('Loaded ${materials.length} materials and ${plans.length} plans from database');
+    } catch (e) {
+      setState(() {
+        _isProcessing = false;
+      });
+      debugPrint('Error loading persisted data: $e');
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error loading your study data: $e'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
     }
   }
 
@@ -53,7 +99,16 @@ class _StudyPageState extends State<StudyPage> with SingleTickerProviderStateMix
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppBarWidget(title: 'Study Materials'),
+      appBar: AppBar(
+        title: const Text('Study Materials'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _refreshData,
+            tooltip: 'Refresh Data',
+          ),
+        ],
+      ),
       body: Column(
         children: [
           // Tab Bar
@@ -159,6 +214,12 @@ class _StudyPageState extends State<StudyPage> with SingleTickerProviderStateMix
 
           const SizedBox(height: 32),
 
+          // Loading Progress Bar
+          if (_isProcessing) ...[
+            _buildProcessingIndicator(),
+            const SizedBox(height: 24),
+          ],
+
           // Upload Options
           _buildUploadOption(
             icon: Icons.camera_alt,
@@ -200,16 +261,22 @@ class _StudyPageState extends State<StudyPage> with SingleTickerProviderStateMix
     required String subtitle,
     required VoidCallback onTap,
   }) {
+    final isDisabled = _isProcessing;
+    
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: isDisabled 
+            ? Theme.of(context).colorScheme.surface.withValues(alpha: 0.5)
+            : Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+          color: isDisabled
+              ? Theme.of(context).colorScheme.outline.withValues(alpha: 0.1)
+              : Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
         ),
       ),
       child: InkWell(
-        onTap: onTap,
+        onTap: isDisabled ? null : onTap,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -223,7 +290,9 @@ class _StudyPageState extends State<StudyPage> with SingleTickerProviderStateMix
                 ),
                 child: Icon(
                   icon,
-                  color: Theme.of(context).colorScheme.secondary,
+                  color: isDisabled 
+                      ? Theme.of(context).colorScheme.secondary.withValues(alpha: 0.4)
+                      : Theme.of(context).colorScheme.secondary,
                   size: 24,
                 ),
               ),
@@ -236,14 +305,18 @@ class _StudyPageState extends State<StudyPage> with SingleTickerProviderStateMix
                       title,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: Theme.of(context).colorScheme.onSurface,
+                        color: isDisabled
+                            ? Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4)
+                            : Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       subtitle,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                        color: isDisabled
+                            ? Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3)
+                            : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                       ),
                     ),
                   ],
@@ -251,7 +324,9 @@ class _StudyPageState extends State<StudyPage> with SingleTickerProviderStateMix
               ),
               Icon(
                 Icons.arrow_forward_ios,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
+                color: isDisabled
+                    ? Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2)
+                    : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
                 size: 16,
               ),
             ],
@@ -393,14 +468,17 @@ class _StudyPageState extends State<StudyPage> with SingleTickerProviderStateMix
   }
 
   Widget _buildMaterialsTab() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
+    return RefreshIndicator(
+      onRefresh: _refreshData,
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Study Plan Section
-          if (_currentStudyPlan != null) ...[
-            _buildStudyPlanSection(),
+          // Study Plans Section
+          if (_studyPlans.isNotEmpty) ...[
+            _buildStudyPlansSection(),
             const SizedBox(height: 32),
           ],
           
@@ -465,20 +543,17 @@ class _StudyPageState extends State<StudyPage> with SingleTickerProviderStateMix
               },
             ),
         ],
+        ),
       ),
     );
   }
 
-  Widget _buildStudyPlanSection() {
-    if (_currentStudyPlan == null) return const SizedBox.shrink();
-    
-    final plan = _currentStudyPlan!;
-    
+  Widget _buildStudyPlansSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Study Plan',
+          'My Study Plans',
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
             fontWeight: FontWeight.bold,
             color: Theme.of(context).colorScheme.onSurface,
@@ -486,93 +561,306 @@ class _StudyPageState extends State<StudyPage> with SingleTickerProviderStateMix
         ),
         const SizedBox(height: 16),
         
-        Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.3),
-                Theme.of(context).colorScheme.tertiaryContainer.withValues(alpha: 0.2),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(16),
+        // Horizontal scrollable plans
+        SizedBox(
+          height: 240,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: _studyPlans.length,
+            itemBuilder: (context, index) {
+              return _buildStudyPlanCard(_studyPlans[index]);
+            },
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStudyPlanCard(StudyPlan plan) {
+    return Container(
+      width: 280,
+      height: 220,
+      margin: const EdgeInsets.only(right: 16),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.3),
+            Theme.of(context).colorScheme.tertiaryContainer.withValues(alpha: 0.2),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.1),
+            spreadRadius: 1,
+            blurRadius: 3,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             children: [
-              Row(
-                children: [
-                  Icon(
-                    Icons.auto_awesome,
-                    color: Theme.of(context).colorScheme.secondary,
-                    size: 24,
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      plan.title,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ),
-                  ),
-                ],
+              Icon(
+                Icons.auto_awesome,
+                color: Theme.of(context).colorScheme.secondary,
+                size: 20,
               ),
-              const SizedBox(height: 12),
-              Text(
-                plan.description,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  plan.title,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-              const SizedBox(height: 16),
-              
-              // Progress indicator
-              Row(
-                children: [
-                  Expanded(
-                    child: LinearProgressIndicator(
-                      value: plan.calculateProgress() / 100,
-                      backgroundColor: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        Theme.of(context).colorScheme.secondary,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Text(
-                    '${plan.calculateProgress().toStringAsFixed(0)}%',
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.secondary,
-                    ),
-                  ),
-                ],
-              ),
-              
-              const SizedBox(height: 16),
-              
-              // Study plan stats
-              Row(
-                children: [
-                  _buildStatChip(
-                    icon: Icons.list_alt,
-                    label: '${plan.topics.length} Topics',
-                  ),
-                  const SizedBox(width: 12),
-                  _buildStatChip(
-                    icon: Icons.schedule,
-                    label: '${plan.totalEstimatedHours}h Total',
+              PopupMenuButton<String>(
+                icon: Icon(
+                  Icons.more_vert,
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                  size: 20,
+                ),
+                onSelected: (value) {
+                  if (value == 'delete') {
+                    _deletePlan(plan.id);
+                  }
+                },
+                itemBuilder: (context) => [
+                  const PopupMenuItem(
+                    value: 'delete',
+                    child: Text('Delete Plan'),
                   ),
                 ],
               ),
             ],
           ),
+          const SizedBox(height: 6),
+          
+          Flexible(
+            child: Text(
+              plan.description,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const SizedBox(height: 8),
+          
+          // Progress indicator
+          Row(
+            children: [
+              Expanded(
+                child: LinearProgressIndicator(
+                  value: plan.calculateProgress() / 100,
+                  backgroundColor: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    Theme.of(context).colorScheme.secondary,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                '${plan.calculateProgress().toStringAsFixed(0)}%',
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          
+          // Plan stats
+          Row(
+            children: [
+              Flexible(
+                child: _buildStatChip(
+                  icon: Icons.list_alt,
+                  label: '${plan.topics.length} Topics',
+                ),
+              ),
+              const SizedBox(width: 6),
+              Flexible(
+                child: _buildStatChip(
+                  icon: Icons.schedule,
+                  label: '${plan.totalEstimatedHours}h',
+                ),
+              ),
+            ],
+          ),
+          
+          const Spacer(),
+          
+          // Action button
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: _processingPlanId == plan.id ? null : () => _startQuizFromPlan(plan),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: _processingPlanId == plan.id 
+                    ? Theme.of(context).colorScheme.secondary.withValues(alpha: 0.6)
+                    : Theme.of(context).colorScheme.secondary,
+                foregroundColor: Theme.of(context).colorScheme.onSecondary,
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: _processingPlanId == plan.id
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: 12,
+                          height: 12,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Theme.of(context).colorScheme.onSecondary,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        const Text('Generating...', style: TextStyle(fontSize: 12)),
+                      ],
+                    )
+                  : const Text('Take Quiz', style: TextStyle(fontSize: 14)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProcessingIndicator() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.2),
+          width: 1,
         ),
-      ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.5,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    Theme.of(context).colorScheme.secondary,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Processing Your Material',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'AI is analyzing your content and creating a personalized study plan...',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          
+          // Progress bar
+          LinearProgressIndicator(
+            backgroundColor: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+            valueColor: AlwaysStoppedAnimation<Color>(
+              Theme.of(context).colorScheme.secondary,
+            ),
+          ),
+          
+          const SizedBox(height: 12),
+          
+          // Processing steps
+          Row(
+            children: [
+              _buildProcessingStep('📷', 'Upload', true),
+              _buildProcessingStep('🔍', 'Analyze', true),
+              _buildProcessingStep('📚', 'Generate Plan', false),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProcessingStep(String emoji, String label, bool isCompleted) {
+    return Expanded(
+      child: Column(
+        children: [
+          Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              color: isCompleted 
+                  ? Theme.of(context).colorScheme.secondary.withValues(alpha: 0.1)
+                  : Theme.of(context).colorScheme.outline.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: isCompleted 
+                    ? Theme.of(context).colorScheme.secondary
+                    : Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
+                width: 1,
+              ),
+            ),
+            child: Center(
+              child: isCompleted
+                  ? Icon(
+                      Icons.check,
+                      size: 16,
+                      color: Theme.of(context).colorScheme.secondary,
+                    )
+                  : Text(
+                      emoji,
+                      style: const TextStyle(fontSize: 14),
+                    ),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+              color: isCompleted 
+                  ? Theme.of(context).colorScheme.secondary
+                  : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+              fontWeight: isCompleted ? FontWeight.w600 : FontWeight.normal,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -682,8 +970,8 @@ class _StudyPageState extends State<StudyPage> with SingleTickerProviderStateMix
               
               const SizedBox(height: 12),
               
-              // Challenge quiz (only if study plan exists)
-              if (_currentStudyPlan != null)
+              // Challenge quiz (only if study plans exist)
+              if (_studyPlans.isNotEmpty)
                 SizedBox(
                   width: double.infinity,
                   child: _buildQuizOptionButton(
@@ -964,8 +1252,9 @@ class _StudyPageState extends State<StudyPage> with SingleTickerProviderStateMix
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Material captured! Processing...'),
+              content: const Text('📷 Material captured! Starting AI analysis...'),
               backgroundColor: Theme.of(context).colorScheme.secondary,
+              duration: const Duration(seconds: 2),
             ),
           );
         }
@@ -1002,8 +1291,9 @@ class _StudyPageState extends State<StudyPage> with SingleTickerProviderStateMix
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('${images.length} material(s) uploaded! Processing...'),
+              content: Text('📱 ${images.length} material(s) uploaded! Starting AI analysis...'),
               backgroundColor: Theme.of(context).colorScheme.secondary,
+              duration: const Duration(seconds: 2),
             ),
           );
         }
@@ -1040,6 +1330,7 @@ class _StudyPageState extends State<StudyPage> with SingleTickerProviderStateMix
           ? 'Study Material ${_studyMaterials.length + 1}'
           : 'Text Material ${_studyMaterials.length + 1}';
       
+      // Analyze the material
       final studyMaterial = await _studyPlanService.analyzeMaterial(
         materialId: materialId,
         type: type,
@@ -1047,25 +1338,41 @@ class _StudyPageState extends State<StudyPage> with SingleTickerProviderStateMix
         imageFile: imageFile,
         title: title,
       );
+
+      // Handle image upload to Firebase Storage if needed
+      study.StudyMaterial finalMaterial = studyMaterial;
+      if (imageFile != null && type == study.MaterialType.image) {
+        try {
+          final downloadUrl = await _materialRepository.uploadImage(imageFile, materialId);
+          finalMaterial = studyMaterial.copyWith(
+            firebaseStoragePath: downloadUrl,
+          );
+        } catch (e) {
+          debugPrint('Warning: Could not upload image to storage: $e');
+          // Continue without Firebase Storage URL
+        }
+      }
+
+      // Save material to database
+      await _materialRepository.saveMaterial(finalMaterial);
       
       setState(() {
-        _studyMaterials.add(studyMaterial);
+        _studyMaterials.add(finalMaterial);
         _isProcessing = false;
       });
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Material analyzed successfully!'),
-            backgroundColor: Theme.of(context).colorScheme.secondary,
+            content: const Text('✅ Material analyzed successfully! Study plan created!'),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 3),
           ),
         );
       }
       
-      // Generate study plan if we have enough materials
-      if (_studyMaterials.isNotEmpty) {
-        await _generateStudyPlan();
-      }
+      // Generate individual study plan for this material
+      await _generateIndividualStudyPlan(finalMaterial);
       
     } catch (e) {
       setState(() {
@@ -1170,27 +1477,29 @@ class _StudyPageState extends State<StudyPage> with SingleTickerProviderStateMix
     await _processUploadedMaterial(null, study.MaterialType.text, textContent: text);
   }
 
-  Future<void> _generateStudyPlan() async {
-    if (_studyMaterials.isEmpty) return;
-    
+  Future<void> _generateIndividualStudyPlan(study.StudyMaterial material) async {
     try {
       setState(() {
         _isProcessing = true;
       });
       
       final studyPlan = await _studyPlanService.generateStudyPlan(
-        materials: _studyMaterials,
+        materials: [material], // Only this material
+        customTitle: "Plan: ${material.title}",
       );
+
+      // Save study plan to database
+      await _planRepository.savePlan(studyPlan);
       
       setState(() {
-        _currentStudyPlan = studyPlan;
+        _studyPlans.add(studyPlan);
         _isProcessing = false;
       });
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Study plan generated!'),
+            content: Text('Study plan "${studyPlan.title}" created!'),
             backgroundColor: Theme.of(context).colorScheme.secondary,
           ),
         );
@@ -1239,10 +1548,10 @@ class _StudyPageState extends State<StudyPage> with SingleTickerProviderStateMix
 
       Quiz quiz;
       
-      // If challenge mode and study plan exists, generate from study plan
-      if (difficulty == QuizDifficulty.hard && _currentStudyPlan != null) {
+      // If challenge mode and study plans exist, generate from first study plan
+      if (difficulty == QuizDifficulty.hard && _studyPlans.isNotEmpty) {
         quiz = await _quizService.generateQuizFromStudyPlan(
-          studyPlan: _currentStudyPlan!,
+          studyPlan: _studyPlans.first,
           difficulty: difficulty,
           questionCount: questionCount,
           timeLimit: timeLimit,
@@ -1277,6 +1586,116 @@ class _StudyPageState extends State<StudyPage> with SingleTickerProviderStateMix
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error generating quiz: $e')),
+        );
+      }
+    }
+  }
+
+  // Plan management methods
+  Future<void> _deletePlan(String planId) async {
+    try {
+      // Delete from database first
+      await _planRepository.deletePlan(planId);
+      
+      // Then remove from local state
+      setState(() {
+        _studyPlans.removeWhere((plan) => plan.id == planId);
+      });
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Study plan deleted'),
+            backgroundColor: Theme.of(context).colorScheme.secondary,
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint('Error deleting study plan: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error deleting study plan: $e'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _refreshData() async {
+    await _loadPersistedData();
+  }
+
+  Future<void> _startQuizFromPlan(StudyPlan plan) async {
+    try {
+      setState(() {
+        _isProcessing = true;
+        _processingPlanId = plan.id;
+      });
+
+      // Show loading snackbar
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      Theme.of(context).colorScheme.onSecondary,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Text('Generating quiz...'),
+              ],
+            ),
+            backgroundColor: Theme.of(context).colorScheme.secondary,
+            duration: const Duration(seconds: 30), // Long duration since quiz generation takes time
+          ),
+        );
+      }
+
+      final quiz = await _quizService.generateQuizFromStudyPlan(
+        studyPlan: plan,
+        difficulty: QuizDifficulty.medium,
+        questionCount: 10,
+        timeLimit: 15,
+      );
+
+      setState(() {
+        _isProcessing = false;
+        _processingPlanId = null;
+      });
+
+      // Hide loading snackbar
+      if (mounted) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        
+        // Navigate to quiz
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => QuizPage(quiz: quiz),
+          ),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        _isProcessing = false;
+        _processingPlanId = null;
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error generating quiz: $e'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
         );
       }
     }

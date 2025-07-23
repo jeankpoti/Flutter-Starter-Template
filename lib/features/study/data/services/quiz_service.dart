@@ -11,8 +11,8 @@ import '../repository/quiz_repository.dart';
 
 class QuizService {
   static final QuizService _instance = QuizService._internal();
-  late final GeminiSolveMathRepo _geminiService;
-  late final QuizRepository _quizRepository;
+  GeminiSolveMathRepo? _geminiService;
+  QuizRepository? _quizRepository;
   final Random _random = Random();
 
   factory QuizService() {
@@ -22,9 +22,14 @@ class QuizService {
   QuizService._internal();
 
   Future<void> initialize() async {
-    _geminiService = GeminiSolveMathRepo();
-    _quizRepository = QuizRepository();
-    await _geminiService.initialize();
+    // Only assign if not already assigned
+    _geminiService ??= GeminiSolveMathRepo();
+    _quizRepository ??= QuizRepository();
+    
+    // Only initialize if not already initialized
+    if (!_geminiService!.isInitialized) {
+      await _geminiService!.initialize();
+    }
   }
 
   /// Generate a quiz from study materials
@@ -169,7 +174,7 @@ Points: 1
 Continue this pattern for all $questionCount questions. Ensure variety in question types and topics covered.
 ''';
 
-    final response = await _geminiService.generateTextContent(prompt);
+    final response = await _geminiService!.generateTextContent(prompt);
     final questionText = response.text ?? '';
     
     return _parseQuestionsFromAIResponse(questionText);
@@ -373,6 +378,178 @@ Continue this pattern for all $questionCount questions. Ensure variety in questi
     );
   }
 
+  /// Update quiz with new answer and return updated quiz
+  Quiz updateQuizWithAnswer({
+    required Quiz quiz,
+    required UserQuizAnswer answer,
+  }) {
+    // Remove any existing answer for this question
+    final updatedAnswers = quiz.userAnswers
+        .where((ua) => ua.questionId != answer.questionId)
+        .toList();
+    
+    // Add the new answer
+    updatedAnswers.add(answer);
+    
+    // Calculate progress and status
+    final isCompleted = updatedAnswers.length == quiz.questions.length;
+    final newScore = isCompleted ? _calculateQuizScore(quiz.questions, updatedAnswers) : null;
+    final newStatus = isCompleted ? QuizStatus.completed : QuizStatus.inProgress;
+    
+    return quiz.copyWith(
+      userAnswers: updatedAnswers,
+      lastScore: newScore,
+      status: newStatus,
+      lastAttemptAt: isCompleted ? DateTime.now() : quiz.lastAttemptAt,
+      attemptCount: isCompleted ? quiz.attemptCount + 1 : quiz.attemptCount,
+    );
+  }
+
+  /// Calculate quiz score based on correct answers
+  double _calculateQuizScore(List<QuizQuestion> questions, List<UserQuizAnswer> answers) {
+    if (questions.isEmpty || answers.isEmpty) return 0.0;
+    
+    int correctAnswers = answers.where((ua) => ua.isCorrect).length;
+    return (correctAnswers / questions.length) * 100;
+  }
+
+  /// Get detailed question tracking for a quiz
+  Map<String, dynamic> getQuestionTracking(Quiz quiz) {
+    final answeredQuestionIds = quiz.userAnswers.map((ua) => ua.questionId).toSet();
+    final unansweredQuestions = quiz.questions
+        .where((q) => !answeredQuestionIds.contains(q.id))
+        .toList();
+    
+    final correctAnswers = quiz.userAnswers.where((ua) => ua.isCorrect).length;
+    final incorrectAnswers = quiz.userAnswers.length - correctAnswers;
+    
+    return {
+      'totalQuestions': quiz.questions.length,
+      'answeredCount': quiz.userAnswers.length,
+      'unansweredCount': unansweredQuestions.length,
+      'correctCount': correctAnswers,
+      'incorrectCount': incorrectAnswers,
+      'completionPercentage': (quiz.userAnswers.length / quiz.questions.length) * 100,
+      'accuracyPercentage': quiz.userAnswers.isEmpty ? 0.0 : (correctAnswers / quiz.userAnswers.length) * 100,
+      'unansweredQuestions': unansweredQuestions,
+      'answeredQuestions': quiz.questions
+          .where((q) => answeredQuestionIds.contains(q.id))
+          .toList(),
+    };
+  }
+
+  /// Get performance by question type
+  Map<String, dynamic> getQuestionTypePerformance(List<Quiz> quizzes) {
+    final typeStats = <QuestionType, Map<String, int>>{};
+    
+    for (final quiz in quizzes) {
+      for (final question in quiz.questions) {
+        typeStats[question.type] ??= {'total': 0, 'correct': 0};
+        typeStats[question.type]!['total'] = typeStats[question.type]!['total']! + 1;
+        
+        final userAnswer = quiz.userAnswers
+            .where((ua) => ua.questionId == question.id)
+            .firstOrNull;
+        
+        if (userAnswer != null && userAnswer.isCorrect) {
+          typeStats[question.type]!['correct'] = typeStats[question.type]!['correct']! + 1;
+        }
+      }
+    }
+    
+    final performance = <String, dynamic>{};
+    for (final entry in typeStats.entries) {
+      final total = entry.value['total']!;
+      final correct = entry.value['correct']!;
+      performance[entry.key.name] = {
+        'total': total,
+        'correct': correct,
+        'accuracy': total > 0 ? (correct / total) * 100 : 0.0,
+      };
+    }
+    
+    return performance;
+  }
+
+  /// Get topic-based performance analysis
+  Map<String, dynamic> getTopicPerformance(List<Quiz> quizzes) {
+    final topicStats = <String, Map<String, int>>{};
+    
+    for (final quiz in quizzes) {
+      for (final question in quiz.questions) {
+        for (final topic in question.relatedTopics) {
+          topicStats[topic] ??= {'total': 0, 'correct': 0};
+          topicStats[topic]!['total'] = topicStats[topic]!['total']! + 1;
+          
+          final userAnswer = quiz.userAnswers
+              .where((ua) => ua.questionId == question.id)
+              .firstOrNull;
+          
+          if (userAnswer != null && userAnswer.isCorrect) {
+            topicStats[topic]!['correct'] = topicStats[topic]!['correct']! + 1;
+          }
+        }
+      }
+    }
+    
+    final performance = <String, dynamic>{};
+    for (final entry in topicStats.entries) {
+      final total = entry.value['total']!;
+      final correct = entry.value['correct']!;
+      performance[entry.key] = {
+        'total': total,
+        'correct': correct,
+        'accuracy': total > 0 ? (correct / total) * 100 : 0.0,
+      };
+    }
+    
+    return performance;
+  }
+
+  /// Get time-based answering patterns
+  Map<String, dynamic> getAnswerTimePatterns(Quiz quiz) {
+    if (quiz.userAnswers.length < 2) {
+      return {'averageTimePerQuestion': 0, 'timePattern': 'insufficient_data'};
+    }
+    
+    final sortedAnswers = quiz.userAnswers.toList()
+      ..sort((a, b) => a.answeredAt.compareTo(b.answeredAt));
+    
+    final timeDifferences = <Duration>[];
+    for (int i = 1; i < sortedAnswers.length; i++) {
+      timeDifferences.add(
+        sortedAnswers[i].answeredAt.difference(sortedAnswers[i - 1].answeredAt),
+      );
+    }
+    
+    final averageTime = timeDifferences.isNotEmpty
+        ? timeDifferences.map((d) => d.inSeconds).reduce((a, b) => a + b) / timeDifferences.length
+        : 0;
+    
+    String pattern = 'steady';
+    if (timeDifferences.isNotEmpty) {
+      final firstHalf = timeDifferences.take(timeDifferences.length ~/ 2);
+      final secondHalf = timeDifferences.skip(timeDifferences.length ~/ 2);
+      
+      final firstAvg = firstHalf.map((d) => d.inSeconds).reduce((a, b) => a + b) / firstHalf.length;
+      final secondAvg = secondHalf.map((d) => d.inSeconds).reduce((a, b) => a + b) / secondHalf.length;
+      
+      if (secondAvg > firstAvg * 1.5) {
+        pattern = 'slowing_down';
+      } else if (secondAvg < firstAvg * 0.7) {
+        pattern = 'speeding_up';
+      }
+    }
+    
+    return {
+      'averageTimePerQuestion': averageTime,
+      'timePattern': pattern,
+      'totalTimeSpent': quiz.userAnswers.isNotEmpty && quiz.userAnswers.length > 1
+          ? sortedAnswers.last.answeredAt.difference(sortedAnswers.first.answeredAt).inMinutes
+          : 0,
+    };
+  }
+
   /// Compare text answers with some tolerance
   bool _compareTextAnswers(String userAnswer, String correctAnswer) {
     final userNormalized = userAnswer.toLowerCase().trim().replaceAll(RegExp(r'\s+'), ' ');
@@ -443,7 +620,7 @@ Continue this pattern for all $questionCount questions. Ensure variety in questi
   /// Save completed quiz to history
   Future<void> saveQuizToHistory(Quiz quiz) async {
     try {
-      await _quizRepository.saveQuiz(quiz);
+      await _quizRepository!.saveQuiz(quiz);
     } catch (e) {
       debugPrint('Error saving quiz to history: $e');
       rethrow;
@@ -453,7 +630,7 @@ Continue this pattern for all $questionCount questions. Ensure variety in questi
   /// Update existing quiz (for retakes)
   Future<void> updateQuizInHistory(Quiz quiz) async {
     try {
-      await _quizRepository.updateQuiz(quiz);
+      await _quizRepository!.updateQuiz(quiz);
     } catch (e) {
       debugPrint('Error updating quiz in history: $e');
       rethrow;
@@ -463,7 +640,7 @@ Continue this pattern for all $questionCount questions. Ensure variety in questi
   /// Get all quizzes for the current user
   Future<List<Quiz>> getQuizHistory() async {
     try {
-      return await _quizRepository.getUserQuizzes();
+      return await _quizRepository!.getUserQuizzes();
     } catch (e) {
       debugPrint('Error fetching quiz history: $e');
       return [];
@@ -473,7 +650,7 @@ Continue this pattern for all $questionCount questions. Ensure variety in questi
   /// Get quizzes for specific study materials
   Future<List<Quiz>> getQuizzesForMaterials(List<String> materialIds) async {
     try {
-      return await _quizRepository.getQuizzesForMaterials(materialIds);
+      return await _quizRepository!.getQuizzesForMaterials(materialIds);
     } catch (e) {
       debugPrint('Error fetching quizzes for materials: $e');
       return [];
@@ -483,7 +660,7 @@ Continue this pattern for all $questionCount questions. Ensure variety in questi
   /// Get comprehensive quiz statistics
   Future<Map<String, dynamic>> getQuizStatistics() async {
     try {
-      return await _quizRepository.getQuizStatistics();
+      return await _quizRepository!.getQuizStatistics();
     } catch (e) {
       debugPrint('Error fetching quiz statistics: $e');
       return {
@@ -501,7 +678,7 @@ Continue this pattern for all $questionCount questions. Ensure variety in questi
   /// Get performance trends over time
   Future<List<Map<String, dynamic>>> getPerformanceTrends({int days = 30}) async {
     try {
-      return await _quizRepository.getPerformanceTrends(days: days);
+      return await _quizRepository!.getPerformanceTrends(days: days);
     } catch (e) {
       debugPrint('Error fetching performance trends: $e');
       return [];
@@ -511,10 +688,217 @@ Continue this pattern for all $questionCount questions. Ensure variety in questi
   /// Delete a quiz from history
   Future<void> deleteQuizFromHistory(String quizId) async {
     try {
-      await _quizRepository.deleteQuiz(quizId);
+      await _quizRepository!.deleteQuiz(quizId);
     } catch (e) {
       debugPrint('Error deleting quiz from history: $e');
       rethrow;
     }
+  }
+
+  /// Save quiz progress (answers) without completing the quiz
+  Future<void> saveQuizProgress(Quiz quiz) async {
+    try {
+      await _quizRepository!.updateQuiz(quiz);
+      debugPrint('Quiz progress saved: ${quiz.id}');
+    } catch (e) {
+      debugPrint('Error saving quiz progress: $e');
+      rethrow;
+    }
+  }
+
+  /// Get comprehensive answer tracking summary
+  Map<String, dynamic> getAnswerTrackingSummary(List<Quiz> quizzes) {
+    int totalQuestions = 0;
+    int totalAnswered = 0;
+    int totalCorrect = 0;
+    int totalIncorrect = 0;
+    
+    final questionTypeBreakdown = <String, Map<String, int>>{};
+    final topicBreakdown = <String, Map<String, int>>{};
+    final timePatterns = <String, int>{};
+    
+    for (final quiz in quizzes) {
+      totalQuestions += quiz.questions.length;
+      totalAnswered += quiz.userAnswers.length;
+      totalCorrect += quiz.userAnswers.where((ua) => ua.isCorrect).length;
+      totalIncorrect += quiz.userAnswers.where((ua) => !ua.isCorrect).length;
+      
+      // Track question type performance
+      for (final question in quiz.questions) {
+        final type = question.type.name;
+        questionTypeBreakdown[type] ??= {'total': 0, 'answered': 0, 'correct': 0};
+        questionTypeBreakdown[type]!['total'] = questionTypeBreakdown[type]!['total']! + 1;
+        
+        final userAnswer = quiz.userAnswers
+            .where((ua) => ua.questionId == question.id)
+            .firstOrNull;
+        
+        if (userAnswer != null) {
+          questionTypeBreakdown[type]!['answered'] = questionTypeBreakdown[type]!['answered']! + 1;
+          if (userAnswer.isCorrect) {
+            questionTypeBreakdown[type]!['correct'] = questionTypeBreakdown[type]!['correct']! + 1;
+          }
+        }
+        
+        // Track topic performance
+        for (final topic in question.relatedTopics) {
+          topicBreakdown[topic] ??= {'total': 0, 'answered': 0, 'correct': 0};
+          topicBreakdown[topic]!['total'] = topicBreakdown[topic]!['total']! + 1;
+          
+          if (userAnswer != null) {
+            topicBreakdown[topic]!['answered'] = topicBreakdown[topic]!['answered']! + 1;
+            if (userAnswer.isCorrect) {
+              topicBreakdown[topic]!['correct'] = topicBreakdown[topic]!['correct']! + 1;
+            }
+          }
+        }
+      }
+      
+      // Track time patterns
+      final timePattern = getAnswerTimePatterns(quiz)['timePattern'] as String;
+      timePatterns[timePattern] = (timePatterns[timePattern] ?? 0) + 1;
+    }
+    
+    return {
+      'overall': {
+        'totalQuestions': totalQuestions,
+        'totalAnswered': totalAnswered,
+        'totalCorrect': totalCorrect,
+        'totalIncorrect': totalIncorrect,
+        'unanswered': totalQuestions - totalAnswered,
+        'overallAccuracy': totalAnswered > 0 ? (totalCorrect / totalAnswered) * 100 : 0.0,
+        'completionRate': totalQuestions > 0 ? (totalAnswered / totalQuestions) * 100 : 0.0,
+      },
+      'questionTypeBreakdown': questionTypeBreakdown,
+      'topicBreakdown': topicBreakdown,
+      'timePatterns': timePatterns,
+    };
+  }
+
+  /// Get questions that need review (frequently answered incorrectly)
+  List<Map<String, dynamic>> getQuestionsNeedingReview(List<Quiz> quizzes, {double threshold = 50.0}) {
+    final questionPerformance = <String, Map<String, dynamic>>{};
+    
+    for (final quiz in quizzes) {
+      for (final question in quiz.questions) {
+        if (!questionPerformance.containsKey(question.id)) {
+          questionPerformance[question.id] = {
+            'question': question,
+            'totalAttempts': 0,
+            'correctAttempts': 0,
+            'topics': question.relatedTopics,
+            'type': question.type.name,
+          };
+        }
+        
+        final userAnswer = quiz.userAnswers
+            .where((ua) => ua.questionId == question.id)
+            .firstOrNull;
+        
+        if (userAnswer != null) {
+          questionPerformance[question.id]!['totalAttempts']++;
+          if (userAnswer.isCorrect) {
+            questionPerformance[question.id]!['correctAttempts']++;
+          }
+        }
+      }
+    }
+    
+    final needReview = <Map<String, dynamic>>[];
+    
+    for (final entry in questionPerformance.entries) {
+      final data = entry.value;
+      final totalAttempts = data['totalAttempts'] as int;
+      final correctAttempts = data['correctAttempts'] as int;
+      
+      if (totalAttempts > 0) {
+        final accuracy = (correctAttempts / totalAttempts) * 100;
+        if (accuracy < threshold) {
+          needReview.add({
+            'questionId': entry.key,
+            'question': data['question'],
+            'accuracy': accuracy,
+            'totalAttempts': totalAttempts,
+            'correctAttempts': correctAttempts,
+            'topics': data['topics'],
+            'type': data['type'],
+          });
+        }
+      }
+    }
+    
+    // Sort by worst performance first
+    needReview.sort((a, b) => (a['accuracy'] as double).compareTo(b['accuracy'] as double));
+    
+    return needReview;
+  }
+
+  /// Get learning progress insights
+  Map<String, dynamic> getLearningInsights(List<Quiz> quizzes) {
+    if (quizzes.isEmpty) {
+      return {
+        'strongTopics': <String>[],
+        'weakTopics': <String>[],
+        'improvingTopics': <String>[],
+        'strugglingTopics': <String>[],
+        'recommendations': <String>[],
+      };
+    }
+    
+    final topicPerformance = getTopicPerformance(quizzes);
+    final strongTopics = <String>[];
+    final weakTopics = <String>[];
+    
+    for (final entry in topicPerformance.entries) {
+      final accuracy = entry.value['accuracy'] as double;
+      if (accuracy >= 80) {
+        strongTopics.add(entry.key);
+      } else if (accuracy < 60) {
+        weakTopics.add(entry.key);
+      }
+    }
+    
+    // Analyze trends (compare recent vs older performance)
+    final recentQuizzes = quizzes.take(quizzes.length ~/ 2).toList();
+    final olderQuizzes = quizzes.skip(quizzes.length ~/ 2).toList();
+    
+    final recentTopicPerformance = getTopicPerformance(recentQuizzes);
+    final olderTopicPerformance = getTopicPerformance(olderQuizzes);
+    
+    final improvingTopics = <String>[];
+    final strugglingTopics = <String>[];
+    
+    for (final topic in recentTopicPerformance.keys) {
+      if (olderTopicPerformance.containsKey(topic)) {
+        final recentAccuracy = recentTopicPerformance[topic]!['accuracy'] as double;
+        final olderAccuracy = olderTopicPerformance[topic]!['accuracy'] as double;
+        
+        if (recentAccuracy > olderAccuracy + 10) {
+          improvingTopics.add(topic);
+        } else if (recentAccuracy < olderAccuracy - 10) {
+          strugglingTopics.add(topic);
+        }
+      }
+    }
+    
+    // Generate recommendations
+    final recommendations = <String>[];
+    if (weakTopics.isNotEmpty) {
+      recommendations.add('Focus on reviewing ${weakTopics.take(3).join(", ")} concepts');
+    }
+    if (strugglingTopics.isNotEmpty) {
+      recommendations.add('Practice more ${strugglingTopics.take(2).join(" and ")} problems');
+    }
+    if (strongTopics.isNotEmpty) {
+      recommendations.add('Great work on ${strongTopics.take(2).join(" and ")}! Keep it up');
+    }
+    
+    return {
+      'strongTopics': strongTopics,
+      'weakTopics': weakTopics,
+      'improvingTopics': improvingTopics,
+      'strugglingTopics': strugglingTopics,
+      'recommendations': recommendations,
+    };
   }
 }

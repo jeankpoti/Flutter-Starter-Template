@@ -268,7 +268,7 @@ class _QuizHistoryPageState extends State<QuizHistoryPage> with SingleTickerProv
                   child: _buildPerformanceChip(
                     icon: Icons.help_outline,
                     label: 'Unanswered',
-                    value: quiz.questions.length - quiz.userAnswers.length,
+                    value: _calculateUnansweredCount(quiz),
                     color: Colors.orange,
                   ),
                 ),
@@ -529,11 +529,14 @@ class _QuizHistoryPageState extends State<QuizHistoryPage> with SingleTickerProv
                 size: 20,
               ),
               const SizedBox(width: 8),
-              Text(
-                title,
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: Theme.of(context).colorScheme.onSurface,
+              Expanded(
+                child: Text(
+                  title,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
@@ -844,6 +847,16 @@ class _QuizHistoryPageState extends State<QuizHistoryPage> with SingleTickerProv
     if (score >= 80) return Colors.green;
     if (score >= 60) return Colors.orange;
     return Colors.red;
+  }
+
+  int _calculateUnansweredCount(Quiz quiz) {
+    // Count questions that either have no answer entry or have null answers (skipped)
+    final answeredQuestionIds = quiz.userAnswers
+        .where((answer) => answer.selectedAnswerId != null || answer.textAnswer != null)
+        .map((answer) => answer.questionId)
+        .toSet();
+    
+    return quiz.questions.length - answeredQuestionIds.length;
   }
 
   String _formatDate(DateTime date) {

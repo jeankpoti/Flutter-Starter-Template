@@ -9,7 +9,7 @@ import '../../../settings/domain/models/math_level.dart';
 
 class GeminiSolveMathRepo implements SolveMathRepo {
   static final GeminiSolveMathRepo _instance = GeminiSolveMathRepo._internal();
-  late final GenerativeModel _model;
+  GenerativeModel? _model;
   bool _isInitialized = false;
 
   // Factory constructor to return the same instance every time
@@ -40,20 +40,20 @@ class GeminiSolveMathRepo implements SolveMathRepo {
 
   // Generate content from text prompt
   Future<GenerateContentResponse> generateTextContent(String prompt) async {
-    if (!_isInitialized) {
+    if (!_isInitialized || _model == null) {
       throw Exception(
         'GeminiService not initialized. Call initialize() first.',
       );
     }
 
     final contentItems = [Content.text(prompt)];
-    return await _model.generateContent(contentItems);
+    return await _model!.generateContent(contentItems);
   }
 
   // Method to solve math problems from text input
   @override
   Future<String> solveMathWithText(String textInput) async {
-    if (!_isInitialized) {
+    if (!_isInitialized || _model == null) {
       throw Exception(
         'GeminiService not initialized. Call initialize() first.',
       );
@@ -133,7 +133,7 @@ Make the explanation appropriate for ${level.displayName} level students.''';
   // Method to solve math from image
   @override
   Future<String> solveMath(dynamic imageInput) async {
-    if (!_isInitialized) {
+    if (!_isInitialized || _model == null) {
       throw Exception(
         'GeminiService not initialized. Call initialize() first.',
       );
@@ -177,7 +177,7 @@ Make the explanation appropriate for ${level.displayName} level students.''';
       ];
 
       // Generate content
-      final response = await _model.generateContent(content);
+      final response = await _model!.generateContent(content);
       return response.text ?? 'Unable to solve the math problem';
     } catch (e) {
       print('Error solving math problem: $e');

@@ -129,7 +129,11 @@ The app supports both **dark mode** and **light mode** themes. When working with
 - `Theme.of(context).colorScheme.surface` - Card/container backgrounds
 - `Theme.of(context).colorScheme.onSurface` - Text on surface
 - `Theme.of(context).colorScheme.background` - Screen background (deprecated, use surface)
-- `Theme.of(context).colorScheme.secondary` - Secondary accent color
+- `Theme.of(context).colorScheme.secondary` - **ACCENT COLOR** - Use for highlights, icons, buttons, and interactive elements
+- `Theme.of(context).colorScheme.onSecondary` - Text/icons on secondary/accent color
+- `Theme.of(context).colorScheme.secondaryContainer` - Background containers with accent color
+- `Theme.of(context).colorScheme.onSecondaryContainer` - Text on secondary container
+- `Theme.of(context).colorScheme.tertiary` - Additional accent color for variety
 - `Theme.of(context).colorScheme.error` - Error states
 - `Theme.of(context).colorScheme.outline` - Borders and dividers
 
@@ -139,6 +143,21 @@ The app supports both **dark mode** and **light mode** themes. When working with
   - `Theme.of(context).textTheme.bodyLarge?.color` - Primary text
   - `Theme.of(context).textTheme.bodyMedium?.color` - Secondary text
   - `Theme.of(context).colorScheme.onSurface.withOpacity(0.6)` - Disabled text
+
+### Accent Color Usage
+The **secondary color** serves as the main accent color throughout the app. Use it for:
+- Interactive elements (buttons, switches, sliders)
+- Icons and highlights
+- Progress indicators and loading states
+- Active/selected states
+- Call-to-action elements
+- Emphasis and visual hierarchy
+
+### Color Combinations
+- **Primary + Secondary**: Main brand color with accent highlights
+- **Surface + Secondary**: Card backgrounds with accent elements
+- **SecondaryContainer**: For subtle accent backgrounds
+- Always use corresponding `on*` colors for text/icons on colored backgrounds
 
 ### Testing Both Themes
 Always test UI changes in both light and dark modes to ensure proper contrast and readability.
