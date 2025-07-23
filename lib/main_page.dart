@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import 'features/solve_math/presentation/collections_page.dart';
 import 'features/solve_math/presentation/home_page.dart';
+import 'features/study/presentation/study_page.dart';
 import 'settings_page.dart';
 import 'theme/theme_cubit.dart';
 import 'utils/responsive.dart';
@@ -48,6 +49,13 @@ class _MainPageState extends State<MainPage> {
     items.add(
       BottomNavigationBarItem(
         backgroundColor: Theme.of(context).colorScheme.surface,
+        icon: Icon(CupertinoIcons.book),
+        label: 'Study',
+      ),
+    );
+    items.add(
+      BottomNavigationBarItem(
+        backgroundColor: Theme.of(context).colorScheme.surface,
         icon: Icon(CupertinoIcons.time),
         label: 'History',
       ),
@@ -71,6 +79,13 @@ class _MainPageState extends State<MainPage> {
     );
     railItems.add(
       NavigationRailDestination(
+        icon: Icon(CupertinoIcons.book),
+        selectedIcon: Icon(CupertinoIcons.book),
+        label: BodySmallTextWidget(text: 'Study'),
+      ),
+    );
+    railItems.add(
+      NavigationRailDestination(
         icon: Icon(CupertinoIcons.time),
         selectedIcon: Icon(CupertinoIcons.time),
         label: BodySmallTextWidget(text: 'History'),
@@ -88,7 +103,7 @@ class _MainPageState extends State<MainPage> {
   }
 
   List<Widget> _buildScreens() {
-    return [const HomePage(), const CollectionsPage(), const SettingsPage()];
+    return [const HomePage(), const StudyPage(), const CollectionsPage(), const SettingsPage()];
   }
 
   @override

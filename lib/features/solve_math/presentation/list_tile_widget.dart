@@ -115,15 +115,24 @@ class _ListTileWidgetState extends State<ListTileWidget> {
               padding: const EdgeInsets.all(8.0),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
-                child: Image.network(
-                  widget.collection.imageUrl ?? '',
-                  fit: BoxFit.cover,
-                  width: 100,
-                  height: 120,
-                  errorBuilder:
-                      (context, error, stackTrace) =>
-                          const Icon(Icons.image_not_supported),
-                ),
+                child:
+                    widget.collection.imageUrl != null &&
+                            widget.collection.imageUrl!.isNotEmpty
+                        ? Image.network(
+                          widget.collection.imageUrl!,
+                          fit: BoxFit.cover,
+                          width: 100,
+                          height: 120,
+                          errorBuilder:
+                              (context, error, stackTrace) =>
+                                  const Icon(Icons.image_not_supported),
+                        )
+                        : Image.asset(
+                          'assets/icons/app_icon.png',
+                          fit: BoxFit.cover,
+                          width: 100,
+                          height: 120,
+                        ),
               ),
             ),
 

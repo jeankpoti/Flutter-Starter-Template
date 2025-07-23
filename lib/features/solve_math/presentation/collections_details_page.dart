@@ -60,15 +60,17 @@ class CollectionsDetailsPage extends StatelessWidget {
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(20),
-                      child: Image.network(
-                        collection.imageUrl ?? '',
-                        fit: BoxFit.cover,
-                        width: 100,
-                        height: 120,
-                        errorBuilder:
-                            (context, error, stackTrace) =>
+                      child: collection.imageUrl != null && collection.imageUrl!.isNotEmpty
+                          ? Image.network(
+                              collection.imageUrl!,
+                              fit: BoxFit.cover,
+                              width: 100,
+                              height: 120,
+                              errorBuilder:
+                                  (context, error, stackTrace) =>
                                 const Icon(Icons.image_not_supported),
-                      ),
+                            )
+                          : const Icon(Icons.image_not_supported),
                     ),
                   ),
                   const SizedBox(height: 45),

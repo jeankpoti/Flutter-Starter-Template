@@ -23,31 +23,6 @@ ThemeData lightMode = ThemeData(
   ),
 );
 
-// ThemeData darkMode = ThemeData(
-//   brightness: Brightness.dark,
-//   colorScheme: ColorScheme.light(
-//     surface: Colors.grey.shade900,
-//     primary: Colors.white,
-//     secondary: Colors.red.shade600,
-//     tertiary: Colors.grey.shade400,
-//   ),
-//   textTheme: TextTheme(
-//     displayLarge: const TextStyle(
-//       fontSize: 72,
-//       fontWeight: FontWeight.bold,
-//       color: Colors.black,
-//     ),
-//     titleLarge: GoogleFonts.oswald(
-//       fontSize: 30,
-//       // fontStyle: FontStyle.italic,
-//       color: Colors.black,
-//     ),
-//     bodyMedium: GoogleFonts.merriweather(color: Colors.grey.shade600),
-//     bodySmall: GoogleFonts.merriweather(color: Colors.grey.shade600),
-//     displaySmall: GoogleFonts.pacifico(color: Colors.grey.shade600),
-//   ),
-// );
-
 ThemeData darkMode = ThemeData(
   brightness: Brightness.dark,
   colorScheme: ColorScheme.dark(
