@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../domain/models/quiz.dart';
 import '../data/services/quiz_service.dart';
+import 'quiz_review_page.dart';
 
 class QuizPage extends StatefulWidget {
   final Quiz quiz;
@@ -750,6 +751,26 @@ class _QuizPageState extends State<QuizPage> {
               ),
             ],
           ),
+          
+          const SizedBox(height: 16),
+          
+          // View Detailed Review Button
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () => _navigateToDetailedReview(),
+              icon: const Icon(Icons.visibility),
+              label: const Text('View Detailed Review'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.secondary,
+                foregroundColor: Theme.of(context).colorScheme.onSecondary,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -805,6 +826,14 @@ class _QuizPageState extends State<QuizPage> {
         curve: Curves.easeInOut,
       );
     }
+  }
+
+  void _navigateToDetailedReview() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => QuizReviewPage(quiz: _currentQuiz),
+      ),
+    );
   }
 
   void _finishQuiz() {

@@ -31,6 +31,11 @@ class _StudyPageState extends State<StudyPage> with SingleTickerProviderStateMix
   List<StudyPlan> _studyPlans = [];
   bool _isProcessing = false;
   String? _processingPlanId;
+  
+  // Quiz button loading states
+  bool _isQuickQuizLoading = false;
+  bool _isPracticeTestLoading = false;
+  bool _isChallengeLoading = false;
 
   @override
   void initState() {
@@ -952,6 +957,7 @@ class _StudyPageState extends State<StudyPage> with SingleTickerProviderStateMix
                       difficulty: QuizDifficulty.easy,
                       questionCount: 5,
                       timeLimit: 10,
+                      isLoading: _isQuickQuizLoading,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -963,6 +969,7 @@ class _StudyPageState extends State<StudyPage> with SingleTickerProviderStateMix
                       difficulty: QuizDifficulty.medium,
                       questionCount: 10,
                       timeLimit: 20,
+                      isLoading: _isPracticeTestLoading,
                     ),
                   ),
                 ],
@@ -982,6 +989,7 @@ class _StudyPageState extends State<StudyPage> with SingleTickerProviderStateMix
                     questionCount: 15,
                     timeLimit: 30,
                     isFullWidth: true,
+                    isLoading: _isChallengeLoading,
                   ),
                 ),
             ],
@@ -999,6 +1007,7 @@ class _StudyPageState extends State<StudyPage> with SingleTickerProviderStateMix
     required int questionCount,
     required int timeLimit,
     bool isFullWidth = false,
+    bool isLoading = false,
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -1009,7 +1018,7 @@ class _StudyPageState extends State<StudyPage> with SingleTickerProviderStateMix
         ),
       ),
       child: InkWell(
-        onTap: () => _generateAndStartQuiz(
+        onTap: isLoading ? null : () => _generateAndStartQuiz(
           difficulty: difficulty,
           questionCount: questionCount,
           timeLimit: timeLimit,
@@ -1020,11 +1029,22 @@ class _StudyPageState extends State<StudyPage> with SingleTickerProviderStateMix
           child: isFullWidth
               ? Row(
                   children: [
-                    Icon(
-                      icon,
-                      color: Theme.of(context).colorScheme.secondary,
-                      size: 24,
-                    ),
+                    isLoading
+                        ? SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Theme.of(context).colorScheme.secondary,
+                              ),
+                            ),
+                          )
+                        : Icon(
+                            icon,
+                            color: Theme.of(context).colorScheme.secondary,
+                            size: 24,
+                          ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
@@ -1055,11 +1075,22 @@ class _StudyPageState extends State<StudyPage> with SingleTickerProviderStateMix
                 )
               : Column(
                   children: [
-                    Icon(
-                      icon,
-                      color: Theme.of(context).colorScheme.secondary,
-                      size: 32,
-                    ),
+                    isLoading
+                        ? SizedBox(
+                            width: 32,
+                            height: 32,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Theme.of(context).colorScheme.secondary,
+                              ),
+                            ),
+                          )
+                        : Icon(
+                            icon,
+                            color: Theme.of(context).colorScheme.secondary,
+                            size: 32,
+                          ),
                     const SizedBox(height: 8),
                     Text(
                       title,
@@ -1523,7 +1554,24 @@ class _StudyPageState extends State<StudyPage> with SingleTickerProviderStateMix
     required int questionCount,
     required int timeLimit,
   }) async {
+    // Set the appropriate loading state based on difficulty
+    setState(() {
+      switch (difficulty) {
+        case QuizDifficulty.easy:
+          _isQuickQuizLoading = true;
+          break;
+        case QuizDifficulty.medium:
+          _isPracticeTestLoading = true;
+          break;
+        case QuizDifficulty.hard:
+          _isChallengeLoading = true;
+          break;
+      }
+    });
     if (_studyMaterials.isEmpty) {
+      setState(() {
+        _resetQuizLoadingStates(difficulty);
+      });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('No study materials available for quiz generation')),
@@ -1568,6 +1616,7 @@ class _StudyPageState extends State<StudyPage> with SingleTickerProviderStateMix
 
       setState(() {
         _isProcessing = false;
+        _resetQuizLoadingStates(difficulty);
       });
 
       if (mounted) {
@@ -1581,6 +1630,7 @@ class _StudyPageState extends State<StudyPage> with SingleTickerProviderStateMix
     } catch (e) {
       setState(() {
         _isProcessing = false;
+        _resetQuizLoadingStates(difficulty);
       });
 
       if (mounted) {
@@ -1588,6 +1638,20 @@ class _StudyPageState extends State<StudyPage> with SingleTickerProviderStateMix
           SnackBar(content: Text('Error generating quiz: $e')),
         );
       }
+    }
+  }
+
+  void _resetQuizLoadingStates(QuizDifficulty difficulty) {
+    switch (difficulty) {
+      case QuizDifficulty.easy:
+        _isQuickQuizLoading = false;
+        break;
+      case QuizDifficulty.medium:
+        _isPracticeTestLoading = false;
+        break;
+      case QuizDifficulty.hard:
+        _isChallengeLoading = false;
+        break;
     }
   }
 

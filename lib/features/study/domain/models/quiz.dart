@@ -329,8 +329,14 @@ class Quiz {
   // Get performance summary
   Map<String, int> getPerformanceSummary() {
     final correct = userAnswers.where((ua) => ua.isCorrect).length;
-    final incorrect = userAnswers.length - correct;
-    final unanswered = questions.length - userAnswers.length;
+    
+    // Only count answers that were actually provided (not skipped)
+    final answeredQuestions = userAnswers
+        .where((ua) => ua.selectedAnswerId != null || ua.textAnswer != null)
+        .toList();
+    
+    final incorrect = answeredQuestions.where((ua) => !ua.isCorrect).length;
+    final unanswered = questions.length - answeredQuestions.length;
     
     return {
       'correct': correct,

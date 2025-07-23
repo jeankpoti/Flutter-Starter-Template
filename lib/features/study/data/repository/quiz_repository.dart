@@ -85,8 +85,15 @@ class QuizRepository {
           })
           .whereType<Quiz>()
           .toList();
+      
+      // Sort by creation date (newest first) in case Firestore ordering failed
+      quizzes.sort((a, b) {
+        final aDate = a.lastAttemptAt ?? a.createdAt;
+        final bDate = b.lastAttemptAt ?? b.createdAt;
+        return bDate.compareTo(aDate); // Descending order (newest first)
+      });
           
-      debugPrint('Parsed ${quizzes.length} quizzes successfully');
+      debugPrint('Parsed and sorted ${quizzes.length} quizzes successfully');
       return quizzes;
     } catch (e) {
       debugPrint('Error fetching user quizzes: $e');

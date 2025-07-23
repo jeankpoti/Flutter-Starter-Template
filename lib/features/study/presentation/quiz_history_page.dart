@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../domain/models/quiz.dart';
 import '../data/services/quiz_service.dart';
+import 'quiz_review_page.dart';
 
 class QuizHistoryPage extends StatefulWidget {
   const QuizHistoryPage({super.key});
@@ -152,8 +153,11 @@ class _QuizHistoryPageState extends State<QuizHistoryPage> with SingleTickerProv
     
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
+      child: InkWell(
+        onTap: () => _navigateToQuizReview(quiz),
+        borderRadius: BorderRadius.circular(8),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -181,6 +185,12 @@ class _QuizHistoryPageState extends State<QuizHistoryPage> with SingleTickerProv
                       color: _getScoreColor(score),
                     ),
                   ),
+                ),
+                const SizedBox(width: 8),
+                Icon(
+                  Icons.arrow_forward_ios,
+                  size: 16,
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
                 ),
               ],
             ),
@@ -275,6 +285,7 @@ class _QuizHistoryPageState extends State<QuizHistoryPage> with SingleTickerProv
               ],
             ),
           ],
+        ),
         ),
       ),
     );
@@ -895,5 +906,13 @@ class _QuizHistoryPageState extends State<QuizHistoryPage> with SingleTickerProv
     } else {
       return 'Your performance is consistent. Keep up the good work!';
     }
+  }
+
+  void _navigateToQuizReview(Quiz quiz) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => QuizReviewPage(quiz: quiz),
+      ),
+    );
   }
 }
