@@ -77,72 +77,93 @@ lib/
 - Prefer BlocBuilder with buildWhen for optimized rebuilds
 
 ### Error Handling
-- Use Either<Failure, Success> from Dartz for functional error handling
-- Create custom Failure classes for domain-specific errors
+- Use custom Result<Success, Failure> classes for structured error handling
+- Create custom Exception and Failure classes for domain-specific errors
 - Implement proper error mapping between layers
 - Centralize error handling strategies
 - Provide user-friendly error messages
 - Log errors for debugging and analytics
 
-#### Dartz Error Handling
-- Use Either for better error control without exceptions
-- Left represents failure case, Right represents success case
-- Create a base Failure class and extend it for specific error types
-- Leverage pattern matching with fold() method to handle both success and error cases in one call
-- Use flatMap/bind for sequential operations that could fail
-- Create extension functions to simplify working with Either
-- Example implementation for handling errors with Dartz following functional programming:
+#### Result Pattern Error Handling
+- Use Result pattern for better error control without complex functional programming
+- Create a base Result class with Success and Failure cases
+- Use sealed classes or enums for different error types
+- Handle errors with pattern matching using switch expressions
+- Example implementation for structured error handling:
 
 ```dart
 // Define base failure class
 abstract class Failure extends Equatable {
   final String message;
+  final String? code;
   
-  const Failure(this.message);
+  const Failure(this.message, {this.code});
   
   @override
-  List<Object> get props => [message];
+  List<Object?> get props => [message, code];
 }
 
 // Specific failure types
 class ServerFailure extends Failure {
-  const ServerFailure([String message = 'Server error occurred']) : super(message);
+  const ServerFailure([String message = 'Server error occurred', String? code]) 
+    : super(message, code: code);
 }
 
 class CacheFailure extends Failure {
-  const CacheFailure([String message = 'Cache error occurred']) : super(message);
+  const CacheFailure([String message = 'Cache error occurred', String? code]) 
+    : super(message, code: code);
 }
 
 class NetworkFailure extends Failure {
-  const NetworkFailure([String message = 'Network error occurred']) : super(message);
+  const NetworkFailure([String message = 'Network error occurred', String? code]) 
+    : super(message, code: code);
 }
 
 class ValidationFailure extends Failure {
-  const ValidationFailure([String message = 'Validation failed']) : super(message);
+  const ValidationFailure([String message = 'Validation failed', String? code]) 
+    : super(message, code: code);
 }
 
-// Extension to handle Either<Failure, T> consistently
-extension EitherExtensions<L, R> on Either<L, R> {
-  R getRight() => (this as Right<L, R>).value;
-  L getLeft() => (this as Left<L, R>).value;
+// Result class for structured error handling
+sealed class Result<T> {
+  const Result();
+}
+
+class Success<T> extends Result<T> {
+  final T data;
+  const Success(this.data);
+}
+
+class Error<T> extends Result<T> {
+  final Failure failure;
+  const Error(this.failure);
+}
+
+// Extension methods for easier Result handling
+extension ResultExtensions<T> on Result<T> {
+  bool get isSuccess => this is Success<T>;
+  bool get isError => this is Error<T>;
   
-  // For use in UI to map to different widgets based on success/failure
-  Widget when({
-    required Widget Function(L failure) failure,
-    required Widget Function(R data) success,
+  T? get data => isSuccess ? (this as Success<T>).data : null;
+  Failure? get failure => isError ? (this as Error<T>).failure : null;
+  
+  // Pattern matching helper
+  R when<R>({
+    required R Function(T data) success,
+    required R Function(Failure failure) error,
   }) {
-    return fold(
-      (l) => failure(l),
-      (r) => success(r),
-    );
+    return switch (this) {
+      Success<T>(:final data) => success(data),
+      Error<T>(:final failure) => error(failure),
+    };
   }
   
-  // Simplify chaining operations that can fail
-  Either<L, T> flatMap<T>(Either<L, T> Function(R r) f) {
-    return fold(
-      (l) => Left(l),
-      (r) => f(r),
-    );
+  // Map success value
+  Result<R> map<R>(R Function(T) mapper) {
+    return switch (this) {
+      Success<T>(:final data) => Success(mapper(data)),
+      Error<T>() => Error(failure!),
+    };
   }
 }
 ```
@@ -186,7 +207,7 @@ extension EitherExtensions<L, R> on Either<L, R> {
 ### Use Case Implementation
 ```dart
 abstract class UseCase<Type, Params> {
-  Future<Either<Failure, Type>> call(Params params);
+  Future<Result<Type>> call(Params params);
 }
 
 class GetUser implements UseCase<User, String> {
@@ -195,7 +216,7 @@ class GetUser implements UseCase<User, String> {
   GetUser(this.repository);
 
   @override
-  Future<Either<Failure, User>> call(String userId) async {
+  Future<Result<User>> call(String userId) async {
     return await repository.getUser(userId);
   }
 }
@@ -204,9 +225,9 @@ class GetUser implements UseCase<User, String> {
 ### Repository Implementation
 ```dart
 abstract class UserRepository {
-  Future<Either<Failure, User>> getUser(String id);
-  Future<Either<Failure, List<User>>> getUsers();
-  Future<Either<Failure, Unit>> saveUser(User user);
+  Future<Result<User>> getUser(String id);
+  Future<Result<List<User>>> getUsers();
+  Future<Result<void>> saveUser(User user);
 }
 
 class UserRepositoryImpl implements UserRepository {
@@ -221,22 +242,24 @@ class UserRepositoryImpl implements UserRepository {
   });
 
   @override
-  Future<Either<Failure, User>> getUser(String id) async {
-    if (await networkInfo.isConnected) {
-      try {
+  Future<Result<User>> getUser(String id) async {
+    try {
+      if (await networkInfo.isConnected) {
         final remoteUser = await remoteDataSource.getUser(id);
         await localDataSource.cacheUser(remoteUser);
-        return Right(remoteUser.toDomain());
-      } on ServerException {
-        return Left(ServerFailure());
-      }
-    } else {
-      try {
+        return Success(remoteUser.toDomain());
+      } else {
         final localUser = await localDataSource.getLastUser();
-        return Right(localUser.toDomain());
-      } on CacheException {
-        return Left(CacheFailure());
+        return Success(localUser.toDomain());
       }
+    } on ServerException catch (e) {
+      return Error(ServerFailure(e.message));
+    } on CacheException catch (e) {
+      return Error(CacheFailure(e.message));
+    } on NetworkException catch (e) {
+      return Error(NetworkFailure(e.message));
+    } catch (e) {
+      return Error(ServerFailure('Unexpected error: ${e.toString()}'));
     }
   }
   
@@ -273,9 +296,9 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     currentUserId = event.id;
     emit(const UserState.loading());
     final result = await getUser(event.id);
-    result.fold(
-      (failure) => emit(UserState.error(failure)),
-      (user) => emit(UserState.loaded(user)),
+    result.when(
+      success: (user) => emit(UserState.loaded(user)),
+      error: (failure) => emit(UserState.error(failure)),
     );
   }
 
@@ -283,9 +306,9 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     if (currentUserId != null) {
       emit(const UserState.loading());
       final result = await getUser(currentUserId!);
-      result.fold(
-        (failure) => emit(UserState.error(failure)),
-        (user) => emit(UserState.loaded(user)),
+      result.when(
+        success: (user) => emit(UserState.loaded(user)),
+        error: (failure) => emit(UserState.error(failure)),
       );
     }
   }
@@ -413,7 +436,6 @@ This is a **Flutter mobile application** called "math_ai" that helps users solve
 - `go_router: ^15.1.1` - Navigation
 - `shared_preferences: ^2.3.3` - Local storage
 - `get_it` - Dependency injection
-- `dartz` - Functional programming with Either
 - `freezed` - Code generation for immutable classes
 - `equatable` - Value equality
 
