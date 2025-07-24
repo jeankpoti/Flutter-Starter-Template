@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import '../../../common_widgets/math_symbols_widget.dart';
 import '../data/services/study_plan_service.dart';
 import '../data/services/quiz_service.dart';
 import '../data/repository/study_material_repository.dart';
@@ -37,6 +38,7 @@ class _StudyPageState extends State<StudyPage>
   bool _isQuickQuizLoading = false;
   bool _isPracticeTestLoading = false;
   bool _isChallengeLoading = false;
+  bool _isAllMaterialsQuizLoading = false;
 
   @override
   void initState() {
@@ -1136,6 +1138,15 @@ class _StudyPageState extends State<StudyPage>
                     isLoading: _isChallengeLoading,
                   ),
                 ),
+
+              const SizedBox(height: 12),
+
+              // Generate quiz with all materials button (only if materials exist)
+              if (_studyMaterials.isNotEmpty)
+                SizedBox(
+                  width: double.infinity,
+                  child: _buildAllMaterialsQuizButton(),
+                ),
             ],
           ),
         ),
@@ -1293,6 +1304,76 @@ class _StudyPageState extends State<StudyPage>
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildAllMaterialsQuizButton() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+        ),
+      ),
+      child: InkWell(
+        onTap:
+            _isAllMaterialsQuizLoading ? null : _generateQuizFromAllMaterials,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              _isAllMaterialsQuizLoading
+                  ? SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        Theme.of(context).colorScheme.secondary,
+                      ),
+                    ),
+                  )
+                  : Icon(
+                    Icons.quiz_outlined,
+                    color: Theme.of(context).colorScheme.secondary,
+                    size: 24,
+                  ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Generate Quiz with All Materials',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ),
+                    Text(
+                      '12 questions • 25 min • All study materials included',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.7),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.arrow_forward_ios,
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.4),
+                size: 16,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -1631,27 +1712,33 @@ class _StudyPageState extends State<StudyPage>
       title: const Text('Add Study Material'),
       content: SizedBox(
         width: double.maxFinite,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Enter your study material text:',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: textController,
-              maxLines: 8,
-              decoration: InputDecoration(
-                hintText:
-                    'Paste or type your math content here...\n\nExample:\n• Chapter 5: Quadratic Equations\n• Solving ax² + bx + c = 0\n• Practice problems 1-15',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                alignLabelWithHint: true,
+        height: 500, // Fixed height to prevent overflow
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Enter your study material text:',
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
-            ),
-          ],
+              const SizedBox(height: 16),
+              TextField(
+                controller: textController,
+                maxLines: 6, // Reduced to make room for keyboard
+                decoration: InputDecoration(
+                  hintText:
+                      'Paste or type your math content here...\n\nExample:\n• Chapter 5: Quadratic Equations\n• Solving ax² + bx + c = 0\n• Practice problems 1-15',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  alignLabelWithHint: true,
+                ),
+              ),
+              const SizedBox(height: 16),
+              // Math Symbols Widget (exactly like homepage)
+              MathSymbolsWidget(controller: textController),
+            ],
+          ),
         ),
       ),
       actions: [
@@ -1671,7 +1758,12 @@ class _StudyPageState extends State<StudyPage>
           style: ElevatedButton.styleFrom(
             backgroundColor: Theme.of(context).colorScheme.secondary,
           ),
-          child: const Text('Add Material'),
+          child: Text(
+            'Add Material',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Theme.of(context).colorScheme.onSecondary,
+            ),
+          ),
         ),
       ],
     );
@@ -1862,6 +1954,73 @@ class _StudyPageState extends State<StudyPage>
       case QuizDifficulty.hard:
         _isChallengeLoading = false;
         break;
+    }
+  }
+
+  /// Generate quiz specifically from all study materials
+  Future<void> _generateQuizFromAllMaterials() async {
+    if (_studyMaterials.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text(
+              'No study materials available to generate quiz from',
+            ),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+      return;
+    }
+
+    setState(() {
+      _isAllMaterialsQuizLoading = true;
+    });
+
+    try {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text(
+              'Generating comprehensive quiz from all your study materials...',
+            ),
+            backgroundColor: Theme.of(context).colorScheme.secondary,
+          ),
+        );
+      }
+
+      // Generate quiz from all study materials with medium difficulty
+      final quiz = await _quizService.generateQuizFromMaterials(
+        materials: _studyMaterials,
+        difficulty: QuizDifficulty.medium,
+        questionCount: 12,
+        timeLimit: 25,
+        customTitle: 'Comprehensive Quiz - All Materials',
+      );
+
+      setState(() {
+        _isAllMaterialsQuizLoading = false;
+      });
+
+      if (mounted) {
+        // Navigate to quiz page
+        Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (context) => QuizPage(quiz: quiz)));
+      }
+    } catch (e) {
+      setState(() {
+        _isAllMaterialsQuizLoading = false;
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error generating comprehensive quiz: $e'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
     }
   }
 

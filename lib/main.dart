@@ -87,7 +87,7 @@ class MyApp extends StatelessWidget {
     return BlocBuilder<ThemeCubit, ThemeData>(
       builder: (context, currentTheme) {
         return MaterialApp.router(
-          debugShowCheckedModeBanner: true,
+          debugShowCheckedModeBanner: false,
           title: 'Math AI',
           theme: currentTheme,
           routerConfig: _router,
