@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -7,8 +5,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:math_ai/features/account/presentation/sign_up_page.dart';
 import 'package:math_ai/features/solve_math/data/repository/gemini_solve_math_repo.dart';
-import 'package:math_ai/features/solve_math/domain/respository/firebase_collection_repo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'core/di/injection_container.dart';
+import 'features/study/presentation/bloc/study_bloc.dart';
 
 import 'main_page_wrapper.dart';
 
@@ -36,6 +36,9 @@ void main() async {
 
   // Initialize Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // Initialize dependency injection
+  await initializeDependencies();
 
   // Initialize Gemini Service
   final geminiService = GeminiSolveMathRepo();
@@ -72,6 +75,11 @@ void main() async {
 
         BlocProvider<SubscriptionCubit>(
           create: (context) => SubscriptionCubit(subscriptionRepository),
+        ),
+
+        // Clean Architecture Study Feature
+        BlocProvider<StudyBloc>(
+          create: (context) => getIt<StudyBloc>(),
         ),
       ],
       child: const MyApp(),
