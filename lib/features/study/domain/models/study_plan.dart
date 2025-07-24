@@ -246,6 +246,111 @@ class StudyPlan {
     return null;
   }
 
+  // Update topic progress and return updated study plan
+  StudyPlan updateTopicProgress(String topicId, double progressPercentage, {StudyTopicStatus? status}) {
+    final updatedTopics = topics.map((topic) {
+      if (topic.id == topicId) {
+        StudyTopicStatus newStatus = status ?? topic.status;
+        DateTime? newCompletedAt = topic.completedAt;
+        
+        // Auto-update status based on progress
+        if (progressPercentage >= 100.0) {
+          newStatus = StudyTopicStatus.completed;
+          newCompletedAt = DateTime.now();
+        } else if (progressPercentage > 0.0 && topic.status == StudyTopicStatus.notStarted) {
+          newStatus = StudyTopicStatus.inProgress;
+        } else if (progressPercentage == 0.0) {
+          newStatus = StudyTopicStatus.notStarted;
+          newCompletedAt = null;
+        }
+        
+        return topic.copyWith(
+          progressPercentage: progressPercentage,
+          status: newStatus,
+          completedAt: newCompletedAt,
+        );
+      }
+      return topic;
+    }).toList();
+
+    return copyWith(
+      topics: updatedTopics,
+      overallProgress: _calculateOverallProgress(updatedTopics),
+    );
+  }
+
+  // Mark topic as complete
+  StudyPlan markTopicComplete(String topicId) {
+    return updateTopicProgress(topicId, 100.0, status: StudyTopicStatus.completed);
+  }
+
+  // Mark topic as incomplete
+  StudyPlan markTopicIncomplete(String topicId) {
+    return updateTopicProgress(topicId, 0.0, status: StudyTopicStatus.notStarted);
+  }
+
+  // Start topic (mark as in progress)
+  StudyPlan startTopic(String topicId) {
+    final updatedTopics = topics.map((topic) {
+      if (topic.id == topicId && topic.status == StudyTopicStatus.notStarted) {
+        return topic.copyWith(
+          status: StudyTopicStatus.inProgress,
+          progressPercentage: topic.progressPercentage > 0 ? topic.progressPercentage : 10.0,
+        );
+      }
+      return topic;
+    }).toList();
+
+    return copyWith(
+      topics: updatedTopics,
+      overallProgress: _calculateOverallProgress(updatedTopics),
+    );
+  }
+
+  // Helper method to calculate overall progress from topics
+  double _calculateOverallProgress(List<StudyTopic> topicsList) {
+    if (topicsList.isEmpty) return 0.0;
+    
+    final totalProgress = topicsList.fold<double>(
+      0.0, 
+      (total, topic) => total + topic.progressPercentage,
+    );
+    
+    return totalProgress / topicsList.length;
+  }
+
+  // Get completion statistics
+  Map<String, int> getCompletionStats() {
+    return {
+      'total': topics.length,
+      'completed': topics.where((t) => t.status == StudyTopicStatus.completed).length,
+      'inProgress': topics.where((t) => t.status == StudyTopicStatus.inProgress).length,
+      'notStarted': topics.where((t) => t.status == StudyTopicStatus.notStarted).length,
+      'needsReview': topics.where((t) => t.status == StudyTopicStatus.needsReview).length,
+    };
+  }
+
+  // Get available topics (prerequisites met)
+  List<StudyTopic> getAvailableTopics() {
+    return topics.where((topic) {
+      if (topic.status == StudyTopicStatus.completed) return false;
+      
+      // Check if all prerequisites are completed
+      return topic.prerequisites.every((prereqId) {
+        final prereqTopic = topics.firstWhere(
+          (t) => t.id == prereqId,
+          orElse: () => topic,
+        );
+        return prereqTopic.status == StudyTopicStatus.completed;
+      });
+    }).toList();
+  }
+
+  // Check if plan is completed
+  bool get isCompleted {
+    return topics.isNotEmpty && topics.every((topic) => topic.status == StudyTopicStatus.completed);
+  }
+
   @override
   String toString() {
     return 'StudyPlan(id: $id, title: $title, progress: ${overallProgress.toStringAsFixed(1)}%)';

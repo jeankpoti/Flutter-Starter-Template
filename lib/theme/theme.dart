@@ -7,6 +7,7 @@ ThemeData lightMode = ThemeData(
     surface: Color(0xFFE5E2E7),
     primary: Colors.black,
     secondary: Colors.red.shade600,
+    onSecondary: Colors.white,
     tertiary: Colors.grey.shade600,
   ),
   textTheme: TextTheme(
@@ -28,8 +29,9 @@ ThemeData darkMode = ThemeData(
   colorScheme: ColorScheme.dark(
     surface: Colors.grey.shade900,
     primary: Colors.white,
-    secondary: Colors.black,
-    tertiary: Colors.grey.shade200,
+    secondary: Colors.red.shade600,
+    onSecondary: Colors.white,
+    tertiary: Colors.grey.shade100,
   ),
   textTheme: TextTheme(
     displayLarge: GoogleFonts.oswald(color: Colors.white),

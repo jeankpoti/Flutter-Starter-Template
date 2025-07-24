@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import '../../../solve_math/data/repository/gemini_solve_math_repo.dart';
@@ -10,6 +11,7 @@ import '../../domain/models/study_plan.dart';
 class StudyPlanService {
   static final StudyPlanService _instance = StudyPlanService._internal();
   late final GeminiSolveMathRepo _geminiService;
+  final Random _random = Random();
 
   factory StudyPlanService() {
     return _instance;
@@ -385,6 +387,7 @@ Make this appropriate for ${mathLevel.displayName} level students with clear pro
   }
 
   String _generateId() {
-    return DateTime.now().millisecondsSinceEpoch.toString();
+    return DateTime.now().millisecondsSinceEpoch.toString() + 
+           _random.nextInt(10000).toString();
   }
 }

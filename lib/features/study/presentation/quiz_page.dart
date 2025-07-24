@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../domain/models/quiz.dart';
 import '../data/services/quiz_service.dart';
 import 'quiz_review_page.dart';
+import '../../../common_widgets/math_symbols_widget.dart';
 
 class QuizPage extends StatefulWidget {
   final Quiz quiz;
@@ -29,6 +30,7 @@ class _QuizPageState extends State<QuizPage> {
   // User answers tracking
   final Map<String, String?> _selectedAnswers = {};
   final Map<String, String?> _textAnswers = {};
+  final Map<String, TextEditingController> _textControllers = {};
 
   @override
   void initState() {
@@ -60,6 +62,11 @@ class _QuizPageState extends State<QuizPage> {
   void dispose() {
     _timer?.cancel();
     _pageController.dispose();
+    // Dispose all text controllers
+    for (final controller in _textControllers.values) {
+      controller.dispose();
+    }
+    _textControllers.clear();
     super.dispose();
   }
 
@@ -501,24 +508,31 @@ class _QuizPageState extends State<QuizPage> {
           ),
         ),
         const SizedBox(height: 16),
-        TextField(
-          onChanged: (value) {
-            _textAnswers[question.id] = value;
-          },
-          decoration: InputDecoration(
-            hintText: 'Type your answer here...',
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                color: Theme.of(context).colorScheme.secondary,
-                width: 2,
+        Column(
+          children: [
+            TextField(
+              onChanged: (value) {
+                _textAnswers[question.id] = value;
+              },
+              controller: _getTextController(question.id),
+              decoration: InputDecoration(
+                hintText: 'Type your answer here...',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.secondary,
+                    width: 2,
+                  ),
+                ),
               ),
+              maxLines: 3,
             ),
-          ),
-          maxLines: 3,
+            const SizedBox(height: 12),
+            MathSymbolsWidget(controller: _getTextController(question.id)),
+          ],
         ),
       ],
     );
@@ -536,23 +550,30 @@ class _QuizPageState extends State<QuizPage> {
           ),
         ),
         const SizedBox(height: 16),
-        TextField(
-          onChanged: (value) {
-            _textAnswers[question.id] = value;
-          },
-          decoration: InputDecoration(
-            hintText: 'Enter the missing word or expression...',
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(
-                color: Theme.of(context).colorScheme.secondary,
-                width: 2,
+        Column(
+          children: [
+            TextField(
+              onChanged: (value) {
+                _textAnswers[question.id] = value;
+              },
+              controller: _getTextController(question.id),
+              decoration: InputDecoration(
+                hintText: 'Enter the missing word or expression...',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.secondary,
+                    width: 2,
+                  ),
+                ),
               ),
             ),
-          ),
+            const SizedBox(height: 12),
+            MathSymbolsWidget(controller: _getTextController(question.id)),
+          ],
         ),
       ],
     );
@@ -894,6 +915,20 @@ class _QuizPageState extends State<QuizPage> {
     
     _initializeQuiz();
   }
+
+  // Text controller management
+  TextEditingController _getTextController(String questionId) {
+    if (!_textControllers.containsKey(questionId)) {
+      _textControllers[questionId] = TextEditingController(
+        text: _textAnswers[questionId] ?? '',
+      );
+      _textControllers[questionId]!.addListener(() {
+        _textAnswers[questionId] = _textControllers[questionId]!.text;
+      });
+    }
+    return _textControllers[questionId]!;
+  }
+
 
   // Helper methods
   String _getQuestionTypeLabel(QuestionType type) {

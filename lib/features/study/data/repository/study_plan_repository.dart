@@ -2,11 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import '../../domain/models/study_plan.dart';
+import 'study_material_repository.dart';
 
 class StudyPlanRepository {
   static final StudyPlanRepository _instance = StudyPlanRepository._internal();
   late final FirebaseFirestore _firestore;
   late final String _collection;
+  late final StudyMaterialRepository _materialRepository;
 
   factory StudyPlanRepository() {
     return _instance;
@@ -15,6 +17,7 @@ class StudyPlanRepository {
   StudyPlanRepository._internal() {
     _firestore = FirebaseFirestore.instance;
     _collection = 'studyPlans';
+    _materialRepository = StudyMaterialRepository();
   }
 
   /// Save a study plan to Firebase
@@ -270,10 +273,25 @@ class StudyPlanRepository {
         throw Exception('Not authorized to delete this plan');
       }
 
-      // Delete the document
+      // Delete associated materials
+      if (plan.materialIds.isNotEmpty) {
+        debugPrint('Deleting ${plan.materialIds.length} associated materials');
+        
+        for (final materialId in plan.materialIds) {
+          try {
+            await _materialRepository.deleteMaterial(materialId);
+            debugPrint('Deleted material: $materialId');
+          } catch (e) {
+            debugPrint('Warning: Could not delete material $materialId: $e');
+            // Continue with other materials even if one fails
+          }
+        }
+      }
+
+      // Delete the study plan document
       await _firestore.collection(_collection).doc(planId).delete();
       
-      debugPrint('Study plan deleted successfully: $planId');
+      debugPrint('Study plan and associated materials deleted successfully: $planId');
     } catch (e) {
       debugPrint('Error deleting study plan: $e');
       rethrow;
@@ -360,11 +378,11 @@ class StudyPlanRepository {
         'intermediateCount': plans.where((p) => p.difficulty == StudyPlanDifficulty.intermediate).length,
         'advancedCount': plans.where((p) => p.difficulty == StudyPlanDifficulty.advanced).length,
         'averageProgress': plans.isNotEmpty 
-            ? plans.fold<double>(0.0, (sum, plan) => sum + plan.overallProgress) / plans.length 
+            ? plans.fold<double>(0.0, (total, plan) => total + plan.overallProgress) / plans.length 
             : 0.0,
         'completedPlans': plans.where((p) => p.overallProgress >= 100.0).length,
-        'totalTopics': plans.fold<int>(0, (sum, plan) => sum + plan.topics.length),
-        'totalEstimatedHours': plans.fold<int>(0, (sum, plan) => sum + plan.totalEstimatedHours),
+        'totalTopics': plans.fold<int>(0, (total, plan) => total + plan.topics.length),
+        'totalEstimatedHours': plans.fold<int>(0, (total, plan) => total + plan.totalEstimatedHours),
       };
 
       debugPrint('Study plan statistics: $stats');
