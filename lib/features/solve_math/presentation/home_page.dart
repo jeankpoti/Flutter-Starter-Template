@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -11,9 +10,6 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
 
 import '../../../common_widgets/app_bar_widget.dart';
-import '../../../common_widgets/body_medium_text_widget.dart';
-import '../../../common_widgets/body_small_text_widget.dart';
-import '../../../common_widgets/elevated_button_widget.dart';
 import '../../../common_widgets/math_markdown_widget.dart';
 import '../../../common_widgets/math_symbols_widget.dart';
 import '../../../common_widgets/scan_effect_loader_widget.dart';
@@ -38,6 +34,12 @@ class _HomePageState extends State<HomePage>
   late TabController _tabController;
   bool _isLoading = false, _isCamera = false, _isGallery = false;
 
+  // Design system spacing constants
+  static const double _spacing4 = 16.0;
+  static const double _spacing6 = 24.0;
+  static const double _spacing8 = 32.0;
+  static const double _spacing10 = 40.0;
+
   @override
   void initState() {
     super.initState();
@@ -55,9 +57,6 @@ class _HomePageState extends State<HomePage>
     File? imageFile,
     String? textInput,
   }) async {
-    context.read<SolveMathCubit>().solveMath(imageFile);
-    context.read<SolveMathCubit>().solveMath(textInput);
-
     final subscriptionCubit = context.read<SubscriptionCubit>();
     await subscriptionCubit.loadSubscriptionStatus();
     final isSubscribed = subscriptionCubit.state.isSubscribed;
@@ -69,25 +68,26 @@ class _HomePageState extends State<HomePage>
         final newStatus = subscriptionCubit.state.isSubscribed;
 
         if (newStatus && mounted) {
-          if (imageFile != null) {
-            context.read<SolveMathCubit>().solveMath(imageFile);
-          } else if (textInput != null) {
-            context.read<SolveMathCubit>().solveMath(textInput);
-          }
+          _solveMath(imageFile: imageFile, textInput: textInput);
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error showing subscription options: $e')),
+          _showSnackBarMessage(
+            'Error showing subscription options. Please try again.',
+            isError: true,
           );
         }
       }
     } else if (mounted) {
-      if (imageFile != null) {
-        context.read<SolveMathCubit>().solveMath(imageFile);
-      } else if (textInput != null) {
-        context.read<SolveMathCubit>().solveMath(textInput);
-      }
+      _solveMath(imageFile: imageFile, textInput: textInput);
+    }
+  }
+
+  void _solveMath({File? imageFile, String? textInput}) {
+    if (imageFile != null) {
+      context.read<SolveMathCubit>().solveMath(imageFile);
+    } else if (textInput != null) {
+      context.read<SolveMathCubit>().solveMath(textInput);
     }
   }
 
@@ -134,7 +134,7 @@ class _HomePageState extends State<HomePage>
       });
     } catch (e) {
       setState(() => _isLoading = false);
-      _showErrorDialog('Failed to take picture: ${e.toString()}');
+      _showSnackBarMessage('Failed to take picture. Please try again.', isError: true);
     }
   }
 
@@ -180,50 +180,60 @@ class _HomePageState extends State<HomePage>
       });
     } catch (e) {
       setState(() => _isLoading = false);
-      _showErrorDialog('Failed to upload picture: ${e.toString()}');
+      _showSnackBarMessage('Failed to upload picture. Please try again.', isError: true);
     }
   }
 
   void _showPermissionDeniedDialog(String permissionType) {
     showDialog(
       context: context,
-      builder:
-          (ctx) => AlertDialog(
-            title: Text('$permissionType Permission Denied'),
-            content: Text(
-              'Please enable $permissionType access in your device settings to continue.',
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+        title: Text(
+          '$permissionType Permission Required',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        content: Text(
+          'Please enable $permissionType access in your device settings to continue.',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(ctx).pop(),
-                child: const Text('OK'),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                  openAppSettings();
-                },
-                child: const Text('Open Settings'),
-              ),
-            ],
           ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(ctx).pop();
+              openAppSettings();
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              foregroundColor: Theme.of(context).colorScheme.onPrimary,
+            ),
+            child: const Text('Open Settings'),
+          ),
+        ],
+      ),
     );
   }
 
-  void _showErrorDialog(String message) {
-    showDialog(
-      context: context,
-      builder:
-          (ctx) => AlertDialog(
-            title: const Text('Error'),
-            content: Text(message),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(ctx).pop(),
-                child: const Text('OK'),
-              ),
-            ],
-          ),
+  void _showSnackBarMessage(String message, {bool isError = false}) {
+    if (!mounted) return;
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isError 
+            ? Theme.of(context).colorScheme.errorContainer
+            : Theme.of(context).colorScheme.surfaceContainer,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+        margin: const EdgeInsets.all(_spacing4),
+      ),
     );
   }
 
@@ -231,69 +241,111 @@ class _HomePageState extends State<HomePage>
     try {
       context.read<SolveMathCubit>().shareResult(imageFile!, result);
     } catch (e) {
-      _showErrorDialog('Failed to share');
+      _showSnackBarMessage('Failed to share result. Please try again.', isError: true);
     }
   }
 
-  void _showResultDialog(bool isTablet) {
-    final state = context.read<SolveMathCubit>().state;
+  void _showResultDialog(bool isTablet, String result) {
     showDialog(
       context: context,
-      builder:
-          (ctx) => AlertDialog(
-            title: const Text(
-              'Math Solution',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+        title: Row(
+          children: [
+            Icon(
+              Icons.check_circle_outline,
+              color: Theme.of(context).colorScheme.secondary,
+              size: 28,
             ),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (_imageFile != null)
-                    Container(
-                      height: isTablet ? 300 : 150,
-                      width: double.infinity,
-                      margin: const EdgeInsets.only(bottom: 16),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        image: DecorationImage(
-                          image: FileImage(_imageFile!),
-                          fit: BoxFit.cover,
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'Math Solution',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (_imageFile != null) ...[
+                Container(
+                  height: isTablet ? 300 : 150,
+                  width: double.infinity,
+                  margin: const EdgeInsets.only(bottom: _spacing4),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12.0),
+                    image: DecorationImage(
+                      image: FileImage(_imageFile!),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              ],
+              Container(
+                padding: const EdgeInsets.all(_spacing4),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surfaceContainer,
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
+                child: MathMarkdownWidget(data: result),
+              ),
+              const SizedBox(height: _spacing4),
+              Container(
+                padding: const EdgeInsets.all(12.0),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.info_outline,
+                      color: Theme.of(context).colorScheme.secondary,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'AI can make mistakes, so double check the solution!',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onSecondaryContainer,
                         ),
                       ),
                     ),
-                  MathMarkdownWidget(data: state.result),
-                  const SizedBox(height: 16),
-                  Center(
-                    child: BodySmallTextWidget(
-                      text:
-                          'AI can make mistakes, so double check the solution!',
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(ctx).pop(),
-                child: const Text('Close'),
-              ),
-              TextButton(
-                onPressed: () {
-                  _shareResult(state.result, _imageFile);
-                  Navigator.of(ctx).pop();
-                },
-                child: const Text('Share'),
+                  ],
+                ),
               ),
             ],
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15),
-            ),
-            backgroundColor: Theme.of(context).colorScheme.surface,
-            elevation: 5,
           ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(
+              'Close',
+              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+            ),
+          ),
+          ElevatedButton.icon(
+            onPressed: () {
+              _shareResult(result, _imageFile);
+              Navigator.of(ctx).pop();
+            },
+            icon: const Icon(Icons.share, size: 18),
+            label: const Text('Share'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.secondary,
+              foregroundColor: Theme.of(context).colorScheme.onSecondary,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -302,356 +354,571 @@ class _HomePageState extends State<HomePage>
     final isTablet = Responsive.isTablet(context);
 
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
       appBar: AppBarWidget(title: 'Solve Math Problem'),
       body: BlocListener<SolveMathCubit, SolveMathState>(
-        listenWhen:
-            (previous, current) =>
-                current.result.isNotEmpty &&
-                current.result != '' &&
-                !current.isIdentifying,
+        listenWhen: (previous, current) =>
+            current.result.isNotEmpty &&
+            current.result != '' &&
+            !current.isIdentifying,
         listener: (context, state) {
           if (state.result.isNotEmpty &&
               state.result != '' &&
               !state.isIdentifying) {
-            // Refresh collections after solving a problem
-            context.read<FirebaseCollectionCubit>().getCollections(
-              isRefresh: true,
-            );
-            _showResultDialog(isTablet);
+            context.read<FirebaseCollectionCubit>().getCollections(isRefresh: true);
+            _showResultDialog(isTablet, state.result);
           }
           if (state.isError) {
-            _showErrorDialog('Error solving math problem');
+            _showSnackBarMessage('Error solving math problem. Please try again.', isError: true);
           }
         },
         child: SafeArea(
-          child: SingleChildScrollView(
-            child: BlocBuilder<SolveMathCubit, SolveMathState>(
-              builder: (context, state) {
-                return Center(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0,
-                      vertical: 32.0,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        // Tab Bar
-                        Container(
-                          margin: const EdgeInsets.only(bottom: 20),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.surface,
-                            borderRadius: BorderRadius.circular(25),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.shadow.withValues(alpha: 0.1),
-                                spreadRadius: 1,
-                                blurRadius: 3,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
+          child: BlocBuilder<SolveMathCubit, SolveMathState>(
+            builder: (context, state) {
+              return CustomScrollView(
+                slivers: [
+                  // Header Section
+                  SliverToBoxAdapter(
+                    child: Container(
+                      margin: const EdgeInsets.all(_spacing4),
+                      padding: const EdgeInsets.all(_spacing6),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
+                            Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.2),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(16.0),
+                      ),
+                      child: Column(
+                        children: [
+                          Icon(
+                            Icons.calculate_outlined,
+                            size: 48,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
-                          child: TabBar(
-                            controller: _tabController,
-                            indicator: BoxDecoration(
-                              borderRadius: BorderRadius.circular(25),
-                              color: Theme.of(context).colorScheme.secondary,
+                          const SizedBox(height: 12),
+                          Text(
+                            'AI-Powered Math Solver',
+                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
-                            labelColor: Theme.of(context).colorScheme.onPrimary,
-                            unselectedLabelColor:
-                                Theme.of(context).colorScheme.onSurface,
-                            indicatorSize: TabBarIndicatorSize.tab,
-                            dividerColor: Colors.transparent,
-                            tabs: const [
-                              Tab(icon: Icon(Icons.camera_alt), text: 'Photo'),
-                              Tab(icon: Icon(Icons.edit), text: 'Text'),
-                            ],
                           ),
-                        ),
-                        // Tab Bar View
-                        SizedBox(
-                          height: isTablet ? 700 : 600,
-                          child: TabBarView(
-                            controller: _tabController,
-                            children: [
-                              _buildPhotoTab(context, state, isTablet),
-                              _buildTextTab(context, state, isTablet),
-                            ],
+                          const SizedBox(height: 8),
+                          Text(
+                            'Capture or type any math problem and get instant solutions with step-by-step explanations',
+                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
+                            ),
+                            textAlign: TextAlign.center,
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                );
-              },
-            ),
+
+                  // Tab Section
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: _spacing4),
+                      child: _buildModernTabBar(),
+                    ),
+                  ),
+
+                  // Content Section
+                  SliverToBoxAdapter(
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.6,
+                      child: Padding(
+                        padding: const EdgeInsets.all(_spacing4),
+                        child: TabBarView(
+                          controller: _tabController,
+                          children: [
+                            _buildPhotoTab(context, state, isTablet),
+                            _buildTextTab(context, state, isTablet),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ),
     );
   }
 
-  Widget _buildPhotoTab(
-    BuildContext context,
-    SolveMathState state,
-    bool isTablet,
-  ) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              Container(
-                width: double.infinity,
-                height: isTablet ? 400 : 300,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface,
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.shadow.withValues(alpha: 0.1),
-                      spreadRadius: 2,
-                      blurRadius: 5,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child:
-                    _imageFile != null
-                        ? ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: Image.file(
-                            _imageFile!,
-                            width: isTablet ? double.infinity : 300,
-                            height: isTablet ? 400 : 300,
-                            fit: BoxFit.cover,
-                          ),
-                        )
-                        : Icon(
-                          Icons.calculate_outlined,
-                          size: isTablet ? 200 : 150,
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onSurface.withValues(alpha: 0.5),
-                        ),
-              ),
-              if (_isLoading || state.isIdentifying)
-                ModernScanEffectLoader(
-                  size: isTablet ? 300 : 200,
-                  duration: const Duration(milliseconds: 1000),
-                ),
-            ],
+  Widget _buildModernTabBar() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: _spacing6),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(16.0),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.08),
+            offset: const Offset(0, 4),
+            blurRadius: 12.0,
+            spreadRadius: 0,
           ),
-          SizedBox(height: isTablet ? 40 : 30),
-          // Take a picture button
-          SizedBox(
-            width: isTablet ? 400 : 300,
-            child: ElevatedButtonWidget(
-              text:
-                  _isCamera && _imageFile != null && state.result.isEmpty
-                      ? 'Solve Math Problem'
-                      : 'Take a picture',
-              onPressed: () async {
-                if (_isLoading) return;
-
-                if (_isCamera && _imageFile != null && state.result.isEmpty) {
-                  await _handleSubscriptionAndSolve(imageFile: _imageFile);
-                } else {
-                  context.read<SolveMathCubit>().emptyResult();
-                  _takePicture();
-                }
-              },
-            ),
+        ],
+      ),
+      child: TabBar(
+        controller: _tabController,
+        indicator: BoxDecoration(
+          borderRadius: BorderRadius.circular(16.0),
+          color: Theme.of(context).colorScheme.secondaryContainer,
+        ),
+        labelColor: Theme.of(context).colorScheme.onSecondaryContainer,
+        unselectedLabelColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+        indicatorSize: TabBarIndicatorSize.tab,
+        dividerColor: Colors.transparent,
+        labelStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
+          fontWeight: FontWeight.w600,
+        ),
+        tabs: const [
+          Tab(
+            icon: Icon(Icons.camera_alt_outlined),
+            text: 'Photo',
+            height: 60,
           ),
-          const SizedBox(height: 16),
-          BodyMediumTextWidget(text: 'Or'),
-          const SizedBox(height: 16),
-          // Upload a picture button
-          SizedBox(
-            width: isTablet ? 400 : 300,
-            child: ElevatedButtonWidget(
-              text:
-                  _isGallery && _imageFile != null && state.result.isEmpty
-                      ? 'Solve Math Problem'
-                      : 'Upload a picture',
-              onPressed: () async {
-                if (_isLoading) return;
-
-                if (_isGallery && _imageFile != null && state.result.isEmpty) {
-                  await _handleSubscriptionAndSolve(imageFile: _imageFile);
-                } else {
-                  context.read<SolveMathCubit>().emptyResult();
-                  _imageFile = null;
-                  _uploadPicture();
-                }
-              },
-            ),
+          Tab(
+            icon: Icon(Icons.edit_outlined),
+            text: 'Text',
+            height: 60,
           ),
-          const SizedBox(height: 20),
-          // Reset button
-          if ((_isGallery && _imageFile != null && state.result.isEmpty) ||
-              (_isCamera && _imageFile != null && state.result.isEmpty))
-            SizedBox(
-              width: isTablet ? 400 : 300,
-              child: ElevatedButtonWidget(
-                text: 'Reset',
-                onPressed: () {
-                  setState(() {
-                    _imageFile = null;
-                    _isLoading = false;
-                    _isCamera = false;
-                    _isGallery = false;
-                  });
-                  context.read<SolveMathCubit>().emptyResult();
-                },
-              ),
-            ),
         ],
       ),
     );
   }
 
-  Widget _buildTextTab(
-    BuildContext context,
-    SolveMathState state,
-    bool isTablet,
-  ) {
+  Widget _buildPhotoTab(BuildContext context, SolveMathState state, bool isTablet) {
     return SingleChildScrollView(
       child: Column(
         children: [
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              Container(
-                width: isTablet ? 600 : 350,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.outline.withValues(alpha: 0.3),
-                  ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Type your math question:',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: _textController,
-                      maxLines: 4,
-                      decoration: InputDecoration(
-                        hintText:
-                            'Enter your math problem here...\ne.g., Solve for x: 2x + 5 = 15',
-                        hintStyle: TextStyle(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onSurface.withValues(alpha: 0.6),
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.outline,
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.outline.withValues(alpha: 0.5),
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.secondary,
-                            width: 2,
-                          ),
-                        ),
-                        filled: true,
-                        fillColor: Theme.of(context).colorScheme.surface,
-                      ),
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    MathSymbolsWidget(controller: _textController),
-                    const SizedBox(height: 16),
-                    SizedBox(
+          // Image Preview Container
+          Container(
+            width: double.infinity,
+            height: isTablet ? 400 : 300,
+            margin: const EdgeInsets.only(bottom: _spacing6),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.circular(16.0),
+              border: Border.all(
+                color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+                width: 1,
+              ),
+            ),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                if (_imageFile != null)
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(16.0),
+                    child: Image.file(
+                      _imageFile!,
                       width: double.infinity,
-                      child: ElevatedButtonWidget(
-                        text: 'Solve Math Problem',
-                        onPressed: () async {
-                          if (_textController.text.trim().isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'Please enter a math problem to solve.',
-                                ),
-                              ),
-                            );
-                            return;
-                          }
+                      height: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                else
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.add_a_photo_outlined,
+                        size: isTablet ? 80 : 60,
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'No image selected',
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Capture or upload a math problem',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                        ),
+                      ),
+                    ],
+                  ),
+                
+                // Loading overlay
+                if (_isLoading || state.isIdentifying)
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.9),
+                      borderRadius: BorderRadius.circular(16.0),
+                    ),
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ModernScanEffectLoader(
+                            size: isTablet ? 120 : 80,
+                            duration: const Duration(milliseconds: 1500),
+                          ),
+                          const SizedBox(height: _spacing4),
+                          Text(
+                            state.isIdentifying ? 'Analyzing problem...' : 'Processing image...',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: Theme.of(context).colorScheme.primary,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
 
-                          await _handleSubscriptionAndSolve(
-                            textInput: _textController.text.trim(),
-                          );
-                        },
+          // Action Buttons
+          _buildActionButtons(isTablet, state),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionButtons(bool isTablet, SolveMathState state) {
+    return Column(
+      children: [
+        // Primary Actions Row
+        Row(
+          children: [
+            Expanded(
+              child: _buildActionButton(
+                icon: Icons.camera_alt,
+                label: _isCamera && _imageFile != null && state.result.isEmpty
+                    ? 'Solve Problem'
+                    : 'Take Photo',
+                onPressed: _isLoading
+                    ? null
+                    : () async {
+                        if (_isCamera && _imageFile != null && state.result.isEmpty) {
+                          await _handleSubscriptionAndSolve(imageFile: _imageFile);
+                        } else {
+                          context.read<SolveMathCubit>().emptyResult();
+                          await _takePicture();
+                        }
+                      },
+                isPrimary: _isCamera && _imageFile != null && state.result.isEmpty,
+                isLoading: _isLoading && _isCamera,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildActionButton(
+                icon: Icons.photo_library,
+                label: _isGallery && _imageFile != null && state.result.isEmpty
+                    ? 'Solve Problem'
+                    : 'Upload Photo',
+                onPressed: _isLoading
+                    ? null
+                    : () async {
+                        if (_isGallery && _imageFile != null && state.result.isEmpty) {
+                          await _handleSubscriptionAndSolve(imageFile: _imageFile);
+                        } else {
+                          context.read<SolveMathCubit>().emptyResult();
+                          setState(() => _imageFile = null);
+                          await _uploadPicture();
+                        }
+                      },
+                isPrimary: _isGallery && _imageFile != null && state.result.isEmpty,
+                isLoading: _isLoading && _isGallery,
+              ),
+            ),
+          ],
+        ),
+
+        // Reset Button
+        if ((_isGallery || _isCamera) && _imageFile != null && state.result.isEmpty) ...[
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: _buildActionButton(
+              icon: Icons.refresh,
+              label: 'Reset',
+              onPressed: () {
+                setState(() {
+                  _imageFile = null;
+                  _isLoading = false;
+                  _isCamera = false;
+                  _isGallery = false;
+                });
+                context.read<SolveMathCubit>().emptyResult();
+              },
+              isSecondary: true,
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildActionButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback? onPressed,
+    bool isPrimary = false,
+    bool isSecondary = false,
+    bool isLoading = false,
+  }) {
+    if (isPrimary) {
+      return ElevatedButton.icon(
+        onPressed: onPressed,
+        icon: isLoading 
+            ? SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Theme.of(context).colorScheme.onPrimary,
+                ),
+              )
+            : Icon(icon, size: 20),
+        label: Text(label),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          foregroundColor: Theme.of(context).colorScheme.onPrimary,
+          minimumSize: const Size(double.infinity, 56),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+          elevation: 2,
+        ),
+      );
+    } else if (isSecondary) {
+      return OutlinedButton.icon(
+        onPressed: onPressed,
+        icon: Icon(icon, size: 20),
+        label: Text(label),
+        style: OutlinedButton.styleFrom(
+          foregroundColor: Theme.of(context).colorScheme.onSurface,
+          side: BorderSide(color: Theme.of(context).colorScheme.outline),
+          minimumSize: const Size(double.infinity, 56),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+        ),
+      );
+    } else {
+      return FilledButton.icon(
+        onPressed: onPressed,
+        icon: isLoading 
+            ? SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Theme.of(context).colorScheme.onSecondaryContainer,
+                ),
+              )
+            : Icon(icon, size: 20),
+        label: Text(label),
+        style: FilledButton.styleFrom(
+          backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+          foregroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
+          minimumSize: const Size(double.infinity, 56),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+        ),
+      );
+    }
+  }
+
+  Widget _buildTextTab(BuildContext context, SolveMathState state, bool isTablet) {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Input Section
+          Container(
+            padding: const EdgeInsets.all(_spacing6),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.circular(16.0),
+              border: Border.all(
+                color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.edit_outlined,
+                      color: Theme.of(context).colorScheme.primary,
+                      size: 24,
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Type your math problem',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ],
                 ),
-              ),
-              // Loading overlay
-              if (state.isIdentifying)
-                Container(
-                  width: isTablet ? 600 : 350,
-                  height: 300,
-                  decoration: BoxDecoration(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.surface.withValues(alpha: 0.8),
-                    borderRadius: BorderRadius.circular(12),
+                const SizedBox(height: _spacing4),
+                TextField(
+                  controller: _textController,
+                  maxLines: 6,
+                  decoration: InputDecoration(
+                    hintText: 'Enter your math problem here...\n\nExample:\n2x + 5 = 15\nSolve for x',
+                    hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                      borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
+                      ),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                      borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                      borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.primary,
+                        width: 2.0,
+                      ),
+                    ),
+                    filled: true,
+                    fillColor: Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.3),
+                    contentPadding: const EdgeInsets.all(_spacing4),
                   ),
-                  child: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                const SizedBox(height: _spacing4),
+                
+                // Math Symbols Widget
+                MathSymbolsWidget(controller: _textController),
+                
+                const SizedBox(height: _spacing6),
+                
+                // Solve Button
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: state.isIdentifying
+                        ? null
+                        : () async {
+                            if (_textController.text.trim().isEmpty) {
+                              _showSnackBarMessage(
+                                'Please enter a math problem to solve.',
+                                isError: true,
+                              );
+                              return;
+                            }
+                            await _handleSubscriptionAndSolve(
+                              textInput: _textController.text.trim(),
+                            );
+                          },
+                    icon: state.isIdentifying
+                        ? SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Theme.of(context).colorScheme.onPrimary,
+                            ),
+                          )
+                        : const Icon(Icons.auto_awesome, size: 20),
+                    label: Text(
+                      state.isIdentifying ? 'Solving...' : 'Solve Problem',
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                      minimumSize: const Size(double.infinity, 56),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                      elevation: 2,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          // Tips Section
+          const SizedBox(height: _spacing6),
+          Container(
+            padding: const EdgeInsets.all(_spacing4),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.tertiaryContainer.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(12.0),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.lightbulb_outline,
+                      color: Theme.of(context).colorScheme.tertiary,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Tips for better results',
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).colorScheme.onTertiaryContainer,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                ...['Be specific with your question (e.g., "Solve for x")', 
+                   'Use proper mathematical notation', 
+                   'Include all necessary information'].map(
+                  (tip) => Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        ModernScanEffectLoader(
-                          size: 80,
-                          duration: const Duration(milliseconds: 1000),
+                        Container(
+                          width: 4,
+                          height: 4,
+                          margin: const EdgeInsets.only(top: 8, right: 8),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.tertiary,
+                            shape: BoxShape.circle,
+                          ),
                         ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'Solving your math problem...',
-                          style: Theme.of(
-                            context,
-                          ).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface,
-                            fontWeight: FontWeight.w500,
+                        Expanded(
+                          child: Text(
+                            tip,
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Theme.of(context).colorScheme.onTertiaryContainer,
+                            ),
                           ),
                         ),
                       ],
                     ),
                   ),
                 ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
