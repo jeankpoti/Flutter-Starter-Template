@@ -134,7 +134,10 @@ class _HomePageState extends State<HomePage>
       });
     } catch (e) {
       setState(() => _isLoading = false);
-      _showSnackBarMessage('Failed to take picture. Please try again.', isError: true);
+      _showSnackBarMessage(
+        'Failed to take picture. Please try again.',
+        isError: true,
+      );
     }
   }
 
@@ -180,56 +183,65 @@ class _HomePageState extends State<HomePage>
       });
     } catch (e) {
       setState(() => _isLoading = false);
-      _showSnackBarMessage('Failed to upload picture. Please try again.', isError: true);
+      _showSnackBarMessage(
+        'Failed to upload picture. Please try again.',
+        isError: true,
+      );
     }
   }
 
   void _showPermissionDeniedDialog(String permissionType) {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
-        title: Text(
-          '$permissionType Permission Required',
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
-        content: Text(
-          'Please enable $permissionType access in your device settings to continue.',
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: Text(
-              'Cancel',
-              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+      builder:
+          (ctx) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12.0),
             ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(ctx).pop();
-              openAppSettings();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              foregroundColor: Theme.of(context).colorScheme.onPrimary,
+            title: Text(
+              '$permissionType Permission Required',
+              style: Theme.of(context).textTheme.titleLarge,
             ),
-            child: const Text('Open Settings'),
+            content: Text(
+              'Please enable $permissionType access in your device settings to continue.',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: Text(
+                  'Cancel',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                  openAppSettings();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                ),
+                child: const Text('Open Settings'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
   void _showSnackBarMessage(String message, {bool isError = false}) {
     if (!mounted) return;
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: isError 
-            ? Theme.of(context).colorScheme.errorContainer
-            : Theme.of(context).colorScheme.surfaceContainer,
+        backgroundColor:
+            isError
+                ? Theme.of(context).colorScheme.errorContainer
+                : Theme.of(context).colorScheme.surfaceContainer,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
         margin: const EdgeInsets.all(_spacing4),
@@ -241,111 +253,126 @@ class _HomePageState extends State<HomePage>
     try {
       context.read<SolveMathCubit>().shareResult(imageFile!, result);
     } catch (e) {
-      _showSnackBarMessage('Failed to share result. Please try again.', isError: true);
+      _showSnackBarMessage(
+        'Failed to share result. Please try again.',
+        isError: true,
+      );
     }
   }
 
   void _showResultDialog(bool isTablet, String result) {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
-        title: Row(
-          children: [
-            Icon(
-              Icons.check_circle_outline,
-              color: Theme.of(context).colorScheme.secondary,
-              size: 28,
+      builder:
+          (ctx) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16.0),
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                'Math Solution',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
+            title: Row(
+              children: [
+                Icon(
+                  Icons.check_circle_outline,
+                  color: Theme.of(context).colorScheme.secondary,
+                  size: 28,
                 ),
-              ),
-            ),
-          ],
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (_imageFile != null) ...[
-                Container(
-                  height: isTablet ? 300 : 150,
-                  width: double.infinity,
-                  margin: const EdgeInsets.only(bottom: _spacing4),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12.0),
-                    image: DecorationImage(
-                      image: FileImage(_imageFile!),
-                      fit: BoxFit.cover,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Math Solution',
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
               ],
-              Container(
-                padding: const EdgeInsets.all(_spacing4),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainer,
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
-                child: MathMarkdownWidget(data: result),
-              ),
-              const SizedBox(height: _spacing4),
-              Container(
-                padding: const EdgeInsets.all(12.0),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.3),
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.info_outline,
-                      color: Theme.of(context).colorScheme.secondary,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'AI can make mistakes, so double check the solution!',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSecondaryContainer,
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (_imageFile != null) ...[
+                    Container(
+                      height: isTablet ? 300 : 150,
+                      width: double.infinity,
+                      margin: const EdgeInsets.only(bottom: _spacing4),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12.0),
+                        image: DecorationImage(
+                          image: FileImage(_imageFile!),
+                          fit: BoxFit.cover,
                         ),
                       ),
                     ),
                   ],
+                  Container(
+                    padding: const EdgeInsets.all(_spacing4),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surfaceContainer,
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    child: MathMarkdownWidget(data: result),
+                  ),
+                  const SizedBox(height: _spacing4),
+                  Container(
+                    padding: const EdgeInsets.all(12.0),
+                    decoration: BoxDecoration(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.secondaryContainer.withValues(alpha: 0.3),
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.info_outline,
+                          color: Theme.of(context).colorScheme.secondary,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'AI can make mistakes, so double check the solution!',
+                            style: Theme.of(
+                              context,
+                            ).textTheme.bodySmall?.copyWith(
+                              color:
+                                  Theme.of(
+                                    context,
+                                  ).colorScheme.onSecondaryContainer,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: Text(
+                  'Close',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                ),
+              ),
+              ElevatedButton.icon(
+                onPressed: () {
+                  _shareResult(result, _imageFile);
+                  Navigator.of(ctx).pop();
+                },
+                icon: const Icon(Icons.share, size: 18),
+                label: const Text('Share'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.secondary,
+                  foregroundColor: Theme.of(context).colorScheme.onSecondary,
                 ),
               ),
             ],
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: Text(
-              'Close',
-              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
-            ),
-          ),
-          ElevatedButton.icon(
-            onPressed: () {
-              _shareResult(result, _imageFile);
-              Navigator.of(ctx).pop();
-            },
-            icon: const Icon(Icons.share, size: 18),
-            label: const Text('Share'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.secondary,
-              foregroundColor: Theme.of(context).colorScheme.onSecondary,
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -357,19 +384,25 @@ class _HomePageState extends State<HomePage>
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
       appBar: AppBarWidget(title: 'Solve Math Problem'),
       body: BlocListener<SolveMathCubit, SolveMathState>(
-        listenWhen: (previous, current) =>
-            current.result.isNotEmpty &&
-            current.result != '' &&
-            !current.isIdentifying,
+        listenWhen:
+            (previous, current) =>
+                current.result.isNotEmpty &&
+                current.result != '' &&
+                !current.isIdentifying,
         listener: (context, state) {
           if (state.result.isNotEmpty &&
               state.result != '' &&
               !state.isIdentifying) {
-            context.read<FirebaseCollectionCubit>().getCollections(isRefresh: true);
+            context.read<FirebaseCollectionCubit>().getCollections(
+              isRefresh: true,
+            );
             _showResultDialog(isTablet, state.result);
           }
           if (state.isError) {
-            _showSnackBarMessage('Error solving math problem. Please try again.', isError: true);
+            _showSnackBarMessage(
+              'Error solving math problem. Please try again.',
+              isError: true,
+            );
           }
         },
         child: SafeArea(
@@ -385,8 +418,10 @@ class _HomePageState extends State<HomePage>
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
-                            Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.2),
+                            Theme.of(context).colorScheme.primaryContainer
+                                .withValues(alpha: 0.3),
+                            Theme.of(context).colorScheme.secondaryContainer
+                                .withValues(alpha: 0.2),
                           ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
@@ -403,7 +438,9 @@ class _HomePageState extends State<HomePage>
                           const SizedBox(height: 12),
                           Text(
                             'AI-Powered Math Solver',
-                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                            style: Theme.of(
+                              context,
+                            ).textTheme.headlineMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: Theme.of(context).colorScheme.onSurface,
                             ),
@@ -411,8 +448,12 @@ class _HomePageState extends State<HomePage>
                           const SizedBox(height: 8),
                           Text(
                             'Capture or type any math problem and get instant solutions with step-by-step explanations',
-                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
+                            style: Theme.of(
+                              context,
+                            ).textTheme.bodyLarge?.copyWith(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withValues(alpha: 0.8),
                             ),
                             textAlign: TextAlign.center,
                           ),
@@ -424,7 +465,9 @@ class _HomePageState extends State<HomePage>
                   // Tab Section
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: _spacing4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: _spacing4,
+                      ),
                       child: _buildModernTabBar(),
                     ),
                   ),
@@ -476,29 +519,27 @@ class _HomePageState extends State<HomePage>
           color: Theme.of(context).colorScheme.secondaryContainer,
         ),
         labelColor: Theme.of(context).colorScheme.onSecondaryContainer,
-        unselectedLabelColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+        unselectedLabelColor: Theme.of(
+          context,
+        ).colorScheme.onSurface.withValues(alpha: 0.6),
         indicatorSize: TabBarIndicatorSize.tab,
         dividerColor: Colors.transparent,
-        labelStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
-          fontWeight: FontWeight.w600,
-        ),
+        labelStyle: Theme.of(
+          context,
+        ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600),
         tabs: const [
-          Tab(
-            icon: Icon(Icons.camera_alt_outlined),
-            text: 'Photo',
-            height: 60,
-          ),
-          Tab(
-            icon: Icon(Icons.edit_outlined),
-            text: 'Text',
-            height: 60,
-          ),
+          Tab(icon: Icon(Icons.camera_alt_outlined), text: 'Photo', height: 60),
+          Tab(icon: Icon(Icons.edit_outlined), text: 'Text', height: 60),
         ],
       ),
     );
   }
 
-  Widget _buildPhotoTab(BuildContext context, SolveMathState state, bool isTablet) {
+  Widget _buildPhotoTab(
+    BuildContext context,
+    SolveMathState state,
+    bool isTablet,
+  ) {
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -511,7 +552,9 @@ class _HomePageState extends State<HomePage>
               color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(16.0),
               border: Border.all(
-                color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+                color: Theme.of(
+                  context,
+                ).colorScheme.outline.withValues(alpha: 0.2),
                 width: 1,
               ),
             ),
@@ -535,30 +578,38 @@ class _HomePageState extends State<HomePage>
                       Icon(
                         Icons.add_a_photo_outlined,
                         size: isTablet ? 80 : 60,
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.4),
                       ),
                       const SizedBox(height: 16),
                       Text(
                         'No image selected',
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.6),
                         ),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         'Capture or upload a math problem',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.5),
                         ),
                       ),
                     ],
                   ),
-                
+
                 // Loading overlay
                 if (_isLoading || state.isIdentifying)
                   Container(
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.9),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.surface.withValues(alpha: 0.9),
                       borderRadius: BorderRadius.circular(16.0),
                     ),
                     child: Center(
@@ -571,8 +622,12 @@ class _HomePageState extends State<HomePage>
                           ),
                           const SizedBox(height: _spacing4),
                           Text(
-                            state.isIdentifying ? 'Analyzing problem...' : 'Processing image...',
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            state.isIdentifying
+                                ? 'Analyzing problem...'
+                                : 'Processing image...',
+                            style: Theme.of(
+                              context,
+                            ).textTheme.bodyMedium?.copyWith(
                               color: Theme.of(context).colorScheme.primary,
                               fontWeight: FontWeight.w500,
                             ),
@@ -601,20 +656,27 @@ class _HomePageState extends State<HomePage>
             Expanded(
               child: _buildActionButton(
                 icon: Icons.camera_alt,
-                label: _isCamera && _imageFile != null && state.result.isEmpty
-                    ? 'Solve Problem'
-                    : 'Take Photo',
-                onPressed: _isLoading
-                    ? null
-                    : () async {
-                        if (_isCamera && _imageFile != null && state.result.isEmpty) {
-                          await _handleSubscriptionAndSolve(imageFile: _imageFile);
-                        } else {
-                          context.read<SolveMathCubit>().emptyResult();
-                          await _takePicture();
-                        }
-                      },
-                isPrimary: _isCamera && _imageFile != null && state.result.isEmpty,
+                label:
+                    _isCamera && _imageFile != null && state.result.isEmpty
+                        ? 'Solve Problem'
+                        : 'Take Photo',
+                onPressed:
+                    _isLoading
+                        ? null
+                        : () async {
+                          if (_isCamera &&
+                              _imageFile != null &&
+                              state.result.isEmpty) {
+                            await _handleSubscriptionAndSolve(
+                              imageFile: _imageFile,
+                            );
+                          } else {
+                            context.read<SolveMathCubit>().emptyResult();
+                            await _takePicture();
+                          }
+                        },
+                isPrimary:
+                    _isCamera && _imageFile != null && state.result.isEmpty,
                 isLoading: _isLoading && _isCamera,
               ),
             ),
@@ -622,21 +684,28 @@ class _HomePageState extends State<HomePage>
             Expanded(
               child: _buildActionButton(
                 icon: Icons.photo_library,
-                label: _isGallery && _imageFile != null && state.result.isEmpty
-                    ? 'Solve Problem'
-                    : 'Upload Photo',
-                onPressed: _isLoading
-                    ? null
-                    : () async {
-                        if (_isGallery && _imageFile != null && state.result.isEmpty) {
-                          await _handleSubscriptionAndSolve(imageFile: _imageFile);
-                        } else {
-                          context.read<SolveMathCubit>().emptyResult();
-                          setState(() => _imageFile = null);
-                          await _uploadPicture();
-                        }
-                      },
-                isPrimary: _isGallery && _imageFile != null && state.result.isEmpty,
+                label:
+                    _isGallery && _imageFile != null && state.result.isEmpty
+                        ? 'Solve Problem'
+                        : 'Upload Photo',
+                onPressed:
+                    _isLoading
+                        ? null
+                        : () async {
+                          if (_isGallery &&
+                              _imageFile != null &&
+                              state.result.isEmpty) {
+                            await _handleSubscriptionAndSolve(
+                              imageFile: _imageFile,
+                            );
+                          } else {
+                            context.read<SolveMathCubit>().emptyResult();
+                            setState(() => _imageFile = null);
+                            await _uploadPicture();
+                          }
+                        },
+                isPrimary:
+                    _isGallery && _imageFile != null && state.result.isEmpty,
                 isLoading: _isLoading && _isGallery,
               ),
             ),
@@ -644,7 +713,9 @@ class _HomePageState extends State<HomePage>
         ),
 
         // Reset Button
-        if ((_isGallery || _isCamera) && _imageFile != null && state.result.isEmpty) ...[
+        if ((_isGallery || _isCamera) &&
+            _imageFile != null &&
+            state.result.isEmpty) ...[
           const SizedBox(height: 16),
           SizedBox(
             width: double.infinity,
@@ -679,22 +750,25 @@ class _HomePageState extends State<HomePage>
     if (isPrimary) {
       return ElevatedButton.icon(
         onPressed: onPressed,
-        icon: isLoading 
-            ? SizedBox(
-                width: 16,
-                height: 16,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: Theme.of(context).colorScheme.onPrimary,
-                ),
-              )
-            : Icon(icon, size: 20),
+        icon:
+            isLoading
+                ? SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
+                )
+                : Icon(icon, size: 20),
         label: Text(label),
         style: ElevatedButton.styleFrom(
           backgroundColor: Theme.of(context).colorScheme.primary,
           foregroundColor: Theme.of(context).colorScheme.onPrimary,
           minimumSize: const Size(double.infinity, 56),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.0),
+          ),
           elevation: 2,
         ),
       );
@@ -707,34 +781,43 @@ class _HomePageState extends State<HomePage>
           foregroundColor: Theme.of(context).colorScheme.onSurface,
           side: BorderSide(color: Theme.of(context).colorScheme.outline),
           minimumSize: const Size(double.infinity, 56),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.0),
+          ),
         ),
       );
     } else {
       return FilledButton.icon(
         onPressed: onPressed,
-        icon: isLoading 
-            ? SizedBox(
-                width: 16,
-                height: 16,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: Theme.of(context).colorScheme.onSecondaryContainer,
-                ),
-              )
-            : Icon(icon, size: 20),
+        icon:
+            isLoading
+                ? SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Theme.of(context).colorScheme.onSecondaryContainer,
+                  ),
+                )
+                : Icon(icon, size: 20),
         label: Text(label),
         style: FilledButton.styleFrom(
           backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
           foregroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
           minimumSize: const Size(double.infinity, 56),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.0),
+          ),
         ),
       );
     }
   }
 
-  Widget _buildTextTab(BuildContext context, SolveMathState state, bool isTablet) {
+  Widget _buildTextTab(
+    BuildContext context,
+    SolveMathState state,
+    bool isTablet,
+  ) {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -746,7 +829,9 @@ class _HomePageState extends State<HomePage>
               color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(16.0),
               border: Border.all(
-                color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+                color: Theme.of(
+                  context,
+                ).colorScheme.outline.withValues(alpha: 0.2),
               ),
             ),
             child: Column(
@@ -774,20 +859,27 @@ class _HomePageState extends State<HomePage>
                   controller: _textController,
                   maxLines: 6,
                   decoration: InputDecoration(
-                    hintText: 'Enter your math problem here...\n\nExample:\n2x + 5 = 15\nSolve for x',
+                    hintText:
+                        'Enter your math problem here...\n\nExample:\n2x + 5 = 15\nSolve for x',
                     hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12.0),
                       borderSide: BorderSide(
-                        color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.outline.withValues(alpha: 0.3),
                       ),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12.0),
                       borderSide: BorderSide(
-                        color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.outline.withValues(alpha: 0.3),
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
@@ -798,46 +890,50 @@ class _HomePageState extends State<HomePage>
                       ),
                     ),
                     filled: true,
-                    fillColor: Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.3),
+                    fillColor: Theme.of(
+                      context,
+                    ).colorScheme.surfaceContainer.withValues(alpha: 0.3),
                     contentPadding: const EdgeInsets.all(_spacing4),
                   ),
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
                 const SizedBox(height: _spacing4),
-                
+
                 // Math Symbols Widget
                 MathSymbolsWidget(controller: _textController),
-                
+
                 const SizedBox(height: _spacing6),
-                
+
                 // Solve Button
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
-                    onPressed: state.isIdentifying
-                        ? null
-                        : () async {
-                            if (_textController.text.trim().isEmpty) {
-                              _showSnackBarMessage(
-                                'Please enter a math problem to solve.',
-                                isError: true,
+                    onPressed:
+                        state.isIdentifying
+                            ? null
+                            : () async {
+                              if (_textController.text.trim().isEmpty) {
+                                _showSnackBarMessage(
+                                  'Please enter a math problem to solve.',
+                                  isError: true,
+                                );
+                                return;
+                              }
+                              await _handleSubscriptionAndSolve(
+                                textInput: _textController.text.trim(),
                               );
-                              return;
-                            }
-                            await _handleSubscriptionAndSolve(
-                              textInput: _textController.text.trim(),
-                            );
-                          },
-                    icon: state.isIdentifying
-                        ? SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Theme.of(context).colorScheme.onPrimary,
-                            ),
-                          )
-                        : const Icon(Icons.auto_awesome, size: 20),
+                            },
+                    icon:
+                        state.isIdentifying
+                            ? SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Theme.of(context).colorScheme.onPrimary,
+                              ),
+                            )
+                            : const Icon(Icons.auto_awesome, size: 20),
                     label: Text(
                       state.isIdentifying ? 'Solving...' : 'Solve Problem',
                       style: Theme.of(context).textTheme.labelLarge?.copyWith(
@@ -864,7 +960,9 @@ class _HomePageState extends State<HomePage>
           Container(
             padding: const EdgeInsets.all(_spacing4),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.tertiaryContainer.withValues(alpha: 0.3),
+              color: Theme.of(
+                context,
+              ).colorScheme.tertiaryContainer.withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(12.0),
             ),
             child: Column(
@@ -882,15 +980,18 @@ class _HomePageState extends State<HomePage>
                       'Tips for better results',
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: Theme.of(context).colorScheme.onTertiaryContainer,
+                        color:
+                            Theme.of(context).colorScheme.onTertiaryContainer,
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 12),
-                ...['Be specific with your question (e.g., "Solve for x")', 
-                   'Use proper mathematical notation', 
-                   'Include all necessary information'].map(
+                ...[
+                  'Be specific with your question (e.g., "Solve for x")',
+                  'Use proper mathematical notation',
+                  'Include all necessary information',
+                ].map(
                   (tip) => Padding(
                     padding: const EdgeInsets.only(bottom: 4),
                     child: Row(
@@ -908,8 +1009,13 @@ class _HomePageState extends State<HomePage>
                         Expanded(
                           child: Text(
                             tip,
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Theme.of(context).colorScheme.onTertiaryContainer,
+                            style: Theme.of(
+                              context,
+                            ).textTheme.bodySmall?.copyWith(
+                              color:
+                                  Theme.of(
+                                    context,
+                                  ).colorScheme.onTertiaryContainer,
                             ),
                           ),
                         ),
