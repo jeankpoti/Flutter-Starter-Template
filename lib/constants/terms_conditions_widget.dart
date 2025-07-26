@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../common_widgets/body_medium_text_widget.dart';
-import '../common_widgets/title_medium_text_widget.dart';
+import '../common_widgets/text_widgets.dart';
 import '../constants/terms_conditions.dart';
 
 class TermsConditionsWidget {
@@ -15,7 +14,7 @@ class TermsConditionsWidget {
           builder: (BuildContext context, StateSetter setState) {
             return AlertDialog(
               backgroundColor: Theme.of(context).colorScheme.surface,
-              title: TitleMediumTextWidget(text: 'Terms and Conditions'),
+              title: TitleMediumText('Terms and Conditions'),
               content: SingleChildScrollView(
                 child: MarkdownBody(
                   data: TermsConditions().termsConditions,
@@ -36,7 +35,7 @@ class TermsConditionsWidget {
                     FontAwesomeIcons.xmark,
                     color: Theme.of(context).colorScheme.secondary,
                   ),
-                  label: BodyMediumTextWidget(text: 'Close'),
+                  label: BodyMediumText('Close'),
                   onPressed: () => Navigator.of(context).pop(),
                 ),
               ],

@@ -7,12 +7,11 @@ import 'package:go_router/go_router.dart';
 
 import '../../../common_widgets/app_bar_widget.dart';
 import '../../../common_widgets/apple_signin_button_widget.dart';
-import '../../../common_widgets/body_medium_text_widget.dart';
 import '../../../common_widgets/elevated_button_widget.dart';
 import '../../../common_widgets/google_signin_button_widget.dart';
 import '../../../common_widgets/loader_widget.dart';
 import '../../../common_widgets/text_form_field_widget.dart';
-import '../../../common_widgets/title_large_text_widget.dart';
+import '../../../common_widgets/text_widgets.dart';
 import '../../../helpers/validator.dart';
 
 import '../../../main.dart';
@@ -99,15 +98,14 @@ class _SignInPageState extends State<SignInPage> {
                         child: Center(
                           child: Column(
                             children: [
-                              const TitleLargeTextWidget(text: 'Sign In'),
+                              const TitleLargeText('Sign In'),
                               const SizedBox(height: 25),
-                              const BodyMediumTextWidget(
-                                text: 'Connect to your account',
+                              const BodyMediumText(
+                                'Connect to your account',
                               ),
                               const SizedBox(height: 5),
-                              const BodyMediumTextWidget(
-                                text:
-                                    'Enter your email and password to sign in',
+                              const BodyMediumText(
+                                'Enter your email and password to sign in',
                               ),
                               const SizedBox(height: 45),
                               Form(
@@ -165,8 +163,8 @@ class _SignInPageState extends State<SignInPage> {
                                                         const ResetPasswordPage(),
                                               ),
                                             ),
-                                        child: const BodyMediumTextWidget(
-                                          text: 'Forgot password?',
+                                        child: const BodyMediumText(
+                                          'Forgot password?',
                                         ),
                                       ),
                                       const SizedBox(height: 45),
@@ -212,8 +210,8 @@ class _SignInPageState extends State<SignInPage> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.center,
                                         children: [
-                                          const BodyMediumTextWidget(
-                                            text: 'No account? ',
+                                          const BodyMediumText(
+                                            'No account? ',
                                           ),
                                           TextButton(
                                             onPressed:
@@ -225,8 +223,8 @@ class _SignInPageState extends State<SignInPage> {
                                                             const SignUpPage(),
                                                   ),
                                                 ),
-                                            child: const BodyMediumTextWidget(
-                                              text: 'Sign Up ',
+                                            child: const BodyMediumText(
+                                              'Sign Up ',
                                             ),
                                           ),
                                         ],
@@ -247,8 +245,8 @@ class _SignInPageState extends State<SignInPage> {
                                             padding: EdgeInsets.symmetric(
                                               horizontal: 12,
                                             ),
-                                            child: BodyMediumTextWidget(
-                                              text: 'Or sign in with',
+                                            child: BodyMediumText(
+                                              'Or sign in with',
                                             ),
                                           ),
                                           Flexible(

@@ -4,9 +4,8 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
 
 import '../../../common_widgets/app_bar_widget.dart';
-import '../../../common_widgets/body_medium_text_widget.dart';
 import '../../../common_widgets/elevated_button_widget.dart';
-import '../../../common_widgets/title_large_text_widget.dart';
+import '../../../common_widgets/text_widgets.dart';
 import 'subscription_cubit.dart';
 import 'subscription_state.dart';
 
@@ -40,7 +39,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
               state.errorMessage != null) {
             ScaffoldMessenger.of(
               context,
-            ).showSnackBar(SnackBar(content: Text(state.errorMessage!)));
+            ).showSnackBar(SnackBar(content: BodyMediumText(state.errorMessage!)));
           }
         },
         builder: (context, state) {
@@ -79,16 +78,16 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
           children: [
             const Icon(Icons.check_circle, color: Colors.green, size: 80),
             const SizedBox(height: 24),
-            const TitleLargeTextWidget(
-              text: 'You have an active subscription!',
+            const TitleLargeText(
+              'You have an active subscription!',
             ),
             const SizedBox(height: 16),
-            BodyMediumTextWidget(
-              text: 'Enjoy all premium features of Snap Animal AI',
+            BodyMediumText(
+              'Enjoy all premium features of Snap Animal AI',
             ),
             if (expirationText.isNotEmpty) ...[
               const SizedBox(height: 8),
-              BodyMediumTextWidget(text: expirationText),
+              BodyMediumText(expirationText),
             ],
             const SizedBox(height: 32),
             Column(
@@ -132,25 +131,20 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
+            const TitleLargeText(
               'Upgrade to Premium',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
-            const Text(
+            const BodyMediumText(
               'Unlock all features and remove ads',
-              style: TextStyle(fontSize: 16),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
-            const Text(
+            const BodyMediumText(
               'Start with a 3-day free trial',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.green,
-              ),
+              color: Colors.green,
+              fontWeight: FontWeight.bold,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),

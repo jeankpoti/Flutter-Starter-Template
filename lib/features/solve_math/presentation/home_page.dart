@@ -13,6 +13,7 @@ import '../../../common_widgets/app_bar_widget.dart';
 import '../../../common_widgets/math_markdown_widget.dart';
 import '../../../common_widgets/math_symbols_widget.dart';
 import '../../../common_widgets/scan_effect_loader_widget.dart';
+import '../../../common_widgets/text_widgets.dart';
 import '../../../utils/responsive.dart';
 import '../../subscription/presentation/subscription_cubit.dart';
 import 'firebase_collection_cubit.dart';
@@ -198,22 +199,16 @@ class _HomePageState extends State<HomePage>
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12.0),
             ),
-            title: Text(
-              '$permissionType Permission Required',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            content: Text(
+            title: TitleLargeText('$permissionType Permission Required'),
+            content: BodyMediumText(
               'Please enable $permissionType access in your device settings to continue.',
-              style: Theme.of(context).textTheme.bodyMedium,
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(ctx).pop(),
-                child: Text(
+                child: LabelLargeText(
                   'Cancel',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               ElevatedButton(
@@ -225,7 +220,7 @@ class _HomePageState extends State<HomePage>
                   backgroundColor: Theme.of(context).colorScheme.primary,
                   foregroundColor: Theme.of(context).colorScheme.onPrimary,
                 ),
-                child: const Text('Open Settings'),
+                child: const LabelLargeText('Open Settings'),
               ),
             ],
           ),
@@ -237,7 +232,7 @@ class _HomePageState extends State<HomePage>
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: BodyMediumText(message),
         backgroundColor:
             isError
                 ? Theme.of(context).colorScheme.errorContainer
@@ -277,11 +272,9 @@ class _HomePageState extends State<HomePage>
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Text(
+                  child: HeadlineSmallText(
                     'Math Solution',
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ],
@@ -331,16 +324,12 @@ class _HomePageState extends State<HomePage>
                         ),
                         const SizedBox(width: 8),
                         Expanded(
-                          child: Text(
+                          child: BodySmallText(
                             'AI can make mistakes, so double check the solution!',
-                            style: Theme.of(
-                              context,
-                            ).textTheme.bodySmall?.copyWith(
-                              color:
-                                  Theme.of(
-                                    context,
-                                  ).colorScheme.onSecondaryContainer,
-                            ),
+                            color:
+                                Theme.of(
+                                  context,
+                                ).colorScheme.onSecondaryContainer,
                           ),
                         ),
                       ],
@@ -352,11 +341,9 @@ class _HomePageState extends State<HomePage>
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(ctx).pop(),
-                child: Text(
+                child: LabelLargeText(
                   'Close',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               ElevatedButton.icon(
@@ -365,7 +352,7 @@ class _HomePageState extends State<HomePage>
                   Navigator.of(ctx).pop();
                 },
                 icon: const Icon(Icons.share, size: 18),
-                label: const Text('Share'),
+                label: const LabelLargeText('Share'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).colorScheme.secondary,
                   foregroundColor: Theme.of(context).colorScheme.onSecondary,
@@ -436,25 +423,17 @@ class _HomePageState extends State<HomePage>
                             color: Theme.of(context).colorScheme.primary,
                           ),
                           const SizedBox(height: 12),
-                          Text(
+                          HeadlineMediumText(
                             'AI-Powered Math Solver',
-                            style: Theme.of(
-                              context,
-                            ).textTheme.headlineMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                           const SizedBox(height: 8),
-                          Text(
+                          BodyLargeText(
                             'Capture or type any math problem and get instant solutions with step-by-step explanations',
-                            style: Theme.of(
+                            color: Theme.of(
                               context,
-                            ).textTheme.bodyLarge?.copyWith(
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.onSurface.withValues(alpha: 0.8),
-                            ),
+                            ).colorScheme.onSurface.withValues(alpha: 0.8),
                             textAlign: TextAlign.center,
                           ),
                         ],
@@ -583,22 +562,18 @@ class _HomePageState extends State<HomePage>
                         ).colorScheme.onSurface.withValues(alpha: 0.4),
                       ),
                       const SizedBox(height: 16),
-                      Text(
+                      BodyLargeText(
                         'No image selected',
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onSurface.withValues(alpha: 0.6),
-                        ),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                       const SizedBox(height: 8),
-                      Text(
+                      BodyMediumText(
                         'Capture or upload a math problem',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onSurface.withValues(alpha: 0.5),
-                        ),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.5),
                       ),
                     ],
                   ),
@@ -621,16 +596,12 @@ class _HomePageState extends State<HomePage>
                             duration: const Duration(milliseconds: 1500),
                           ),
                           const SizedBox(height: _spacing4),
-                          Text(
+                          BodyMediumText(
                             state.isIdentifying
                                 ? 'Analyzing problem...'
                                 : 'Processing image...',
-                            style: Theme.of(
-                              context,
-                            ).textTheme.bodyMedium?.copyWith(
-                              color: Theme.of(context).colorScheme.primary,
-                              fontWeight: FontWeight.w500,
-                            ),
+                            color: Theme.of(context).colorScheme.primary,
+                            fontWeight: FontWeight.w500,
                           ),
                         ],
                       ),
@@ -757,14 +728,14 @@ class _HomePageState extends State<HomePage>
                   height: 16,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    color: Theme.of(context).colorScheme.onPrimary,
+                    color: Theme.of(context).colorScheme.onSecondary,
                   ),
                 )
                 : Icon(icon, size: 20),
-        label: Text(label),
+        label: LabelLargeText(label),
         style: ElevatedButton.styleFrom(
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          foregroundColor: Theme.of(context).colorScheme.onPrimary,
+          backgroundColor: Theme.of(context).colorScheme.secondary,
+          foregroundColor: Theme.of(context).colorScheme.onSecondary,
           minimumSize: const Size(double.infinity, 56),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12.0),
@@ -776,9 +747,9 @@ class _HomePageState extends State<HomePage>
       return OutlinedButton.icon(
         onPressed: onPressed,
         icon: Icon(icon, size: 20),
-        label: Text(label),
+        label: LabelLargeText(label),
         style: OutlinedButton.styleFrom(
-          foregroundColor: Theme.of(context).colorScheme.onSurface,
+          foregroundColor: Theme.of(context).colorScheme.onSecondary,
           side: BorderSide(color: Theme.of(context).colorScheme.outline),
           minimumSize: const Size(double.infinity, 56),
           shape: RoundedRectangleBorder(
@@ -796,11 +767,11 @@ class _HomePageState extends State<HomePage>
                   height: 16,
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
-                    color: Theme.of(context).colorScheme.onSecondaryContainer,
+                    color: Theme.of(context).colorScheme.onSecondary,
                   ),
                 )
                 : Icon(icon, size: 20),
-        label: Text(label),
+        label: LabelLargeText(label),
         style: FilledButton.styleFrom(
           backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
           foregroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
@@ -845,12 +816,10 @@ class _HomePageState extends State<HomePage>
                       size: 24,
                     ),
                     const SizedBox(width: 12),
-                    Text(
+                    TitleMediumText(
                       'Type your math problem',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ],
                 ),
@@ -934,15 +903,14 @@ class _HomePageState extends State<HomePage>
                               ),
                             )
                             : const Icon(Icons.auto_awesome, size: 20),
-                    label: Text(
+                    label: LabelLargeText(
                       state.isIdentifying ? 'Solving...' : 'Solve Problem',
-                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                      fontWeight: FontWeight.w600,
                     ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                      backgroundColor: Theme.of(context).colorScheme.secondary,
+                      foregroundColor:
+                          Theme.of(context).colorScheme.onSecondary,
                       minimumSize: const Size(double.infinity, 56),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12.0),
@@ -976,13 +944,10 @@ class _HomePageState extends State<HomePage>
                       size: 20,
                     ),
                     const SizedBox(width: 8),
-                    Text(
+                    TitleSmallText(
                       'Tips for better results',
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color:
-                            Theme.of(context).colorScheme.onTertiaryContainer,
-                      ),
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.onTertiaryContainer,
                     ),
                   ],
                 ),
@@ -1007,16 +972,12 @@ class _HomePageState extends State<HomePage>
                           ),
                         ),
                         Expanded(
-                          child: Text(
+                          child: BodySmallText(
                             tip,
-                            style: Theme.of(
-                              context,
-                            ).textTheme.bodySmall?.copyWith(
-                              color:
-                                  Theme.of(
-                                    context,
-                                  ).colorScheme.onTertiaryContainer,
-                            ),
+                            color:
+                                Theme.of(
+                                  context,
+                                ).colorScheme.onTertiaryContainer,
                           ),
                         ),
                       ],

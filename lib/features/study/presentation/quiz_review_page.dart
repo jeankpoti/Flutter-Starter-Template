@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../common_widgets/text_widgets.dart';
 import '../domain/models/quiz.dart';
 
 class QuizReviewPage extends StatelessWidget {
@@ -13,7 +14,7 @@ class QuizReviewPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Quiz Review: ${quiz.title}'),
+        title: TitleLargeText('Quiz Review: ${quiz.title}'),
         actions: [
           IconButton(
             icon: const Icon(Icons.share),
@@ -33,12 +34,10 @@ class QuizReviewPage extends StatelessWidget {
             const SizedBox(height: 24),
             
             // Questions Review
-            Text(
+            TitleLargeText(
               'Questions Review',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
             const SizedBox(height: 16),
             
@@ -93,19 +92,15 @@ class QuizReviewPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    TitleMediumText(
                       quiz.title,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
-                    Text(
+                    TitleSmallText(
                       'Score: ${score.toStringAsFixed(1)}%',
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: _getScoreColor(score),
-                      ),
+                      fontWeight: FontWeight.w600,
+                      color: _getScoreColor(score),
                     ),
                   ],
                 ),
@@ -159,11 +154,9 @@ class QuizReviewPage extends StatelessWidget {
                 color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
               ),
               const SizedBox(width: 4),
-              Text(
+              BodySmallText(
                 'Completed: ${_formatDate(quiz.lastAttemptAt ?? quiz.createdAt)}',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                ),
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
               ),
               const SizedBox(width: 16),
               Icon(
@@ -172,11 +165,9 @@ class QuizReviewPage extends StatelessWidget {
                 color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
               ),
               const SizedBox(width: 4),
-              Text(
+              BodySmallText(
                 '${quiz.questions.length} questions',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                ),
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
               ),
             ],
           ),
@@ -200,18 +191,14 @@ class QuizReviewPage extends StatelessWidget {
           size: 20,
         ),
         const SizedBox(height: 4),
-        Text(
+        TitleMediumText(
           value.toString(),
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: color,
-          ),
+          fontWeight: FontWeight.bold,
+          color: color,
         ),
-        Text(
+        LabelSmallText(
           label,
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-          ),
+          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
         ),
       ],
     );
@@ -267,12 +254,10 @@ class QuizReviewPage extends StatelessWidget {
                   color: cardColor,
                   borderRadius: BorderRadius.circular(6),
                 ),
-                child: Text(
+                child: LabelMediumText(
                   'Q$questionNumber',
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: statusColor,
-                  ),
+                  fontWeight: FontWeight.bold,
+                  color: statusColor,
                 ),
               ),
               const SizedBox(width: 8),
@@ -283,12 +268,10 @@ class QuizReviewPage extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: Text(
+                child: LabelMediumText(
                   _getStatusText(isAnswered, isCorrect),
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: statusColor,
-                  ),
+                  fontWeight: FontWeight.w600,
+                  color: statusColor,
                 ),
               ),
               if (question.pointValue > 1)
@@ -298,12 +281,10 @@ class QuizReviewPage extends StatelessWidget {
                     color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(4),
                   ),
-                  child: Text(
+                  child: LabelSmallText(
                     '${question.pointValue} pts',
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.secondary,
-                    ),
+                    fontWeight: FontWeight.w600,
+                    color: Theme.of(context).colorScheme.secondary,
                   ),
                 ),
             ],
@@ -312,12 +293,10 @@ class QuizReviewPage extends StatelessWidget {
           const SizedBox(height: 12),
           
           // Question Text
-          Text(
+          TitleMediumText(
             question.questionText,
-            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              fontWeight: FontWeight.w500,
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
+            fontWeight: FontWeight.w500,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
           
           const SizedBox(height: 16),
@@ -341,11 +320,9 @@ class QuizReviewPage extends StatelessWidget {
                   color: Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Text(
+                child: LabelSmallText(
                   topic,
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSecondaryContainer,
-                  ),
+                  color: Theme.of(context).colorScheme.onSecondaryContainer,
                 ),
               )).toList(),
             ),
@@ -371,21 +348,17 @@ class QuizReviewPage extends StatelessWidget {
                         color: Theme.of(context).colorScheme.secondary,
                       ),
                       const SizedBox(width: 6),
-                      Text(
+                      LabelMediumText(
                         'Explanation',
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: Theme.of(context).colorScheme.secondary,
-                        ),
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).colorScheme.secondary,
                       ),
                     ],
                   ),
                   const SizedBox(height: 6),
-                  Text(
+                  BodySmallText(
                     question.explanation!,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
-                    ),
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
                   ),
                 ],
               ),
@@ -447,31 +420,25 @@ class QuizReviewPage extends StatelessWidget {
                 const SizedBox(width: 8),
               ],
               Expanded(
-                child: Text(
+                child: BodyMediumText(
                   answer.text,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: textColor,
-                    fontWeight: (isUserSelected || isCorrectAnswer) 
-                        ? FontWeight.w600 
-                        : FontWeight.normal,
-                  ),
+                  color: textColor,
+                  fontWeight: (isUserSelected || isCorrectAnswer) 
+                      ? FontWeight.w600 
+                      : FontWeight.normal,
                 ),
               ),
               if (isUserSelected && !isCorrectAnswer)
-                Text(
+                LabelSmallText(
                   'Your answer',
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: textColor,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  color: textColor,
+                  fontWeight: FontWeight.w600,
                 ),
               if (isCorrectAnswer)
-                Text(
+                LabelSmallText(
                   'Correct answer',
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: textColor,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  color: textColor,
+                  fontWeight: FontWeight.w600,
                 ),
             ],
           ),
@@ -495,12 +462,10 @@ class QuizReviewPage extends StatelessWidget {
       children: [
         // Your Answer
         if (wasAnswered) ...[
-          Text(
+          LabelMediumText(
             'Your Answer:',
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
+            fontWeight: FontWeight.w600,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
           const SizedBox(height: 6),
           Container(
@@ -524,12 +489,10 @@ class QuizReviewPage extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: Text(
+                  child: BodyMediumText(
                     userAnswerText,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: isCorrect ? Colors.green : Colors.red,
-                      fontWeight: FontWeight.w500,
-                    ),
+                    color: isCorrect ? Colors.green : Colors.red,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
@@ -553,12 +516,10 @@ class QuizReviewPage extends StatelessWidget {
                   size: 20,
                 ),
                 const SizedBox(width: 8),
-                Text(
+                BodyMediumText(
                   'Question was not answered',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.orange,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  color: Colors.orange,
+                  fontWeight: FontWeight.w500,
                 ),
               ],
             ),
@@ -567,12 +528,10 @@ class QuizReviewPage extends StatelessWidget {
         ],
         
         // Correct Answer
-        Text(
+        LabelMediumText(
           'Correct Answer:',
-          style: Theme.of(context).textTheme.labelMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
+          fontWeight: FontWeight.w600,
+          color: Theme.of(context).colorScheme.onSurface,
         ),
         const SizedBox(height: 6),
         Container(
@@ -592,12 +551,10 @@ class QuizReviewPage extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: Text(
+                child: BodyMediumText(
                   correctAnswer,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.green,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  color: Colors.green,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],
@@ -665,7 +622,7 @@ Total Questions: ${quiz.questions.length}
     // In a real app, you would use share_plus package
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Share functionality would open here\n\n$shareText'),
+        content: BodyMediumText('Share functionality would open here\n\n$shareText'),
         duration: const Duration(seconds: 3),
       ),
     );

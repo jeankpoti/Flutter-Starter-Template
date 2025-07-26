@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../../common_widgets/math_markdown_widget.dart';
-import 'home_page.dart';
 
 import '../../../common_widgets/app_bar_widget.dart';
-import '../../../common_widgets/body_small_text_widget.dart';
+import '../../../common_widgets/text_widgets.dart';
 import '../../../common_widgets/elevated_button_widget.dart';
 import '../../../utils/responsive.dart';
 import '../domain/models/collection.dart';
@@ -60,17 +59,24 @@ class CollectionsDetailsPage extends StatelessWidget {
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(20),
-                      child: collection.imageUrl != null && collection.imageUrl!.isNotEmpty
-                          ? Image.network(
-                              collection.imageUrl!,
-                              fit: BoxFit.cover,
-                              width: 100,
-                              height: 120,
-                              errorBuilder:
-                                  (context, error, stackTrace) =>
-                                const Icon(Icons.image_not_supported),
-                            )
-                          : const Icon(Icons.image_not_supported),
+                      child:
+                          collection.imageUrl != null &&
+                                  collection.imageUrl!.isNotEmpty
+                              ? Image.network(
+                                collection.imageUrl!,
+                                fit: BoxFit.cover,
+                                width: 100,
+                                height: 120,
+                                errorBuilder:
+                                    (context, error, stackTrace) =>
+                                        const Icon(Icons.image_not_supported),
+                              )
+                              : Image.asset(
+                                'assets/icons/app_icon.png',
+                                fit: BoxFit.cover,
+                                width: 100,
+                                height: 120,
+                              ),
                     ),
                   ),
                   const SizedBox(height: 45),
@@ -93,7 +99,7 @@ class CollectionsDetailsPage extends StatelessWidget {
                               if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                    content: Text(
+                                    content: BodyMediumText(
                                       'Solution copied to clipboard!',
                                     ),
                                     duration: Duration(seconds: 2),
@@ -104,7 +110,7 @@ class CollectionsDetailsPage extends StatelessWidget {
                               if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                    content: Text('Unable to copy solution'),
+                                    content: BodyMediumText('Unable to copy solution'),
                                     duration: Duration(seconds: 2),
                                   ),
                                 );
@@ -140,7 +146,7 @@ class CollectionsDetailsPage extends StatelessWidget {
                               if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                    content: Text('Unable to share solution'),
+                                    content: BodyMediumText('Unable to share solution'),
                                     duration: Duration(seconds: 2),
                                   ),
                                 );
@@ -164,8 +170,8 @@ class CollectionsDetailsPage extends StatelessWidget {
           right: 32.0,
           bottom: 32.0,
         ),
-        child: BodySmallTextWidget(
-          text: 'Math AI can make mistakes, so double check the solution!',
+        child: BodySmallText(
+          'Math AI can make mistakes, so double check the solution!',
           textAlign: TextAlign.center,
         ),
       ),

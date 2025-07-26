@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
-import '../../../common_widgets/body_medium_text_widget.dart';
+import '../../../common_widgets/text_widgets.dart';
 import '../../../common_widgets/icon_widget.dart';
 import '../domain/models/collection.dart';
 import 'firebase_collection_cubit.dart';
@@ -49,16 +49,16 @@ class _ListTileWidgetState extends State<ListTileWidget> {
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: Theme.of(context).colorScheme.surface,
-          title: const BodyMediumTextWidget(
-            text: 'Are you sure you want to delete this file?',
+          title: const BodyMediumText(
+            'Are you sure you want to delete this file?',
           ),
           actions: <Widget>[
             TextButton(
-              child: const BodyMediumTextWidget(text: 'Cancel'),
+              child: const BodyMediumText('Cancel'),
               onPressed: () => Navigator.pop(context),
             ),
             TextButton(
-              child: const BodyMediumTextWidget(text: 'Delete'),
+              child: const BodyMediumText('Delete'),
               onPressed: () {
                 // Run animation before actual deletion
                 firebaseAnimalCubit.deleteCollection(collection);
@@ -145,18 +145,17 @@ class _ListTileWidgetState extends State<ListTileWidget> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   spacing: 20,
                   children: [
-                    BodyMediumTextWidget(
-                      text: widget.collection.solution ?? '',
-                      maxLine: 3,
+                    BodyMediumText(
+                      widget.collection.solution ?? '',
+                      maxLines: 3,
                     ),
-                    BodyMediumTextWidget(
-                      text:
-                          widget.collection.createdAt != null
-                              ? DateFormat(
-                                'MMMM dd, yyyy',
-                              ).format(widget.collection.createdAt!)
-                              : '',
-                      maxLine: 1,
+                    BodyMediumText(
+                      widget.collection.createdAt != null
+                          ? DateFormat(
+                            'MMMM dd, yyyy',
+                          ).format(widget.collection.createdAt!)
+                          : '',
+                      maxLines: 1,
                     ),
                   ],
                 ),

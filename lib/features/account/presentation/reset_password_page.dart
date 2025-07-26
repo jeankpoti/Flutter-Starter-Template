@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../../common_widgets/app_bar_widget.dart';
-import '../../../common_widgets/body_medium_text_widget.dart';
+import '../../../common_widgets/text_widgets.dart';
 import '../../../common_widgets/google_signin_button_widget.dart';
 import '../../../common_widgets/loader_widget.dart';
 import '../../../common_widgets/text_form_field_widget.dart';
@@ -66,9 +66,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
 
                         // const TitleLargeTextWidget(text: 'Reset password'),
                         // const SizedBox(height: 25),
-                        const BodyMediumTextWidget(
-                          text:
-                              'Please enter your email, and we will send you a verification code to your email.',
+                        const BodyMediumText(
+                          'Please enter your email, and we will send you a verification code to your email.',
                         ),
                         const SizedBox(height: 45),
                         Form(

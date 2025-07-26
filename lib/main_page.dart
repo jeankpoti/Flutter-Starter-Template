@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 import 'features/solve_math/presentation/collections_page.dart';
 import 'features/solve_math/presentation/home_page.dart';
@@ -9,8 +8,7 @@ import 'features/study/presentation/study_page.dart';
 import 'settings_page.dart';
 import 'theme/theme_cubit.dart';
 import 'utils/responsive.dart';
-import 'common_widgets/body_small_text_widget.dart';
-import 'common_widgets/title_large_text_widget.dart';
+import 'common_widgets/text_widgets.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -74,21 +72,21 @@ class _MainPageState extends State<MainPage> {
       NavigationRailDestination(
         icon: Icon(CupertinoIcons.function),
         selectedIcon: Icon(CupertinoIcons.function),
-        label: BodySmallTextWidget(text: 'Solve'),
+        label: LabelSmallText('Solve'),
       ),
     );
     railItems.add(
       NavigationRailDestination(
         icon: Icon(CupertinoIcons.book),
         selectedIcon: Icon(CupertinoIcons.book),
-        label: BodySmallTextWidget(text: 'Study'),
+        label: LabelSmallText('Study'),
       ),
     );
     railItems.add(
       NavigationRailDestination(
         icon: Icon(CupertinoIcons.time),
         selectedIcon: Icon(CupertinoIcons.time),
-        label: BodySmallTextWidget(text: 'History'),
+        label: LabelSmallText('History'),
       ),
     );
 
@@ -97,7 +95,7 @@ class _MainPageState extends State<MainPage> {
         icon: Icon(CupertinoIcons.settings),
         selectedIcon: Icon(CupertinoIcons.settings),
         // indicatorColor: Colors.amber,
-        label: BodySmallTextWidget(text: 'Settings'),
+        label: LabelSmallText('Settings'),
       ),
     );
   }
@@ -139,7 +137,7 @@ class _MainPageState extends State<MainPage> {
                     right: 8,
                     bottom: 32,
                   ),
-                  child: TitleLargeTextWidget(text: 'LOGO'),
+                  child: TitleLargeText('LOGO'),
                 ),
                 destinations: railItems,
               ),

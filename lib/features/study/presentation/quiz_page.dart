@@ -4,14 +4,12 @@ import '../domain/models/quiz.dart';
 import '../data/services/quiz_service.dart';
 import 'quiz_review_page.dart';
 import '../../../common_widgets/math_symbols_widget.dart';
+import '../../../common_widgets/text_widgets.dart';
 
 class QuizPage extends StatefulWidget {
   final Quiz quiz;
 
-  const QuizPage({
-    super.key,
-    required this.quiz,
-  });
+  const QuizPage({super.key, required this.quiz});
 
   @override
   State<QuizPage> createState() => _QuizPageState();
@@ -20,13 +18,13 @@ class QuizPage extends StatefulWidget {
 class _QuizPageState extends State<QuizPage> {
   final QuizService _quizService = QuizService();
   final PageController _pageController = PageController();
-  
+
   late Quiz _currentQuiz;
   int _currentQuestionIndex = 0;
   Timer? _timer;
   int _remainingTime = 0; // in seconds
   bool _isQuizCompleted = false;
-  
+
   // User answers tracking
   final Map<String, String?> _selectedAnswers = {};
   final Map<String, String?> _textAnswers = {};
@@ -41,7 +39,8 @@ class _QuizPageState extends State<QuizPage> {
 
   void _initializeQuiz() {
     if (_currentQuiz.timeLimit > 0) {
-      _remainingTime = _currentQuiz.timeLimit * 60; // Convert minutes to seconds
+      _remainingTime =
+          _currentQuiz.timeLimit * 60; // Convert minutes to seconds
       _startTimer();
     }
   }
@@ -74,10 +73,8 @@ class _QuizPageState extends State<QuizPage> {
   Widget build(BuildContext context) {
     if (_currentQuiz.questions.isEmpty) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Quiz')),
-        body: const Center(
-          child: Text('No questions available'),
-        ),
+        appBar: AppBar(title: const TitleLargeText('Quiz')),
+        body: const Center(child: BodyMediumText('No questions available')),
       );
     }
 
@@ -92,7 +89,7 @@ class _QuizPageState extends State<QuizPage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(_currentQuiz.title),
+          title: TitleLargeText(_currentQuiz.title),
           leading: IconButton(
             icon: const Icon(Icons.close),
             onPressed: () async {
@@ -107,9 +104,8 @@ class _QuizPageState extends State<QuizPage> {
           children: [
             _buildQuizHeader(),
             Expanded(
-              child: _isQuizCompleted 
-                  ? _buildQuizResults()
-                  : _buildQuizContent(),
+              child:
+                  _isQuizCompleted ? _buildQuizResults() : _buildQuizContent(),
             ),
             if (!_isQuizCompleted) _buildQuizNavigation(),
           ],
@@ -119,8 +115,9 @@ class _QuizPageState extends State<QuizPage> {
   }
 
   Widget _buildQuizHeader() {
-    final progress = (_currentQuestionIndex + 1) / _currentQuiz.questions.length;
-    
+    final progress =
+        (_currentQuestionIndex + 1) / _currentQuiz.questions.length;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -139,21 +136,24 @@ class _QuizPageState extends State<QuizPage> {
           // Progress bar
           Row(
             children: [
-              Text(
+              TitleMediumText(
                 'Question ${_currentQuestionIndex + 1} of ${_currentQuiz.questions.length}',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
+                fontWeight: FontWeight.w600,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
               const Spacer(),
               if (_currentQuiz.timeLimit > 0)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
-                    color: _remainingTime < 300 // Less than 5 minutes
-                        ? Theme.of(context).colorScheme.errorContainer
-                        : Theme.of(context).colorScheme.secondaryContainer,
+                    color:
+                        _remainingTime <
+                                300 // Less than 5 minutes
+                            ? Theme.of(context).colorScheme.errorContainer
+                            : Theme.of(context).colorScheme.secondaryContainer,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Row(
@@ -162,19 +162,25 @@ class _QuizPageState extends State<QuizPage> {
                       Icon(
                         Icons.timer,
                         size: 16,
-                        color: _remainingTime < 300
-                            ? Theme.of(context).colorScheme.onErrorContainer
-                            : Theme.of(context).colorScheme.onSecondaryContainer,
+                        color:
+                            _remainingTime < 300
+                                ? Theme.of(context).colorScheme.onErrorContainer
+                                : Theme.of(
+                                  context,
+                                ).colorScheme.onSecondaryContainer,
                       ),
                       const SizedBox(width: 4),
-                      Text(
+                      LabelLargeText(
                         _formatTime(_remainingTime),
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: _remainingTime < 300
-                              ? Theme.of(context).colorScheme.onErrorContainer
-                              : Theme.of(context).colorScheme.onSecondaryContainer,
-                        ),
+                        fontWeight: FontWeight.w600,
+                        color:
+                            _remainingTime < 300
+                                ? Theme.of(
+                                  context,
+                                ).colorScheme.onErrorContainer
+                                : Theme.of(
+                                  context,
+                                ).colorScheme.onSecondaryContainer,
                       ),
                     ],
                   ),
@@ -184,7 +190,9 @@ class _QuizPageState extends State<QuizPage> {
           const SizedBox(height: 12),
           LinearProgressIndicator(
             value: progress,
-            backgroundColor: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
+            backgroundColor: Theme.of(
+              context,
+            ).colorScheme.outline.withValues(alpha: 0.3),
             valueColor: AlwaysStoppedAnimation<Color>(
               Theme.of(context).colorScheme.secondary,
             ),
@@ -224,7 +232,9 @@ class _QuizPageState extends State<QuizPage> {
               color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+                color: Theme.of(
+                  context,
+                ).colorScheme.outline.withValues(alpha: 0.2),
               ),
             ),
             child: Column(
@@ -233,54 +243,64 @@ class _QuizPageState extends State<QuizPage> {
                 Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.secondaryContainer,
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Text(
+                      child: LabelSmallText(
                         _getQuestionTypeLabel(question.type),
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: Theme.of(context).colorScheme.onSecondaryContainer,
-                        ),
+                        fontWeight: FontWeight.w600,
+                        color:
+                            Theme.of(
+                              context,
+                            ).colorScheme.onSecondaryContainer,
                       ),
                     ),
                     const Spacer(),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.tertiaryContainer,
+                        color: Theme.of(context).colorScheme.secondary,
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Text(
+                      child: LabelSmallText(
                         '${question.pointValue} ${question.pointValue == 1 ? 'point' : 'points'}',
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: Theme.of(context).colorScheme.onTertiaryContainer,
-                        ),
+                        fontWeight: FontWeight.w600,
+                        color:
+                            Theme.of(context).colorScheme.onTertiaryContainer,
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 16),
-                Text(
+                AppTextWidget(
                   question.questionText,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: Theme.of(context).colorScheme.onSurface,
-                    height: 1.4,
-                  ),
+                  style: Theme.of(context).textTheme.titleMedium,
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).colorScheme.onSurface,
+                  height: 1.4,
                 ),
                 if (question.hint != null) ...[
                   const SizedBox(height: 12),
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                      color: Theme.of(context)
+                          .colorScheme
+                          .surfaceContainerHighest
+                          .withValues(alpha: 0.5),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.outline.withValues(alpha: 0.3),
                       ),
                     ),
                     child: Row(
@@ -292,12 +312,14 @@ class _QuizPageState extends State<QuizPage> {
                         ),
                         const SizedBox(width: 8),
                         Expanded(
-                          child: Text(
+                          child: AppTextWidget(
                             'Hint: ${question.hint}',
                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
                               fontStyle: FontStyle.italic,
                             ),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withValues(alpha: 0.8),
                           ),
                         ),
                       ],
@@ -307,9 +329,9 @@ class _QuizPageState extends State<QuizPage> {
               ],
             ),
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Answer options
           _buildAnswerSection(question),
         ],
@@ -334,12 +356,10 @@ class _QuizPageState extends State<QuizPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        TitleMediumText(
           'Select the correct answer:',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
+          fontWeight: FontWeight.w600,
+          color: Theme.of(context).colorScheme.onSurface,
         ),
         const SizedBox(height: 16),
         ...question.answers.asMap().entries.map((entry) {
@@ -347,7 +367,7 @@ class _QuizPageState extends State<QuizPage> {
           final answer = entry.value;
           final isSelected = _selectedAnswers[question.id] == answer.id;
           final optionLetter = String.fromCharCode(65 + index); // A, B, C, D
-          
+
           return Container(
             margin: const EdgeInsets.only(bottom: 12),
             child: InkWell(
@@ -360,14 +380,19 @@ class _QuizPageState extends State<QuizPage> {
               child: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: isSelected
-                      ? Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.5)
-                      : Theme.of(context).colorScheme.surface,
+                  color:
+                      isSelected
+                          ? Theme.of(context).colorScheme.secondaryContainer
+                              .withValues(alpha: 0.5)
+                          : Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: isSelected
-                        ? Theme.of(context).colorScheme.secondary
-                        : Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
+                    color:
+                        isSelected
+                            ? Theme.of(context).colorScheme.secondary
+                            : Theme.of(
+                              context,
+                            ).colorScheme.outline.withValues(alpha: 0.3),
                     width: isSelected ? 2 : 1,
                   ),
                 ),
@@ -377,37 +402,37 @@ class _QuizPageState extends State<QuizPage> {
                       width: 32,
                       height: 32,
                       decoration: BoxDecoration(
-                        color: isSelected
-                            ? Theme.of(context).colorScheme.secondary
-                            : Colors.transparent,
+                        color:
+                            isSelected
+                                ? Theme.of(context).colorScheme.secondary
+                                : Colors.transparent,
                         border: Border.all(
-                          color: isSelected
-                              ? Theme.of(context).colorScheme.secondary
-                              : Theme.of(context).colorScheme.outline,
+                          color:
+                              isSelected
+                                  ? Theme.of(context).colorScheme.secondary
+                                  : Theme.of(context).colorScheme.outline,
                           width: 2,
                         ),
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Center(
-                        child: Text(
+                        child: TitleSmallText(
                           optionLetter,
-                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: isSelected
-                                ? Theme.of(context).colorScheme.onSecondary
-                                : Theme.of(context).colorScheme.onSurface,
-                          ),
+                          fontWeight: FontWeight.bold,
+                          color:
+                              isSelected
+                                  ? Theme.of(context).colorScheme.onSecondary
+                                  : Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
-                      child: Text(
+                      child: BodyMediumText(
                         answer.text,
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface,
-                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                        ),
+                        color: Theme.of(context).colorScheme.onSurface,
+                        fontWeight:
+                            isSelected ? FontWeight.w600 : FontWeight.normal,
                       ),
                     ),
                   ],
@@ -424,73 +449,83 @@ class _QuizPageState extends State<QuizPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        TitleMediumText(
           'Select True or False:',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
+          fontWeight: FontWeight.w600,
+          color: Theme.of(context).colorScheme.onSurface,
         ),
         const SizedBox(height: 16),
         Row(
-          children: question.answers.map((answer) {
-            final isSelected = _selectedAnswers[question.id] == answer.id;
-            final isTrue = answer.text.toLowerCase() == 'true';
-            
-            return Expanded(
-              child: Container(
-                margin: EdgeInsets.only(right: isTrue ? 8 : 0, left: isTrue ? 0 : 8),
-                child: InkWell(
-                  onTap: () {
-                    setState(() {
-                      _selectedAnswers[question.id] = answer.id;
-                    });
-                  },
-                  borderRadius: BorderRadius.circular(12),
+          children:
+              question.answers.map((answer) {
+                final isSelected = _selectedAnswers[question.id] == answer.id;
+                final isTrue = answer.text.toLowerCase() == 'true';
+
+                return Expanded(
                   child: Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? (isTrue 
-                              ? Colors.green.withValues(alpha: 0.1)
-                              : Colors.red.withValues(alpha: 0.1))
-                          : Theme.of(context).colorScheme.surface,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: isSelected
-                            ? (isTrue ? Colors.green : Colors.red)
-                            : Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
-                        width: isSelected ? 2 : 1,
-                      ),
+                    margin: EdgeInsets.only(
+                      right: isTrue ? 8 : 0,
+                      left: isTrue ? 0 : 8,
                     ),
-                    child: Center(
-                      child: Column(
-                        children: [
-                          Icon(
-                            isTrue ? Icons.check_circle : Icons.cancel,
-                            color: isSelected
-                                ? (isTrue ? Colors.green : Colors.red)
-                                : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                            size: 32,
+                    child: InkWell(
+                      onTap: () {
+                        setState(() {
+                          _selectedAnswers[question.id] = answer.id;
+                        });
+                      },
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color:
+                              isSelected
+                                  ? (isTrue
+                                      ? Colors.green.withValues(alpha: 0.1)
+                                      : Colors.red.withValues(alpha: 0.1))
+                                  : Theme.of(context).colorScheme.surface,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color:
+                                isSelected
+                                    ? (isTrue ? Colors.green : Colors.red)
+                                    : Theme.of(context).colorScheme.outline
+                                        .withValues(alpha: 0.3),
+                            width: isSelected ? 2 : 1,
                           ),
-                          const SizedBox(height: 8),
-                          Text(
-                            answer.text,
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                              color: isSelected
-                                  ? (isTrue ? Colors.green : Colors.red)
-                                  : Theme.of(context).colorScheme.onSurface,
-                            ),
+                        ),
+                        child: Center(
+                          child: Column(
+                            children: [
+                              Icon(
+                                isTrue ? Icons.check_circle : Icons.cancel,
+                                color:
+                                    isSelected
+                                        ? (isTrue ? Colors.green : Colors.red)
+                                        : Theme.of(context)
+                                            .colorScheme
+                                            .onSurface
+                                            .withValues(alpha: 0.6),
+                                size: 32,
+                              ),
+                              const SizedBox(height: 8),
+                              TitleMediumText(
+                                answer.text,
+                                fontWeight: FontWeight.w600,
+                                color:
+                                    isSelected
+                                        ? (isTrue ? Colors.green : Colors.red)
+                                        : Theme.of(
+                                          context,
+                                        ).colorScheme.onSurface,
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ),
-            );
-          }).toList(),
+                );
+              }).toList(),
         ),
       ],
     );
@@ -500,12 +535,10 @@ class _QuizPageState extends State<QuizPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        TitleMediumText(
           'Enter your answer:',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
+          fontWeight: FontWeight.w600,
+          color: Theme.of(context).colorScheme.onSurface,
         ),
         const SizedBox(height: 16),
         Column(
@@ -542,12 +575,10 @@ class _QuizPageState extends State<QuizPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        TitleMediumText(
           'Fill in the blank:',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
+          fontWeight: FontWeight.w600,
+          color: Theme.of(context).colorScheme.onSurface,
         ),
         const SizedBox(height: 16),
         Column(
@@ -581,8 +612,9 @@ class _QuizPageState extends State<QuizPage> {
 
   Widget _buildQuizNavigation() {
     final canGoBack = _currentQuestionIndex > 0;
-    final isLastQuestion = _currentQuestionIndex == _currentQuiz.questions.length - 1;
-    
+    final isLastQuestion =
+        _currentQuestionIndex == _currentQuiz.questions.length - 1;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -603,23 +635,24 @@ class _QuizPageState extends State<QuizPage> {
               child: ElevatedButton.icon(
                 onPressed: _goToPreviousQuestion,
                 icon: const Icon(Icons.arrow_back),
-                label: const Text('Previous'),
+                label: const LabelLargeText('Previous'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                  backgroundColor:
+                      Theme.of(context).colorScheme.surfaceContainerHighest,
                   foregroundColor: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             )
           else
             const Expanded(child: SizedBox()),
-            
+
           const SizedBox(width: 16),
-          
+
           Expanded(
             child: ElevatedButton.icon(
               onPressed: isLastQuestion ? _finishQuiz : _goToNextQuestion,
               icon: Icon(isLastQuestion ? Icons.check : Icons.arrow_forward),
-              label: Text(isLastQuestion ? 'Finish Quiz' : 'Next'),
+              label: LabelLargeText(isLastQuestion ? 'Finish Quiz' : 'Next'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.secondary,
                 foregroundColor: Theme.of(context).colorScheme.onSecondary,
@@ -634,7 +667,7 @@ class _QuizPageState extends State<QuizPage> {
   Widget _buildQuizResults() {
     final score = _currentQuiz.calculateScore();
     final summary = _currentQuiz.getPerformanceSummary();
-    
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -646,8 +679,12 @@ class _QuizPageState extends State<QuizPage> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.3),
-                  Theme.of(context).colorScheme.tertiaryContainer.withValues(alpha: 0.2),
+                  Theme.of(
+                    context,
+                  ).colorScheme.secondaryContainer.withValues(alpha: 0.3),
+                  Theme.of(
+                    context,
+                  ).colorScheme.tertiaryContainer.withValues(alpha: 0.2),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -657,45 +694,45 @@ class _QuizPageState extends State<QuizPage> {
             child: Column(
               children: [
                 Icon(
-                  score >= 80 ? Icons.celebration : score >= 60 ? Icons.thumb_up : Icons.refresh,
+                  score >= 80
+                      ? Icons.celebration
+                      : score >= 60
+                      ? Icons.thumb_up
+                      : Icons.refresh,
                   size: 64,
                   color: Theme.of(context).colorScheme.secondary,
                 ),
                 const SizedBox(height: 16),
-                Text(
+                HeadlineSmallText(
                   'Quiz Completed!',
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
                 const SizedBox(height: 8),
-                Text(
+                DisplayMediumText(
                   '${score.toStringAsFixed(1)}%',
-                  style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.secondary,
-                  ),
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.secondary,
                 ),
                 const SizedBox(height: 16),
-                Text(
+                BodyLargeText(
                   _getScoreMessage(score),
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
-                  ),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.8),
                   textAlign: TextAlign.center,
                 ),
               ],
             ),
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Performance breakdown
           _buildPerformanceBreakdown(summary),
-          
+
           const SizedBox(height: 24),
-          
+
           // Action buttons
           Row(
             children: [
@@ -703,9 +740,10 @@ class _QuizPageState extends State<QuizPage> {
                 child: ElevatedButton.icon(
                   onPressed: () => Navigator.of(context).pop(),
                   icon: const Icon(Icons.home),
-                  label: const Text('Back to Study'),
+                  label: const LabelLargeText('Back to Study'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    backgroundColor:
+                        Theme.of(context).colorScheme.surfaceContainerHighest,
                     foregroundColor: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
@@ -715,7 +753,7 @@ class _QuizPageState extends State<QuizPage> {
                 child: ElevatedButton.icon(
                   onPressed: _retakeQuiz,
                   icon: const Icon(Icons.refresh),
-                  label: const Text('Retake Quiz'),
+                  label: const LabelLargeText('Retake Quiz'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.secondary,
                     foregroundColor: Theme.of(context).colorScheme.onSecondary,
@@ -742,12 +780,10 @@ class _QuizPageState extends State<QuizPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          TitleMediumText(
             'Performance Breakdown',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
           const SizedBox(height: 16),
           Row(
@@ -772,16 +808,16 @@ class _QuizPageState extends State<QuizPage> {
               ),
             ],
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // View Detailed Review Button
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: () => _navigateToDetailedReview(),
               icon: const Icon(Icons.visibility),
-              label: const Text('View Detailed Review'),
+              label: const LabelLargeText('View Detailed Review'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.secondary,
                 foregroundColor: Theme.of(context).colorScheme.onSecondary,
@@ -806,24 +842,18 @@ class _QuizPageState extends State<QuizPage> {
     return Expanded(
       child: Column(
         children: [
-          Icon(
-            icon,
-            color: color,
-            size: 32,
-          ),
+          Icon(icon, color: color, size: 32),
           const SizedBox(height: 8),
-          Text(
+          TitleLargeText(
             value.toString(),
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
+            fontWeight: FontWeight.bold,
+            color: color,
           ),
-          Text(
+          LabelMediumText(
             label,
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-            ),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.7),
           ),
         ],
       ),
@@ -859,10 +889,10 @@ class _QuizPageState extends State<QuizPage> {
 
   void _finishQuiz() {
     _timer?.cancel();
-    
+
     // Process all answers
     final userAnswers = <UserQuizAnswer>[];
-    
+
     for (final question in _currentQuiz.questions) {
       final userAnswer = _quizService.submitAnswer(
         questionId: question.id,
@@ -872,19 +902,17 @@ class _QuizPageState extends State<QuizPage> {
       );
       userAnswers.add(userAnswer);
     }
-    
+
     // Update quiz with results
-    final quizWithAnswers = _currentQuiz.copyWith(
-      userAnswers: userAnswers,
-    );
-    
+    final quizWithAnswers = _currentQuiz.copyWith(userAnswers: userAnswers);
+
     final completedQuiz = quizWithAnswers.copyWith(
       status: QuizStatus.completed,
       lastScore: quizWithAnswers.calculateScore(),
       lastAttemptAt: DateTime.now(),
       attemptCount: _currentQuiz.attemptCount + 1,
     );
-    
+
     setState(() {
       _currentQuiz = completedQuiz;
       _isQuizCompleted = true;
@@ -906,13 +934,13 @@ class _QuizPageState extends State<QuizPage> {
       _textAnswers.clear();
       _isQuizCompleted = false;
     });
-    
+
     _pageController.animateToPage(
       0,
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
     );
-    
+
     _initializeQuiz();
   }
 
@@ -928,7 +956,6 @@ class _QuizPageState extends State<QuizPage> {
     }
     return _textControllers[questionId]!;
   }
-
 
   // Helper methods
   String _getQuestionTypeLabel(QuestionType type) {
@@ -966,33 +993,37 @@ class _QuizPageState extends State<QuizPage> {
 
   Future<bool> _showExitConfirmation() async {
     if (_isQuizCompleted) return true;
-    
+
     return await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Exit Quiz?'),
-        content: const Text(
-          'Are you sure you want to exit? Your progress will be lost.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Exit'),
-          ),
-        ],
-      ),
-    ) ?? false;
+          context: context,
+          builder:
+              (context) => AlertDialog(
+                title: const TitleMediumText('Exit Quiz?'),
+                content: const BodyMediumText(
+                  'Are you sure you want to exit? Your progress will be lost.',
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(false),
+                    child: const LabelLargeText('Cancel'),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(true),
+                    child: const LabelLargeText('Exit'),
+                  ),
+                ],
+              ),
+        ) ??
+        false;
   }
 
   Future<void> _saveQuizToHistory(Quiz quiz) async {
     try {
-      debugPrint('Saving quiz to history: ${quiz.id}, attemptCount: ${quiz.attemptCount}');
+      debugPrint(
+        'Saving quiz to history: ${quiz.id}, attemptCount: ${quiz.attemptCount}',
+      );
       debugPrint('Quiz status: ${quiz.status}, score: ${quiz.lastScore}');
-      
+
       if (quiz.attemptCount == 1) {
         // First attempt - save new quiz
         await _quizService.saveQuizToHistory(quiz);
@@ -1002,11 +1033,14 @@ class _QuizPageState extends State<QuizPage> {
         await _quizService.updateQuizInHistory(quiz);
         debugPrint('Quiz updated successfully');
       }
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Quiz results saved to history'),
+            content: BodyMediumText(
+              'Quiz results saved to history',
+              color: Theme.of(context).colorScheme.onSecondary,
+            ),
             backgroundColor: Theme.of(context).colorScheme.secondary,
             duration: const Duration(seconds: 2),
           ),
@@ -1017,7 +1051,7 @@ class _QuizPageState extends State<QuizPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to save quiz results: $e'),
+            content: BodyMediumText('Failed to save quiz results: $e'),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );

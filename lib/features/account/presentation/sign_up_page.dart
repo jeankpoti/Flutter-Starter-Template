@@ -4,11 +4,10 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:io' show Platform;
 
 import '../../../common_widgets/apple_signin_button_widget.dart';
-import '../../../common_widgets/body_medium_text_widget.dart';
 import '../../../common_widgets/google_signin_button_widget.dart';
 import '../../../common_widgets/loader_widget.dart';
 import '../../../common_widgets/text_form_field_widget.dart';
-import '../../../common_widgets/title_large_text_widget.dart';
+import '../../../common_widgets/text_widgets.dart';
 import '../../../constants/terms_conditions_widget.dart';
 import '../../../helpers/validator.dart';
 import '../../../utils/responsive.dart';
@@ -101,15 +100,14 @@ class _SignUpPageState extends State<SignUpPage> {
                         child: Center(
                           child: Column(
                             children: [
-                              const TitleLargeTextWidget(text: 'Sign Up'),
+                              const TitleLargeText('Sign Up'),
                               const SizedBox(height: 25),
-                              const BodyMediumTextWidget(
-                                text: 'Create an account',
+                              const BodyMediumText(
+                                'Create an account',
                               ),
                               const SizedBox(height: 5),
-                              const BodyMediumTextWidget(
-                                text:
-                                    'Enter your full name, email, and password',
+                              const BodyMediumText(
+                                'Enter your full name, email, and password',
                               ),
                               const SizedBox(height: 45),
                               Form(
@@ -212,8 +210,8 @@ class _SignUpPageState extends State<SignUpPage> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.center,
                                         children: [
-                                          const BodyMediumTextWidget(
-                                            text: 'Already have an account? ',
+                                          const BodyMediumText(
+                                            'Already have an account? ',
                                           ),
                                           TextButton(
                                             onPressed:
@@ -225,8 +223,8 @@ class _SignUpPageState extends State<SignUpPage> {
                                                             const SignInPage(),
                                                   ),
                                                 ),
-                                            child: const BodyMediumTextWidget(
-                                              text: 'Sign In ',
+                                            child: const BodyMediumText(
+                                              'Sign In ',
                                             ),
                                           ),
                                         ],
@@ -313,8 +311,8 @@ class _SignUpPageState extends State<SignUpPage> {
                               Wrap(
                                 alignment: WrapAlignment.center,
                                 children: [
-                                  const BodyMediumTextWidget(
-                                    text: 'By signing up, you agree to our ',
+                                  const BodyMediumText(
+                                    'By signing up, you agree to our ',
                                   ),
                                   GestureDetector(
                                     onTap:

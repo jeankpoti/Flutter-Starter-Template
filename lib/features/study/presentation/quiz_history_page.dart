@@ -2,6 +2,18 @@ import 'package:flutter/material.dart';
 import '../domain/models/quiz.dart';
 import '../data/services/quiz_service.dart';
 import 'quiz_review_page.dart';
+import '../../../common_widgets/text_widgets.dart';
+
+enum SortOption {
+  dateNewest,
+  dateOldest,
+  scoreHighest,
+  scoreLowest,
+  titleAZ,
+  titleZA,
+}
+
+enum FilterOption { all, completed, inProgress, easy, medium, hard }
 
 class QuizHistoryPage extends StatefulWidget {
   const QuizHistoryPage({super.key});
@@ -10,19 +22,32 @@ class QuizHistoryPage extends StatefulWidget {
   State<QuizHistoryPage> createState() => _QuizHistoryPageState();
 }
 
-class _QuizHistoryPageState extends State<QuizHistoryPage> with SingleTickerProviderStateMixin {
+class _QuizHistoryPageState extends State<QuizHistoryPage>
+    with SingleTickerProviderStateMixin {
   final QuizService _quizService = QuizService();
   late TabController _tabController;
-  
+  final TextEditingController _searchController = TextEditingController();
+
   List<Quiz> _quizHistory = [];
+  List<Quiz> _filteredQuizHistory = [];
   Map<String, dynamic> _statistics = {};
   List<Map<String, dynamic>> _performanceTrends = [];
   bool _isLoading = true;
+
+  SortOption _currentSort = SortOption.dateNewest;
+  FilterOption _currentFilter = FilterOption.all;
+  String _searchQuery = '';
+
+  // Spacing constants
+  static const double _spacing2 = 8.0;
+  static const double _spacing3 = 12.0;
+  static const double _spacing4 = 16.0;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _searchController.addListener(_onSearchChanged);
     _initializeAndLoadData();
   }
 
@@ -37,7 +62,9 @@ class _QuizHistoryPageState extends State<QuizHistoryPage> with SingleTickerProv
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error initializing quiz service: $e')),
+          SnackBar(
+            content: BodyMediumText('Error initializing quiz service: $e'),
+          ),
         );
       }
     }
@@ -46,7 +73,104 @@ class _QuizHistoryPageState extends State<QuizHistoryPage> with SingleTickerProv
   @override
   void dispose() {
     _tabController.dispose();
+    _searchController.dispose();
     super.dispose();
+  }
+
+  void _onSearchChanged() {
+    setState(() {
+      _searchQuery = _searchController.text;
+      _applyFiltersAndSort();
+    });
+  }
+
+  void _applyFiltersAndSort() {
+    List<Quiz> filtered = List.from(_quizHistory);
+
+    // Apply search filter
+    if (_searchQuery.isNotEmpty) {
+      filtered =
+          filtered.where((quiz) {
+            return quiz.title.toLowerCase().contains(
+                  _searchQuery.toLowerCase(),
+                ) ||
+                quiz.difficulty.name.toLowerCase().contains(
+                  _searchQuery.toLowerCase(),
+                );
+          }).toList();
+    }
+
+    // Apply filter
+    switch (_currentFilter) {
+      case FilterOption.completed:
+        filtered =
+            filtered
+                .where((quiz) => quiz.status == QuizStatus.completed)
+                .toList();
+        break;
+      case FilterOption.inProgress:
+        filtered =
+            filtered
+                .where((quiz) => quiz.status == QuizStatus.inProgress)
+                .toList();
+        break;
+      case FilterOption.easy:
+        filtered =
+            filtered
+                .where((quiz) => quiz.difficulty == QuizDifficulty.easy)
+                .toList();
+        break;
+      case FilterOption.medium:
+        filtered =
+            filtered
+                .where((quiz) => quiz.difficulty == QuizDifficulty.medium)
+                .toList();
+        break;
+      case FilterOption.hard:
+        filtered =
+            filtered
+                .where((quiz) => quiz.difficulty == QuizDifficulty.hard)
+                .toList();
+        break;
+      case FilterOption.all:
+        break;
+    }
+
+    // Apply sorting
+    switch (_currentSort) {
+      case SortOption.dateNewest:
+        filtered.sort(
+          (a, b) => (b.lastAttemptAt ?? b.createdAt).compareTo(
+            a.lastAttemptAt ?? a.createdAt,
+          ),
+        );
+        break;
+      case SortOption.dateOldest:
+        filtered.sort(
+          (a, b) => (a.lastAttemptAt ?? a.createdAt).compareTo(
+            b.lastAttemptAt ?? b.createdAt,
+          ),
+        );
+        break;
+      case SortOption.scoreHighest:
+        filtered.sort(
+          (a, b) => (b.lastScore ?? 0.0).compareTo(a.lastScore ?? 0.0),
+        );
+        break;
+      case SortOption.scoreLowest:
+        filtered.sort(
+          (a, b) => (a.lastScore ?? 0.0).compareTo(b.lastScore ?? 0.0),
+        );
+        break;
+      case SortOption.titleAZ:
+        filtered.sort((a, b) => a.title.compareTo(b.title));
+        break;
+      case SortOption.titleZA:
+        filtered.sort((a, b) => b.title.compareTo(a.title));
+        break;
+    }
+
+    _filteredQuizHistory = filtered;
   }
 
   Future<void> _loadQuizData() async {
@@ -56,7 +180,7 @@ class _QuizHistoryPageState extends State<QuizHistoryPage> with SingleTickerProv
 
     try {
       debugPrint('Loading quiz data...');
-      
+
       final futures = await Future.wait([
         _quizService.getQuizHistory(),
         _quizService.getQuizStatistics(),
@@ -66,26 +190,28 @@ class _QuizHistoryPageState extends State<QuizHistoryPage> with SingleTickerProv
       final quizHistory = futures[0] as List<Quiz>;
       final statistics = futures[1] as Map<String, dynamic>;
       final performanceTrends = futures[2] as List<Map<String, dynamic>>;
-      
+
       debugPrint('Loaded ${quizHistory.length} quizzes from history');
       debugPrint('Statistics: $statistics');
       debugPrint('Performance trends: ${performanceTrends.length} entries');
 
       setState(() {
         _quizHistory = quizHistory;
+        _filteredQuizHistory = quizHistory;
         _statistics = statistics;
         _performanceTrends = performanceTrends;
         _isLoading = false;
+        _applyFiltersAndSort();
       });
     } catch (e) {
       debugPrint('Error loading quiz data: $e');
       setState(() {
         _isLoading = false;
       });
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading quiz data: $e')),
+          SnackBar(content: BodyMediumText('Error loading quiz data: $e')),
         );
       }
     }
@@ -95,37 +221,184 @@ class _QuizHistoryPageState extends State<QuizHistoryPage> with SingleTickerProv
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Quiz History'),
+        title: TitleLargeText('Quiz History', fontWeight: FontWeight.bold),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: Icon(
+              Icons.refresh,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
             onPressed: _loadQuizData,
             tooltip: 'Refresh Data',
           ),
         ],
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(icon: Icon(Icons.history), text: 'History'),
-            Tab(icon: Icon(Icons.analytics), text: 'Statistics'),
-            Tab(icon: Icon(Icons.trending_up), text: 'Progress'),
-          ],
-        ),
-      ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : TabBarView(
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(48.0),
+          child: Container(
+            color: Theme.of(context).colorScheme.surface,
+            child: TabBar(
               controller: _tabController,
-              children: [
-                _buildHistoryTab(),
-                _buildStatisticsTab(),
-                _buildProgressTab(),
+              labelColor: Theme.of(context).colorScheme.primary,
+              unselectedLabelColor: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.6),
+              indicatorColor: Theme.of(context).colorScheme.primary,
+              indicatorWeight: 3.0,
+              tabs: const [
+                Tab(icon: Icon(Icons.history), text: 'History'),
+                Tab(icon: Icon(Icons.analytics), text: 'Statistics'),
+                Tab(icon: Icon(Icons.trending_up), text: 'Progress'),
               ],
             ),
+          ),
+        ),
+      ),
+      body:
+          _isLoading
+              ? Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(_spacing4),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      const SizedBox(height: _spacing4),
+                      BodyMediumText(
+                        'Loading quiz history...',
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.7),
+                      ),
+                      const SizedBox(height: 32),
+                      // Loading skeleton for quiz cards
+                      ...List.generate(
+                        3,
+                        (index) => Container(
+                          margin: const EdgeInsets.only(bottom: _spacing3),
+                          child: const LoadingTitleLargeText(width: 300),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      const LoadingBodyMediumText(width: 250, lines: 2),
+                    ],
+                  ),
+                ),
+              )
+              : TabBarView(
+                controller: _tabController,
+                children: [
+                  _buildHistoryTab(),
+                  _buildStatisticsTab(),
+                  _buildProgressTab(),
+                ],
+              ),
     );
   }
 
   Widget _buildHistoryTab() {
+    return Column(
+      children: [
+        // Search and Filter Section
+        Container(
+          padding: const EdgeInsets.all(_spacing4),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            border: Border(
+              bottom: BorderSide(
+                color: Theme.of(
+                  context,
+                ).colorScheme.outline.withValues(alpha: 0.2),
+              ),
+            ),
+          ),
+          child: Column(
+            children: [
+              // Search Bar
+              Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.secondaryContainer.withValues(alpha: 0.3),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: TextField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    hintText: 'Search quizzes...',
+                    hintStyle: TextStyle(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.6),
+                    ),
+                    prefixIcon: Icon(
+                      Icons.search,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.6),
+                    ),
+                    suffixIcon:
+                        _searchQuery.isNotEmpty
+                            ? IconButton(
+                              icon: Icon(
+                                Icons.clear,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withValues(alpha: 0.6),
+                              ),
+                              onPressed: () {
+                                _searchController.clear();
+                              },
+                            )
+                            : null,
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: _spacing4,
+                      vertical: _spacing3,
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: _spacing3),
+
+              // Filter and Sort Row
+              Row(
+                children: [
+                  Expanded(child: _buildFilterChip()),
+                  const SizedBox(width: _spacing2),
+                  Expanded(child: _buildSortChip()),
+                ],
+              ),
+
+              // Results count
+              if (_searchQuery.isNotEmpty || _currentFilter != FilterOption.all)
+                Padding(
+                  padding: const EdgeInsets.only(top: _spacing2),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: BodySmallText(
+                      '${_filteredQuizHistory.length} result${_filteredQuizHistory.length != 1 ? 's' : ''}',
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.6),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+
+        // Quiz List
+        Expanded(child: _buildQuizList()),
+      ],
+    );
+  }
+
+  Widget _buildQuizList() {
     if (_quizHistory.isEmpty) {
       return _buildEmptyState(
         icon: Icons.quiz,
@@ -134,158 +407,209 @@ class _QuizHistoryPageState extends State<QuizHistoryPage> with SingleTickerProv
       );
     }
 
+    if (_filteredQuizHistory.isEmpty) {
+      return _buildEmptyState(
+        icon: Icons.search_off,
+        title: 'No Results Found',
+        subtitle: 'Try adjusting your search or filter criteria.',
+      );
+    }
+
     return RefreshIndicator(
       onRefresh: _loadQuizData,
       child: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: _quizHistory.length,
+        padding: const EdgeInsets.all(_spacing4),
+        itemCount: _filteredQuizHistory.length,
         itemBuilder: (context, index) {
-          final quiz = _quizHistory[index];
-          return _buildQuizHistoryCard(quiz);
+          final quiz = _filteredQuizHistory[index];
+          return _buildQuizHistoryCard(quiz, index);
         },
       ),
     );
   }
 
-  Widget _buildQuizHistoryCard(Quiz quiz) {
+  Widget _buildQuizHistoryCard(Quiz quiz, int index) {
     final score = quiz.lastScore ?? 0.0;
     final completedAt = quiz.lastAttemptAt;
-    
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: InkWell(
-        onTap: () => _navigateToQuizReview(quiz),
-        borderRadius: BorderRadius.circular(8),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    quiz.title,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: _getScoreColor(score).withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text(
-                    '${score.toStringAsFixed(1)}%',
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: _getScoreColor(score),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Icon(
-                  Icons.arrow_forward_ios,
-                  size: 16,
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            
-            Row(
-              children: [
-                Icon(
-                  Icons.quiz,
-                  size: 16,
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  '${quiz.questions.length} questions',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Icon(
-                  Icons.signal_cellular_alt,
-                  size: 16,
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  quiz.difficulty.name.toUpperCase(),
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                  ),
-                ),
-                if (quiz.attemptCount > 1) ...[
-                  const SizedBox(width: 16),
-                  Icon(
-                    Icons.repeat,
-                    size: 16,
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    '${quiz.attemptCount} attempts',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                    ),
-                  ),
-                ],
-              ],
-            ),
-            
-            const SizedBox(height: 8),
-            
-            if (completedAt != null)
-              Text(
-                'Completed on ${_formatDate(completedAt)}',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
-                ),
-              ),
-            
-            const SizedBox(height: 12),
-            
-            // Performance summary
-            Row(
-              children: [
-                Expanded(
-                  child: _buildPerformanceChip(
-                    icon: Icons.check_circle,
-                    label: 'Correct',
-                    value: quiz.userAnswers.where((a) => a.isCorrect).length,
-                    color: Colors.green,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: _buildPerformanceChip(
-                    icon: Icons.cancel,
-                    label: 'Incorrect',
-                    value: quiz.userAnswers.where((a) => !a.isCorrect).length,
-                    color: Colors.red,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: _buildPerformanceChip(
-                    icon: Icons.help_outline,
-                    label: 'Unanswered',
-                    value: _calculateUnansweredCount(quiz),
-                    color: Colors.orange,
-                  ),
-                ),
-              ],
+
+    return TweenAnimationBuilder(
+      duration: Duration(
+        milliseconds: 300 + (index * 50),
+      ), // Staggered animation
+      tween: Tween<double>(begin: 0, end: 1),
+      builder: (context, double value, child) {
+        return Transform.translate(
+          offset: Offset(0, 20 * (1 - value)),
+          child: Opacity(opacity: value, child: child),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: _spacing3),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(
+                context,
+              ).colorScheme.shadow.withValues(alpha: 0.08),
+              offset: const Offset(0, 2),
+              blurRadius: 8,
+              spreadRadius: 0,
             ),
           ],
+          border: Border.all(
+            color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.1),
+          ),
         ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () => _navigateToQuizReview(quiz),
+            borderRadius: BorderRadius.circular(16),
+            child: Padding(
+              padding: const EdgeInsets.all(_spacing4),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TitleMediumText(
+                          quiz.title,
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: _getScoreColor(score).withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: LabelMediumText(
+                          '${score.toStringAsFixed(1)}%',
+                          fontWeight: FontWeight.w600,
+                          color: _getScoreColor(score),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        size: 16,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.4),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.quiz,
+                        size: 16,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.6),
+                      ),
+                      const SizedBox(width: 4),
+                      BodySmallText(
+                        '${quiz.questions.length} questions',
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.6),
+                      ),
+                      const SizedBox(width: 16),
+                      Icon(
+                        Icons.signal_cellular_alt,
+                        size: 16,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.6),
+                      ),
+                      const SizedBox(width: 4),
+                      BodySmallText(
+                        quiz.difficulty.name.toUpperCase(),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.6),
+                      ),
+                      if (quiz.attemptCount > 1) ...[
+                        const SizedBox(width: 16),
+                        Icon(
+                          Icons.repeat,
+                          size: 16,
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.6),
+                        ),
+                        const SizedBox(width: 4),
+                        BodySmallText(
+                          '${quiz.attemptCount} attempts',
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.onSurface.withValues(alpha: 0.6),
+                        ),
+                      ],
+                    ],
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  if (completedAt != null)
+                    BodySmallText(
+                      'Completed on ${_formatDate(completedAt)}',
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.5),
+                    ),
+
+                  const SizedBox(height: 12),
+
+                  // Performance summary
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildPerformanceChip(
+                          icon: Icons.check_circle,
+                          label: 'Correct',
+                          value:
+                              quiz.userAnswers.where((a) => a.isCorrect).length,
+                          color: Colors.green,
+                        ),
+                      ),
+                      const SizedBox(width: _spacing2),
+                      Expanded(
+                        child: _buildPerformanceChip(
+                          icon: Icons.cancel,
+                          label: 'Incorrect',
+                          value:
+                              quiz.userAnswers
+                                  .where((a) => !a.isCorrect)
+                                  .length,
+                          color: Theme.of(context).colorScheme.secondary,
+                        ),
+                      ),
+                      const SizedBox(width: _spacing2),
+                      Expanded(
+                        child: _buildPerformanceChip(
+                          icon: Icons.help_outline,
+                          label: 'Unanswered',
+                          value: _calculateUnansweredCount(quiz),
+                          color: Colors.orange,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -305,24 +629,18 @@ class _QuizHistoryPageState extends State<QuizHistoryPage> with SingleTickerProv
       ),
       child: Column(
         children: [
-          Icon(
-            icon,
-            color: color,
-            size: 16,
-          ),
+          Icon(icon, color: color, size: 16),
           const SizedBox(height: 4),
-          Text(
+          LabelMediumText(
             value.toString(),
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: color,
-            ),
+            fontWeight: FontWeight.bold,
+            color: color,
           ),
-          Text(
+          LabelSmallText(
             label,
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-            ),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.7),
           ),
         ],
       ),
@@ -341,8 +659,12 @@ class _QuizHistoryPageState extends State<QuizHistoryPage> with SingleTickerProv
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.3),
-                  Theme.of(context).colorScheme.tertiaryContainer.withValues(alpha: 0.2),
+                  Theme.of(
+                    context,
+                  ).colorScheme.secondaryContainer.withValues(alpha: 0.3),
+                  Theme.of(
+                    context,
+                  ).colorScheme.tertiaryContainer.withValues(alpha: 0.2),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -360,17 +682,15 @@ class _QuizHistoryPageState extends State<QuizHistoryPage> with SingleTickerProv
                       size: 24,
                     ),
                     const SizedBox(width: 12),
-                    Text(
+                    TitleLargeText(
                       'Quiz Statistics',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ],
                 ),
                 const SizedBox(height: 20),
-                
+
                 Row(
                   children: [
                     Expanded(
@@ -384,21 +704,23 @@ class _QuizHistoryPageState extends State<QuizHistoryPage> with SingleTickerProv
                     Expanded(
                       child: _buildStatCard(
                         title: 'Average Score',
-                        value: '${(_statistics['averageScore'] ?? 0.0).toStringAsFixed(1)}%',
+                        value:
+                            '${(_statistics['averageScore'] ?? 0.0).toStringAsFixed(1)}%',
                         icon: Icons.trending_up,
                       ),
                     ),
                   ],
                 ),
-                
+
                 const SizedBox(height: 12),
-                
+
                 Row(
                   children: [
                     Expanded(
                       child: _buildStatCard(
                         title: 'Best Score',
-                        value: '${(_statistics['bestScore'] ?? 0.0).toStringAsFixed(1)}%',
+                        value:
+                            '${(_statistics['bestScore'] ?? 0.0).toStringAsFixed(1)}%',
                         icon: Icons.emoji_events,
                       ),
                     ),
@@ -415,25 +737,24 @@ class _QuizHistoryPageState extends State<QuizHistoryPage> with SingleTickerProv
               ],
             ),
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Detailed statistics
-          Text(
+          TitleMediumText(
             'Detailed Statistics',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
           const SizedBox(height: 16),
-          
+
           Row(
             children: [
               Expanded(
                 child: _buildDetailedStatCard(
                   title: 'Questions Answered',
-                  value: _statistics['totalQuestionsAnswered']?.toString() ?? '0',
+                  value:
+                      _statistics['totalQuestionsAnswered']?.toString() ?? '0',
                   subtitle: 'Total questions attempted',
                   icon: Icons.help_outline,
                 ),
@@ -449,21 +770,19 @@ class _QuizHistoryPageState extends State<QuizHistoryPage> with SingleTickerProv
               ),
             ],
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Recent activity
-          if (_statistics['recentActivity'] != null && 
+          if (_statistics['recentActivity'] != null &&
               (_statistics['recentActivity'] as List).isNotEmpty) ...[
-            Text(
+            TitleMediumText(
               'Recent Activity',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
             const SizedBox(height: 16),
-            
+
             ...(_statistics['recentActivity'] as List<Map<String, dynamic>>)
                 .take(5)
                 .map((activity) => _buildRecentActivityCard(activity)),
@@ -489,24 +808,18 @@ class _QuizHistoryPageState extends State<QuizHistoryPage> with SingleTickerProv
       ),
       child: Column(
         children: [
-          Icon(
-            icon,
-            color: Theme.of(context).colorScheme.secondary,
-            size: 24,
-          ),
+          Icon(icon, color: Theme.of(context).colorScheme.secondary, size: 24),
           const SizedBox(height: 8),
-          Text(
+          TitleLargeText(
             value,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
-          Text(
+          BodySmallText(
             title,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-            ),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.7),
             textAlign: TextAlign.center,
           ),
         ],
@@ -541,30 +854,26 @@ class _QuizHistoryPageState extends State<QuizHistoryPage> with SingleTickerProv
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: Text(
+                child: TitleSmallText(
                   title,
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).colorScheme.onSurface,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
           ),
           const SizedBox(height: 8),
-          Text(
+          HeadlineSmallText(
             value,
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.secondary,
-            ),
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).colorScheme.secondary,
           ),
-          Text(
+          BodySmallText(
             subtitle,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-            ),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.6),
           ),
         ],
       ),
@@ -574,7 +883,7 @@ class _QuizHistoryPageState extends State<QuizHistoryPage> with SingleTickerProv
   Widget _buildRecentActivityCard(Map<String, dynamic> activity) {
     final score = activity['score'] as double?;
     final completedAt = activity['completedAt'] as String?;
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
@@ -590,7 +899,9 @@ class _QuizHistoryPageState extends State<QuizHistoryPage> with SingleTickerProv
           Container(
             padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.3),
+              color: Theme.of(
+                context,
+              ).colorScheme.secondaryContainer.withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(6),
             ),
             child: Icon(
@@ -604,30 +915,26 @@ class _QuizHistoryPageState extends State<QuizHistoryPage> with SingleTickerProv
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                BodyMediumText(
                   activity['title'] ?? 'Quiz',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
                 if (completedAt != null)
-                  Text(
+                  BodySmallText(
                     _formatDate(DateTime.parse(completedAt)),
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                    ),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
               ],
             ),
           ),
           if (score != null)
-            Text(
+            LabelMediumText(
               '${score.toStringAsFixed(1)}%',
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: _getScoreColor(score),
-              ),
+              fontWeight: FontWeight.w600,
+              color: _getScoreColor(score),
             ),
         ],
       ),
@@ -648,15 +955,13 @@ class _QuizHistoryPageState extends State<QuizHistoryPage> with SingleTickerProv
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          TitleMediumText(
             'Performance Trends (Last 30 Days)',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
           const SizedBox(height: 16),
-          
+
           // Simple progress chart representation
           Container(
             padding: const EdgeInsets.all(20),
@@ -664,7 +969,9 @@ class _QuizHistoryPageState extends State<QuizHistoryPage> with SingleTickerProv
               color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+                color: Theme.of(
+                  context,
+                ).colorScheme.outline.withValues(alpha: 0.2),
               ),
             ),
             child: Column(
@@ -672,23 +979,21 @@ class _QuizHistoryPageState extends State<QuizHistoryPage> with SingleTickerProv
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
+                    TitleSmallText(
                       'Average Score Trend',
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
-                    Text(
+                    BodySmallText(
                       '${_performanceTrends.length} days with activity',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                      ),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
                   ],
                 ),
                 const SizedBox(height: 20),
-                
+
                 // Simple bar chart representation
                 SizedBox(
                   height: 200,
@@ -698,8 +1003,9 @@ class _QuizHistoryPageState extends State<QuizHistoryPage> with SingleTickerProv
                     itemBuilder: (context, index) {
                       final trend = _performanceTrends[index];
                       final score = trend['averageScore'] as double;
-                      final height = (score / 100) * 150; // Scale to 150px max height
-                      
+                      final height =
+                          (score / 100) * 150; // Scale to 150px max height
+
                       return Container(
                         width: 30,
                         margin: const EdgeInsets.only(right: 8),
@@ -714,11 +1020,11 @@ class _QuizHistoryPageState extends State<QuizHistoryPage> with SingleTickerProv
                               ),
                             ),
                             const SizedBox(height: 8),
-                            Text(
+                            LabelSmallText(
                               '${score.toStringAsFixed(0)}%',
-                              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                              ),
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withValues(alpha: 0.6),
                             ),
                           ],
                         ),
@@ -729,19 +1035,17 @@ class _QuizHistoryPageState extends State<QuizHistoryPage> with SingleTickerProv
               ],
             ),
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Progress insights
-          Text(
+          TitleMediumText(
             'Progress Insights',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
           const SizedBox(height: 16),
-          
+
           if (_performanceTrends.isNotEmpty) ...[
             _buildInsightCard(
               icon: Icons.show_chart,
@@ -752,7 +1056,8 @@ class _QuizHistoryPageState extends State<QuizHistoryPage> with SingleTickerProv
             _buildInsightCard(
               icon: Icons.calendar_today,
               title: 'Activity Pattern',
-              description: 'You completed quizzes on ${_performanceTrends.length} different days this month.',
+              description:
+                  'You completed quizzes on ${_performanceTrends.length} different days this month.',
             ),
           ],
         ],
@@ -779,7 +1084,9 @@ class _QuizHistoryPageState extends State<QuizHistoryPage> with SingleTickerProv
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.3),
+              color: Theme.of(
+                context,
+              ).colorScheme.secondaryContainer.withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
@@ -793,19 +1100,17 @@ class _QuizHistoryPageState extends State<QuizHistoryPage> with SingleTickerProv
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                TitleSmallText(
                   title,
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
+                  fontWeight: FontWeight.w600,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
                 const SizedBox(height: 4),
-                Text(
+                BodySmallText(
                   description,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-                  ),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.7),
                 ),
               ],
             ),
@@ -829,22 +1134,24 @@ class _QuizHistoryPageState extends State<QuizHistoryPage> with SingleTickerProv
             Icon(
               icon,
               size: 64,
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.4),
             ),
             const SizedBox(height: 16),
-            Text(
+            TitleMediumText(
               title,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-              ),
+              fontWeight: FontWeight.w600,
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.6),
             ),
             const SizedBox(height: 8),
-            Text(
+            BodyMediumText(
               subtitle,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
-              ),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.5),
               textAlign: TextAlign.center,
             ),
           ],
@@ -855,25 +1162,29 @@ class _QuizHistoryPageState extends State<QuizHistoryPage> with SingleTickerProv
 
   // Helper methods
   Color _getScoreColor(double score) {
-    if (score >= 80) return Colors.green;
-    if (score >= 60) return Colors.orange;
-    return Colors.red;
+    if (score >= 80) return Theme.of(context).colorScheme.secondary;
+    if (score >= 60) return Theme.of(context).colorScheme.tertiary;
+    return Theme.of(context).colorScheme.error;
   }
 
   int _calculateUnansweredCount(Quiz quiz) {
     // Count questions that either have no answer entry or have null answers (skipped)
-    final answeredQuestionIds = quiz.userAnswers
-        .where((answer) => answer.selectedAnswerId != null || answer.textAnswer != null)
-        .map((answer) => answer.questionId)
-        .toSet();
-    
+    final answeredQuestionIds =
+        quiz.userAnswers
+            .where(
+              (answer) =>
+                  answer.selectedAnswerId != null || answer.textAnswer != null,
+            )
+            .map((answer) => answer.questionId)
+            .toSet();
+
     return quiz.questions.length - answeredQuestionIds.length;
   }
 
   String _formatDate(DateTime date) {
     final now = DateTime.now();
     final difference = now.difference(date).inDays;
-    
+
     if (difference == 0) {
       return 'Today';
     } else if (difference == 1) {
@@ -887,18 +1198,19 @@ class _QuizHistoryPageState extends State<QuizHistoryPage> with SingleTickerProv
 
   String _getPerformanceInsight() {
     if (_performanceTrends.isEmpty) return 'No recent activity';
-    
-    final recent = _performanceTrends.length > 5 
-        ? _performanceTrends.skip(_performanceTrends.length - 5).toList()
-        : _performanceTrends;
+
+    final recent =
+        _performanceTrends.length > 5
+            ? _performanceTrends.skip(_performanceTrends.length - 5).toList()
+            : _performanceTrends;
     final scores = recent.map((t) => t['averageScore'] as double).toList();
-    
+
     if (scores.length < 2) {
       return 'Take more quizzes to see performance trends.';
     }
-    
+
     final trend = scores.last - scores.first;
-    
+
     if (trend > 5) {
       return 'Great improvement! Your scores are trending upward.';
     } else if (trend < -5) {
@@ -908,11 +1220,289 @@ class _QuizHistoryPageState extends State<QuizHistoryPage> with SingleTickerProv
     }
   }
 
-  void _navigateToQuizReview(Quiz quiz) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => QuizReviewPage(quiz: quiz),
+  Widget _buildFilterChip() {
+    return InkWell(
+      onTap: _showFilterDialog,
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: _spacing3,
+          vertical: _spacing2,
+        ),
+        decoration: BoxDecoration(
+          color:
+              _currentFilter != FilterOption.all
+                  ? Theme.of(context).colorScheme.secondaryContainer
+                  : Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color:
+                _currentFilter != FilterOption.all
+                    ? Theme.of(context).colorScheme.secondary
+                    : Theme.of(
+                      context,
+                    ).colorScheme.outline.withValues(alpha: 0.3),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.filter_list,
+              size: 16,
+              color:
+                  _currentFilter != FilterOption.all
+                      ? Theme.of(context).colorScheme.secondary
+                      : Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.7),
+            ),
+            const SizedBox(width: 4),
+            LabelMediumText(
+              _getFilterLabel(_currentFilter),
+              color:
+                  _currentFilter != FilterOption.all
+                      ? Theme.of(context).colorScheme.onSecondary
+                      : Theme.of(
+                        context,
+                      ).colorScheme.onSecondary.withValues(alpha: 0.7),
+              fontWeight: FontWeight.w500,
+            ),
+          ],
+        ),
       ),
     );
+  }
+
+  Widget _buildSortChip() {
+    return InkWell(
+      onTap: _showSortDialog,
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: _spacing3,
+          vertical: _spacing2,
+        ),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.sort,
+              size: 16,
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.7),
+            ),
+            const SizedBox(width: 4),
+            LabelMediumText(
+              _getSortLabel(_currentSort),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.7),
+              fontWeight: FontWeight.w500,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _getFilterLabel(FilterOption filter) {
+    switch (filter) {
+      case FilterOption.all:
+        return 'All';
+      case FilterOption.completed:
+        return 'Completed';
+      case FilterOption.inProgress:
+        return 'In Progress';
+      case FilterOption.easy:
+        return 'Easy';
+      case FilterOption.medium:
+        return 'Medium';
+      case FilterOption.hard:
+        return 'Hard';
+    }
+  }
+
+  String _getSortLabel(SortOption sort) {
+    switch (sort) {
+      case SortOption.dateNewest:
+        return 'Newest';
+      case SortOption.dateOldest:
+        return 'Oldest';
+      case SortOption.scoreHighest:
+        return 'High Score';
+      case SortOption.scoreLowest:
+        return 'Low Score';
+      case SortOption.titleAZ:
+        return 'A-Z';
+      case SortOption.titleZA:
+        return 'Z-A';
+    }
+  }
+
+  void _showFilterDialog() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder:
+          (context) => Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Handle bar
+                Container(
+                  margin: const EdgeInsets.only(top: 12),
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.all(_spacing4),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TitleMediumText(
+                        'Filter Quizzes',
+                        fontWeight: FontWeight.bold,
+                      ),
+                      const SizedBox(height: _spacing4),
+
+                      ...FilterOption.values.map(
+                        (filter) => ListTile(
+                          leading: Radio<FilterOption>(
+                            value: filter,
+                            groupValue: _currentFilter,
+                            onChanged: (value) {
+                              setState(() {
+                                _currentFilter = value!;
+                                _applyFiltersAndSort();
+                              });
+                              Navigator.pop(context);
+                            },
+                            activeColor:
+                                Theme.of(context).colorScheme.secondary,
+                          ),
+                          title: BodyMediumText(_getFilterLabel(filter)),
+                          onTap: () {
+                            setState(() {
+                              _currentFilter = filter;
+                              _applyFiltersAndSort();
+                            });
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ),
+
+                      const SizedBox(height: _spacing2),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+    );
+  }
+
+  void _showSortDialog() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder:
+          (context) => Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Handle bar
+                Container(
+                  margin: const EdgeInsets.only(top: 12),
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.all(_spacing4),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TitleMediumText(
+                        'Sort Quizzes',
+                        fontWeight: FontWeight.bold,
+                      ),
+                      const SizedBox(height: _spacing4),
+
+                      ...SortOption.values.map(
+                        (sort) => ListTile(
+                          leading: Radio<SortOption>(
+                            value: sort,
+                            groupValue: _currentSort,
+                            onChanged: (value) {
+                              setState(() {
+                                _currentSort = value!;
+                                _applyFiltersAndSort();
+                              });
+                              Navigator.pop(context);
+                            },
+                            activeColor:
+                                Theme.of(context).colorScheme.secondary,
+                          ),
+                          title: BodyMediumText(_getSortLabel(sort)),
+                          onTap: () {
+                            setState(() {
+                              _currentSort = sort;
+                              _applyFiltersAndSort();
+                            });
+                            Navigator.pop(context);
+                          },
+                        ),
+                      ),
+
+                      const SizedBox(height: _spacing2),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+    );
+  }
+
+  void _navigateToQuizReview(Quiz quiz) {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (context) => QuizReviewPage(quiz: quiz)));
   }
 }

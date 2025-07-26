@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
 import '../../../common_widgets/app_bar_widget.dart';
-import '../../../common_widgets/body_medium_text_widget.dart';
+import '../../../common_widgets/text_widgets.dart';
 import '../../../common_widgets/loader_widget.dart';
 import 'firebase_collection_cubit.dart';
 import 'firebase_collection_state.dart';
@@ -107,7 +107,7 @@ class _CollectionsPageState extends State<CollectionsPage> {
                   ..hideCurrentSnackBar()
                   ..showSnackBar(
                     const SnackBar(
-                      content: Text('Could not load more problems.'),
+                      content: BodyMediumText('Could not load more problems.'),
                     ),
                   );
               }
@@ -124,14 +124,14 @@ class _CollectionsPageState extends State<CollectionsPage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const BodyMediumTextWidget(text: 'Something went wrong!'),
+                      const BodyMediumText('Something went wrong!'),
                       const SizedBox(height: 10),
                       ElevatedButton(
                         onPressed:
                             () => context
                                 .read<FirebaseCollectionCubit>()
                                 .getCollections(isRefresh: true),
-                        child: const Text('Try Again'),
+                        child: const LabelLargeText('Try Again'),
                       ),
                     ],
                   ),
@@ -144,14 +144,14 @@ class _CollectionsPageState extends State<CollectionsPage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text('Failed to load more problems'),
+                      const BodyMediumText('Failed to load more problems'),
                       ElevatedButton(
                         onPressed:
                             () =>
                                 context
                                     .read<FirebaseCollectionCubit>()
                                     .loadMoreCollections(),
-                        child: const Text('Retry'),
+                        child: const LabelLargeText('Retry'),
                       ),
                     ],
                   ),
@@ -172,8 +172,8 @@ class _CollectionsPageState extends State<CollectionsPage> {
                           minHeight: constraints.maxHeight,
                         ),
                         child: const Center(
-                          child: BodyMediumTextWidget(
-                            text: 'No solved problems yet! Solve your first math problem to see it here.',
+                          child: BodyMediumText(
+                            'No solved problems yet! Solve your first math problem to see it here.',
                           ),
                         ),
                       ),
@@ -201,13 +201,13 @@ class _CollectionsPageState extends State<CollectionsPage> {
                           : const SizedBox.shrink();
                     } else {
                       // Optionally show a "No more items" message
-                      return const Padding(
-                        padding: EdgeInsets.all(16.0),
+                      return Padding(
+                        padding: const EdgeInsets.all(16.0),
                         child: Center(
                           child: Text(
-                            'No more animals to load',
-                            style: TextStyle(
-                              color: Colors.grey,
+                            'No more problems to load',
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                               fontStyle: FontStyle.italic,
                             ),
                           ),

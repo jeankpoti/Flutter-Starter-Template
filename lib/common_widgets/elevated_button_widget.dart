@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'title_medium_text_widget.dart';
+import 'text_widgets.dart';
 
 class ElevatedButtonWidget extends StatelessWidget {
   final String text;
@@ -29,7 +29,10 @@ class ElevatedButtonWidget extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
           ),
         ),
-        child: TitleMediumTextWidget(text: text, color: Colors.white),
+        child: LabelLargeText(
+          text,
+          color: Theme.of(context).colorScheme.onSecondary,
+        ),
       ),
     );
   }

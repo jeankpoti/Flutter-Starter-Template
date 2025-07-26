@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../../common_widgets/math_symbols_widget.dart';
+import '../../../common_widgets/text_widgets.dart';
 import '../data/services/study_plan_service.dart';
 import '../data/services/quiz_service.dart';
 import '../data/repository/study_material_repository.dart';
@@ -38,7 +39,6 @@ class _StudyPageState extends State<StudyPage>
   static const double _spacing4 = 16.0;
   static const double _spacing6 = 24.0;
   static const double _spacing8 = 32.0;
-  static const double _spacing10 = 40.0;
 
   // Quiz button loading states
   bool _isQuickQuizLoading = false;
@@ -98,7 +98,7 @@ class _StudyPageState extends State<StudyPage>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error loading your study data: $e'),
+            content: BodyMediumText('Error loading your study data: $e'),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -117,11 +117,9 @@ class _StudyPageState extends State<StudyPage>
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
       appBar: AppBar(
-        title: Text(
+        title: HeadlineSmallText(
           'Study Materials',
-          style: Theme.of(
-            context,
-          ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w600),
+          fontWeight: FontWeight.w600,
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -248,27 +246,20 @@ class _StudyPageState extends State<StudyPage>
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: Text(
+                      child: HeadlineSmallText(
                         'Upload Your Study Material',
-                        style: Theme.of(
-                          context,
-                        ).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 12),
-                Text(
+                BodyMediumText(
                   'Upload textbook pages, class notes, homework, or any math material. Our AI will create a personalized study plan just for you!',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.onSurface.withValues(alpha: 0.8),
-                    height: 1.5,
-                  ),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.8),
                 ),
               ],
             ),
@@ -372,31 +363,27 @@ class _StudyPageState extends State<StudyPage>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    TitleMediumText(
                       title,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color:
-                            isDisabled
-                                ? Theme.of(
-                                  context,
-                                ).colorScheme.onSurface.withValues(alpha: 0.4)
-                                : Theme.of(context).colorScheme.onSurface,
-                      ),
+                      fontWeight: FontWeight.w600,
+                      color:
+                          isDisabled
+                              ? Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withValues(alpha: 0.4)
+                              : Theme.of(context).colorScheme.onSurface,
                     ),
                     const SizedBox(height: 4),
-                    Text(
+                    BodySmallText(
                       subtitle,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color:
-                            isDisabled
-                                ? Theme.of(
-                                  context,
-                                ).colorScheme.onSurface.withValues(alpha: 0.3)
-                                : Theme.of(
-                                  context,
-                                ).colorScheme.onSurface.withValues(alpha: 0.7),
-                      ),
+                      color:
+                          isDisabled
+                              ? Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withValues(alpha: 0.3)
+                              : Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
                   ],
                 ),
@@ -424,12 +411,10 @@ class _StudyPageState extends State<StudyPage>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        TitleMediumText(
           'Recent Uploads',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
+          fontWeight: FontWeight.bold,
+          color: Theme.of(context).colorScheme.onSurface,
         ),
         const SizedBox(height: 16),
 
@@ -452,22 +437,18 @@ class _StudyPageState extends State<StudyPage>
                   ).colorScheme.onSurface.withValues(alpha: 0.4),
                 ),
                 const SizedBox(height: 12),
-                Text(
+                BodyMediumText(
                   'No materials uploaded yet',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.onSurface.withValues(alpha: 0.6),
-                  ),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
                 const SizedBox(height: 8),
-                Text(
+                BodySmallText(
                   'Upload your first study material to get started!',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.onSurface.withValues(alpha: 0.5),
-                  ),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.5),
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -537,27 +518,19 @@ class _StudyPageState extends State<StudyPage>
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
+                              BodySmallText(
                                 material.title,
-                                style: Theme.of(
-                                  context,
-                                ).textTheme.bodySmall?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                  color:
-                                      Theme.of(context).colorScheme.onSurface,
-                                ),
+                                fontWeight: FontWeight.w600,
+                                color:
+                                    Theme.of(context).colorScheme.onSurface,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),
                               const SizedBox(height: 4),
-                              Text(
+                              LabelSmallText(
                                 '${material.extractedTopics.length} topics',
-                                style: Theme.of(
-                                  context,
-                                ).textTheme.labelSmall?.copyWith(
-                                  color: Theme.of(context).colorScheme.onSurface
-                                      .withValues(alpha: 0.6),
-                                ),
+                                color: Theme.of(context).colorScheme.onSurface
+                                    .withValues(alpha: 0.6),
                               ),
                             ],
                           ),
@@ -595,12 +568,10 @@ class _StudyPageState extends State<StudyPage>
             ],
 
             // Materials Section
-            Text(
+            HeadlineSmallText(
               'My Study Materials',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
             const SizedBox(height: 16),
 
@@ -624,23 +595,19 @@ class _StudyPageState extends State<StudyPage>
                       ).colorScheme.onSurface.withValues(alpha: 0.4),
                     ),
                     const SizedBox(height: 16),
-                    Text(
+                    TitleMediumText(
                       'No Study Materials',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.onSurface.withValues(alpha: 0.6),
-                      ),
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
                     const SizedBox(height: 8),
-                    Text(
+                    BodyMediumText(
                       'Upload your first material to see it here and start building your personalized study plan.',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.onSurface.withValues(alpha: 0.5),
-                      ),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.5),
                       textAlign: TextAlign.center,
                     ),
                   ],
@@ -666,12 +633,10 @@ class _StudyPageState extends State<StudyPage>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        HeadlineSmallText(
           'My Study Plans',
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
+          fontWeight: FontWeight.bold,
+          color: Theme.of(context).colorScheme.onSurface,
         ),
         const SizedBox(height: 16),
 
@@ -729,14 +694,10 @@ class _StudyPageState extends State<StudyPage>
                     ),
                     const SizedBox(width: 8),
                     Expanded(
-                      child: Text(
+                      child: TitleMediumText(
                         plan.title,
-                        style: Theme.of(
-                          context,
-                        ).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -758,7 +719,7 @@ class _StudyPageState extends State<StudyPage>
                           (context) => [
                             const PopupMenuItem(
                               value: 'delete',
-                              child: Text('Delete Plan'),
+                              child: LabelLargeText('Delete Plan'),
                             ),
                           ],
                     ),
@@ -766,13 +727,11 @@ class _StudyPageState extends State<StudyPage>
                 ),
                 const SizedBox(height: 6),
 
-                Text(
+                BodySmallText(
                   plan.description,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.onSurface.withValues(alpha: 0.7),
-                  ),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.7),
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -798,14 +757,10 @@ class _StudyPageState extends State<StudyPage>
                           ),
                         ),
                         const SizedBox(width: 8),
-                        Text(
+                        LabelSmallText(
                           '${plan.calculateProgress().toStringAsFixed(0)}%',
-                          style: Theme.of(
-                            context,
-                          ).textTheme.labelSmall?.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: Theme.of(context).colorScheme.secondary,
-                          ),
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).colorScheme.secondary,
                         ),
                         const SizedBox(width: 4),
                         Icon(
@@ -847,9 +802,8 @@ class _StudyPageState extends State<StudyPage>
                       child: TextButton.icon(
                         onPressed: () => _showStudyPlanTopics(plan),
                         icon: const Icon(Icons.list, size: 16),
-                        label: const Text(
+                        label: const LabelMediumText(
                           'View Topics',
-                          style: TextStyle(fontSize: 12),
                         ),
                         style: TextButton.styleFrom(
                           foregroundColor:
@@ -898,15 +852,13 @@ class _StudyPageState extends State<StudyPage>
                                       ),
                                     ),
                                     const SizedBox(width: 6),
-                                    const Text(
+                                    const LabelSmallText(
                                       'Loading...',
-                                      style: TextStyle(fontSize: 11),
                                     ),
                                   ],
                                 )
-                                : Text(
+                                : LabelMediumText(
                                   'Take Quiz',
-                                  style: TextStyle(fontSize: 12),
                                 ),
                       ),
                     ),
@@ -950,21 +902,17 @@ class _StudyPageState extends State<StudyPage>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    TitleMediumText(
                       'Processing Your Material',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                     const SizedBox(height: 4),
-                    Text(
+                    BodySmallText(
                       'AI is analyzing your content and creating a personalized study plan...',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.onSurface.withValues(alpha: 0.7),
-                      ),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
                   ],
                 ),
@@ -1033,21 +981,19 @@ class _StudyPageState extends State<StudyPage>
                         size: 16,
                         color: Theme.of(context).colorScheme.secondary,
                       )
-                      : Text(emoji, style: const TextStyle(fontSize: 14)),
+                      : LabelSmallText(emoji),
             ),
           ),
           const SizedBox(height: 4),
-          Text(
+          LabelSmallText(
             label,
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color:
-                  isCompleted
-                      ? Theme.of(context).colorScheme.secondary
-                      : Theme.of(
-                        context,
-                      ).colorScheme.onSurface.withValues(alpha: 0.6),
-              fontWeight: isCompleted ? FontWeight.w600 : FontWeight.normal,
-            ),
+            color:
+                isCompleted
+                    ? Theme.of(context).colorScheme.secondary
+                    : Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.6),
+            fontWeight: isCompleted ? FontWeight.w600 : FontWeight.normal,
           ),
         ],
       ),
@@ -1061,12 +1007,10 @@ class _StudyPageState extends State<StudyPage>
         Row(
           children: [
             Expanded(
-              child: Text(
+              child: HeadlineSmallText(
                 'Practice Quizzes',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             TextButton.icon(
@@ -1078,7 +1022,7 @@ class _StudyPageState extends State<StudyPage>
                 );
               },
               icon: const Icon(Icons.history),
-              label: const Text('History'),
+              label: const LabelLargeText('History'),
               style: TextButton.styleFrom(
                 foregroundColor: Theme.of(context).colorScheme.secondary,
               ),
@@ -1116,24 +1060,20 @@ class _StudyPageState extends State<StudyPage>
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: Text(
+                    child: TitleLargeText(
                       'Test Your Knowledge',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 12),
-              Text(
+              BodyMediumText(
                 'Generate AI-powered quizzes based on your study materials to test your understanding and identify areas for improvement.',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.onSurface.withValues(alpha: 0.8),
-                ),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.8),
               ),
               const SizedBox(height: 20),
 
@@ -1254,24 +1194,16 @@ class _StudyPageState extends State<StudyPage>
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            TitleMediumText(
                               title,
-                              style: Theme.of(
-                                context,
-                              ).textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.w600,
-                                color: Theme.of(context).colorScheme.onSurface,
-                              ),
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
-                            Text(
+                            BodySmallText(
                               subtitle,
-                              style: Theme.of(
+                              color: Theme.of(
                                 context,
-                              ).textTheme.bodySmall?.copyWith(
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSurface.withValues(alpha: 0.7),
-                              ),
+                              ).colorScheme.onSurface.withValues(alpha: 0.7),
                             ),
                           ],
                         ),
@@ -1304,22 +1236,18 @@ class _StudyPageState extends State<StudyPage>
                             size: 32,
                           ),
                       const SizedBox(height: 8),
-                      Text(
+                      TitleSmallText(
                         title,
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).colorScheme.onSurface,
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 4),
-                      Text(
+                      LabelSmallText(
                         subtitle,
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.onSurface.withValues(alpha: 0.7),
-                        ),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.7),
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -1341,12 +1269,10 @@ class _StudyPageState extends State<StudyPage>
         children: [
           Icon(icon, size: 16, color: Theme.of(context).colorScheme.secondary),
           const SizedBox(width: 6),
-          Text(
+          LabelSmallText(
             label,
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              fontWeight: FontWeight.w600,
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
+            fontWeight: FontWeight.w600,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ],
       ),
@@ -1391,20 +1317,16 @@ class _StudyPageState extends State<StudyPage>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    TitleMediumText(
                       'Generate Quiz with All Materials',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
-                    Text(
+                    BodySmallText(
                       '12 questions • 25 min • All study materials included',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.onSurface.withValues(alpha: 0.7),
-                      ),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
                   ],
                 ),
@@ -1460,20 +1382,16 @@ class _StudyPageState extends State<StudyPage>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    TitleMediumText(
                       material.title,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
-                    Text(
+                    BodySmallText(
                       material.difficultyLevel,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.onSurface.withValues(alpha: 0.6),
-                      ),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
                   ],
                 ),
@@ -1500,12 +1418,10 @@ class _StudyPageState extends State<StudyPage>
 
           if (material.extractedTopics.isNotEmpty) ...[
             const SizedBox(height: 12),
-            Text(
+            LabelMediumText(
               'Topics Found:',
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
+              fontWeight: FontWeight.w600,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
             const SizedBox(height: 6),
             Wrap(
@@ -1524,14 +1440,12 @@ class _StudyPageState extends State<StudyPage>
                         ).colorScheme.secondaryContainer.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Text(
+                      child: LabelSmallText(
                         topic,
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color:
-                              Theme.of(
-                                context,
-                              ).colorScheme.onSecondaryContainer,
-                        ),
+                        color:
+                            Theme.of(
+                              context,
+                            ).colorScheme.onSecondaryContainer,
                       ),
                     );
                   }).toList(),
@@ -1539,13 +1453,11 @@ class _StudyPageState extends State<StudyPage>
             if (material.extractedTopics.length > 3)
               Padding(
                 padding: const EdgeInsets.only(top: 6),
-                child: Text(
+                child: LabelSmallText(
                   '+${material.extractedTopics.length - 3} more topics',
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.onSurface.withValues(alpha: 0.6),
-                  ),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
               ),
           ],
@@ -1579,7 +1491,7 @@ class _StudyPageState extends State<StudyPage>
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text(
+              content: const BodyMediumText(
                 '📷 Material captured! Starting AI analysis...',
               ),
               backgroundColor: Theme.of(context).colorScheme.secondary,
@@ -1594,7 +1506,7 @@ class _StudyPageState extends State<StudyPage>
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Error capturing photo: $e')));
+        ).showSnackBar(SnackBar(content: BodyMediumText('Error capturing photo: $e')));
       }
     }
   }
@@ -1620,7 +1532,7 @@ class _StudyPageState extends State<StudyPage>
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(
+              content: BodyMediumText(
                 '📱 ${images.length} material(s) uploaded! Starting AI analysis...',
               ),
               backgroundColor: Theme.of(context).colorScheme.secondary,
@@ -1637,7 +1549,7 @@ class _StudyPageState extends State<StudyPage>
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error uploading from gallery: $e')),
+          SnackBar(content: BodyMediumText('Error uploading from gallery: $e')),
         );
       }
     }
@@ -1700,7 +1612,7 @@ class _StudyPageState extends State<StudyPage>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text(
+            content: const BodyMediumText(
               '✅ Material analyzed successfully! Study plan created!',
             ),
             backgroundColor: Colors.green,
@@ -1718,7 +1630,7 @@ class _StudyPageState extends State<StudyPage>
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error processing material: $e')),
+          SnackBar(content: BodyMediumText('Error processing material: $e')),
         );
       }
     }
@@ -1729,21 +1641,21 @@ class _StudyPageState extends State<StudyPage>
       context: context,
       builder:
           (ctx) => AlertDialog(
-            title: Text('$permissionType Permission Required'),
-            content: Text(
+            title: TitleLargeText('$permissionType Permission Required'),
+            content: BodyMediumText(
               'Please enable $permissionType access in your device settings to upload study materials.',
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(ctx).pop(),
-                child: const Text('Cancel'),
+                child: const LabelLargeText('Cancel'),
               ),
               TextButton(
                 onPressed: () {
                   Navigator.of(ctx).pop();
                   openAppSettings();
                 },
-                child: const Text('Open Settings'),
+                child: const LabelLargeText('Open Settings'),
               ),
             ],
           ),
@@ -1754,7 +1666,7 @@ class _StudyPageState extends State<StudyPage>
     final TextEditingController textController = TextEditingController();
 
     return AlertDialog(
-      title: const Text('Add Study Material'),
+      title: const TitleLargeText('Add Study Material'),
       content: SizedBox(
         width: double.maxFinite,
         height: 500, // Fixed height to prevent overflow
@@ -1762,9 +1674,8 @@ class _StudyPageState extends State<StudyPage>
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
+              BodyMediumText(
                 'Enter your study material text:',
-                style: Theme.of(context).textTheme.bodyMedium,
               ),
               const SizedBox(height: 16),
               TextField(
@@ -1789,7 +1700,7 @@ class _StudyPageState extends State<StudyPage>
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: const LabelLargeText('Cancel'),
         ),
         ElevatedButton(
           onPressed: () async {
@@ -1803,11 +1714,9 @@ class _StudyPageState extends State<StudyPage>
           style: ElevatedButton.styleFrom(
             backgroundColor: Theme.of(context).colorScheme.secondary,
           ),
-          child: Text(
+          child: LabelLargeText(
             'Add Material',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSecondary,
-            ),
+            color: Theme.of(context).colorScheme.onSecondary,
           ),
         ),
       ],
@@ -1818,7 +1727,7 @@ class _StudyPageState extends State<StudyPage>
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Processing text material...'),
+          content: BodyMediumText('Processing text material...'),
           backgroundColor: Theme.of(context).colorScheme.secondary,
         ),
       );
@@ -1855,7 +1764,7 @@ class _StudyPageState extends State<StudyPage>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Study plan "${studyPlan.title}" created!'),
+            content: BodyMediumText('Study plan "${studyPlan.title}" created!'),
             backgroundColor: Theme.of(context).colorScheme.secondary,
           ),
         );
@@ -1867,7 +1776,7 @@ class _StudyPageState extends State<StudyPage>
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error generating study plan: $e')),
+          SnackBar(content: BodyMediumText('Error generating study plan: $e')),
         );
       }
     }
@@ -1920,7 +1829,7 @@ class _StudyPageState extends State<StudyPage>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text(
+            content: BodyMediumText(
               'No study materials or plans available for quiz generation',
             ),
           ),
@@ -1937,7 +1846,7 @@ class _StudyPageState extends State<StudyPage>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Generating quiz with $questionCount questions...'),
+            content: BodyMediumText('Generating quiz with $questionCount questions...'),
             backgroundColor: Theme.of(context).colorScheme.secondary,
           ),
         );
@@ -1983,7 +1892,7 @@ class _StudyPageState extends State<StudyPage>
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Error generating quiz: $e')));
+        ).showSnackBar(SnackBar(content: BodyMediumText('Error generating quiz: $e')));
       }
     }
   }
@@ -2008,7 +1917,7 @@ class _StudyPageState extends State<StudyPage>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text(
+            content: const BodyMediumText(
               'No study materials available to generate quiz from',
             ),
             backgroundColor: Theme.of(context).colorScheme.error,
@@ -2026,7 +1935,7 @@ class _StudyPageState extends State<StudyPage>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text(
+            content: const BodyMediumText(
               'Generating comprehensive quiz from all your study materials...',
             ),
             backgroundColor: Theme.of(context).colorScheme.secondary,
@@ -2061,7 +1970,7 @@ class _StudyPageState extends State<StudyPage>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error generating comprehensive quiz: $e'),
+            content: BodyMediumText('Error generating comprehensive quiz: $e'),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -2075,24 +1984,20 @@ class _StudyPageState extends State<StudyPage>
       context: context,
       builder:
           (context) => AlertDialog(
-            title: Text(
+            title: TitleLargeText(
               'Select Study Plan',
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+              fontWeight: FontWeight.bold,
             ),
             content: SizedBox(
               width: double.maxFinite,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
+                  BodyMediumText(
                     'Choose which study plan to generate the quiz from:',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.onSurface.withValues(alpha: 0.7),
-                    ),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.7),
                   ),
                   const SizedBox(height: 16),
                   Flexible(
@@ -2119,17 +2024,15 @@ class _StudyPageState extends State<StudyPage>
                                 size: 20,
                               ),
                             ),
-                            title: Text(
+                            title: TitleMediumText(
                               plan.title,
-                              style: Theme.of(context).textTheme.titleMedium
-                                  ?.copyWith(fontWeight: FontWeight.w600),
+                              fontWeight: FontWeight.w600,
                             ),
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
+                                BodySmallText(
                                   '${plan.topics.length} topics • ${plan.calculateProgress().toStringAsFixed(0)}% complete',
-                                  style: Theme.of(context).textTheme.bodySmall,
                                 ),
                                 const SizedBox(height: 4),
                                 LinearProgressIndicator(
@@ -2161,13 +2064,11 @@ class _StudyPageState extends State<StudyPage>
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: Text(
+                child: LabelLargeText(
                   'Cancel',
-                  style: TextStyle(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.onSurface.withValues(alpha: 0.7),
-                  ),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.7),
                 ),
               ),
             ],
@@ -2190,7 +2091,7 @@ class _StudyPageState extends State<StudyPage>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
+            content: BodyMediumText(
               'Generating quiz from "${plan.title}" with $questionCount questions...',
             ),
             backgroundColor: Theme.of(context).colorScheme.secondary,
@@ -2225,7 +2126,7 @@ class _StudyPageState extends State<StudyPage>
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Error generating quiz: $e')));
+        ).showSnackBar(SnackBar(content: BodyMediumText('Error generating quiz: $e')));
       }
     }
   }
@@ -2244,7 +2145,7 @@ class _StudyPageState extends State<StudyPage>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Study plan deleted'),
+            content: const BodyMediumText('Study plan deleted'),
             backgroundColor: Theme.of(context).colorScheme.secondary,
           ),
         );
@@ -2254,7 +2155,7 @@ class _StudyPageState extends State<StudyPage>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error deleting study plan: $e'),
+            content: BodyMediumText('Error deleting study plan: $e'),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -2290,7 +2191,7 @@ class _StudyPageState extends State<StudyPage>
                   ),
                 ),
                 const SizedBox(width: 12),
-                const Text('Generating quiz...'),
+                const BodyMediumText('Generating quiz...'),
               ],
             ),
             backgroundColor: Theme.of(context).colorScheme.secondary,
@@ -2332,7 +2233,7 @@ class _StudyPageState extends State<StudyPage>
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error generating quiz: $e'),
+            content: BodyMediumText('Error generating quiz: $e'),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -2365,7 +2266,7 @@ class _StudyPageState extends State<StudyPage>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Progress updated: ${progress.toStringAsFixed(0)}%'),
+            content: BodyMediumText('Progress updated: ${progress.toStringAsFixed(0)}%'),
             backgroundColor: Theme.of(context).colorScheme.secondary,
             duration: const Duration(seconds: 1),
           ),
@@ -2376,7 +2277,7 @@ class _StudyPageState extends State<StudyPage>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error updating progress: $e'),
+            content: BodyMediumText('Error updating progress: $e'),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -2411,7 +2312,7 @@ class _StudyPageState extends State<StudyPage>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('✅ Topic marked as complete!'),
+            content: const BodyMediumText('✅ Topic marked as complete!'),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 1),
           ),
@@ -2439,7 +2340,7 @@ class _StudyPageState extends State<StudyPage>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('📚 Topic started!'),
+            content: const BodyMediumText('📚 Topic started!'),
             backgroundColor: Theme.of(context).colorScheme.secondary,
             duration: const Duration(seconds: 1),
           ),
@@ -2496,10 +2397,9 @@ class _StudyPageState extends State<StudyPage>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      HeadlineSmallText(
                         currentPlan.title,
-                        style: Theme.of(context).textTheme.headlineSmall
-                            ?.copyWith(fontWeight: FontWeight.bold),
+                        fontWeight: FontWeight.bold,
                       ),
                       const SizedBox(height: 8),
 
@@ -2518,14 +2418,10 @@ class _StudyPageState extends State<StudyPage>
                             ),
                           ),
                           const SizedBox(width: 12),
-                          Text(
+                          LabelMediumText(
                             '${currentPlan.calculateProgress().toStringAsFixed(0)}% Complete',
-                            style: Theme.of(
-                              context,
-                            ).textTheme.labelMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.secondary,
-                            ),
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.secondary,
                           ),
                         ],
                       ),
@@ -2596,21 +2492,17 @@ class _StudyPageState extends State<StudyPage>
       children: [
         Icon(icon, size: 16, color: Theme.of(context).colorScheme.secondary),
         const SizedBox(width: 4),
-        Text(
+        LabelMediumText(
           value,
-          style: Theme.of(context).textTheme.labelMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
+          fontWeight: FontWeight.bold,
+          color: Theme.of(context).colorScheme.onSurface,
         ),
         const SizedBox(width: 2),
-        Text(
+        LabelSmallText(
           label,
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color: Theme.of(
-              context,
-            ).colorScheme.onSurface.withValues(alpha: 0.7),
-          ),
+          color: Theme.of(
+            context,
+          ).colorScheme.onSurface.withValues(alpha: 0.7),
         ),
       ],
     );
@@ -2661,22 +2553,18 @@ class _StudyPageState extends State<StudyPage>
 
                   // Topic title
                   Expanded(
-                    child: Text(
+                    child: TitleMediumText(
                       topic.title,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
 
                   // Progress percentage
-                  Text(
+                  LabelMediumText(
                     '${topic.progressPercentage.toStringAsFixed(0)}%',
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: _getTopicStatusColor(topic.status),
-                    ),
+                    fontWeight: FontWeight.bold,
+                    color: _getTopicStatusColor(topic.status),
                   ),
 
                   const SizedBox(width: 8),
@@ -2706,13 +2594,11 @@ class _StudyPageState extends State<StudyPage>
               const SizedBox(height: 8),
 
               // Topic description and metadata
-              Text(
+              BodySmallText(
                 topic.description,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.onSurface.withValues(alpha: 0.7),
-                ),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.7),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -2730,13 +2616,11 @@ class _StudyPageState extends State<StudyPage>
                     ).colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                   const SizedBox(width: 4),
-                  Text(
+                  LabelSmallText(
                     '${topic.estimatedMinutes} min',
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.onSurface.withValues(alpha: 0.6),
-                    ),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
 
                   const SizedBox(width: 16),
@@ -2749,13 +2633,11 @@ class _StudyPageState extends State<StudyPage>
                     ).colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                   const SizedBox(width: 4),
-                  Text(
+                  LabelSmallText(
                     '${topic.keyConceptsList.length} concepts',
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.onSurface.withValues(alpha: 0.6),
-                    ),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
 
                   const Spacer(),
@@ -2779,14 +2661,10 @@ class _StudyPageState extends State<StudyPage>
                             ).colorScheme.secondary.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: Text(
+                          child: LabelSmallText(
                             'Start',
-                            style: Theme.of(
-                              context,
-                            ).textTheme.labelSmall?.copyWith(
-                              color: Theme.of(context).colorScheme.secondary,
-                              fontWeight: FontWeight.w600,
-                            ),
+                            color: Theme.of(context).colorScheme.secondary,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
@@ -2805,14 +2683,10 @@ class _StudyPageState extends State<StudyPage>
                           color: Colors.green.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: Text(
+                        child: LabelSmallText(
                           'Complete',
-                          style: Theme.of(
-                            context,
-                          ).textTheme.labelSmall?.copyWith(
-                            color: Colors.green,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          color: Colors.green,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
@@ -2831,14 +2705,10 @@ class _StudyPageState extends State<StudyPage>
                         children: [
                           Icon(Icons.check, size: 12, color: Colors.green),
                           const SizedBox(width: 4),
-                          Text(
+                          LabelSmallText(
                             'Done',
-                            style: Theme.of(
-                              context,
-                            ).textTheme.labelSmall?.copyWith(
-                              color: Colors.green,
-                              fontWeight: FontWeight.w600,
-                            ),
+                            color: Colors.green,
+                            fontWeight: FontWeight.w600,
                           ),
                         ],
                       ),
@@ -2932,14 +2802,10 @@ class _StudyPageState extends State<StudyPage>
                           ),
                           const SizedBox(width: 12),
                           Expanded(
-                            child: Text(
+                            child: HeadlineSmallText(
                               currentTopic.title,
-                              style: Theme.of(
-                                context,
-                              ).textTheme.headlineSmall?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context).colorScheme.onSurface,
-                              ),
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
                           IconButton(
@@ -2971,14 +2837,10 @@ class _StudyPageState extends State<StudyPage>
                             ),
                           ),
                           const SizedBox(width: 12),
-                          Text(
+                          LabelLargeText(
                             '${currentTopic.progressPercentage.toStringAsFixed(0)}% Complete',
-                            style: Theme.of(
-                              context,
-                            ).textTheme.labelLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: _getTopicStatusColor(currentTopic.status),
-                            ),
+                            fontWeight: FontWeight.bold,
+                            color: _getTopicStatusColor(currentTopic.status),
                           ),
                         ],
                       ),
@@ -3021,14 +2883,9 @@ class _StudyPageState extends State<StudyPage>
                         _buildTopicSection(
                           'Description',
                           Icons.description,
-                          child: Text(
+                          child: BodyLargeText(
                             currentTopic.description,
-                            style: Theme.of(
-                              context,
-                            ).textTheme.bodyLarge?.copyWith(
-                              height: 1.6,
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
 
@@ -3065,17 +2922,13 @@ class _StudyPageState extends State<StudyPage>
                                                   .withValues(alpha: 0.2),
                                             ),
                                           ),
-                                          child: Text(
+                                          child: BodyMediumText(
                                             concept,
-                                            style: Theme.of(
-                                              context,
-                                            ).textTheme.bodyMedium?.copyWith(
-                                              color:
-                                                  Theme.of(context)
-                                                      .colorScheme
-                                                      .onSecondaryContainer,
-                                              fontWeight: FontWeight.w500,
-                                            ),
+                                            color:
+                                                Theme.of(context)
+                                                    .colorScheme
+                                                    .onSecondaryContainer,
+                                            fontWeight: FontWeight.w500,
                                           ),
                                         ),
                                       )
@@ -3105,15 +2958,10 @@ class _StudyPageState extends State<StudyPage>
                                   ).colorScheme.primary.withValues(alpha: 0.2),
                                 ),
                               ),
-                              child: Text(
+                              child: BodyMediumText(
                                 currentTopic.aiExplanation!,
-                                style: Theme.of(
-                                  context,
-                                ).textTheme.bodyMedium?.copyWith(
-                                  height: 1.6,
-                                  color:
-                                      Theme.of(context).colorScheme.onSurface,
-                                ),
+                                color:
+                                    Theme.of(context).colorScheme.onSurface,
                               ),
                             ),
                           ),
@@ -3169,30 +3017,21 @@ class _StudyPageState extends State<StudyPage>
                                                       BorderRadius.circular(12),
                                                 ),
                                                 child: Center(
-                                                  child: Text(
+                                                  child: LabelSmallText(
                                                     '${index + 1}',
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .labelSmall
-                                                        ?.copyWith(
-                                                          color:
-                                                              Theme.of(context)
-                                                                  .colorScheme
-                                                                  .onSecondary,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                        ),
+                                                    color:
+                                                        Theme.of(context)
+                                                            .colorScheme
+                                                            .onSecondary,
+                                                    fontWeight:
+                                                        FontWeight.bold,
                                                   ),
                                                 ),
                                               ),
                                               const SizedBox(width: 12),
                                               Expanded(
-                                                child: Text(
+                                                child: BodyMediumText(
                                                   problem,
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .bodyMedium
-                                                      ?.copyWith(height: 1.5),
                                                 ),
                                               ),
                                             ],
@@ -3213,17 +3052,12 @@ class _StudyPageState extends State<StudyPage>
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
+                                BodyMediumText(
                                   'Complete these topics first:',
-                                  style: Theme.of(
-                                    context,
-                                  ).textTheme.bodyMedium?.copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurface
-                                        .withValues(alpha: 0.7),
-                                    fontStyle: FontStyle.italic,
-                                  ),
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurface
+                                      .withValues(alpha: 0.7),
                                 ),
                                 const SizedBox(height: 8),
                                 ...currentTopic.prerequisites.map((prereqId) {
@@ -3251,13 +3085,9 @@ class _StudyPageState extends State<StudyPage>
                                         ),
                                         const SizedBox(width: 8),
                                         Expanded(
-                                          child: Text(
+                                          child: BodySmallText(
                                             prereqTopic?.title ??
                                                 'Unknown Topic',
-                                            style:
-                                                Theme.of(
-                                                  context,
-                                                ).textTheme.bodySmall,
                                           ),
                                         ),
                                       ],
@@ -3294,23 +3124,15 @@ class _StudyPageState extends State<StudyPage>
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
+                                      TitleMediumText(
                                         'Topic Completed!',
-                                        style: Theme.of(
-                                          context,
-                                        ).textTheme.titleMedium?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.green,
-                                        ),
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.green,
                                       ),
-                                      Text(
+                                      BodySmallText(
                                         'Completed on ${_formatDate(currentTopic.completedAt!)}',
-                                        style: Theme.of(
-                                          context,
-                                        ).textTheme.bodySmall?.copyWith(
-                                          color: Colors.green.withValues(
-                                            alpha: 0.8,
-                                          ),
+                                        color: Colors.green.withValues(
+                                          alpha: 0.8,
                                         ),
                                       ),
                                     ],
@@ -3352,7 +3174,7 @@ class _StudyPageState extends State<StudyPage>
                                   ? Icons.play_arrow
                                   : Icons.play_circle,
                             ),
-                            label: Text(
+                            label: LabelLargeText(
                               currentTopic.status == StudyTopicStatus.notStarted
                                   ? 'Start Topic'
                                   : 'Continue',
@@ -3378,7 +3200,7 @@ class _StudyPageState extends State<StudyPage>
                               onUpdate?.call(); // Refresh parent sheet
                             },
                             icon: const Icon(Icons.check_circle),
-                            label: const Text('Mark Complete'),
+                            label: const LabelLargeText('Mark Complete'),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.green,
                               foregroundColor: Colors.white,
@@ -3399,7 +3221,7 @@ class _StudyPageState extends State<StudyPage>
                               onUpdate?.call(); // Refresh parent sheet
                             },
                             icon: const Icon(Icons.refresh),
-                            label: const Text('Mark Incomplete'),
+                            label: const LabelLargeText('Mark Incomplete'),
                             style: ElevatedButton.styleFrom(
                               backgroundColor:
                                   Theme.of(context).colorScheme.error,
@@ -3431,14 +3253,12 @@ class _StudyPageState extends State<StudyPage>
           color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
         ),
         const SizedBox(width: 4),
-        Text(
+        BodySmallText(
           text,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Theme.of(
-              context,
-            ).colorScheme.onSurface.withValues(alpha: 0.6),
-            fontWeight: FontWeight.w500,
-          ),
+          color: Theme.of(
+            context,
+          ).colorScheme.onSurface.withValues(alpha: 0.6),
+          fontWeight: FontWeight.w500,
         ),
       ],
     );
@@ -3469,12 +3289,10 @@ class _StudyPageState extends State<StudyPage>
               ),
             ),
             const SizedBox(width: 8),
-            Text(
+            TitleMediumText(
               title,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ],
         ),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'title_large_text_widget.dart';
-import 'title_medium_text_widget.dart';
+import 'text_widgets.dart';
 
 class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   final String? title;
@@ -17,7 +16,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       toolbarHeight: preferredSize.height,
       elevation: 5,
-      title: TitleLargeTextWidget(text: title ?? ""),
+      title: TitleLargeText(title ?? ""),
       // centerTitle: true,
       backgroundColor: Theme.of(context).colorScheme.surface,
 

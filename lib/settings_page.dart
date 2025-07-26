@@ -7,7 +7,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'common_widgets/app_bar_widget.dart';
-import 'common_widgets/body_medium_text_widget.dart';
+import 'common_widgets/text_widgets.dart';
 import 'common_widgets/error_message_widget.dart';
 import 'common_widgets/loader_widget.dart';
 import 'common_widgets/settings_list_tile.dart';
@@ -236,18 +236,14 @@ class _SettingsPageState extends State<SettingsPage> {
 
                     if (user != null)
                       ExpansionTile(
-                        title: const BodyMediumTextWidget(
-                          text: 'Account Settings',
-                        ),
+                        title: const BodyMediumText('Account Settings'),
                         children: [
                           ListTile(
                             leading: Icon(
                               Icons.person,
                               color: Theme.of(context).colorScheme.secondary,
                             ),
-                            title: const BodyMediumTextWidget(
-                              text: 'Delete Account',
-                            ),
+                            title: const BodyMediumText('Delete Account'),
                             onTap: () async {
                               String confirmText = '';
 
@@ -257,16 +253,13 @@ class _SettingsPageState extends State<SettingsPage> {
                                   return AlertDialog(
                                     backgroundColor:
                                         Theme.of(context).colorScheme.surface,
-                                    title: const BodyMediumTextWidget(
-                                      text: 'Delete Account',
-                                    ),
+                                    title: const BodyMediumText('Delete Account'),
                                     content: Column(
                                       spacing: 16,
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        const BodyMediumTextWidget(
-                                          text:
-                                              'This action cannot be undone. All your data will be deleted.  Please type "DELETE" to confirm.',
+                                        const BodyMediumText(
+                                          'This action cannot be undone. All your data will be deleted.  Please type "DELETE" to confirm.',
                                         ),
                                         TextField(
                                           onChanged:
