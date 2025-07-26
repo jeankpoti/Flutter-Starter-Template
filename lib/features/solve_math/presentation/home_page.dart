@@ -749,6 +749,7 @@ class _HomePageState extends State<HomePage>
         icon: Icon(icon, size: 20),
         label: LabelLargeText(label),
         style: OutlinedButton.styleFrom(
+          backgroundColor: Theme.of(context).colorScheme.secondary,
           foregroundColor: Theme.of(context).colorScheme.onSecondary,
           side: BorderSide(color: Theme.of(context).colorScheme.outline),
           minimumSize: const Size(double.infinity, 56),
@@ -773,8 +774,8 @@ class _HomePageState extends State<HomePage>
                 : Icon(icon, size: 20),
         label: LabelLargeText(label),
         style: FilledButton.styleFrom(
-          backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-          foregroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
+          backgroundColor: Theme.of(context).colorScheme.secondary,
+          foregroundColor: Theme.of(context).colorScheme.onSecondary,
           minimumSize: const Size(double.infinity, 56),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12.0),
@@ -928,9 +929,7 @@ class _HomePageState extends State<HomePage>
           Container(
             padding: const EdgeInsets.all(_spacing4),
             decoration: BoxDecoration(
-              color: Theme.of(
-                context,
-              ).colorScheme.tertiaryContainer.withValues(alpha: 0.3),
+              color: Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(12.0),
             ),
             child: Column(
@@ -940,14 +939,14 @@ class _HomePageState extends State<HomePage>
                   children: [
                     Icon(
                       Icons.lightbulb_outline,
-                      color: Theme.of(context).colorScheme.tertiary,
+                      color: Theme.of(context).colorScheme.onSurface,
                       size: 20,
                     ),
                     const SizedBox(width: 8),
                     TitleSmallText(
                       'Tips for better results',
                       fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onTertiaryContainer,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ],
                 ),
@@ -967,17 +966,14 @@ class _HomePageState extends State<HomePage>
                           height: 4,
                           margin: const EdgeInsets.only(top: 8, right: 8),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.tertiary,
+                            color: Theme.of(context).colorScheme.onSurface,
                             shape: BoxShape.circle,
                           ),
                         ),
                         Expanded(
                           child: BodySmallText(
                             tip,
-                            color:
-                                Theme.of(
-                                  context,
-                                ).colorScheme.onTertiaryContainer,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                       ],

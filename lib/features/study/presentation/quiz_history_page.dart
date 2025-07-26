@@ -1232,7 +1232,7 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
         decoration: BoxDecoration(
           color:
               _currentFilter != FilterOption.all
-                  ? Theme.of(context).colorScheme.secondaryContainer
+                  ? Theme.of(context).colorScheme.secondary
                   : Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
@@ -1263,9 +1263,7 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
               color:
                   _currentFilter != FilterOption.all
                       ? Theme.of(context).colorScheme.onSecondary
-                      : Theme.of(
-                        context,
-                      ).colorScheme.onSecondary.withValues(alpha: 0.7),
+                      : Theme.of(context).colorScheme.onSurface,
               fontWeight: FontWeight.w500,
             ),
           ],

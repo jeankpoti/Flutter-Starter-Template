@@ -5,55 +5,55 @@ import 'package:flutter/material.dart';
 class AppTextWidget extends StatelessWidget {
   /// The text to display
   final String text;
-  
+
   /// Text style from theme - determines font size, weight, etc.
   final TextStyle? style;
-  
+
   /// Override color (will use theme color if not provided)
   final Color? color;
-  
+
   /// Text alignment
   final TextAlign? textAlign;
-  
+
   /// Maximum number of lines
   final int? maxLines;
-  
+
   /// Text overflow behavior
   final TextOverflow? overflow;
-  
+
   /// Whether text should wrap
   final bool? softWrap;
-  
+
   /// Font weight override
   final FontWeight? fontWeight;
-  
+
   /// Font size override
   final double? fontSize;
-  
+
   /// Text decoration (underline, etc.)
   final TextDecoration? decoration;
-  
+
   /// Line height multiplier
   final double? height;
-  
+
   /// Letter spacing
   final double? letterSpacing;
-  
+
   /// Word spacing
   final double? wordSpacing;
-  
+
   /// Text direction
   final TextDirection? textDirection;
-  
+
   /// Locale for text
   final Locale? locale;
-  
+
   /// Selection color
   final Color? selectionColor;
-  
+
   /// Whether text should be selectable
   final bool selectable;
-  
+
   /// Callback when text is tapped (only for selectable text)
   final VoidCallback? onTap;
 
@@ -82,7 +82,7 @@ class AppTextWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     // Build the text style with all customizations
     final effectiveStyle = (style ?? theme.textTheme.bodyMedium!).copyWith(
       color: color,
@@ -464,7 +464,9 @@ class BodyMediumText extends StatelessWidget {
     return AppTextWidget(
       text,
       style: Theme.of(context).textTheme.bodyMedium,
-      color: color ?? Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
+      color:
+          color ??
+          Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
       textAlign: textAlign,
       maxLines: maxLines,
       overflow: overflow,
@@ -496,7 +498,9 @@ class BodySmallText extends StatelessWidget {
     return AppTextWidget(
       text,
       style: Theme.of(context).textTheme.bodySmall,
-      color: color ?? Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+      color:
+          color ??
+          Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
       textAlign: textAlign,
       maxLines: maxLines,
       overflow: overflow,
@@ -560,7 +564,7 @@ class LabelMediumText extends StatelessWidget {
     return AppTextWidget(
       text,
       style: Theme.of(context).textTheme.labelMedium,
-      color: color ?? Theme.of(context).colorScheme.onSurface,
+      color: color ?? Theme.of(context).colorScheme.onSecondary,
       textAlign: textAlign,
       maxLines: maxLines,
       overflow: overflow,
@@ -592,7 +596,9 @@ class LabelSmallText extends StatelessWidget {
     return AppTextWidget(
       text,
       style: Theme.of(context).textTheme.labelSmall,
-      color: color ?? Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+      color:
+          color ??
+          Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
       textAlign: textAlign,
       maxLines: maxLines,
       overflow: overflow,

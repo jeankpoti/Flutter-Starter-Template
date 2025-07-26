@@ -521,16 +521,16 @@ class _StudyPageState extends State<StudyPage>
                               BodySmallText(
                                 material.title,
                                 fontWeight: FontWeight.w600,
-                                color:
-                                    Theme.of(context).colorScheme.onSurface,
+                                color: Theme.of(context).colorScheme.onSurface,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),
                               const SizedBox(height: 4),
                               LabelSmallText(
                                 '${material.extractedTopics.length} topics',
-                                color: Theme.of(context).colorScheme.onSurface
-                                    .withValues(alpha: 0.6),
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withValues(alpha: 0.6),
                               ),
                             ],
                           ),
@@ -802,8 +802,9 @@ class _StudyPageState extends State<StudyPage>
                       child: TextButton.icon(
                         onPressed: () => _showStudyPlanTopics(plan),
                         icon: const Icon(Icons.list, size: 16),
-                        label: const LabelMediumText(
+                        label: LabelMediumText(
                           'View Topics',
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                         style: TextButton.styleFrom(
                           foregroundColor:
@@ -852,14 +853,10 @@ class _StudyPageState extends State<StudyPage>
                                       ),
                                     ),
                                     const SizedBox(width: 6),
-                                    const LabelSmallText(
-                                      'Loading...',
-                                    ),
+                                    const LabelSmallText('Loading...'),
                                   ],
                                 )
-                                : LabelMediumText(
-                                  'Take Quiz',
-                                ),
+                                : LabelMediumText('Take Quiz'),
                       ),
                     ),
                   ],
@@ -1416,51 +1413,48 @@ class _StudyPageState extends State<StudyPage>
             ],
           ),
 
-          if (material.extractedTopics.isNotEmpty) ...[
-            const SizedBox(height: 12),
-            LabelMediumText(
-              'Topics Found:',
-              fontWeight: FontWeight.w600,
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
-            const SizedBox(height: 6),
-            Wrap(
-              spacing: 6,
-              runSpacing: 6,
-              children:
-                  material.extractedTopics.take(3).map((topic) {
-                    return Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.secondaryContainer.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: LabelSmallText(
-                        topic,
-                        color:
-                            Theme.of(
-                              context,
-                            ).colorScheme.onSecondaryContainer,
-                      ),
-                    );
-                  }).toList(),
-            ),
-            if (material.extractedTopics.length > 3)
-              Padding(
-                padding: const EdgeInsets.only(top: 6),
-                child: LabelSmallText(
-                  '+${material.extractedTopics.length - 3} more topics',
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.onSurface.withValues(alpha: 0.6),
-                ),
-              ),
-          ],
+          // if (material.extractedTopics.isNotEmpty) ...[
+          //   const SizedBox(height: 12),
+          //   LabelMediumText(
+          //     'Topics Found:',
+          //     fontWeight: FontWeight.w600,
+          //     color: Theme.of(context).colorScheme.onSurface,
+          //   ),
+          //   const SizedBox(height: 6),
+          //   Wrap(
+          //     spacing: 6,
+          //     runSpacing: 6,
+          //     children:
+          //         material.extractedTopics.take(3).map((topic) {
+          //           return Container(
+          //             padding: const EdgeInsets.symmetric(
+          //               horizontal: 8,
+          //               vertical: 4,
+          //             ),
+          //             decoration: BoxDecoration(
+          //               color: Theme.of(
+          //                 context,
+          //               ).colorScheme.secondary.withValues(alpha: 0.2),
+          //               borderRadius: BorderRadius.circular(12),
+          //             ),
+          //             child: LabelSmallText(
+          //               topic,
+          //               color: Theme.of(context).colorScheme.onSurface,
+          //             ),
+          //           );
+          //         }).toList(),
+          //   ),
+          //   if (material.extractedTopics.length > 3)
+          //     Padding(
+          //       padding: const EdgeInsets.only(top: 6),
+          //       child: LabelSmallText(
+          //         '+${material.extractedTopics.length - 3} more topics',
+          //         color: Theme.of(
+          //           context,
+          //         ).colorScheme.onSurface.withValues(alpha: 0.6),
+          //       ),
+          //     ),
+          // ],
         ],
       ),
     );
@@ -1504,9 +1498,9 @@ class _StudyPageState extends State<StudyPage>
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: BodyMediumText('Error capturing photo: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: BodyMediumText('Error capturing photo: $e')),
+        );
       }
     }
   }
@@ -1674,9 +1668,7 @@ class _StudyPageState extends State<StudyPage>
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              BodyMediumText(
-                'Enter your study material text:',
-              ),
+              BodyMediumText('Enter your study material text:'),
               const SizedBox(height: 16),
               TextField(
                 controller: textController,
@@ -1846,7 +1838,9 @@ class _StudyPageState extends State<StudyPage>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: BodyMediumText('Generating quiz with $questionCount questions...'),
+            content: BodyMediumText(
+              'Generating quiz with $questionCount questions...',
+            ),
             backgroundColor: Theme.of(context).colorScheme.secondary,
           ),
         );
@@ -1890,9 +1884,9 @@ class _StudyPageState extends State<StudyPage>
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: BodyMediumText('Error generating quiz: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: BodyMediumText('Error generating quiz: $e')),
+        );
       }
     }
   }
@@ -2124,9 +2118,9 @@ class _StudyPageState extends State<StudyPage>
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: BodyMediumText('Error generating quiz: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: BodyMediumText('Error generating quiz: $e')),
+        );
       }
     }
   }
@@ -2266,7 +2260,9 @@ class _StudyPageState extends State<StudyPage>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: BodyMediumText('Progress updated: ${progress.toStringAsFixed(0)}%'),
+            content: BodyMediumText(
+              'Progress updated: ${progress.toStringAsFixed(0)}%',
+            ),
             backgroundColor: Theme.of(context).colorScheme.secondary,
             duration: const Duration(seconds: 1),
           ),
@@ -2500,9 +2496,7 @@ class _StudyPageState extends State<StudyPage>
         const SizedBox(width: 2),
         LabelSmallText(
           label,
-          color: Theme.of(
-            context,
-          ).colorScheme.onSurface.withValues(alpha: 0.7),
+          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
         ),
       ],
     );
@@ -2960,8 +2954,7 @@ class _StudyPageState extends State<StudyPage>
                               ),
                               child: BodyMediumText(
                                 currentTopic.aiExplanation!,
-                                color:
-                                    Theme.of(context).colorScheme.onSurface,
+                                color: Theme.of(context).colorScheme.onSurface,
                               ),
                             ),
                           ),
@@ -3023,16 +3016,13 @@ class _StudyPageState extends State<StudyPage>
                                                         Theme.of(context)
                                                             .colorScheme
                                                             .onSecondary,
-                                                    fontWeight:
-                                                        FontWeight.bold,
+                                                    fontWeight: FontWeight.bold,
                                                   ),
                                                 ),
                                               ),
                                               const SizedBox(width: 12),
                                               Expanded(
-                                                child: BodyMediumText(
-                                                  problem,
-                                                ),
+                                                child: BodyMediumText(problem),
                                               ),
                                             ],
                                           ),
@@ -3054,9 +3044,7 @@ class _StudyPageState extends State<StudyPage>
                               children: [
                                 BodyMediumText(
                                   'Complete these topics first:',
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSurface
+                                  color: Theme.of(context).colorScheme.onSurface
                                       .withValues(alpha: 0.7),
                                 ),
                                 const SizedBox(height: 8),
@@ -3178,6 +3166,7 @@ class _StudyPageState extends State<StudyPage>
                               currentTopic.status == StudyTopicStatus.notStarted
                                   ? 'Start Topic'
                                   : 'Continue',
+                              color: Theme.of(context).colorScheme.onSecondary,
                             ),
                             style: ElevatedButton.styleFrom(
                               backgroundColor:
@@ -3200,7 +3189,10 @@ class _StudyPageState extends State<StudyPage>
                               onUpdate?.call(); // Refresh parent sheet
                             },
                             icon: const Icon(Icons.check_circle),
-                            label: const LabelLargeText('Mark Complete'),
+                            label: LabelLargeText(
+                              'Mark Complete',
+                              color: Theme.of(context).colorScheme.onSecondary,
+                            ),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.green,
                               foregroundColor: Colors.white,
@@ -3255,9 +3247,7 @@ class _StudyPageState extends State<StudyPage>
         const SizedBox(width: 4),
         BodySmallText(
           text,
-          color: Theme.of(
-            context,
-          ).colorScheme.onSurface.withValues(alpha: 0.6),
+          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
           fontWeight: FontWeight.w500,
         ),
       ],
