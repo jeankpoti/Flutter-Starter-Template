@@ -7,6 +7,7 @@ import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import '../../../common_widgets/app_bar_widget.dart';
 import '../../../common_widgets/text_widgets.dart';
 import '../../../common_widgets/loader_widget.dart';
+import '../../../l10n/app_localizations.dart';
 import 'firebase_collection_cubit.dart';
 import 'firebase_collection_state.dart';
 import 'collections_details_page.dart';
@@ -92,7 +93,7 @@ class _CollectionsPageState extends State<CollectionsPage> {
     );
 
     return Scaffold(
-      appBar: AppBarWidget(title: 'Recent Problems'),
+      appBar: AppBarWidget(title: AppLocalizations.of(context)!.recentProblems),
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: _refreshData,
@@ -106,8 +107,10 @@ class _CollectionsPageState extends State<CollectionsPage> {
                 ScaffoldMessenger.of(context)
                   ..hideCurrentSnackBar()
                   ..showSnackBar(
-                    const SnackBar(
-                      content: BodyMediumText('Could not load more problems.'),
+                    SnackBar(
+                      content: BodyMediumText(
+                        AppLocalizations.of(context)!.couldNotLoadMoreProblems,
+                      ),
                     ),
                   );
               }
@@ -124,14 +127,18 @@ class _CollectionsPageState extends State<CollectionsPage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const BodyMediumText('Something went wrong!'),
+                      BodyMediumText(
+                        AppLocalizations.of(context)!.somethingWentWrong,
+                      ),
                       const SizedBox(height: 10),
                       ElevatedButton(
                         onPressed:
                             () => context
                                 .read<FirebaseCollectionCubit>()
                                 .getCollections(isRefresh: true),
-                        child: const LabelLargeText('Try Again'),
+                        child: LabelLargeText(
+                          AppLocalizations.of(context)!.tryAgain,
+                        ),
                       ),
                     ],
                   ),
@@ -144,14 +151,18 @@ class _CollectionsPageState extends State<CollectionsPage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const BodyMediumText('Failed to load more problems'),
+                      BodyMediumText(
+                        AppLocalizations.of(context)!.failedToLoadMoreProblems,
+                      ),
                       ElevatedButton(
                         onPressed:
                             () =>
                                 context
                                     .read<FirebaseCollectionCubit>()
                                     .loadMoreCollections(),
-                        child: const LabelLargeText('Retry'),
+                        child: LabelLargeText(
+                          AppLocalizations.of(context)!.retry,
+                        ),
                       ),
                     ],
                   ),
@@ -171,9 +182,9 @@ class _CollectionsPageState extends State<CollectionsPage> {
                         constraints: BoxConstraints(
                           minHeight: constraints.maxHeight,
                         ),
-                        child: const Center(
+                        child: Center(
                           child: BodyMediumText(
-                            'No solved problems yet! Solve your first math problem to see it here.',
+                            AppLocalizations.of(context)!.noSolvedProblemsYet,
                           ),
                         ),
                       ),
@@ -205,9 +216,13 @@ class _CollectionsPageState extends State<CollectionsPage> {
                         padding: const EdgeInsets.all(16.0),
                         child: Center(
                           child: Text(
-                            'No more problems to load',
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                            AppLocalizations.of(context)!.noMoreProblemsToLoad,
+                            style: Theme.of(
+                              context,
+                            ).textTheme.bodySmall?.copyWith(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withValues(alpha: 0.6),
                               fontStyle: FontStyle.italic,
                             ),
                           ),

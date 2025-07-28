@@ -160,7 +160,45 @@ The app supports both **dark mode** and **light mode** themes.
 ### Color Usage Requirements
 - **ALWAYS** use `Theme.of(context).colorScheme` for colors instead of hardcoded values
 - **NEVER** use hardcoded colors like `Colors.white`, `Colors.black`, or specific color values
+- **NEVER** put black color on red background - this creates accessibility issues and poor readability
+- **ALWAYS** use white color on red background for proper contrast and accessibility
 - Use semantic color properties that adapt automatically to theme changes
+
+### Text Color Consistency on Colored Backgrounds
+When using colored backgrounds, **ALWAYS** explicitly specify the appropriate contrasting text color:
+
+- **Error containers**: Use `onErrorContainer` for text on `errorContainer` backgrounds
+- **Secondary backgrounds**: Use `onSecondary` for text on `secondary` backgrounds  
+- **Primary backgrounds**: Use `onPrimary` for text on `primary` backgrounds
+- **Surface containers**: Use `onSurfaceVariant` for text on `surfaceContainer` backgrounds
+
+**Example patterns to follow:**
+```dart
+// For buttons with secondary background
+ElevatedButton(
+  style: ElevatedButton.styleFrom(
+    backgroundColor: Theme.of(context).colorScheme.secondary,
+    foregroundColor: Theme.of(context).colorScheme.onSecondary,
+  ),
+  child: LabelLargeText(
+    'Button Text',
+    color: Theme.of(context).colorScheme.onSecondary, // Explicit color
+  ),
+)
+
+// For error messages
+SnackBar(
+  backgroundColor: Theme.of(context).colorScheme.errorContainer,
+  content: Text(
+    'Error message',
+    style: TextStyle(
+      color: Theme.of(context).colorScheme.onErrorContainer, // Explicit color
+    ),
+  ),
+)
+```
+
+**Why this matters:** Custom text widgets may not automatically inherit button foreground colors, so explicit color specification ensures proper contrast and accessibility across all themes.
 
 ### Essential Color Properties
 - `Theme.of(context).colorScheme.primary` - Primary brand color

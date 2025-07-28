@@ -3,13 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'dart:io' show Platform;
 
+import '../../../l10n/app_localizations.dart';
+
 import '../../../common_widgets/apple_signin_button_widget.dart';
 import '../../../common_widgets/google_signin_button_widget.dart';
 import '../../../common_widgets/loader_widget.dart';
 import '../../../common_widgets/text_form_field_widget.dart';
 import '../../../common_widgets/text_widgets.dart';
 import '../../../constants/terms_conditions_widget.dart';
-import '../../../helpers/validator.dart';
 import '../../../utils/responsive.dart';
 import 'account_cubit.dart';
 import 'account_state.dart';
@@ -100,14 +101,14 @@ class _SignUpPageState extends State<SignUpPage> {
                         child: Center(
                           child: Column(
                             children: [
-                              const TitleLargeText('Sign Up'),
+                              TitleLargeText(AppLocalizations.of(context)!.signUp),
                               const SizedBox(height: 25),
-                              const BodyMediumText(
-                                'Create an account',
+                              BodyMediumText(
+                                AppLocalizations.of(context)!.createAccount,
                               ),
                               const SizedBox(height: 5),
-                              const BodyMediumText(
-                                'Enter your full name, email, and password',
+                              BodyMediumText(
+                                AppLocalizations.of(context)!.signUpDescription,
                               ),
                               const SizedBox(height: 45),
                               Form(
@@ -118,11 +119,11 @@ class _SignUpPageState extends State<SignUpPage> {
                                     children: [
                                       TextFormFieldWidget(
                                         controller: _fullNameController,
-                                        labelText: 'Full Name',
+                                        labelText: AppLocalizations.of(context)!.fullName,
                                         validator:
                                             (value) =>
                                                 value!.isEmpty
-                                                    ? 'Please provide your full name'
+                                                    ? AppLocalizations.of(context)!.fullNameRequired
                                                     : null,
                                       ),
                                       const SizedBox(height: 20),
@@ -130,10 +131,16 @@ class _SignUpPageState extends State<SignUpPage> {
                                         controller: _emailController,
                                         keyboardType:
                                             TextInputType.emailAddress,
-                                        labelText: 'Email',
-                                        validator:
-                                            (value) =>
-                                                Validator.validateEmail(value!),
+                                        labelText: AppLocalizations.of(context)!.email,
+                                        validator: (value) {
+                                          if (value!.isEmpty) {
+                                            return AppLocalizations.of(context)!.emailRequired;
+                                          }
+                                          if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                                            return AppLocalizations.of(context)!.invalidEmail;
+                                          }
+                                          return null;
+                                        },
                                       ),
                                       const SizedBox(height: 20),
                                       TextFormFieldWidget(
@@ -142,12 +149,12 @@ class _SignUpPageState extends State<SignUpPage> {
                                             TextInputType.emailAddress,
                                         obscureText:
                                             true, // or bind to a local bool if you prefer
-                                        labelText: 'Password',
+                                        labelText: AppLocalizations.of(context)!.password,
                                         validator: (value) {
                                           if (value!.isEmpty) {
-                                            return 'Please provide a password';
+                                            return AppLocalizations.of(context)!.passwordRequired;
                                           } else if (value.length < 6) {
-                                            return 'Password must be at least 6 characters';
+                                            return AppLocalizations.of(context)!.passwordTooShort;
                                           }
                                           return null;
                                         },
@@ -158,13 +165,13 @@ class _SignUpPageState extends State<SignUpPage> {
                                         keyboardType:
                                             TextInputType.emailAddress,
                                         obscureText: true,
-                                        labelText: 'Confirm Password',
+                                        labelText: AppLocalizations.of(context)!.confirmPassword,
                                         validator: (value) {
                                           if (value!.isEmpty) {
-                                            return 'Please confirm your password';
+                                            return AppLocalizations.of(context)!.confirmPasswordRequired;
                                           } else if (value !=
                                               _passwordController.text) {
-                                            return 'Passwords do not match';
+                                            return AppLocalizations.of(context)!.passwordsDoNotMatch;
                                           }
                                           return null;
                                         },
@@ -187,7 +194,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                             onPressed:
                                                 () => validateAndSave(context),
                                             text: Text(
-                                              ' Sign Up',
+                                              ' ${AppLocalizations.of(context)!.signUp}',
                                               style: TextStyle(
                                                 color: Colors.white,
                                               ),
@@ -210,8 +217,8 @@ class _SignUpPageState extends State<SignUpPage> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.center,
                                         children: [
-                                          const BodyMediumText(
-                                            'Already have an account? ',
+                                          BodyMediumText(
+                                            AppLocalizations.of(context)!.alreadyHaveAccount,
                                           ),
                                           TextButton(
                                             onPressed:
@@ -223,8 +230,8 @@ class _SignUpPageState extends State<SignUpPage> {
                                                             const SignInPage(),
                                                   ),
                                                 ),
-                                            child: const BodyMediumText(
-                                              'Sign In ',
+                                            child: BodyMediumText(
+                                              AppLocalizations.of(context)!.signIn,
                                             ),
                                           ),
                                         ],
@@ -246,7 +253,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                               horizontal: 12,
                                             ),
                                             child: Text(
-                                              'Or sign up with',
+                                              AppLocalizations.of(context)!.orSignUpWith,
                                               style: TextStyle(
                                                 color:
                                                     Theme.of(
@@ -275,7 +282,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                               context,
                                             ),
                                         text: Text(
-                                          ' Google',
+                                          ' ${AppLocalizations.of(context)!.google}',
                                           style: TextStyle(color: Colors.white),
                                         ),
                                         color:
@@ -293,7 +300,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                               () => accountCubit
                                                   .signUpWithApple(context),
                                           text: Text(
-                                            ' Apple',
+                                            ' ${AppLocalizations.of(context)!.apple}',
                                             style: TextStyle(
                                               color: Colors.white,
                                             ),
@@ -311,8 +318,8 @@ class _SignUpPageState extends State<SignUpPage> {
                               Wrap(
                                 alignment: WrapAlignment.center,
                                 children: [
-                                  const BodyMediumText(
-                                    'By signing up, you agree to our ',
+                                  BodyMediumText(
+                                    AppLocalizations.of(context)!.termsAgreement,
                                   ),
                                   GestureDetector(
                                     onTap:
@@ -322,7 +329,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                           ),
                                         },
                                     child: Text(
-                                      'Terms and Conditions',
+                                      AppLocalizations.of(context)!.termsAndConditions,
                                       style: TextStyle(
                                         color:
                                             Theme.of(

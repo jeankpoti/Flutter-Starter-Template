@@ -6,6 +6,9 @@ import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'l10n/app_localizations.dart';
+import 'features/locale/presentation/locale_cubit.dart';
+
 import 'common_widgets/app_bar_widget.dart';
 import 'common_widgets/text_widgets.dart';
 import 'common_widgets/error_message_widget.dart';
@@ -53,11 +56,13 @@ class _SettingsPageState extends State<SettingsPage> {
     setState(() {
       _selectedLevel = level;
     });
-    
+
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Math level updated to ${level.displayName}'),
+          content: Text(
+            AppLocalizations.of(context)!.mathLevelUpdated(level.displayName),
+          ),
           backgroundColor: Theme.of(context).colorScheme.secondary,
         ),
       );
@@ -77,14 +82,20 @@ class _SettingsPageState extends State<SettingsPage> {
     });
 
     return Scaffold(
-      appBar: const AppBarWidget(title: 'Settings'),
+      appBar: AppBarWidget(title: AppLocalizations.of(context)!.settings),
       body: SafeArea(
         child: BlocListener<AccountCubit, AccountState>(
           listener: (context, accountState) {
             if (accountState.errorMsg != null) {
-              ErrorMessageWidget.showError(context, 'Something went wrong!');
+              ErrorMessageWidget.showError(
+                context,
+                AppLocalizations.of(context)!.somethingWentWrong,
+              );
             } else if (accountState.isSignOut) {
-              ErrorMessageWidget.showError(context, 'Sign out successfully!');
+              ErrorMessageWidget.showError(
+                context,
+                AppLocalizations.of(context)!.signOutSuccess,
+              );
               // accountCubit.resetSignOut();
 
               context.goNamed(AppRoute.signInPage.name);
@@ -108,9 +119,12 @@ class _SettingsPageState extends State<SettingsPage> {
                   children: [
                     // Math Level Section
                     _buildMathLevelSection(),
-                    
+
+                    // Language Section
+                    _buildLanguageSection(),
+
                     SettingsListTile(
-                      text: 'Change theme',
+                      text: AppLocalizations.of(context)!.changeTheme,
                       icon: Icon(
                         Icons.brightness_4,
                         color: Theme.of(context).colorScheme.secondary,
@@ -128,7 +142,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
                     if (user != null)
                       SettingsListTile(
-                        text: 'Sign out',
+                        text: AppLocalizations.of(context)!.signOut,
                         icon: Icon(
                           Icons.logout,
                           color: Theme.of(context).colorScheme.secondary,
@@ -138,7 +152,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         },
                       ),
                     SettingsListTile(
-                      text: 'Get Premium',
+                      text: AppLocalizations.of(context)!.getPremium,
                       icon: Icon(
                         Icons.logout,
                         color: Theme.of(context).colorScheme.secondary,
@@ -153,7 +167,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           ),
                     ),
                     SettingsListTile(
-                      text: 'Rate Us',
+                      text: AppLocalizations.of(context)!.rateUs,
                       icon: Icon(
                         Icons.star,
                         color: Theme.of(context).colorScheme.secondary,
@@ -167,26 +181,24 @@ class _SettingsPageState extends State<SettingsPage> {
                           if (context.mounted) {
                             ErrorMessageWidget.showError(
                               context,
-                              'Something went wrong!',
+                              AppLocalizations.of(context)!.somethingWentWrong,
                             );
                           }
                         }
                       },
                     ),
                     SettingsListTile(
-                      text: 'Share with Friends',
+                      text: AppLocalizations.of(context)!.shareWithFriends,
                       icon: Icon(
                         Icons.share,
                         color: Theme.of(context).colorScheme.secondary,
                       ),
                       onTap: () {
-                        Share.share(
-                          'Check out this amazing app: https://apps.apple.com/app/id6739957932',
-                        );
+                        Share.share(AppLocalizations.of(context)!.shareAppText);
                       },
                     ),
                     SettingsListTile(
-                      text: 'Privacy Policy & Terms of Use',
+                      text: AppLocalizations.of(context)!.privacyPolicyTerms,
                       icon: Icon(
                         Icons.privacy_tip,
                         color: Theme.of(context).colorScheme.secondary,
@@ -203,14 +215,16 @@ class _SettingsPageState extends State<SettingsPage> {
                           if (context.mounted) {
                             ErrorMessageWidget.showError(
                               context,
-                              'Could not open Privacy Policy',
+                              AppLocalizations.of(
+                                context,
+                              )!.couldNotOpenPrivacyPolicy,
                             );
                           }
                         }
                       },
                     ),
                     SettingsListTile(
-                      text: 'Support',
+                      text: AppLocalizations.of(context)!.support,
                       icon: Icon(
                         Icons.description,
                         color: Theme.of(context).colorScheme.secondary,
@@ -227,7 +241,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           if (context.mounted) {
                             ErrorMessageWidget.showError(
                               context,
-                              'Could not open Terms of Use',
+                              AppLocalizations.of(context)!.couldNotOpenTerms,
                             );
                           }
                         }
@@ -236,14 +250,18 @@ class _SettingsPageState extends State<SettingsPage> {
 
                     if (user != null)
                       ExpansionTile(
-                        title: const BodyMediumText('Account Settings'),
+                        title: BodyMediumText(
+                          AppLocalizations.of(context)!.accountSettings,
+                        ),
                         children: [
                           ListTile(
                             leading: Icon(
                               Icons.person,
                               color: Theme.of(context).colorScheme.secondary,
                             ),
-                            title: const BodyMediumText('Delete Account'),
+                            title: BodyMediumText(
+                              AppLocalizations.of(context)!.deleteAccount,
+                            ),
                             onTap: () async {
                               String confirmText = '';
 
@@ -253,13 +271,19 @@ class _SettingsPageState extends State<SettingsPage> {
                                   return AlertDialog(
                                     backgroundColor:
                                         Theme.of(context).colorScheme.surface,
-                                    title: const BodyMediumText('Delete Account'),
+                                    title: BodyMediumText(
+                                      AppLocalizations.of(
+                                        context,
+                                      )!.deleteAccount,
+                                    ),
                                     content: Column(
                                       spacing: 16,
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        const BodyMediumText(
-                                          'This action cannot be undone. All your data will be deleted.  Please type "DELETE" to confirm.',
+                                        BodyMediumText(
+                                          AppLocalizations.of(
+                                            context,
+                                          )!.deleteAccountConfirmation,
                                         ),
                                         TextField(
                                           onChanged:
@@ -275,7 +299,10 @@ class _SettingsPageState extends State<SettingsPage> {
                                                 context,
                                               ).colorScheme.secondary,
                                           decoration: InputDecoration(
-                                            hintText: 'Type DELETE',
+                                            hintText:
+                                                AppLocalizations.of(
+                                                  context,
+                                                )!.typeDeleteHint,
                                             fillColor:
                                                 Theme.of(
                                                   context,
@@ -316,7 +343,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                         onPressed:
                                             () => Navigator.pop(context, false),
                                         child: Text(
-                                          'Cancel',
+                                          AppLocalizations.of(context)!.cancel,
                                           style:
                                               Theme.of(
                                                 context,
@@ -331,16 +358,20 @@ class _SettingsPageState extends State<SettingsPage> {
                                             ScaffoldMessenger.of(
                                               context,
                                             ).showSnackBar(
-                                              const SnackBar(
+                                              SnackBar(
                                                 content: Text(
-                                                  'Please type DELETE to confirm',
+                                                  AppLocalizations.of(
+                                                    context,
+                                                  )!.deleteConfirmationError,
                                                 ),
                                               ),
                                             );
                                           }
                                         },
                                         child: Text(
-                                          'Delete Account',
+                                          AppLocalizations.of(
+                                            context,
+                                          )!.deleteAccount,
                                           style:
                                               Theme.of(
                                                 context,
@@ -360,7 +391,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             },
                           ),
                           SettingsListTile(
-                            text: 'Reset Password',
+                            text: AppLocalizations.of(context)!.resetPassword,
                             icon: Icon(
                               Icons.logout,
                               color: Theme.of(context).colorScheme.secondary,
@@ -406,7 +437,7 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
               const SizedBox(width: 12),
               Text(
-                'Math Level',
+                AppLocalizations.of(context)!.mathLevel,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: Theme.of(context).colorScheme.onSurface,
@@ -416,9 +447,11 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Choose your education level for personalized explanations',
+            AppLocalizations.of(context)!.mathLevelDescription,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.7),
             ),
           ),
           const SizedBox(height: 16),
@@ -426,7 +459,10 @@ class _SettingsPageState extends State<SettingsPage> {
             const Center(child: CircularProgressIndicator())
           else
             Column(
-              children: MathLevel.values.map((level) => _buildLevelOption(level)).toList(),
+              children:
+                  MathLevel.values
+                      .map((level) => _buildLevelOption(level))
+                      .toList(),
             ),
         ],
       ),
@@ -435,7 +471,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Widget _buildLevelOption(MathLevel level) {
     final isSelected = _selectedLevel == level;
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       child: InkWell(
@@ -444,14 +480,20 @@ class _SettingsPageState extends State<SettingsPage> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
-            color: isSelected 
-                ? Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.3)
-                : Colors.transparent,
+            color:
+                isSelected
+                    ? Theme.of(
+                      context,
+                    ).colorScheme.secondaryContainer.withValues(alpha: 0.3)
+                    : Colors.transparent,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: isSelected 
-                  ? Theme.of(context).colorScheme.secondary
-                  : Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+              color:
+                  isSelected
+                      ? Theme.of(context).colorScheme.secondary
+                      : Theme.of(
+                        context,
+                      ).colorScheme.outline.withValues(alpha: 0.2),
               width: isSelected ? 1.5 : 1,
             ),
           ),
@@ -464,19 +506,155 @@ class _SettingsPageState extends State<SettingsPage> {
                     Text(
                       level.displayName,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                        color: isSelected 
-                            ? Theme.of(context).colorScheme.secondary
-                            : Theme.of(context).colorScheme.onSurface,
+                        fontWeight:
+                            isSelected ? FontWeight.w600 : FontWeight.normal,
+                        color:
+                            isSelected
+                                ? Theme.of(context).colorScheme.secondary
+                                : Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                     Text(
                       level.ageRange,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                     ),
                   ],
+                ),
+              ),
+              if (isSelected)
+                Icon(
+                  Icons.check_circle,
+                  color: Theme.of(context).colorScheme.secondary,
+                  size: 20,
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLanguageSection() {
+    return BlocBuilder<LocaleCubit, Locale>(
+      builder: (context, currentLocale) {
+        return Container(
+          margin: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surfaceContainer,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    Icons.language,
+                    color: Theme.of(context).colorScheme.secondary,
+                    size: 24,
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Language', // Keep this hardcoded for now as it's the language selector itself
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                AppLocalizations.of(context)!.choosePreferredLanguage,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.7),
+                ),
+              ),
+              const SizedBox(width: 16),
+              _buildLanguageOption(
+                'en',
+                'English',
+                currentLocale.languageCode == 'en',
+              ),
+              const SizedBox(height: 8),
+              _buildLanguageOption(
+                'fr',
+                'Français',
+                currentLocale.languageCode == 'fr',
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildLanguageOption(
+    String languageCode,
+    String languageName,
+    bool isSelected,
+  ) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: InkWell(
+        onTap: () async {
+          // Change language immediately
+          await context.read<LocaleCubit>().changeLocale(languageCode);
+
+          // Show confirmation
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  AppLocalizations.of(context)!.languageChangedTo(languageName),
+                ),
+                backgroundColor: Theme.of(context).colorScheme.secondary,
+                duration: const Duration(seconds: 2),
+              ),
+            );
+          }
+        },
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          decoration: BoxDecoration(
+            color:
+                isSelected
+                    ? Theme.of(
+                      context,
+                    ).colorScheme.secondaryContainer.withValues(alpha: 0.3)
+                    : Colors.transparent,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color:
+                  isSelected
+                      ? Theme.of(context).colorScheme.secondary
+                      : Theme.of(
+                        context,
+                      ).colorScheme.outline.withValues(alpha: 0.2),
+              width: isSelected ? 1.5 : 1,
+            ),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  languageName,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight:
+                        isSelected ? FontWeight.w600 : FontWeight.normal,
+                    color:
+                        isSelected
+                            ? Theme.of(context).colorScheme.secondary
+                            : Theme.of(context).colorScheme.onSurface,
+                  ),
                 ),
               ),
               if (isSelected)

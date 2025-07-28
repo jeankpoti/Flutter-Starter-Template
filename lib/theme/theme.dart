@@ -6,7 +6,10 @@ ThemeData lightMode = ThemeData(
   colorScheme: ColorScheme.light(
     surface: const Color(0xFFE5E2E7),
     primary: Colors.black,
-    secondary: Colors.red.shade600,
+    secondary:
+    //  const Color(0xFF023e8a),
+    const Color(0xFF03045e),
+    // Colors.red.shade600,
     onSecondary: Colors.white,
     tertiary: Colors.grey.shade600,
     onSurface: Colors.black,
@@ -25,11 +28,8 @@ ThemeData lightMode = ThemeData(
       fontSize: 45,
       fontWeight: FontWeight.w400,
     ),
-    displaySmall: GoogleFonts.oswald(
-      fontSize: 36,
-      fontWeight: FontWeight.w400,
-    ),
-    
+    displaySmall: GoogleFonts.oswald(fontSize: 36, fontWeight: FontWeight.w400),
+
     // Headline styles - prominent text
     headlineLarge: GoogleFonts.oswald(
       fontSize: 32,
@@ -43,12 +43,9 @@ ThemeData lightMode = ThemeData(
       fontSize: 24,
       fontWeight: FontWeight.w400,
     ),
-    
+
     // Title styles - medium prominence
-    titleLarge: GoogleFonts.oswald(
-      fontSize: 22,
-      fontWeight: FontWeight.w400,
-    ),
+    titleLarge: GoogleFonts.oswald(fontSize: 22, fontWeight: FontWeight.w400),
     titleMedium: GoogleFonts.oswald(
       fontSize: 16,
       fontWeight: FontWeight.w500,
@@ -59,7 +56,7 @@ ThemeData lightMode = ThemeData(
       fontWeight: FontWeight.w500,
       letterSpacing: 0.1,
     ),
-    
+
     // Body styles - readable text
     bodyLarge: GoogleFonts.merriweather(
       fontSize: 16,
@@ -76,7 +73,7 @@ ThemeData lightMode = ThemeData(
       fontWeight: FontWeight.w400,
       letterSpacing: 0.4,
     ),
-    
+
     // Label styles - UI elements
     labelLarge: GoogleFonts.merriweather(
       fontSize: 14,
@@ -127,7 +124,7 @@ ThemeData darkMode = ThemeData(
       fontWeight: FontWeight.w400,
       color: Colors.white,
     ),
-    
+
     // Headline styles - prominent text
     headlineLarge: GoogleFonts.oswald(
       fontSize: 32,
@@ -144,7 +141,7 @@ ThemeData darkMode = ThemeData(
       fontWeight: FontWeight.w400,
       color: Colors.white,
     ),
-    
+
     // Title styles - medium prominence
     titleLarge: GoogleFonts.oswald(
       fontSize: 22,
@@ -163,7 +160,7 @@ ThemeData darkMode = ThemeData(
       letterSpacing: 0.1,
       color: Colors.white,
     ),
-    
+
     // Body styles - readable text
     bodyLarge: GoogleFonts.merriweather(
       fontSize: 16,
@@ -183,7 +180,7 @@ ThemeData darkMode = ThemeData(
       letterSpacing: 0.4,
       color: Colors.white,
     ),
-    
+
     // Label styles - UI elements
     labelLarge: GoogleFonts.merriweather(
       fontSize: 14,

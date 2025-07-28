@@ -4,6 +4,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../../common_widgets/math_markdown_widget.dart';
 
 import '../../../common_widgets/app_bar_widget.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../common_widgets/text_widgets.dart';
 import '../../../common_widgets/elevated_button_widget.dart';
 import '../../../utils/responsive.dart';
@@ -25,7 +26,7 @@ class CollectionsDetailsPage extends StatelessWidget {
     final isTablet = Responsive.isTablet(context);
 
     return Scaffold(
-      appBar: AppBarWidget(title: 'Problems Details'),
+      appBar: AppBarWidget(title: AppLocalizations.of(context)!.problemsDetails),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Center(
@@ -90,7 +91,7 @@ class CollectionsDetailsPage extends StatelessWidget {
                     children: [
                       Expanded(
                         child: ElevatedButtonWidget(
-                          text: 'Copy Solution',
+                          text: AppLocalizations.of(context)!.copySolution,
                           onPressed: () async {
                             try {
                               await Clipboard.setData(
@@ -98,9 +99,9 @@ class CollectionsDetailsPage extends StatelessWidget {
                               );
                               if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
+                                  SnackBar(
                                     content: BodyMediumText(
-                                      'Solution copied to clipboard!',
+                                      AppLocalizations.of(context)!.solutionCopiedToClipboard,
                                     ),
                                     duration: Duration(seconds: 2),
                                   ),
@@ -109,8 +110,8 @@ class CollectionsDetailsPage extends StatelessWidget {
                             } catch (e) {
                               if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: BodyMediumText('Unable to copy solution'),
+                                  SnackBar(
+                                    content: BodyMediumText(AppLocalizations.of(context)!.unableToCopySolution),
                                     duration: Duration(seconds: 2),
                                   ),
                                 );
@@ -122,31 +123,30 @@ class CollectionsDetailsPage extends StatelessWidget {
                       const SizedBox(width: 16),
                       Expanded(
                         child: ElevatedButtonWidget(
-                          text: 'Share Solution',
+                          text: AppLocalizations.of(context)!.shareSolution,
                           onPressed: () async {
                             try {
-                              final String shareText =
-                                  "Math Problem Solution:\n\n${collection.solution ?? ''}";
+                              final String shareText = AppLocalizations.of(context)!.shareText(collection.solution ?? '');
 
                               if (collection.imageUrl != null &&
                                   collection.imageUrl!.isNotEmpty) {
                                 // Share with image if available
                                 await Share.share(
                                   shareText,
-                                  subject: 'Math Problem Solution',
+                                  subject: AppLocalizations.of(context)!.mathProblemSolution,
                                 );
                               } else {
                                 // Share text only
                                 await Share.share(
                                   shareText,
-                                  subject: 'Math Problem Solution',
+                                  subject: AppLocalizations.of(context)!.mathProblemSolution,
                                 );
                               }
                             } catch (e) {
                               if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: BodyMediumText('Unable to share solution'),
+                                  SnackBar(
+                                    content: BodyMediumText(AppLocalizations.of(context)!.unableToShareSolution),
                                     duration: Duration(seconds: 2),
                                   ),
                                 );
@@ -171,7 +171,7 @@ class CollectionsDetailsPage extends StatelessWidget {
           bottom: 32.0,
         ),
         child: BodySmallText(
-          'Math AI can make mistakes, so double check the solution!',
+          AppLocalizations.of(context)!.mathAiDisclaimer,
           textAlign: TextAlign.center,
         ),
       ),

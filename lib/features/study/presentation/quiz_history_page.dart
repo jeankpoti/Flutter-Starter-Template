@@ -3,6 +3,7 @@ import '../domain/models/quiz.dart';
 import '../data/services/quiz_service.dart';
 import 'quiz_review_page.dart';
 import '../../../common_widgets/text_widgets.dart';
+import '../../../l10n/app_localizations.dart';
 
 enum SortOption {
   dateNewest,
@@ -63,7 +64,7 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: BodyMediumText('Error initializing quiz service: $e'),
+            content: BodyMediumText(AppLocalizations.of(context)!.errorInitializingQuizService),
           ),
         );
       }
@@ -211,7 +212,7 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: BodyMediumText('Error loading quiz data: $e')),
+          SnackBar(content: BodyMediumText(AppLocalizations.of(context)!.errorLoadingQuizData)),
         );
       }
     }
@@ -221,7 +222,7 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: TitleLargeText('Quiz History', fontWeight: FontWeight.bold),
+        title: TitleLargeText(AppLocalizations.of(context)!.quizHistory, fontWeight: FontWeight.bold),
         backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
         actions: [
@@ -231,7 +232,7 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
               color: Theme.of(context).colorScheme.onSurface,
             ),
             onPressed: _loadQuizData,
-            tooltip: 'Refresh Data',
+            tooltip: AppLocalizations.of(context)!.refreshData,
           ),
         ],
         bottom: PreferredSize(
@@ -246,10 +247,10 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
               ).colorScheme.onSurface.withValues(alpha: 0.6),
               indicatorColor: Theme.of(context).colorScheme.primary,
               indicatorWeight: 3.0,
-              tabs: const [
-                Tab(icon: Icon(Icons.history), text: 'History'),
-                Tab(icon: Icon(Icons.analytics), text: 'Statistics'),
-                Tab(icon: Icon(Icons.trending_up), text: 'Progress'),
+              tabs: [
+                Tab(icon: const Icon(Icons.history), text: AppLocalizations.of(context)!.history),
+                Tab(icon: const Icon(Icons.analytics), text: AppLocalizations.of(context)!.statistics),
+                Tab(icon: const Icon(Icons.trending_up), text: AppLocalizations.of(context)!.progress),
               ],
             ),
           ),
@@ -268,7 +269,7 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
                       ),
                       const SizedBox(height: _spacing4),
                       BodyMediumText(
-                        'Loading quiz history...',
+                        AppLocalizations.of(context)!.loadingQuizHistory,
                         color: Theme.of(
                           context,
                         ).colorScheme.onSurface.withValues(alpha: 0.7),
@@ -328,7 +329,7 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
                 child: TextField(
                   controller: _searchController,
                   decoration: InputDecoration(
-                    hintText: 'Search quizzes...',
+                    hintText: AppLocalizations.of(context)!.searchQuizzes,
                     hintStyle: TextStyle(
                       color: Theme.of(
                         context,
@@ -381,7 +382,9 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
                   child: Align(
                     alignment: Alignment.centerLeft,
                     child: BodySmallText(
-                      '${_filteredQuizHistory.length} result${_filteredQuizHistory.length != 1 ? 's' : ''}',
+                      _filteredQuizHistory.length == 1
+                          ? AppLocalizations.of(context)!.resultsCount(_filteredQuizHistory.length)
+                          : AppLocalizations.of(context)!.resultsCountPlural(_filteredQuizHistory.length),
                       color: Theme.of(
                         context,
                       ).colorScheme.onSurface.withValues(alpha: 0.6),
@@ -402,16 +405,16 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
     if (_quizHistory.isEmpty) {
       return _buildEmptyState(
         icon: Icons.quiz,
-        title: 'No Quiz History',
-        subtitle: 'Take your first quiz to see it here!',
+        title: AppLocalizations.of(context)!.noQuizHistory,
+        subtitle: AppLocalizations.of(context)!.noQuizHistorySubtitle,
       );
     }
 
     if (_filteredQuizHistory.isEmpty) {
       return _buildEmptyState(
         icon: Icons.search_off,
-        title: 'No Results Found',
-        subtitle: 'Try adjusting your search or filter criteria.',
+        title: AppLocalizations.of(context)!.noResultsFound,
+        subtitle: AppLocalizations.of(context)!.noResultsFoundSubtitle,
       );
     }
 
@@ -519,7 +522,7 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
                       ),
                       const SizedBox(width: 4),
                       BodySmallText(
-                        '${quiz.questions.length} questions',
+                        '${quiz.questions.length} ${AppLocalizations.of(context)!.questions}',
                         color: Theme.of(
                           context,
                         ).colorScheme.onSurface.withValues(alpha: 0.6),
@@ -550,7 +553,7 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
                         ),
                         const SizedBox(width: 4),
                         BodySmallText(
-                          '${quiz.attemptCount} attempts',
+                          '${quiz.attemptCount} ${AppLocalizations.of(context)!.attempts}',
                           color: Theme.of(
                             context,
                           ).colorScheme.onSurface.withValues(alpha: 0.6),
@@ -563,7 +566,7 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
 
                   if (completedAt != null)
                     BodySmallText(
-                      'Completed on ${_formatDate(completedAt)}',
+                      '${AppLocalizations.of(context)!.completedOn} ${_formatDate(completedAt)}',
                       color: Theme.of(
                         context,
                       ).colorScheme.onSurface.withValues(alpha: 0.5),
@@ -577,7 +580,7 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
                       Expanded(
                         child: _buildPerformanceChip(
                           icon: Icons.check_circle,
-                          label: 'Correct',
+                          label: AppLocalizations.of(context)!.correct,
                           value:
                               quiz.userAnswers.where((a) => a.isCorrect).length,
                           color: Colors.green,
@@ -587,7 +590,7 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
                       Expanded(
                         child: _buildPerformanceChip(
                           icon: Icons.cancel,
-                          label: 'Incorrect',
+                          label: AppLocalizations.of(context)!.incorrect,
                           value:
                               quiz.userAnswers
                                   .where((a) => !a.isCorrect)
@@ -599,7 +602,7 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
                       Expanded(
                         child: _buildPerformanceChip(
                           icon: Icons.help_outline,
-                          label: 'Unanswered',
+                          label: AppLocalizations.of(context)!.unanswered,
                           value: _calculateUnansweredCount(quiz),
                           color: Colors.orange,
                         ),
@@ -683,7 +686,7 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
                     ),
                     const SizedBox(width: 12),
                     TitleLargeText(
-                      'Quiz Statistics',
+                      AppLocalizations.of(context)!.quizStatistics,
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
@@ -695,7 +698,7 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
                   children: [
                     Expanded(
                       child: _buildStatCard(
-                        title: 'Total Quizzes',
+                        title: AppLocalizations.of(context)!.totalQuizzes,
                         value: _statistics['totalQuizzes']?.toString() ?? '0',
                         icon: Icons.quiz,
                       ),
@@ -703,7 +706,7 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
                     const SizedBox(width: 12),
                     Expanded(
                       child: _buildStatCard(
-                        title: 'Average Score',
+                        title: AppLocalizations.of(context)!.averageScore,
                         value:
                             '${(_statistics['averageScore'] ?? 0.0).toStringAsFixed(1)}%',
                         icon: Icons.trending_up,
@@ -718,7 +721,7 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
                   children: [
                     Expanded(
                       child: _buildStatCard(
-                        title: 'Best Score',
+                        title: AppLocalizations.of(context)!.bestScore,
                         value:
                             '${(_statistics['bestScore'] ?? 0.0).toStringAsFixed(1)}%',
                         icon: Icons.emoji_events,
@@ -727,8 +730,8 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
                     const SizedBox(width: 12),
                     Expanded(
                       child: _buildStatCard(
-                        title: 'Current Streak',
-                        value: '${_statistics['streakCount'] ?? 0} days',
+                        title: AppLocalizations.of(context)!.currentStreak,
+                        value: '${_statistics['streakCount'] ?? 0} ${AppLocalizations.of(context)!.days}',
                         icon: Icons.local_fire_department,
                       ),
                     ),
@@ -742,7 +745,7 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
 
           // Detailed statistics
           TitleMediumText(
-            'Detailed Statistics',
+            AppLocalizations.of(context)!.detailedStatistics,
             fontWeight: FontWeight.bold,
             color: Theme.of(context).colorScheme.onSurface,
           ),
@@ -752,19 +755,19 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
             children: [
               Expanded(
                 child: _buildDetailedStatCard(
-                  title: 'Questions Answered',
+                  title: AppLocalizations.of(context)!.questionsAnswered,
                   value:
                       _statistics['totalQuestionsAnswered']?.toString() ?? '0',
-                  subtitle: 'Total questions attempted',
+                  subtitle: AppLocalizations.of(context)!.totalQuestionsAttempted,
                   icon: Icons.help_outline,
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: _buildDetailedStatCard(
-                  title: 'Correct Answers',
+                  title: AppLocalizations.of(context)!.correctAnswers,
                   value: _statistics['totalCorrectAnswers']?.toString() ?? '0',
-                  subtitle: 'Questions answered correctly',
+                  subtitle: AppLocalizations.of(context)!.questionsAnsweredCorrectly,
                   icon: Icons.check_circle,
                 ),
               ),
@@ -777,7 +780,7 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
           if (_statistics['recentActivity'] != null &&
               (_statistics['recentActivity'] as List).isNotEmpty) ...[
             TitleMediumText(
-              'Recent Activity',
+              AppLocalizations.of(context)!.recentActivity,
               fontWeight: FontWeight.bold,
               color: Theme.of(context).colorScheme.onSurface,
             ),
@@ -916,7 +919,7 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 BodyMediumText(
-                  activity['title'] ?? 'Quiz',
+                  activity['title'] ?? AppLocalizations.of(context)!.quiz,
                   fontWeight: FontWeight.w600,
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
@@ -945,8 +948,8 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
     if (_performanceTrends.isEmpty) {
       return _buildEmptyState(
         icon: Icons.trending_up,
-        title: 'No Progress Data',
-        subtitle: 'Take more quizzes to see your progress trends!',
+        title: AppLocalizations.of(context)!.noProgressData,
+        subtitle: AppLocalizations.of(context)!.noProgressDataSubtitle,
       );
     }
 
@@ -956,7 +959,7 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TitleMediumText(
-            'Performance Trends (Last 30 Days)',
+            AppLocalizations.of(context)!.performanceTrends,
             fontWeight: FontWeight.bold,
             color: Theme.of(context).colorScheme.onSurface,
           ),
@@ -980,12 +983,12 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     TitleSmallText(
-                      'Average Score Trend',
+                      AppLocalizations.of(context)!.averageScoreTrend,
                       fontWeight: FontWeight.w600,
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
                     BodySmallText(
-                      '${_performanceTrends.length} days with activity',
+                      '${_performanceTrends.length} ${AppLocalizations.of(context)!.daysWithActivity}',
                       color: Theme.of(
                         context,
                       ).colorScheme.onSurface.withValues(alpha: 0.6),
@@ -1040,7 +1043,7 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
 
           // Progress insights
           TitleMediumText(
-            'Progress Insights',
+            AppLocalizations.of(context)!.progressInsights,
             fontWeight: FontWeight.bold,
             color: Theme.of(context).colorScheme.onSurface,
           ),
@@ -1049,15 +1052,15 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
           if (_performanceTrends.isNotEmpty) ...[
             _buildInsightCard(
               icon: Icons.show_chart,
-              title: 'Recent Performance',
+              title: AppLocalizations.of(context)!.recentPerformance,
               description: _getPerformanceInsight(),
             ),
             const SizedBox(height: 12),
             _buildInsightCard(
               icon: Icons.calendar_today,
-              title: 'Activity Pattern',
+              title: AppLocalizations.of(context)!.activityPattern,
               description:
-                  'You completed quizzes on ${_performanceTrends.length} different days this month.',
+                  AppLocalizations.of(context)!.activityPatternDescription(_performanceTrends.length),
             ),
           ],
         ],
@@ -1186,18 +1189,18 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
     final difference = now.difference(date).inDays;
 
     if (difference == 0) {
-      return 'Today';
+      return AppLocalizations.of(context)!.today;
     } else if (difference == 1) {
-      return 'Yesterday';
+      return AppLocalizations.of(context)!.yesterday;
     } else if (difference < 7) {
-      return '$difference days ago';
+      return AppLocalizations.of(context)!.daysAgo(difference);
     } else {
       return '${date.day}/${date.month}/${date.year}';
     }
   }
 
   String _getPerformanceInsight() {
-    if (_performanceTrends.isEmpty) return 'No recent activity';
+    if (_performanceTrends.isEmpty) return AppLocalizations.of(context)!.noRecentActivity;
 
     final recent =
         _performanceTrends.length > 5
@@ -1206,17 +1209,17 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
     final scores = recent.map((t) => t['averageScore'] as double).toList();
 
     if (scores.length < 2) {
-      return 'Take more quizzes to see performance trends.';
+      return AppLocalizations.of(context)!.takeMoreQuizzes;
     }
 
     final trend = scores.last - scores.first;
 
     if (trend > 5) {
-      return 'Great improvement! Your scores are trending upward.';
+      return AppLocalizations.of(context)!.performanceImprovement;
     } else if (trend < -5) {
-      return 'Your recent scores have dipped. Keep practicing to improve!';
+      return AppLocalizations.of(context)!.performanceDecline;
     } else {
-      return 'Your performance is consistent. Keep up the good work!';
+      return AppLocalizations.of(context)!.performanceConsistent;
     }
   }
 
@@ -1315,34 +1318,34 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
   String _getFilterLabel(FilterOption filter) {
     switch (filter) {
       case FilterOption.all:
-        return 'All';
+        return AppLocalizations.of(context)!.allFilter;
       case FilterOption.completed:
-        return 'Completed';
+        return AppLocalizations.of(context)!.completedFilter;
       case FilterOption.inProgress:
-        return 'In Progress';
+        return AppLocalizations.of(context)!.inProgressFilter;
       case FilterOption.easy:
-        return 'Easy';
+        return AppLocalizations.of(context)!.easyFilter;
       case FilterOption.medium:
-        return 'Medium';
+        return AppLocalizations.of(context)!.mediumFilter;
       case FilterOption.hard:
-        return 'Hard';
+        return AppLocalizations.of(context)!.hardFilter;
     }
   }
 
   String _getSortLabel(SortOption sort) {
     switch (sort) {
       case SortOption.dateNewest:
-        return 'Newest';
+        return AppLocalizations.of(context)!.newestSort;
       case SortOption.dateOldest:
-        return 'Oldest';
+        return AppLocalizations.of(context)!.oldestSort;
       case SortOption.scoreHighest:
-        return 'High Score';
+        return AppLocalizations.of(context)!.highScoreSort;
       case SortOption.scoreLowest:
-        return 'Low Score';
+        return AppLocalizations.of(context)!.lowScoreSort;
       case SortOption.titleAZ:
-        return 'A-Z';
+        return AppLocalizations.of(context)!.azSort;
       case SortOption.titleZA:
-        return 'Z-A';
+        return AppLocalizations.of(context)!.zaSort;
     }
   }
 
@@ -1381,7 +1384,7 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       TitleMediumText(
-                        'Filter Quizzes',
+                        AppLocalizations.of(context)!.filterQuizzes,
                         fontWeight: FontWeight.bold,
                       ),
                       const SizedBox(height: _spacing4),
@@ -1457,7 +1460,7 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       TitleMediumText(
-                        'Sort Quizzes',
+                        AppLocalizations.of(context)!.sortQuizzes,
                         fontWeight: FontWeight.bold,
                       ),
                       const SizedBox(height: _spacing4),

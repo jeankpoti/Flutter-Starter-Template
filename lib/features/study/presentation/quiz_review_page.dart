@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../common_widgets/text_widgets.dart';
 import '../domain/models/quiz.dart';
+import '../../../l10n/app_localizations.dart';
 
 class QuizReviewPage extends StatelessWidget {
   final Quiz quiz;
@@ -14,12 +15,12 @@ class QuizReviewPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: TitleLargeText('Quiz Review: ${quiz.title}'),
+        title: TitleLargeText(AppLocalizations.of(context)!.quizReviewTitle(quiz.title)),
         actions: [
           IconButton(
             icon: const Icon(Icons.share),
             onPressed: () => _shareQuizResults(context),
-            tooltip: 'Share Results',
+            tooltip: AppLocalizations.of(context)!.shareResults,
           ),
         ],
       ),
@@ -35,7 +36,7 @@ class QuizReviewPage extends StatelessWidget {
             
             // Questions Review
             TitleLargeText(
-              'Questions Review',
+              AppLocalizations.of(context)!.questionsReview,
               fontWeight: FontWeight.bold,
               color: Theme.of(context).colorScheme.onSurface,
             ),
@@ -98,7 +99,7 @@ class QuizReviewPage extends StatelessWidget {
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
                     TitleSmallText(
-                      'Score: ${score.toStringAsFixed(1)}%',
+                      AppLocalizations.of(context)!.score(score.toStringAsFixed(1)),
                       fontWeight: FontWeight.w600,
                       color: _getScoreColor(score),
                     ),
@@ -116,7 +117,7 @@ class QuizReviewPage extends StatelessWidget {
               Expanded(
                 child: _buildSummaryItem(
                   context,
-                  'Correct',
+                  AppLocalizations.of(context)!.correct,
                   summary['correct']!,
                   Colors.green,
                   Icons.check_circle,
@@ -125,7 +126,7 @@ class QuizReviewPage extends StatelessWidget {
               Expanded(
                 child: _buildSummaryItem(
                   context,
-                  'Incorrect',
+                  AppLocalizations.of(context)!.incorrect,
                   summary['incorrect']!,
                   Colors.red,
                   Icons.cancel,
@@ -134,7 +135,7 @@ class QuizReviewPage extends StatelessWidget {
               Expanded(
                 child: _buildSummaryItem(
                   context,
-                  'Unanswered',
+                  AppLocalizations.of(context)!.unanswered,
                   summary['unanswered']!,
                   Colors.orange,
                   Icons.help_outline,
@@ -155,7 +156,7 @@ class QuizReviewPage extends StatelessWidget {
               ),
               const SizedBox(width: 4),
               BodySmallText(
-                'Completed: ${_formatDate(quiz.lastAttemptAt ?? quiz.createdAt)}',
+                AppLocalizations.of(context)!.completed(_formatDate(context, quiz.lastAttemptAt ?? quiz.createdAt)),
                 color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
               ),
               const SizedBox(width: 16),
@@ -166,7 +167,7 @@ class QuizReviewPage extends StatelessWidget {
               ),
               const SizedBox(width: 4),
               BodySmallText(
-                '${quiz.questions.length} questions',
+                AppLocalizations.of(context)!.questionsCount(quiz.questions.length),
                 color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
               ),
             ],
@@ -269,7 +270,7 @@ class QuizReviewPage extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: LabelMediumText(
-                  _getStatusText(isAnswered, isCorrect),
+                  _getStatusText(context, isAnswered, isCorrect),
                   fontWeight: FontWeight.w600,
                   color: statusColor,
                 ),
@@ -282,7 +283,7 @@ class QuizReviewPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: LabelSmallText(
-                    '${question.pointValue} pts',
+                    AppLocalizations.of(context)!.pointsValue(question.pointValue),
                     fontWeight: FontWeight.w600,
                     color: Theme.of(context).colorScheme.secondary,
                   ),
@@ -349,7 +350,7 @@ class QuizReviewPage extends StatelessWidget {
                       ),
                       const SizedBox(width: 6),
                       LabelMediumText(
-                        'Explanation',
+                        AppLocalizations.of(context)!.explanation,
                         fontWeight: FontWeight.w600,
                         color: Theme.of(context).colorScheme.secondary,
                       ),
@@ -430,13 +431,13 @@ class QuizReviewPage extends StatelessWidget {
               ),
               if (isUserSelected && !isCorrectAnswer)
                 LabelSmallText(
-                  'Your answer',
+                  AppLocalizations.of(context)!.yourAnswer,
                   color: textColor,
                   fontWeight: FontWeight.w600,
                 ),
               if (isCorrectAnswer)
                 LabelSmallText(
-                  'Correct answer',
+                  AppLocalizations.of(context)!.correctAnswer,
                   color: textColor,
                   fontWeight: FontWeight.w600,
                 ),
@@ -463,7 +464,7 @@ class QuizReviewPage extends StatelessWidget {
         // Your Answer
         if (wasAnswered) ...[
           LabelMediumText(
-            'Your Answer:',
+            AppLocalizations.of(context)!.yourAnswerLabel,
             fontWeight: FontWeight.w600,
             color: Theme.of(context).colorScheme.onSurface,
           ),
@@ -517,7 +518,7 @@ class QuizReviewPage extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 BodyMediumText(
-                  'Question was not answered',
+                  AppLocalizations.of(context)!.questionNotAnswered,
                   color: Colors.orange,
                   fontWeight: FontWeight.w500,
                 ),
@@ -529,7 +530,7 @@ class QuizReviewPage extends StatelessWidget {
         
         // Correct Answer
         LabelMediumText(
-          'Correct Answer:',
+          AppLocalizations.of(context)!.correctAnswerLabel,
           fontWeight: FontWeight.w600,
           color: Theme.of(context).colorScheme.onSurface,
         ),
@@ -564,9 +565,9 @@ class QuizReviewPage extends StatelessWidget {
     );
   }
 
-  String _getStatusText(bool isAnswered, bool isCorrect) {
-    if (!isAnswered) return 'Unanswered';
-    return isCorrect ? 'Correct' : 'Incorrect';
+  String _getStatusText(BuildContext context, bool isAnswered, bool isCorrect) {
+    if (!isAnswered) return AppLocalizations.of(context)!.unanswered;
+    return isCorrect ? AppLocalizations.of(context)!.correct : AppLocalizations.of(context)!.incorrect;
   }
 
   Color _getScoreColor(double score) {
@@ -581,25 +582,25 @@ class QuizReviewPage extends StatelessWidget {
     return Icons.trending_down;
   }
 
-  String _formatDate(DateTime date) {
+  String _formatDate(BuildContext context, DateTime date) {
     final now = DateTime.now();
     final difference = now.difference(date).inDays;
     
     if (difference == 0) {
-      return 'Today at ${_formatTime(date)}';
+      return AppLocalizations.of(context)!.todayAt(_formatTime(context, date));
     } else if (difference == 1) {
-      return 'Yesterday at ${_formatTime(date)}';
+      return AppLocalizations.of(context)!.yesterdayAt(_formatTime(context, date));
     } else if (difference < 7) {
-      return '$difference days ago';
+      return AppLocalizations.of(context)!.daysAgo(difference);
     } else {
       return '${date.day}/${date.month}/${date.year}';
     }
   }
 
-  String _formatTime(DateTime date) {
+  String _formatTime(BuildContext context, DateTime date) {
     final hour = date.hour;
     final minute = date.minute.toString().padLeft(2, '0');
-    final period = hour >= 12 ? 'PM' : 'AM';
+    final period = hour >= 12 ? AppLocalizations.of(context)!.pm : AppLocalizations.of(context)!.am;
     final displayHour = hour == 0 ? 12 : (hour > 12 ? hour - 12 : hour);
     return '$displayHour:$minute $period';
   }
@@ -609,20 +610,20 @@ class QuizReviewPage extends StatelessWidget {
     final summary = quiz.getPerformanceSummary();
     
     final shareText = '''
-Quiz Results: ${quiz.title}
-Score: ${score.toStringAsFixed(1)}%
+${AppLocalizations.of(context)!.quizResultsShare(quiz.title)}
+${AppLocalizations.of(context)!.shareScore(score.toStringAsFixed(1))}
 
-✅ Correct: ${summary['correct']}
-❌ Incorrect: ${summary['incorrect']}
-⚪ Unanswered: ${summary['unanswered']}
+${AppLocalizations.of(context)!.shareCorrect(summary['correct']!)}
+${AppLocalizations.of(context)!.shareIncorrect(summary['incorrect']!)}
+${AppLocalizations.of(context)!.shareUnanswered(summary['unanswered']!)}
 
-Total Questions: ${quiz.questions.length}
+${AppLocalizations.of(context)!.totalQuestions(quiz.questions.length)}
 ''';
 
     // In a real app, you would use share_plus package
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: BodyMediumText('Share functionality would open here\n\n$shareText'),
+        content: BodyMediumText(AppLocalizations.of(context)!.shareFunctionality(shareText)),
         duration: const Duration(seconds: 3),
       ),
     );

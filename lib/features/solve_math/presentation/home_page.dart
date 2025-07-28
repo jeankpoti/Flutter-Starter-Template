@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../l10n/app_localizations.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
@@ -38,8 +39,6 @@ class _HomePageState extends State<HomePage>
   // Design system spacing constants
   static const double _spacing4 = 16.0;
   static const double _spacing6 = 24.0;
-  static const double _spacing8 = 32.0;
-  static const double _spacing10 = 40.0;
 
   @override
   void initState() {
@@ -74,7 +73,7 @@ class _HomePageState extends State<HomePage>
       } catch (e) {
         if (mounted) {
           _showSnackBarMessage(
-            'Error showing subscription options. Please try again.',
+            AppLocalizations.of(context)!.subscriptionError,
             isError: true,
           );
         }
@@ -135,10 +134,12 @@ class _HomePageState extends State<HomePage>
       });
     } catch (e) {
       setState(() => _isLoading = false);
-      _showSnackBarMessage(
-        'Failed to take picture. Please try again.',
-        isError: true,
-      );
+      if (mounted) {
+        _showSnackBarMessage(
+          AppLocalizations.of(context)!.takePictureError,
+          isError: true,
+        );
+      }
     }
   }
 
@@ -184,10 +185,12 @@ class _HomePageState extends State<HomePage>
       });
     } catch (e) {
       setState(() => _isLoading = false);
-      _showSnackBarMessage(
-        'Failed to upload picture. Please try again.',
-        isError: true,
-      );
+      if (mounted) {
+        _showSnackBarMessage(
+          AppLocalizations.of(context)!.uploadPictureError,
+          isError: true,
+        );
+      }
     }
   }
 
@@ -199,15 +202,15 @@ class _HomePageState extends State<HomePage>
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12.0),
             ),
-            title: TitleLargeText('$permissionType Permission Required'),
+            title: TitleLargeText('$permissionType ${AppLocalizations.of(context)!.permissionRequired}'),
             content: BodyMediumText(
-              'Please enable $permissionType access in your device settings to continue.',
+              AppLocalizations.of(context)!.enableAccessMessage,
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(ctx).pop(),
                 child: LabelLargeText(
-                  'Cancel',
+                  AppLocalizations.of(context)!.cancel,
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
@@ -220,7 +223,7 @@ class _HomePageState extends State<HomePage>
                   backgroundColor: Theme.of(context).colorScheme.primary,
                   foregroundColor: Theme.of(context).colorScheme.onPrimary,
                 ),
-                child: const LabelLargeText('Open Settings'),
+                child: LabelLargeText(AppLocalizations.of(context)!.openSettings),
               ),
             ],
           ),
@@ -232,7 +235,12 @@ class _HomePageState extends State<HomePage>
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: BodyMediumText(message),
+        content: BodyMediumText(
+          message,
+          color: isError
+              ? Theme.of(context).colorScheme.onErrorContainer
+              : Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
         backgroundColor:
             isError
                 ? Theme.of(context).colorScheme.errorContainer
@@ -249,7 +257,7 @@ class _HomePageState extends State<HomePage>
       context.read<SolveMathCubit>().shareResult(imageFile!, result);
     } catch (e) {
       _showSnackBarMessage(
-        'Failed to share result. Please try again.',
+        AppLocalizations.of(context)!.shareError,
         isError: true,
       );
     }
@@ -273,7 +281,7 @@ class _HomePageState extends State<HomePage>
                 const SizedBox(width: 12),
                 Expanded(
                   child: HeadlineSmallText(
-                    'Math Solution',
+                    AppLocalizations.of(context)!.mathSolution,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -325,7 +333,7 @@ class _HomePageState extends State<HomePage>
                         const SizedBox(width: 8),
                         Expanded(
                           child: BodySmallText(
-                            'AI can make mistakes, so double check the solution!',
+                            AppLocalizations.of(context)!.aiDisclaimer,
                             color:
                                 Theme.of(
                                   context,
@@ -342,7 +350,7 @@ class _HomePageState extends State<HomePage>
               TextButton(
                 onPressed: () => Navigator.of(ctx).pop(),
                 child: LabelLargeText(
-                  'Close',
+                  AppLocalizations.of(context)!.close,
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
@@ -352,7 +360,10 @@ class _HomePageState extends State<HomePage>
                   Navigator.of(ctx).pop();
                 },
                 icon: const Icon(Icons.share, size: 18),
-                label: const LabelLargeText('Share'),
+                label: LabelLargeText(
+                  AppLocalizations.of(context)!.share,
+                  color: Theme.of(context).colorScheme.onSecondary,
+                ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).colorScheme.secondary,
                   foregroundColor: Theme.of(context).colorScheme.onSecondary,
@@ -369,7 +380,7 @@ class _HomePageState extends State<HomePage>
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
-      appBar: AppBarWidget(title: 'Solve Math Problem'),
+      appBar: AppBarWidget(title: AppLocalizations.of(context)!.solveMathProblem),
       body: BlocListener<SolveMathCubit, SolveMathState>(
         listenWhen:
             (previous, current) =>
@@ -387,7 +398,7 @@ class _HomePageState extends State<HomePage>
           }
           if (state.isError) {
             _showSnackBarMessage(
-              'Error solving math problem. Please try again.',
+              AppLocalizations.of(context)!.mathSolvingError,
               isError: true,
             );
           }
@@ -424,13 +435,13 @@ class _HomePageState extends State<HomePage>
                           ),
                           const SizedBox(height: 12),
                           HeadlineMediumText(
-                            'AI-Powered Math Solver',
+                            AppLocalizations.of(context)!.aiMathSolver,
                             fontWeight: FontWeight.bold,
                             color: Theme.of(context).colorScheme.onSurface,
                           ),
                           const SizedBox(height: 8),
                           BodyLargeText(
-                            'Capture or type any math problem and get instant solutions with step-by-step explanations',
+                            AppLocalizations.of(context)!.mathSolverDescription,
                             color: Theme.of(
                               context,
                             ).colorScheme.onSurface.withValues(alpha: 0.8),
@@ -506,9 +517,9 @@ class _HomePageState extends State<HomePage>
         labelStyle: Theme.of(
           context,
         ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600),
-        tabs: const [
-          Tab(icon: Icon(Icons.camera_alt_outlined), text: 'Photo', height: 60),
-          Tab(icon: Icon(Icons.edit_outlined), text: 'Text', height: 60),
+        tabs: [
+          Tab(icon: const Icon(Icons.camera_alt_outlined), text: AppLocalizations.of(context)!.photo, height: 60),
+          Tab(icon: const Icon(Icons.edit_outlined), text: AppLocalizations.of(context)!.text, height: 60),
         ],
       ),
     );
@@ -563,14 +574,14 @@ class _HomePageState extends State<HomePage>
                       ),
                       const SizedBox(height: 16),
                       BodyLargeText(
-                        'No image selected',
+                        AppLocalizations.of(context)!.noImageSelected,
                         color: Theme.of(
                           context,
                         ).colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                       const SizedBox(height: 8),
                       BodyMediumText(
-                        'Capture or upload a math problem',
+                        AppLocalizations.of(context)!.captureOrUpload,
                         color: Theme.of(
                           context,
                         ).colorScheme.onSurface.withValues(alpha: 0.5),
@@ -598,8 +609,8 @@ class _HomePageState extends State<HomePage>
                           const SizedBox(height: _spacing4),
                           BodyMediumText(
                             state.isIdentifying
-                                ? 'Analyzing problem...'
-                                : 'Processing image...',
+                                ? AppLocalizations.of(context)!.analyzingProblem
+                                : AppLocalizations.of(context)!.processingImage,
                             color: Theme.of(context).colorScheme.primary,
                             fontWeight: FontWeight.w500,
                           ),
@@ -629,8 +640,8 @@ class _HomePageState extends State<HomePage>
                 icon: Icons.camera_alt,
                 label:
                     _isCamera && _imageFile != null && state.result.isEmpty
-                        ? 'Solve Problem'
-                        : 'Take Photo',
+                        ? AppLocalizations.of(context)!.solveProblem
+                        : AppLocalizations.of(context)!.takePhoto,
                 onPressed:
                     _isLoading
                         ? null
@@ -657,8 +668,8 @@ class _HomePageState extends State<HomePage>
                 icon: Icons.photo_library,
                 label:
                     _isGallery && _imageFile != null && state.result.isEmpty
-                        ? 'Solve Problem'
-                        : 'Upload Photo',
+                        ? AppLocalizations.of(context)!.solveProblem
+                        : AppLocalizations.of(context)!.uploadPhoto,
                 onPressed:
                     _isLoading
                         ? null
@@ -692,7 +703,7 @@ class _HomePageState extends State<HomePage>
             width: double.infinity,
             child: _buildActionButton(
               icon: Icons.refresh,
-              label: 'Reset',
+              label: AppLocalizations.of(context)!.reset,
               onPressed: () {
                 setState(() {
                   _imageFile = null;
@@ -732,7 +743,7 @@ class _HomePageState extends State<HomePage>
                   ),
                 )
                 : Icon(icon, size: 20),
-        label: LabelLargeText(label),
+        label: LabelLargeText(label, color: Theme.of(context).colorScheme.onSecondary),
         style: ElevatedButton.styleFrom(
           backgroundColor: Theme.of(context).colorScheme.secondary,
           foregroundColor: Theme.of(context).colorScheme.onSecondary,
@@ -747,7 +758,7 @@ class _HomePageState extends State<HomePage>
       return OutlinedButton.icon(
         onPressed: onPressed,
         icon: Icon(icon, size: 20),
-        label: LabelLargeText(label),
+        label: LabelLargeText(label, color: Theme.of(context).colorScheme.onSecondary),
         style: OutlinedButton.styleFrom(
           backgroundColor: Theme.of(context).colorScheme.secondary,
           foregroundColor: Theme.of(context).colorScheme.onSecondary,
@@ -772,7 +783,7 @@ class _HomePageState extends State<HomePage>
                   ),
                 )
                 : Icon(icon, size: 20),
-        label: LabelLargeText(label),
+        label: LabelLargeText(label, color: Theme.of(context).colorScheme.onSecondary),
         style: FilledButton.styleFrom(
           backgroundColor: Theme.of(context).colorScheme.secondary,
           foregroundColor: Theme.of(context).colorScheme.onSecondary,
@@ -818,7 +829,7 @@ class _HomePageState extends State<HomePage>
                     ),
                     const SizedBox(width: 12),
                     TitleMediumText(
-                      'Type your math problem',
+                      AppLocalizations.of(context)!.typeMathProblem,
                       fontWeight: FontWeight.w600,
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
@@ -830,7 +841,7 @@ class _HomePageState extends State<HomePage>
                   maxLines: 6,
                   decoration: InputDecoration(
                     hintText:
-                        'Enter your math problem here...\n\nExample:\n2x + 5 = 15\nSolve for x',
+                        '${AppLocalizations.of(context)!.enterMathProblem}\n\n${AppLocalizations.of(context)!.exampleProblem}',
                     hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Theme.of(
                         context,
@@ -884,7 +895,7 @@ class _HomePageState extends State<HomePage>
                             : () async {
                               if (_textController.text.trim().isEmpty) {
                                 _showSnackBarMessage(
-                                  'Please enter a math problem to solve.',
+                                  AppLocalizations.of(context)!.enterMathProblemError,
                                   isError: true,
                                 );
                                 return;
@@ -905,8 +916,9 @@ class _HomePageState extends State<HomePage>
                             )
                             : const Icon(Icons.auto_awesome, size: 20),
                     label: LabelLargeText(
-                      state.isIdentifying ? 'Solving...' : 'Solve Problem',
+                      state.isIdentifying ? AppLocalizations.of(context)!.solving : AppLocalizations.of(context)!.solveProblem,
                       fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.onSecondary,
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.secondary,
@@ -944,7 +956,7 @@ class _HomePageState extends State<HomePage>
                     ),
                     const SizedBox(width: 8),
                     TitleSmallText(
-                      'Tips for better results',
+                      AppLocalizations.of(context)!.tipsForBetterResults,
                       fontWeight: FontWeight.w600,
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
@@ -952,9 +964,9 @@ class _HomePageState extends State<HomePage>
                 ),
                 const SizedBox(height: 12),
                 ...[
-                  'Be specific with your question (e.g., "Solve for x")',
-                  'Use proper mathematical notation',
-                  'Include all necessary information',
+                  AppLocalizations.of(context)!.beSpecificTip,
+                  AppLocalizations.of(context)!.useProperNotationTip,
+                  AppLocalizations.of(context)!.includeNecessaryInfoTip,
                 ].map(
                   (tip) => Padding(
                     padding: const EdgeInsets.only(bottom: 4),

@@ -5,6 +5,7 @@ import '../data/services/quiz_service.dart';
 import 'quiz_review_page.dart';
 import '../../../common_widgets/math_symbols_widget.dart';
 import '../../../common_widgets/text_widgets.dart';
+import '../../../l10n/app_localizations.dart';
 
 class QuizPage extends StatefulWidget {
   final Quiz quiz;
@@ -73,8 +74,8 @@ class _QuizPageState extends State<QuizPage> {
   Widget build(BuildContext context) {
     if (_currentQuiz.questions.isEmpty) {
       return Scaffold(
-        appBar: AppBar(title: const TitleLargeText('Quiz')),
-        body: const Center(child: BodyMediumText('No questions available')),
+        appBar: AppBar(title: TitleLargeText(AppLocalizations.of(context)!.quiz)),
+        body: Center(child: BodyMediumText(AppLocalizations.of(context)!.noQuestionsAvailable)),
       );
     }
 
@@ -137,7 +138,7 @@ class _QuizPageState extends State<QuizPage> {
           Row(
             children: [
               TitleMediumText(
-                'Question ${_currentQuestionIndex + 1} of ${_currentQuiz.questions.length}',
+                AppLocalizations.of(context)!.questionProgress(_currentQuestionIndex + 1, _currentQuiz.questions.length),
                 fontWeight: FontWeight.w600,
                 color: Theme.of(context).colorScheme.onSurface,
               ),
@@ -271,7 +272,7 @@ class _QuizPageState extends State<QuizPage> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: LabelSmallText(
-                        '${question.pointValue} ${question.pointValue == 1 ? 'point' : 'points'}',
+                        AppLocalizations.of(context)!.pointsDisplay(question.pointValue, question.pointValue == 1 ? AppLocalizations.of(context)!.point : AppLocalizations.of(context)!.points),
                         fontWeight: FontWeight.w600,
                         color:
                             Theme.of(context).colorScheme.onTertiaryContainer,
@@ -313,7 +314,7 @@ class _QuizPageState extends State<QuizPage> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: AppTextWidget(
-                            'Hint: ${question.hint}',
+                            AppLocalizations.of(context)!.hintLabel(question.hint!),
                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               fontStyle: FontStyle.italic,
                             ),
@@ -357,7 +358,7 @@ class _QuizPageState extends State<QuizPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         TitleMediumText(
-          'Select the correct answer:',
+          AppLocalizations.of(context)!.selectCorrectAnswer,
           fontWeight: FontWeight.w600,
           color: Theme.of(context).colorScheme.onSurface,
         ),
@@ -450,7 +451,7 @@ class _QuizPageState extends State<QuizPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         TitleMediumText(
-          'Select True or False:',
+          AppLocalizations.of(context)!.selectTrueFalse,
           fontWeight: FontWeight.w600,
           color: Theme.of(context).colorScheme.onSurface,
         ),
@@ -536,7 +537,7 @@ class _QuizPageState extends State<QuizPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         TitleMediumText(
-          'Enter your answer:',
+          AppLocalizations.of(context)!.enterYourAnswer,
           fontWeight: FontWeight.w600,
           color: Theme.of(context).colorScheme.onSurface,
         ),
@@ -549,7 +550,7 @@ class _QuizPageState extends State<QuizPage> {
               },
               controller: _getTextController(question.id),
               decoration: InputDecoration(
-                hintText: 'Type your answer here...',
+                hintText: AppLocalizations.of(context)!.typeAnswerHere,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -576,7 +577,7 @@ class _QuizPageState extends State<QuizPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         TitleMediumText(
-          'Fill in the blank:',
+          AppLocalizations.of(context)!.fillInBlank,
           fontWeight: FontWeight.w600,
           color: Theme.of(context).colorScheme.onSurface,
         ),
@@ -589,7 +590,7 @@ class _QuizPageState extends State<QuizPage> {
               },
               controller: _getTextController(question.id),
               decoration: InputDecoration(
-                hintText: 'Enter the missing word or expression...',
+                hintText: AppLocalizations.of(context)!.enterMissingWord,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -635,7 +636,7 @@ class _QuizPageState extends State<QuizPage> {
               child: ElevatedButton.icon(
                 onPressed: _goToPreviousQuestion,
                 icon: const Icon(Icons.arrow_back),
-                label: const LabelLargeText('Previous'),
+                label: LabelLargeText(AppLocalizations.of(context)!.previous),
                 style: ElevatedButton.styleFrom(
                   backgroundColor:
                       Theme.of(context).colorScheme.surfaceContainerHighest,
@@ -652,7 +653,7 @@ class _QuizPageState extends State<QuizPage> {
             child: ElevatedButton.icon(
               onPressed: isLastQuestion ? _finishQuiz : _goToNextQuestion,
               icon: Icon(isLastQuestion ? Icons.check : Icons.arrow_forward),
-              label: LabelLargeText(isLastQuestion ? 'Finish Quiz' : 'Next'),
+              label: LabelLargeText(isLastQuestion ? AppLocalizations.of(context)!.finishQuiz : AppLocalizations.of(context)!.next),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.secondary,
                 foregroundColor: Theme.of(context).colorScheme.onSecondary,
@@ -704,7 +705,7 @@ class _QuizPageState extends State<QuizPage> {
                 ),
                 const SizedBox(height: 16),
                 HeadlineSmallText(
-                  'Quiz Completed!',
+                  AppLocalizations.of(context)!.quizCompleted,
                   fontWeight: FontWeight.bold,
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
@@ -740,7 +741,7 @@ class _QuizPageState extends State<QuizPage> {
                 child: ElevatedButton.icon(
                   onPressed: () => Navigator.of(context).pop(),
                   icon: const Icon(Icons.home),
-                  label: const LabelLargeText('Back to Study'),
+                  label: LabelLargeText(AppLocalizations.of(context)!.backToStudy),
                   style: ElevatedButton.styleFrom(
                     backgroundColor:
                         Theme.of(context).colorScheme.surfaceContainerHighest,
@@ -753,7 +754,7 @@ class _QuizPageState extends State<QuizPage> {
                 child: ElevatedButton.icon(
                   onPressed: _retakeQuiz,
                   icon: const Icon(Icons.refresh),
-                  label: const LabelLargeText('Retake Quiz'),
+                  label: LabelLargeText(AppLocalizations.of(context)!.retakeQuiz),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.secondary,
                     foregroundColor: Theme.of(context).colorScheme.onSecondary,
@@ -781,7 +782,7 @@ class _QuizPageState extends State<QuizPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TitleMediumText(
-            'Performance Breakdown',
+            AppLocalizations.of(context)!.performanceBreakdown,
             fontWeight: FontWeight.bold,
             color: Theme.of(context).colorScheme.onSurface,
           ),
@@ -790,19 +791,19 @@ class _QuizPageState extends State<QuizPage> {
             children: [
               _buildStatItem(
                 icon: Icons.check_circle,
-                label: 'Correct',
+                label: AppLocalizations.of(context)!.correct,
                 value: summary['correct']!,
                 color: Colors.green,
               ),
               _buildStatItem(
                 icon: Icons.cancel,
-                label: 'Incorrect',
+                label: AppLocalizations.of(context)!.incorrect,
                 value: summary['incorrect']!,
                 color: Colors.red,
               ),
               _buildStatItem(
                 icon: Icons.help_outline,
-                label: 'Unanswered',
+                label: AppLocalizations.of(context)!.unanswered,
                 value: summary['unanswered']!,
                 color: Colors.orange,
               ),
@@ -817,7 +818,7 @@ class _QuizPageState extends State<QuizPage> {
             child: ElevatedButton.icon(
               onPressed: () => _navigateToDetailedReview(),
               icon: const Icon(Icons.visibility),
-              label: const LabelLargeText('View Detailed Review'),
+              label: LabelLargeText(AppLocalizations.of(context)!.viewDetailedReview),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.secondary,
                 foregroundColor: Theme.of(context).colorScheme.onSecondary,
@@ -961,13 +962,13 @@ class _QuizPageState extends State<QuizPage> {
   String _getQuestionTypeLabel(QuestionType type) {
     switch (type) {
       case QuestionType.multipleChoice:
-        return 'Multiple Choice';
+        return AppLocalizations.of(context)!.multipleChoice;
       case QuestionType.shortAnswer:
-        return 'Short Answer';
+        return AppLocalizations.of(context)!.shortAnswer;
       case QuestionType.trueFalse:
-        return 'True/False';
+        return AppLocalizations.of(context)!.trueFalse;
       case QuestionType.fillInTheBlank:
-        return 'Fill in the Blank';
+        return AppLocalizations.of(context)!.fillInTheBlank;
     }
   }
 
@@ -979,15 +980,15 @@ class _QuizPageState extends State<QuizPage> {
 
   String _getScoreMessage(double score) {
     if (score >= 90) {
-      return 'Excellent work! You have mastered this material.';
+      return AppLocalizations.of(context)!.excellentWork;
     } else if (score >= 80) {
-      return 'Great job! You have a solid understanding.';
+      return AppLocalizations.of(context)!.greatJob;
     } else if (score >= 70) {
-      return 'Good work! Consider reviewing some topics.';
+      return AppLocalizations.of(context)!.goodWork;
     } else if (score >= 60) {
-      return 'Fair performance. Some additional study recommended.';
+      return AppLocalizations.of(context)!.fairPerformance;
     } else {
-      return 'Consider reviewing the material and retaking the quiz.';
+      return AppLocalizations.of(context)!.reviewMaterial;
     }
   }
 
@@ -998,18 +999,18 @@ class _QuizPageState extends State<QuizPage> {
           context: context,
           builder:
               (context) => AlertDialog(
-                title: const TitleMediumText('Exit Quiz?'),
-                content: const BodyMediumText(
-                  'Are you sure you want to exit? Your progress will be lost.',
+                title: TitleMediumText(AppLocalizations.of(context)!.exitQuiz),
+                content: BodyMediumText(
+                  AppLocalizations.of(context)!.exitQuizConfirmation,
                 ),
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(false),
-                    child: const LabelLargeText('Cancel'),
+                    child: LabelLargeText(AppLocalizations.of(context)!.cancel),
                   ),
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(true),
-                    child: const LabelLargeText('Exit'),
+                    child: LabelLargeText(AppLocalizations.of(context)!.exit),
                   ),
                 ],
               ),
@@ -1038,7 +1039,7 @@ class _QuizPageState extends State<QuizPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: BodyMediumText(
-              'Quiz results saved to history',
+              AppLocalizations.of(context)!.quizResultsSaved,
               color: Theme.of(context).colorScheme.onSecondary,
             ),
             backgroundColor: Theme.of(context).colorScheme.secondary,
@@ -1051,7 +1052,7 @@ class _QuizPageState extends State<QuizPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: BodyMediumText('Failed to save quiz results: $e'),
+            content: BodyMediumText(AppLocalizations.of(context)!.failedToSaveResults(e.toString())),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
+import '../../../l10n/app_localizations.dart';
 
 import '../../../common_widgets/app_bar_widget.dart';
 import '../../../common_widgets/apple_signin_button_widget.dart';
@@ -98,14 +99,17 @@ class _SignInPageState extends State<SignInPage> {
                         child: Center(
                           child: Column(
                             children: [
-                              const TitleLargeText('Sign In'),
+                              TitleLargeText(
+                                AppLocalizations.of(context)!.signIn,
+                              ),
                               const SizedBox(height: 25),
-                              const BodyMediumText(
-                                'Connect to your account',
+                              BodyMediumText(
+                                AppLocalizations.of(context)!.connectToAccount,
                               ),
                               const SizedBox(height: 5),
-                              const BodyMediumText(
-                                'Enter your email and password to sign in',
+                              BodyMediumText(
+                                AppLocalizations.of(context)!.signInDescription,
+                                textAlign: TextAlign.center,
                               ),
                               const SizedBox(height: 45),
                               Form(
@@ -119,16 +123,33 @@ class _SignInPageState extends State<SignInPage> {
                                         controller: _emailController,
                                         keyboardType:
                                             TextInputType.emailAddress,
-                                        labelText: 'Email',
-                                        validator:
-                                            (value) =>
-                                                Validator.validateEmail(value!),
+                                        labelText:
+                                            AppLocalizations.of(context)!.email,
+                                        validator: (value) {
+                                          if (value!.isEmpty) {
+                                            return AppLocalizations.of(
+                                              context,
+                                            )!.emailRequired;
+                                          }
+                                          // Basic email validation
+                                          if (!RegExp(
+                                            r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                                          ).hasMatch(value)) {
+                                            return AppLocalizations.of(
+                                              context,
+                                            )!.invalidEmail;
+                                          }
+                                          return null;
+                                        },
                                       ),
                                       const SizedBox(height: 20),
                                       TextFormFieldWidget(
                                         controller: _passwordController,
                                         obscureText: isPasswordVisible,
-                                        labelText: 'Password',
+                                        labelText:
+                                            AppLocalizations.of(
+                                              context,
+                                            )!.password,
                                         suffixIcon: GestureDetector(
                                           onTap: () {
                                             setState(() {
@@ -149,7 +170,9 @@ class _SignInPageState extends State<SignInPage> {
                                         validator:
                                             (value) =>
                                                 value!.isEmpty
-                                                    ? 'Please provide a password'
+                                                    ? AppLocalizations.of(
+                                                      context,
+                                                    )!.passwordRequired
                                                     : null,
                                       ),
                                       const SizedBox(height: 15),
@@ -163,8 +186,10 @@ class _SignInPageState extends State<SignInPage> {
                                                         const ResetPasswordPage(),
                                               ),
                                             ),
-                                        child: const BodyMediumText(
-                                          'Forgot password?',
+                                        child: BodyMediumText(
+                                          AppLocalizations.of(
+                                            context,
+                                          )!.forgotPassword,
                                         ),
                                       ),
                                       const SizedBox(height: 45),
@@ -184,7 +209,7 @@ class _SignInPageState extends State<SignInPage> {
                                             onPressed:
                                                 () => validateAndSave(context),
                                             text: Text(
-                                              ' Sign In',
+                                              ' ${AppLocalizations.of(context)!.signIn}',
                                               style: TextStyle(
                                                 color: Colors.white,
                                               ),
@@ -210,8 +235,10 @@ class _SignInPageState extends State<SignInPage> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.center,
                                         children: [
-                                          const BodyMediumText(
-                                            'No account? ',
+                                          BodyMediumText(
+                                            AppLocalizations.of(
+                                              context,
+                                            )!.noAccount,
                                           ),
                                           TextButton(
                                             onPressed:
@@ -223,8 +250,10 @@ class _SignInPageState extends State<SignInPage> {
                                                             const SignUpPage(),
                                                   ),
                                                 ),
-                                            child: const BodyMediumText(
-                                              'Sign Up ',
+                                            child: BodyMediumText(
+                                              AppLocalizations.of(
+                                                context,
+                                              )!.signUp,
                                             ),
                                           ),
                                         ],
@@ -241,12 +270,14 @@ class _SignInPageState extends State<SignInPage> {
                                                   ).colorScheme.primary,
                                             ),
                                           ),
-                                          const Padding(
-                                            padding: EdgeInsets.symmetric(
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
                                               horizontal: 12,
                                             ),
                                             child: BodyMediumText(
-                                              'Or sign in with',
+                                              AppLocalizations.of(
+                                                context,
+                                              )!.orSignInWith,
                                             ),
                                           ),
                                           Flexible(
@@ -268,7 +299,7 @@ class _SignInPageState extends State<SignInPage> {
                                             () => accountCubit
                                                 .signInWithGooogle(context),
                                         text: Text(
-                                          ' Google',
+                                          ' ${AppLocalizations.of(context)!.google}',
                                           style: TextStyle(color: Colors.white),
                                         ),
                                         color:
@@ -286,7 +317,7 @@ class _SignInPageState extends State<SignInPage> {
                                               () => accountCubit
                                                   .signInWithApple(context),
                                           text: Text(
-                                            ' Apple',
+                                            ' ${AppLocalizations.of(context)!.apple}',
                                             style: TextStyle(
                                               color: Colors.white,
                                             ),

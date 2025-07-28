@@ -4,8 +4,17 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../common_widgets/text_widgets.dart';
 import '../constants/terms_conditions.dart';
+import '../l10n/app_localizations.dart';
 
 class TermsConditionsWidget {
+  static String _getLocalizedTerms(BuildContext context) {
+    final locale = AppLocalizations.of(context)!.localeName;
+    if (locale == 'fr') {
+      return TermsConditions().termsConditionsFr;
+    }
+    return TermsConditions().termsConditions;
+  }
+
   static void termsConditionsWidget({required BuildContext context}) {
     showDialog(
       context: context,
@@ -14,10 +23,10 @@ class TermsConditionsWidget {
           builder: (BuildContext context, StateSetter setState) {
             return AlertDialog(
               backgroundColor: Theme.of(context).colorScheme.surface,
-              title: TitleMediumText('Terms and Conditions'),
+              title: TitleMediumText(AppLocalizations.of(context)!.termsAndConditions),
               content: SingleChildScrollView(
                 child: MarkdownBody(
-                  data: TermsConditions().termsConditions,
+                  data: _getLocalizedTerms(context),
                   styleSheet: MarkdownStyleSheet.fromTheme(
                     Theme.of(context),
                   ).copyWith(
@@ -35,7 +44,7 @@ class TermsConditionsWidget {
                     FontAwesomeIcons.xmark,
                     color: Theme.of(context).colorScheme.secondary,
                   ),
-                  label: BodyMediumText('Close'),
+                  label: BodyMediumText(AppLocalizations.of(context)!.close),
                   onPressed: () => Navigator.of(context).pop(),
                 ),
               ],

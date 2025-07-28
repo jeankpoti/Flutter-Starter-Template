@@ -4,10 +4,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
+// import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:math_ai/features/account/presentation/sign_up_page.dart';
 import 'package:math_ai/features/solve_math/data/repository/gemini_solve_math_repo.dart';
 import 'package:math_ai/features/solve_math/domain/respository/firebase_collection_repo.dart';
+import 'package:math_ai/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'main_page_wrapper.dart';
@@ -16,6 +19,7 @@ import 'features/account/data/repository/account_repo.dart';
 import 'features/account/presentation/account_cubit.dart';
 import 'features/account/presentation/reset_password_page.dart';
 import 'features/account/presentation/sign_in_page.dart';
+import 'features/locale/presentation/locale_cubit.dart';
 import 'features/solve_math/data/repository/firebase_math_repo.dart';
 import 'features/solve_math/domain/models/collection.dart';
 import 'features/solve_math/presentation/collections_details_page.dart';
@@ -58,6 +62,7 @@ void main() async {
     MultiBlocProvider(
       providers: [
         BlocProvider<ThemeCubit>(create: (context) => ThemeCubit(isDarkMode)),
+        BlocProvider<LocaleCubit>(create: (context) => LocaleCubit()),
         BlocProvider<AccountCubit>(
           create: (context) => AccountCubit(accountRepo),
         ),
@@ -86,13 +91,28 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<ThemeCubit, ThemeData>(
       builder: (context, currentTheme) {
-        return MaterialApp.router(
-          debugShowCheckedModeBanner: false,
-          title: 'Math AI',
-          theme: currentTheme,
-          routerConfig: _router,
-          // home: SigninPage(),
-          // MainView(),
+        return BlocBuilder<LocaleCubit, Locale>(
+          builder: (context, currentLocale) {
+            return MaterialApp.router(
+              debugShowCheckedModeBanner: false,
+              title: 'Math AI',
+              theme: currentTheme,
+              locale: currentLocale,
+              routerConfig: _router,
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: const [
+                Locale('en'), // English
+                Locale('fr'), // French
+              ],
+              // home: SigninPage(),
+              // MainView(),
+            );
+          },
         );
       },
     );

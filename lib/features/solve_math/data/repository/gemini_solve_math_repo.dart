@@ -25,7 +25,7 @@ class GeminiSolveMathRepo implements SolveMathRepo {
     if (!_isInitialized) {
       try {
         _model = FirebaseAI.googleAI().generativeModel(
-          model: 'gemini-2.5-flash',
+          model: 'gemini-2.5-flash-lite',
         );
         _isInitialized = true;
       } catch (e) {
@@ -63,7 +63,7 @@ class GeminiSolveMathRepo implements SolveMathRepo {
       // Get user's math level preference
       final prefs = await PreferencesService.getInstance();
       final mathLevel = prefs.getMathLevel();
-      
+
       final prompt = _buildAgeAppropriatePrompt(textInput.trim(), mathLevel);
 
       final response = await generateTextContent(prompt);
@@ -75,7 +75,8 @@ class GeminiSolveMathRepo implements SolveMathRepo {
   }
 
   String _buildAgeAppropriatePrompt(String mathProblem, MathLevel level) {
-    final basePrompt = '''You are a math tutor AI. Solve this math problem and provide a complete solution.
+    final basePrompt =
+        '''You are a math tutor AI. Solve this math problem and provide a complete solution.
 
 Problem: $mathProblem
 

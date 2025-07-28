@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../common_widgets/math_symbols_widget.dart';
 import '../../../common_widgets/text_widgets.dart';
 import '../data/services/study_plan_service.dart';
@@ -98,7 +99,7 @@ class _StudyPageState extends State<StudyPage>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: BodyMediumText('Error loading your study data: $e'),
+            content: BodyMediumText('${AppLocalizations.of(context)!.errorLoadingStudyData}: $e'),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -118,7 +119,7 @@ class _StudyPageState extends State<StudyPage>
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
       appBar: AppBar(
         title: HeadlineSmallText(
-          'Study Materials',
+          AppLocalizations.of(context)!.studyMaterialsTitle,
           fontWeight: FontWeight.w600,
         ),
         backgroundColor: Colors.transparent,
@@ -130,7 +131,7 @@ class _StudyPageState extends State<StudyPage>
               color: Theme.of(context).colorScheme.onSurface,
             ),
             onPressed: _refreshData,
-            tooltip: 'Refresh Data',
+            tooltip: AppLocalizations.of(context)!.refreshData,
           ),
         ],
       ),
@@ -194,15 +195,15 @@ class _StudyPageState extends State<StudyPage>
         labelStyle: Theme.of(
           context,
         ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600),
-        tabs: const [
+        tabs: [
           Tab(
-            icon: Icon(Icons.upload_file_outlined),
-            text: 'Upload',
+            icon: const Icon(Icons.upload_file_outlined),
+            text: AppLocalizations.of(context)!.uploadTab,
             height: 60,
           ),
           Tab(
-            icon: Icon(Icons.library_books_outlined),
-            text: 'My Materials',
+            icon: const Icon(Icons.library_books_outlined),
+            text: AppLocalizations.of(context)!.myMaterialsTab,
             height: 60,
           ),
         ],
@@ -247,7 +248,7 @@ class _StudyPageState extends State<StudyPage>
                     const SizedBox(width: 12),
                     Expanded(
                       child: HeadlineSmallText(
-                        'Upload Your Study Material',
+                        AppLocalizations.of(context)!.uploadYourStudyMaterial,
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).colorScheme.onSurface,
                       ),
@@ -256,7 +257,7 @@ class _StudyPageState extends State<StudyPage>
                 ),
                 const SizedBox(height: 12),
                 BodyMediumText(
-                  'Upload textbook pages, class notes, homework, or any math material. Our AI will create a personalized study plan just for you!',
+                  AppLocalizations.of(context)!.uploadDescription,
                   color: Theme.of(
                     context,
                   ).colorScheme.onSurface.withValues(alpha: 0.8),
@@ -276,8 +277,8 @@ class _StudyPageState extends State<StudyPage>
           // Upload Options
           _buildUploadOption(
             icon: Icons.camera_alt,
-            title: 'Take Photo',
-            subtitle: 'Capture textbook pages, notes, or worksheets',
+            title: AppLocalizations.of(context)!.takePhoto,
+            subtitle: AppLocalizations.of(context)!.takePhotoSubtitle,
             onTap: () => _handlePhotoUpload(),
           ),
 
@@ -285,8 +286,8 @@ class _StudyPageState extends State<StudyPage>
 
           _buildUploadOption(
             icon: Icons.photo_library,
-            title: 'Upload from Gallery',
-            subtitle: 'Select images from your photo library',
+            title: AppLocalizations.of(context)!.uploadFromGallery,
+            subtitle: AppLocalizations.of(context)!.uploadFromGallerySubtitle,
             onTap: () => _handleGalleryUpload(),
           ),
 
@@ -294,8 +295,8 @@ class _StudyPageState extends State<StudyPage>
 
           _buildUploadOption(
             icon: Icons.edit_note,
-            title: 'Type Material',
-            subtitle: 'Enter text directly or paste from clipboard',
+            title: AppLocalizations.of(context)!.typeMaterial,
+            subtitle: AppLocalizations.of(context)!.typeMaterialSubtitle,
             onTap: () => _handleTextInput(),
           ),
 
@@ -412,7 +413,7 @@ class _StudyPageState extends State<StudyPage>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         TitleMediumText(
-          'Recent Uploads',
+          AppLocalizations.of(context)!.recentUploads,
           fontWeight: FontWeight.bold,
           color: Theme.of(context).colorScheme.onSurface,
         ),
@@ -438,14 +439,14 @@ class _StudyPageState extends State<StudyPage>
                 ),
                 const SizedBox(height: 12),
                 BodyMediumText(
-                  'No materials uploaded yet',
+                  AppLocalizations.of(context)!.noMaterialsUploaded,
                   color: Theme.of(
                     context,
                   ).colorScheme.onSurface.withValues(alpha: 0.6),
                 ),
                 const SizedBox(height: 8),
                 BodySmallText(
-                  'Upload your first study material to get started!',
+                  AppLocalizations.of(context)!.uploadFirstMaterial,
                   color: Theme.of(
                     context,
                   ).colorScheme.onSurface.withValues(alpha: 0.5),
@@ -527,7 +528,7 @@ class _StudyPageState extends State<StudyPage>
                               ),
                               const SizedBox(height: 4),
                               LabelSmallText(
-                                '${material.extractedTopics.length} topics',
+                                '${material.extractedTopics.length} ${AppLocalizations.of(context)!.topics}',
                                 color: Theme.of(
                                   context,
                                 ).colorScheme.onSurface.withValues(alpha: 0.6),
@@ -569,7 +570,7 @@ class _StudyPageState extends State<StudyPage>
 
             // Materials Section
             HeadlineSmallText(
-              'My Study Materials',
+              AppLocalizations.of(context)!.myStudyMaterials,
               fontWeight: FontWeight.bold,
               color: Theme.of(context).colorScheme.onSurface,
             ),
@@ -596,7 +597,7 @@ class _StudyPageState extends State<StudyPage>
                     ),
                     const SizedBox(height: 16),
                     TitleMediumText(
-                      'No Study Materials',
+                      AppLocalizations.of(context)!.noStudyMaterials,
                       fontWeight: FontWeight.w600,
                       color: Theme.of(
                         context,
@@ -604,7 +605,7 @@ class _StudyPageState extends State<StudyPage>
                     ),
                     const SizedBox(height: 8),
                     BodyMediumText(
-                      'Upload your first material to see it here and start building your personalized study plan.',
+                      AppLocalizations.of(context)!.noStudyMaterialsDescription,
                       color: Theme.of(
                         context,
                       ).colorScheme.onSurface.withValues(alpha: 0.5),
@@ -634,7 +635,7 @@ class _StudyPageState extends State<StudyPage>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         HeadlineSmallText(
-          'My Study Plans',
+          AppLocalizations.of(context)!.myStudyPlans,
           fontWeight: FontWeight.bold,
           color: Theme.of(context).colorScheme.onSurface,
         ),
@@ -717,9 +718,9 @@ class _StudyPageState extends State<StudyPage>
                       },
                       itemBuilder:
                           (context) => [
-                            const PopupMenuItem(
+                            PopupMenuItem(
                               value: 'delete',
-                              child: LabelLargeText('Delete Plan'),
+                              child: LabelLargeText(AppLocalizations.of(context)!.deletePlan),
                             ),
                           ],
                     ),
@@ -803,7 +804,7 @@ class _StudyPageState extends State<StudyPage>
                         onPressed: () => _showStudyPlanTopics(plan),
                         icon: const Icon(Icons.list, size: 16),
                         label: LabelMediumText(
-                          'View Topics',
+                          AppLocalizations.of(context)!.viewTopics,
                           color: Theme.of(context).colorScheme.onSurface,
                         ),
                         style: TextButton.styleFrom(
@@ -853,10 +854,10 @@ class _StudyPageState extends State<StudyPage>
                                       ),
                                     ),
                                     const SizedBox(width: 6),
-                                    const LabelSmallText('Loading...'),
+                                    LabelSmallText(AppLocalizations.of(context)!.loading),
                                   ],
                                 )
-                                : LabelMediumText('Take Quiz'),
+                                : LabelMediumText(AppLocalizations.of(context)!.takeQuiz),
                       ),
                     ),
                   ],
@@ -900,13 +901,13 @@ class _StudyPageState extends State<StudyPage>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     TitleMediumText(
-                      'Processing Your Material',
+                      AppLocalizations.of(context)!.processingYourMaterial,
                       fontWeight: FontWeight.w600,
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
                     const SizedBox(height: 4),
                     BodySmallText(
-                      'AI is analyzing your content and creating a personalized study plan...',
+                      AppLocalizations.of(context)!.processingDescription,
                       color: Theme.of(
                         context,
                       ).colorScheme.onSurface.withValues(alpha: 0.7),
@@ -933,8 +934,8 @@ class _StudyPageState extends State<StudyPage>
           // Processing steps
           Row(
             children: [
-              _buildProcessingStep('📷', 'Upload', true),
-              _buildProcessingStep('🔍', 'Analyze', true),
+              _buildProcessingStep('📷', AppLocalizations.of(context)!.uploadStep, true),
+              _buildProcessingStep('🔍', AppLocalizations.of(context)!.analyzeStep, true),
               _buildProcessingStep('📚', 'Generate Plan', false),
             ],
           ),
@@ -1005,7 +1006,7 @@ class _StudyPageState extends State<StudyPage>
           children: [
             Expanded(
               child: HeadlineSmallText(
-                'Practice Quizzes',
+                AppLocalizations.of(context)!.practiceQuizzes,
                 fontWeight: FontWeight.bold,
                 color: Theme.of(context).colorScheme.onSurface,
               ),
@@ -1019,7 +1020,7 @@ class _StudyPageState extends State<StudyPage>
                 );
               },
               icon: const Icon(Icons.history),
-              label: const LabelLargeText('History'),
+              label: LabelLargeText(AppLocalizations.of(context)!.history),
               style: TextButton.styleFrom(
                 foregroundColor: Theme.of(context).colorScheme.secondary,
               ),
@@ -1058,7 +1059,7 @@ class _StudyPageState extends State<StudyPage>
                   const SizedBox(width: 12),
                   Expanded(
                     child: TitleLargeText(
-                      'Test Your Knowledge',
+                      AppLocalizations.of(context)!.testYourKnowledge,
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
@@ -1067,7 +1068,7 @@ class _StudyPageState extends State<StudyPage>
               ),
               const SizedBox(height: 12),
               BodyMediumText(
-                'Generate AI-powered quizzes based on your study materials to test your understanding and identify areas for improvement.',
+                AppLocalizations.of(context)!.testKnowledgeDescription,
                 color: Theme.of(
                   context,
                 ).colorScheme.onSurface.withValues(alpha: 0.8),
@@ -1080,8 +1081,8 @@ class _StudyPageState extends State<StudyPage>
                   Expanded(
                     child: _buildQuizOptionButton(
                       icon: Icons.flash_on,
-                      title: 'Quick Quiz',
-                      subtitle: '5 questions • 10 min',
+                      title: AppLocalizations.of(context)!.quickQuiz,
+                      subtitle: AppLocalizations.of(context)!.quickQuizSubtitle,
                       difficulty: QuizDifficulty.easy,
                       questionCount: 5,
                       timeLimit: 10,
@@ -1092,8 +1093,8 @@ class _StudyPageState extends State<StudyPage>
                   Expanded(
                     child: _buildQuizOptionButton(
                       icon: Icons.school,
-                      title: 'Practice Test',
-                      subtitle: '10 questions • 20 min',
+                      title: AppLocalizations.of(context)!.practiceTest,
+                      subtitle: AppLocalizations.of(context)!.practiceTestSubtitle,
                       difficulty: QuizDifficulty.medium,
                       questionCount: 10,
                       timeLimit: 20,
@@ -1111,8 +1112,8 @@ class _StudyPageState extends State<StudyPage>
                   width: double.infinity,
                   child: _buildQuizOptionButton(
                     icon: Icons.emoji_events,
-                    title: 'Challenge Mode',
-                    subtitle: '15 questions • 30 min • Based on study plan',
+                    title: AppLocalizations.of(context)!.challengeMode,
+                    subtitle: AppLocalizations.of(context)!.challengeModeSubtitle,
                     difficulty: QuizDifficulty.hard,
                     questionCount: 15,
                     timeLimit: 30,
