@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import '../../../solve_math/data/repository/gemini_solve_math_repo.dart';
 import '../../../settings/data/preferences_service.dart';
 import '../../../settings/domain/models/math_level.dart';
+import '../../../solve_math/data/repository/prompt_localizer.dart';
 import '../../domain/models/study_material.dart';
 import '../../domain/models/study_plan.dart';
 
@@ -35,13 +36,14 @@ class StudyPlanService {
     final userId = FirebaseAuth.instance.currentUser?.uid ?? '';
     final prefs = await PreferencesService.getInstance();
     final mathLevel = prefs.getMathLevel();
+    final locale = prefs.getLocale();
 
     String aiAnalysis = '';
     List<String> extractedTopics = [];
 
     try {
       if (type == MaterialType.text && content != null) {
-        aiAnalysis = await _analyzeTextContent(content, mathLevel);
+        aiAnalysis = await _analyzeTextContent(content, mathLevel, locale);
       } else if (type == MaterialType.image && imageFile != null) {
         aiAnalysis = await _analyzeImageContent(imageFile, mathLevel);
       }
@@ -110,38 +112,12 @@ class StudyPlanService {
   }
 
   /// Analyze text content using Gemini AI
-  Future<String> _analyzeTextContent(String content, MathLevel mathLevel) async {
-    final prompt = '''
-You are an expert math tutor analyzing study material. Analyze this content and provide a comprehensive breakdown:
-
-CONTENT TO ANALYZE:
-$content
-
-Please provide analysis in this format:
-
-**MAIN TOPICS:**
-- List the key mathematical topics covered
-- Include subtopics and specific concepts
-
-**DIFFICULTY LEVEL:**
-- Assess if this is appropriate for ${mathLevel.displayName} level
-- Note any prerequisites needed
-
-**KEY CONCEPTS:**
-- Essential concepts students must understand
-- Important formulas or theorems mentioned
-
-**LEARNING OBJECTIVES:**
-- What students should be able to do after studying this
-- Specific skills they'll develop
-
-**STUDY RECOMMENDATIONS:**
-- How to approach learning this material
-- Suggested practice strategies
-- Estimated study time needed
-
-Make recommendations appropriate for ${mathLevel.displayName} level students.
-''';
+  Future<String> _analyzeTextContent(String content, MathLevel mathLevel, String locale) async {
+    final prompt = PromptLocalizer.getStudyAnalysisPrompt(
+      locale,
+      content,
+      mathLevel.displayName,
+    );
 
     final response = await _geminiService.generateTextContent(prompt);
     return response.text ?? 'Unable to analyze content';

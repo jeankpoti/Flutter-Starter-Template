@@ -143,7 +143,10 @@ class _SettingsPageState extends State<SettingsPage> {
                               languageCode,
                             );
 
-                            final languageName = _getLanguageName(context, languageCode);
+                            final languageName = _getLanguageName(
+                              context,
+                              languageCode,
+                            );
                             if (mounted) {
                               AppSnackBar.showSuccess(
                                 context,

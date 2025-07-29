@@ -57,6 +57,8 @@ class _HomePageState extends State<HomePage>
     File? imageFile,
     String? textInput,
   }) async {
+    _solveMath(imageFile: imageFile, textInput: textInput);
+
     final subscriptionCubit = context.read<SubscriptionCubit>();
     await subscriptionCubit.loadSubscriptionStatus();
     final isSubscribed = subscriptionCubit.state.isSubscribed;
@@ -202,7 +204,9 @@ class _HomePageState extends State<HomePage>
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12.0),
             ),
-            title: TitleLargeText('$permissionType ${AppLocalizations.of(context)!.permissionRequired}'),
+            title: TitleLargeText(
+              '$permissionType ${AppLocalizations.of(context)!.permissionRequired}',
+            ),
             content: BodyMediumText(
               AppLocalizations.of(context)!.enableAccessMessage,
             ),
@@ -223,7 +227,9 @@ class _HomePageState extends State<HomePage>
                   backgroundColor: Theme.of(context).colorScheme.primary,
                   foregroundColor: Theme.of(context).colorScheme.onPrimary,
                 ),
-                child: LabelLargeText(AppLocalizations.of(context)!.openSettings),
+                child: LabelLargeText(
+                  AppLocalizations.of(context)!.openSettings,
+                ),
               ),
             ],
           ),
@@ -237,9 +243,10 @@ class _HomePageState extends State<HomePage>
       SnackBar(
         content: BodyMediumText(
           message,
-          color: isError
-              ? Theme.of(context).colorScheme.onErrorContainer
-              : Theme.of(context).colorScheme.onSurfaceVariant,
+          color:
+              isError
+                  ? Theme.of(context).colorScheme.onErrorContainer
+                  : Theme.of(context).colorScheme.onSurfaceVariant,
         ),
         backgroundColor:
             isError
@@ -380,7 +387,9 @@ class _HomePageState extends State<HomePage>
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
-      appBar: AppBarWidget(title: AppLocalizations.of(context)!.solveMathProblem),
+      appBar: AppBarWidget(
+        title: AppLocalizations.of(context)!.solveMathProblem,
+      ),
       body: BlocListener<SolveMathCubit, SolveMathState>(
         listenWhen:
             (previous, current) =>
@@ -518,8 +527,16 @@ class _HomePageState extends State<HomePage>
           context,
         ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600),
         tabs: [
-          Tab(icon: const Icon(Icons.camera_alt_outlined), text: AppLocalizations.of(context)!.photo, height: 60),
-          Tab(icon: const Icon(Icons.edit_outlined), text: AppLocalizations.of(context)!.text, height: 60),
+          Tab(
+            icon: const Icon(Icons.camera_alt_outlined),
+            text: AppLocalizations.of(context)!.photo,
+            height: 60,
+          ),
+          Tab(
+            icon: const Icon(Icons.edit_outlined),
+            text: AppLocalizations.of(context)!.text,
+            height: 60,
+          ),
         ],
       ),
     );
@@ -743,7 +760,10 @@ class _HomePageState extends State<HomePage>
                   ),
                 )
                 : Icon(icon, size: 20),
-        label: LabelLargeText(label, color: Theme.of(context).colorScheme.onSecondary),
+        label: LabelLargeText(
+          label,
+          color: Theme.of(context).colorScheme.onSecondary,
+        ),
         style: ElevatedButton.styleFrom(
           backgroundColor: Theme.of(context).colorScheme.secondary,
           foregroundColor: Theme.of(context).colorScheme.onSecondary,
@@ -758,7 +778,10 @@ class _HomePageState extends State<HomePage>
       return OutlinedButton.icon(
         onPressed: onPressed,
         icon: Icon(icon, size: 20),
-        label: LabelLargeText(label, color: Theme.of(context).colorScheme.onSecondary),
+        label: LabelLargeText(
+          label,
+          color: Theme.of(context).colorScheme.onSecondary,
+        ),
         style: OutlinedButton.styleFrom(
           backgroundColor: Theme.of(context).colorScheme.secondary,
           foregroundColor: Theme.of(context).colorScheme.onSecondary,
@@ -783,7 +806,10 @@ class _HomePageState extends State<HomePage>
                   ),
                 )
                 : Icon(icon, size: 20),
-        label: LabelLargeText(label, color: Theme.of(context).colorScheme.onSecondary),
+        label: LabelLargeText(
+          label,
+          color: Theme.of(context).colorScheme.onSecondary,
+        ),
         style: FilledButton.styleFrom(
           backgroundColor: Theme.of(context).colorScheme.secondary,
           foregroundColor: Theme.of(context).colorScheme.onSecondary,
@@ -895,7 +921,9 @@ class _HomePageState extends State<HomePage>
                             : () async {
                               if (_textController.text.trim().isEmpty) {
                                 _showSnackBarMessage(
-                                  AppLocalizations.of(context)!.enterMathProblemError,
+                                  AppLocalizations.of(
+                                    context,
+                                  )!.enterMathProblemError,
                                   isError: true,
                                 );
                                 return;
@@ -916,7 +944,9 @@ class _HomePageState extends State<HomePage>
                             )
                             : const Icon(Icons.auto_awesome, size: 20),
                     label: LabelLargeText(
-                      state.isIdentifying ? AppLocalizations.of(context)!.solving : AppLocalizations.of(context)!.solveProblem,
+                      state.isIdentifying
+                          ? AppLocalizations.of(context)!.solving
+                          : AppLocalizations.of(context)!.solveProblem,
                       fontWeight: FontWeight.w600,
                       color: Theme.of(context).colorScheme.onSecondary,
                     ),

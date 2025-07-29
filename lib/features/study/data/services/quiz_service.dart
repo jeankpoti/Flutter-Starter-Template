@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import '../../../solve_math/data/repository/gemini_solve_math_repo.dart';
 import '../../../settings/data/preferences_service.dart';
 import '../../../settings/domain/models/math_level.dart';
+import '../../../solve_math/data/repository/prompt_localizer.dart';
 import '../../domain/models/quiz.dart';
 import '../../domain/models/study_material.dart';
 import '../../domain/models/study_plan.dart';
@@ -43,6 +44,7 @@ class QuizService {
     final userId = FirebaseAuth.instance.currentUser?.uid ?? '';
     final prefs = await PreferencesService.getInstance();
     final mathLevel = prefs.getMathLevel();
+    final locale = prefs.getLocale();
 
     // Combine material content for AI analysis
     final combinedContent = _combineMaterialsContent(materials);
@@ -51,6 +53,7 @@ class QuizService {
     final questions = await _generateQuestionsFromContent(
       content: combinedContent,
       mathLevel: mathLevel,
+      locale: locale,
       difficulty: difficulty,
       questionCount: questionCount,
     );
@@ -83,6 +86,7 @@ class QuizService {
     final userId = FirebaseAuth.instance.currentUser?.uid ?? '';
     final prefs = await PreferencesService.getInstance();
     final mathLevel = prefs.getMathLevel();
+    final locale = prefs.getLocale();
 
     // Use specific topics or all topics from study plan
     final topicsToUse = specificTopics ?? studyPlan.topics;
@@ -91,6 +95,7 @@ class QuizService {
     final questions = await _generateQuestionsFromTopics(
       topics: topicsToUse,
       mathLevel: mathLevel,
+      locale: locale,
       difficulty: difficulty,
       questionCount: questionCount,
     );
@@ -115,64 +120,17 @@ class QuizService {
   Future<List<QuizQuestion>> _generateQuestionsFromContent({
     required String content,
     required MathLevel mathLevel,
+    required String locale,
     required QuizDifficulty difficulty,
     required int questionCount,
   }) async {
-    final prompt = '''
-You are an expert math teacher creating quiz questions. Based on the study material below, create exactly $questionCount quiz questions.
-
-STUDY MATERIAL:
-$content
-
-REQUIREMENTS:
-- Student Level: ${mathLevel.displayName}
-- Difficulty: ${difficulty.name}
-- Create a mix of question types: multiple choice, short answer, true/false, and fill-in-the-blank
-- Questions should test understanding, not just memorization
-- Include clear explanations for each answer
-- Make questions progressively challenging
-
-Format each question EXACTLY like this:
-
-QUESTION 1:
-Type: multiple_choice
-Text: [Question text here]
-Options:
-A) [Option A]
-B) [Option B] 
-C) [Option C]
-D) [Option D]
-Correct: A
-Explanation: [Why this answer is correct]
-Topics: [Topic1, Topic2]
-Points: 1
-
-QUESTION 2:
-Type: short_answer
-Text: [Question text here]
-Correct: [Expected answer]
-Explanation: [Explanation of the solution]
-Topics: [Topic1, Topic2]
-Points: 2
-
-QUESTION 3:
-Type: true_false
-Text: [Statement to evaluate]
-Correct: true
-Explanation: [Why this is true/false]
-Topics: [Topic1]
-Points: 1
-
-QUESTION 4:
-Type: fill_in_blank
-Text: The formula for area of a circle is _____.
-Correct: πr²
-Explanation: [Explanation]
-Topics: [Topic1]
-Points: 1
-
-Continue this pattern for all $questionCount questions. Ensure variety in question types and topics covered.
-''';
+    final prompt = PromptLocalizer.getQuizGenerationPrompt(
+      locale,
+      content,
+      mathLevel.displayName,
+      difficulty.name,
+      questionCount,
+    );
 
     final response = await _geminiService!.generateTextContent(prompt);
     final questionText = response.text ?? '';
@@ -184,6 +142,7 @@ Continue this pattern for all $questionCount questions. Ensure variety in questi
   Future<List<QuizQuestion>> _generateQuestionsFromTopics({
     required List<StudyTopic> topics,
     required MathLevel mathLevel,
+    required String locale,
     required QuizDifficulty difficulty,
     required int questionCount,
   }) async {
@@ -192,6 +151,7 @@ Continue this pattern for all $questionCount questions. Ensure variety in questi
     return _generateQuestionsFromContent(
       content: topicsContent,
       mathLevel: mathLevel,
+      locale: locale,
       difficulty: difficulty,
       questionCount: questionCount,
     );

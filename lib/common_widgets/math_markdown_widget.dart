@@ -142,7 +142,9 @@ class MathMarkdownWidget extends StatelessWidget {
           ).colorScheme.secondaryContainer.withValues(alpha: 0.3),
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.3),
+            color: Theme.of(
+              context,
+            ).colorScheme.secondary.withValues(alpha: 0.3),
             width: 1,
           ),
         ),
@@ -380,8 +382,9 @@ class MathMarkdownWidget extends StatelessWidget {
               ),
               child: Math.tex(
                 mathExpression,
-                textStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSecondaryContainer,
+                textStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),

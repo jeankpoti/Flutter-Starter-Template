@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../settings/data/preferences_service.dart';
 
 class LocaleCubit extends Cubit<Locale> {
   static const String _localeKey = 'selected_locale';
@@ -42,6 +43,10 @@ class LocaleCubit extends Cubit<Locale> {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_localeKey, languageCode);
+      
+      // Also update the preferences service for AI prompts
+      final preferencesService = await PreferencesService.getInstance();
+      await preferencesService.setLocale(languageCode);
     } catch (e) {
       // Even if saving fails, the locale change is already applied
       print('Failed to save locale preference: $e');

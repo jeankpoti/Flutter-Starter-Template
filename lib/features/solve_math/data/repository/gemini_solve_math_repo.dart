@@ -6,6 +6,7 @@ import 'dart:async';
 import '../../domain/respository/solve_math_repo.dart';
 import '../../../settings/data/preferences_service.dart';
 import '../../../settings/domain/models/math_level.dart';
+import 'prompt_localizer.dart';
 
 class GeminiSolveMathRepo implements SolveMathRepo {
   static final GeminiSolveMathRepo _instance = GeminiSolveMathRepo._internal();
@@ -60,11 +61,12 @@ class GeminiSolveMathRepo implements SolveMathRepo {
     }
 
     try {
-      // Get user's math level preference
+      // Get user's math level preference and locale
       final prefs = await PreferencesService.getInstance();
       final mathLevel = prefs.getMathLevel();
+      final locale = prefs.getLocale();
 
-      final prompt = _buildAgeAppropriatePrompt(textInput.trim(), mathLevel);
+      final prompt = _buildAgeAppropriatePrompt(textInput.trim(), mathLevel, locale);
 
       final response = await generateTextContent(prompt);
       return response.text ?? 'Unable to solve the math problem';
@@ -74,61 +76,21 @@ class GeminiSolveMathRepo implements SolveMathRepo {
     }
   }
 
-  String _buildAgeAppropriatePrompt(String mathProblem, MathLevel level) {
-    final basePrompt =
-        '''You are a math tutor AI. Solve this math problem and provide a complete solution.
-
-Problem: $mathProblem
-
-Please follow this format:
-1. **Problem**: Restate the math problem clearly
-2. **Solution Steps**: Show detailed step-by-step solution
-3. **Final Answer**: Use the format "The final answer is \$\\boxed{answer}\$"
-
-${level.toPromptContext()}
-
-Requirements:
-- Show ALL working steps clearly
-- Use LaTeX math notation inside \$ symbols (e.g., \$x^2 + 1\$, \$\\frac{1}{2}\$)
-- For final answers, always use \$\\boxed{answer}\$ format
-- For word problems, identify given information first
-- Double-check your calculations
-
-Examples of proper formatting:
-- Simple: The final answer is \$\\boxed{42}\$
-- Fraction: The final answer is \$\\boxed{\\frac{3}{4}}\$
-- Expression: The final answer is \$\\boxed{2x + 5}\$
-
-Make the explanation appropriate for ${level.displayName} level students.''';
-
-    return basePrompt;
+  String _buildAgeAppropriatePrompt(String mathProblem, MathLevel level, String locale) {
+    return PromptLocalizer.getMathSolvingPrompt(
+      locale,
+      mathProblem,
+      level.toPromptContext(),
+      level.displayName,
+    );
   }
 
-  String _buildImagePrompt(MathLevel level) {
-    return '''You are a math tutor AI. Analyze this image containing a math problem and provide a complete solution.
-
-Please follow this format:
-1. **Problem**: State what math problem you see
-2. **Solution Steps**: Show detailed step-by-step solution
-3. **Final Answer**: Use the format "The final answer is \$\\boxed{answer}\$"
-
-${level.toPromptContext()}
-
-Requirements:
-- Show ALL working steps clearly
-- Use LaTeX math notation inside \$ symbols (e.g., \$x^2 + 1\$, \$\\frac{1}{2}\$)
-- For final answers, always use \$\\boxed{answer}\$ format
-- If the image is unclear, ask for a clearer photo
-- If no math problem is visible, politely explain what you see instead
-- For word problems, identify given information first
-- Double-check your calculations
-
-Examples of proper formatting:
-- Simple: The final answer is \$\\boxed{42}\$
-- Fraction: The final answer is \$\\boxed{\\frac{3}{4}}\$
-- Expression: The final answer is \$\\boxed{2x + 5}\$
-
-Make the explanation appropriate for ${level.displayName} level students.''';
+  String _buildImagePrompt(MathLevel level, String locale) {
+    return PromptLocalizer.getImageAnalysisPrompt(
+      locale,
+      level.toPromptContext(),
+      level.displayName,
+    );
   }
 
   // Method to solve math from image
@@ -162,13 +124,14 @@ Make the explanation appropriate for ${level.displayName} level students.''';
         );
       }
 
-      // Get user's math level preference for image solving too
+      // Get user's math level preference and locale for image solving
       final prefs = await PreferencesService.getInstance();
       final mathLevel = prefs.getMathLevel();
+      final locale = prefs.getLocale();
 
       // Create the image part with the bytes
       final imagePart = InlineDataPart('image/jpeg', imageBytes);
-      final prompt = TextPart(_buildImagePrompt(mathLevel));
+      final prompt = TextPart(_buildImagePrompt(mathLevel, locale));
 
       // Convert file to bytes first
       // final imageBytes = await imageFile!.readAsBytes(); I

@@ -4,6 +4,7 @@ import '../domain/models/math_level.dart';
 class PreferencesService {
   static const String _mathLevelKey = 'math_level';
   static const String _isFirstTimeKey = 'is_first_time';
+  static const String _localeKey = 'selected_locale';
   
   static PreferencesService? _instance;
   SharedPreferences? _prefs;
@@ -36,6 +37,15 @@ class PreferencesService {
 
   Future<void> setFirstTimeComplete() async {
     await _prefs!.setBool(_isFirstTimeKey, false);
+  }
+
+  // Locale preferences
+  Future<void> setLocale(String languageCode) async {
+    await _prefs!.setString(_localeKey, languageCode);
+  }
+
+  String getLocale() {
+    return _prefs!.getString(_localeKey) ?? 'en'; // Default to English
   }
 
   Future<void> clearAll() async {
