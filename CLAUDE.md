@@ -115,6 +115,190 @@ Reusable UI components following consistent naming:
 - Navigation handled through go_router with named routes
 - Image picking functionality for math problem capture
 
+## Internationalization and Translation Guidelines
+
+### 🌍 **MANDATORY TRANSLATION POLICY**
+
+**NEVER use hardcoded strings in UI components.** All user-facing text MUST be translatable using the localization system.
+
+### Supported Languages
+- **English** (`en`) - Primary language
+- **French** (`fr`) - Secondary language
+
+### Translation File Locations
+- `lib/l10n/app_en.arb` - English translations
+- `lib/l10n/app_fr.arb` - French translations
+- Generated files: `lib/l10n/app_localizations.dart` (auto-generated)
+
+### **CRITICAL RULES - ALWAYS FOLLOW**
+
+#### 1. **Never Use Hardcoded Strings**
+```dart
+// ❌ WRONG - Hardcoded string
+Text('Save'),
+AppBar(title: Text('Settings')),
+SnackBar(content: Text('Success!')),
+
+// ✅ CORRECT - Using translations
+Text(AppLocalizations.of(context)!.save),
+AppBar(title: Text(AppLocalizations.of(context)!.settings)),
+SnackBar(content: Text(AppLocalizations.of(context)!.success)),
+```
+
+#### 2. **Add Translation Keys for All New Text**
+When adding new UI text, ALWAYS add keys to both `.arb` files:
+
+**app_en.arb:**
+```json
+{
+  "newFeatureTitle": "New Feature",
+  "newFeatureDescription": "This is a description of the new feature"
+}
+```
+
+**app_fr.arb:**
+```json
+{
+  "newFeatureTitle": "Nouvelle fonctionnalité",  
+  "newFeatureDescription": "Ceci est une description de la nouvelle fonctionnalité"
+}
+```
+
+#### 3. **Regenerate Localizations After Changes**
+After modifying `.arb` files, ALWAYS run:
+```bash
+flutter gen-l10n
+```
+
+#### 4. **Handle Parameters in Translations**
+For dynamic content, use parameterized translations:
+
+**app_en.arb:**
+```json
+{
+  "welcomeUser": "Welcome, {username}!",
+  "itemCount": "You have {count} items"
+}
+```
+
+**Usage:**
+```dart
+Text(AppLocalizations.of(context)!.welcomeUser(user.name)),
+Text(AppLocalizations.of(context)!.itemCount(items.length)),
+```
+
+#### 5. **Translation Key Naming Conventions**
+- Use **camelCase** for keys
+- Be descriptive and specific
+- Group related keys with prefixes
+
+**Examples:**
+```json
+{
+  "mathLevel": "Math Level",
+  "mathLevelDescription": "Choose your education level",
+  "mathLevelElementary": "Elementary",
+  "mathLevelHighSchool": "High School",
+  "mathLevelCollege": "College",
+  
+  "quiz": "Quiz",
+  "quizCompleted": "Quiz Completed!",
+  "quizScore": "Score: {score}%",
+  "quizRetake": "Retake Quiz"
+}
+```
+
+### **Common Translation Patterns**
+
+#### Dropdown/Picker Options
+```dart
+// ✅ Always translate dropdown options
+SettingsDropdown<MathLevel>(
+  getDisplayText: (level) => _getMathLevelDisplayName(context, level),
+  // Helper function uses AppLocalizations
+)
+```
+
+#### Success/Error Messages
+```dart
+// ✅ Always translate feedback messages
+AppSnackBar.showSuccess(
+  context,
+  AppLocalizations.of(context)!.dataSaved,
+);
+
+AppSnackBar.showError(
+  context,
+  AppLocalizations.of(context)!.errorOccurred,
+);
+```
+
+#### Button Labels
+```dart
+// ✅ Always translate button text
+ElevatedButton(
+  onPressed: onPressed,
+  child: Text(AppLocalizations.of(context)!.save),
+)
+```
+
+#### Form Labels and Hints
+```dart
+// ✅ Always translate form elements
+TextFormField(
+  decoration: InputDecoration(
+    labelText: AppLocalizations.of(context)!.email,
+    hintText: AppLocalizations.of(context)!.enterEmail,
+  ),
+)
+```
+
+### **Quality Assurance**
+
+#### Before Submitting Code:
+1. **Search for hardcoded strings**: `grep -r '"[A-Z]' lib/` 
+2. **Test both languages**: Switch between English and French in app
+3. **Verify all new text is translated**: Check both `.arb` files
+4. **Run localization generation**: `flutter gen-l10n`
+5. **No compilation errors**: `flutter analyze`
+
+#### Translation Review Checklist:
+- [ ] All user-visible text uses `AppLocalizations.of(context)!`
+- [ ] Translation keys added to both `app_en.arb` and `app_fr.arb`
+- [ ] French translations are accurate and natural
+- [ ] Dynamic content uses parameterized translations
+- [ ] `flutter gen-l10n` executed successfully
+- [ ] App tested in both languages
+- [ ] No hardcoded strings remain
+
+### **Existing Translation Keys**
+Key categories already available:
+- **Authentication**: signIn, signUp, email, password, etc.
+- **Navigation**: solve, study, history, settings, etc.
+- **Math Levels**: elementary, highSchool, college + descriptions
+- **Languages**: englishLanguage, frenchLanguage
+- **UI Actions**: save, cancel, delete, retry, loading, etc.
+- **Messages**: success, error, somethingWentWrong, etc.
+
+### **Tools and Commands**
+```bash
+# Generate localization files
+flutter gen-l10n
+
+# Find potential hardcoded strings
+grep -r '"[A-Z]' lib/ --include="*.dart"
+
+# Search for specific translation key usage
+grep -r "AppLocalizations.of(context)" lib/
+
+# Validate app in French
+# Change device language to French and test the app
+```
+
+### **Resources**
+- [Flutter Internationalization Guide](https://docs.flutter.dev/ui/accessibility-and-internationalization/internationalization)
+- [ARB File Format](https://github.com/google/app-resource-bundle/wiki/ApplicationResourceBundleSpecification)
+
 ## Cubit State Management Pattern
 
 The app uses **flutter_bloc** with Cubit pattern for state management:

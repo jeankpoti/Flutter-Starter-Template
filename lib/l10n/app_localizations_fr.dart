@@ -187,6 +187,46 @@ class AppLocalizationsFr extends AppLocalizations {
       'Choisissez votre niveau d\'éducation pour des explications personnalisées';
 
   @override
+  String get language => 'Langue';
+
+  @override
+  String get englishLanguage => 'Anglais';
+
+  @override
+  String get frenchLanguage => 'Français';
+
+  @override
+  String get spanishLanguage => 'Espagnol';
+
+  @override
+  String get elementary => 'Élémentaire';
+
+  @override
+  String get elementaryAgeRange => 'Âges 6-11';
+
+  @override
+  String get elementaryDescription =>
+      'Explications simples avec des mots faciles';
+
+  @override
+  String get highSchool => 'Lycée';
+
+  @override
+  String get highSchoolAgeRange => 'Âges 14-18';
+
+  @override
+  String get highSchoolDescription => 'Explications mathématiques standard';
+
+  @override
+  String get college => 'Université';
+
+  @override
+  String get collegeAgeRange => 'Âges 18+';
+
+  @override
+  String get collegeDescription => 'Concepts mathématiques avancés';
+
+  @override
   String get getPremium => 'Obtenir Premium';
 
   @override

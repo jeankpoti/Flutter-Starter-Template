@@ -5,6 +5,8 @@ import '../data/services/quiz_service.dart';
 import 'quiz_review_page.dart';
 import '../../../common_widgets/math_symbols_widget.dart';
 import '../../../common_widgets/text_widgets.dart';
+import '../../../common_widgets/math_text_widget.dart';
+import '../../../common_widgets/app_snackbar_widget.dart';
 import '../../../l10n/app_localizations.dart';
 
 class QuizPage extends StatefulWidget {
@@ -74,8 +76,14 @@ class _QuizPageState extends State<QuizPage> {
   Widget build(BuildContext context) {
     if (_currentQuiz.questions.isEmpty) {
       return Scaffold(
-        appBar: AppBar(title: TitleLargeText(AppLocalizations.of(context)!.quiz)),
-        body: Center(child: BodyMediumText(AppLocalizations.of(context)!.noQuestionsAvailable)),
+        appBar: AppBar(
+          title: TitleLargeText(AppLocalizations.of(context)!.quiz),
+        ),
+        body: Center(
+          child: BodyMediumText(
+            AppLocalizations.of(context)!.noQuestionsAvailable,
+          ),
+        ),
       );
     }
 
@@ -138,7 +146,10 @@ class _QuizPageState extends State<QuizPage> {
           Row(
             children: [
               TitleMediumText(
-                AppLocalizations.of(context)!.questionProgress(_currentQuestionIndex + 1, _currentQuiz.questions.length),
+                AppLocalizations.of(context)!.questionProgress(
+                  _currentQuestionIndex + 1,
+                  _currentQuiz.questions.length,
+                ),
                 fontWeight: FontWeight.w600,
                 color: Theme.of(context).colorScheme.onSurface,
               ),
@@ -176,9 +187,7 @@ class _QuizPageState extends State<QuizPage> {
                         fontWeight: FontWeight.w600,
                         color:
                             _remainingTime < 300
-                                ? Theme.of(
-                                  context,
-                                ).colorScheme.onErrorContainer
+                                ? Theme.of(context).colorScheme.onErrorContainer
                                 : Theme.of(
                                   context,
                                 ).colorScheme.onSecondaryContainer,
@@ -256,9 +265,7 @@ class _QuizPageState extends State<QuizPage> {
                         _getQuestionTypeLabel(question.type),
                         fontWeight: FontWeight.w600,
                         color:
-                            Theme.of(
-                              context,
-                            ).colorScheme.onSecondaryContainer,
+                            Theme.of(context).colorScheme.onSecondaryContainer,
                       ),
                     ),
                     const Spacer(),
@@ -272,7 +279,12 @@ class _QuizPageState extends State<QuizPage> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: LabelSmallText(
-                        AppLocalizations.of(context)!.pointsDisplay(question.pointValue, question.pointValue == 1 ? AppLocalizations.of(context)!.point : AppLocalizations.of(context)!.points),
+                        AppLocalizations.of(context)!.pointsDisplay(
+                          question.pointValue,
+                          question.pointValue == 1
+                              ? AppLocalizations.of(context)!.point
+                              : AppLocalizations.of(context)!.points,
+                        ),
                         fontWeight: FontWeight.w600,
                         color:
                             Theme.of(context).colorScheme.onTertiaryContainer,
@@ -281,7 +293,7 @@ class _QuizPageState extends State<QuizPage> {
                   ],
                 ),
                 const SizedBox(height: 16),
-                AppTextWidget(
+                MathTextWidget(
                   question.questionText,
                   style: Theme.of(context).textTheme.titleMedium,
                   fontWeight: FontWeight.w600,
@@ -314,10 +326,11 @@ class _QuizPageState extends State<QuizPage> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: AppTextWidget(
-                            AppLocalizations.of(context)!.hintLabel(question.hint!),
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              fontStyle: FontStyle.italic,
-                            ),
+                            AppLocalizations.of(
+                              context,
+                            )!.hintLabel(question.hint!),
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(fontStyle: FontStyle.italic),
                             color: Theme.of(
                               context,
                             ).colorScheme.onSurface.withValues(alpha: 0.8),
@@ -653,7 +666,12 @@ class _QuizPageState extends State<QuizPage> {
             child: ElevatedButton.icon(
               onPressed: isLastQuestion ? _finishQuiz : _goToNextQuestion,
               icon: Icon(isLastQuestion ? Icons.check : Icons.arrow_forward),
-              label: LabelLargeText(isLastQuestion ? AppLocalizations.of(context)!.finishQuiz : AppLocalizations.of(context)!.next),
+              label: LabelLargeText(
+                isLastQuestion
+                    ? AppLocalizations.of(context)!.finishQuiz
+                    : AppLocalizations.of(context)!.next,
+                color: Theme.of(context).colorScheme.onSecondary,
+              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.secondary,
                 foregroundColor: Theme.of(context).colorScheme.onSecondary,
@@ -741,7 +759,9 @@ class _QuizPageState extends State<QuizPage> {
                 child: ElevatedButton.icon(
                   onPressed: () => Navigator.of(context).pop(),
                   icon: const Icon(Icons.home),
-                  label: LabelLargeText(AppLocalizations.of(context)!.backToStudy),
+                  label: LabelLargeText(
+                    AppLocalizations.of(context)!.backToStudy,
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor:
                         Theme.of(context).colorScheme.surfaceContainerHighest,
@@ -754,7 +774,10 @@ class _QuizPageState extends State<QuizPage> {
                 child: ElevatedButton.icon(
                   onPressed: _retakeQuiz,
                   icon: const Icon(Icons.refresh),
-                  label: LabelLargeText(AppLocalizations.of(context)!.retakeQuiz),
+                  label: LabelLargeText(
+                    AppLocalizations.of(context)!.retakeQuiz,
+                    color: Theme.of(context).colorScheme.onSecondary,
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.secondary,
                     foregroundColor: Theme.of(context).colorScheme.onSecondary,
@@ -818,7 +841,10 @@ class _QuizPageState extends State<QuizPage> {
             child: ElevatedButton.icon(
               onPressed: () => _navigateToDetailedReview(),
               icon: const Icon(Icons.visibility),
-              label: LabelLargeText(AppLocalizations.of(context)!.viewDetailedReview),
+              label: LabelLargeText(
+                AppLocalizations.of(context)!.viewDetailedReview,
+                color: Theme.of(context).colorScheme.onSecondary,
+              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.secondary,
                 foregroundColor: Theme.of(context).colorScheme.onSecondary,
@@ -1036,25 +1062,18 @@ class _QuizPageState extends State<QuizPage> {
       }
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: BodyMediumText(
-              AppLocalizations.of(context)!.quizResultsSaved,
-              color: Theme.of(context).colorScheme.onSecondary,
-            ),
-            backgroundColor: Theme.of(context).colorScheme.secondary,
-            duration: const Duration(seconds: 2),
-          ),
+        AppSnackBar.showSuccess(
+          context,
+          AppLocalizations.of(context)!.quizResultsSaved,
+          duration: const Duration(seconds: 2),
         );
       }
     } catch (e) {
       debugPrint('Error saving quiz to history: $e');
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: BodyMediumText(AppLocalizations.of(context)!.failedToSaveResults(e.toString())),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
+        AppSnackBar.showError(
+          context,
+          AppLocalizations.of(context)!.failedToSaveResults(e.toString()),
         );
       }
     }

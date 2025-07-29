@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
-import '../../../../common_widgets/error_message_widget.dart';
+import '../../../../common_widgets/app_snackbar_widget.dart';
 import '../../domain/repository/account_repo.dart';
 
 class FirebaseRepo implements AccountRepo {
@@ -30,7 +30,7 @@ class FirebaseRepo implements AccountRepo {
       } else {
         // If email is not verified, sign out the user and show an error message
         await _auth.signOut();
-        ErrorMessageWidget.showError(
+        AppSnackBar.showError(
           context,
           "Your email is not verified. Please check your inbox for the verification email.",
         );
@@ -41,18 +41,18 @@ class FirebaseRepo implements AccountRepo {
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         // Show error message
-        ErrorMessageWidget.showError(
+        AppSnackBar.showError(
           context,
           "No user found for that email.. Please try again.",
         );
       } else if (e.code == 'wrong-password') {
         // Show error message
-        ErrorMessageWidget.showError(
+        AppSnackBar.showError(
           context,
           "Wrong password provided for that user. Please try again.",
         );
       } else if (e.code == 'invalid-credential') {
-        ErrorMessageWidget.showError(
+        AppSnackBar.showError(
           context,
           "Email or password incorrect. Please try again.",
         );
@@ -61,7 +61,7 @@ class FirebaseRepo implements AccountRepo {
         print(
           "FirebaseAuthException during email/password sign-in: ${e.code} - ${e.message}",
         );
-        ErrorMessageWidget.showError(
+        AppSnackBar.showError(
           context,
           "An authentication error occurred. Please try again.",
         );
@@ -70,7 +70,7 @@ class FirebaseRepo implements AccountRepo {
     } catch (e) {
       // Handle any other errors
       print("Unexpected error during email/password sign-in: $e");
-      ErrorMessageWidget.showError(
+      AppSnackBar.showError(
         context,
         "An unexpected error occurred. Please try again.",
       );
@@ -100,7 +100,7 @@ class FirebaseRepo implements AccountRepo {
       if (appleCredential == null) {
         print("Apple ID Credential is null after call.");
         // Consider showing a generic error message if not already handled by the package's exception
-        // ErrorMessageWidget.showError(context, "Apple Sign-In failed to get credentials.");
+        // AppSnackBar.showError(context, "Apple Sign-In failed to get credentials.");
         return false; // ADDED: Return false if credential is null
       }
 
@@ -121,7 +121,7 @@ class FirebaseRepo implements AccountRepo {
       if (user != null) {
         // Check if this is a new user
         if (authResult.additionalUserInfo?.isNewUser ?? false) {
-          ErrorMessageWidget.showError(
+          AppSnackBar.showError(
             context,
             "Account not found. Please sign up first!",
           );
@@ -140,7 +140,7 @@ class FirebaseRepo implements AccountRepo {
       } else {
         // User is null after successful credential exchange, which is unexpected.
         print("Firebase user is null after Apple sign-in credential exchange.");
-        ErrorMessageWidget.showError(
+        AppSnackBar.showError(
           context,
           "Failed to retrieve user information after Apple Sign-In.",
         );
@@ -166,14 +166,14 @@ class FirebaseRepo implements AccountRepo {
         displayMessage =
             "An unknown error occurred with Apple Sign-In. Please try again.";
       }
-      ErrorMessageWidget.showError(context, displayMessage);
+      AppSnackBar.showError(context, displayMessage);
       return false; // ADDED: Return false
     } on FirebaseAuthException catch (e) {
       // ADDED: Specific catch for Firebase Auth exceptions
       print(
         "Error signing in with Apple (FirebaseAuthException): ${e.code} - ${e.message}",
       );
-      ErrorMessageWidget.showError(
+      AppSnackBar.showError(
         context,
         "Firebase authentication failed with Apple Sign-In: ${e.message}",
       );
@@ -182,7 +182,7 @@ class FirebaseRepo implements AccountRepo {
       print(
         "Error signing in with Apple (Generic Catch): $e",
       ); // MODIFIED: More specific log
-      ErrorMessageWidget.showError(
+      AppSnackBar.showError(
         context,
         "An unexpected error occurred during Apple Sign-In!",
       );
@@ -224,7 +224,7 @@ class FirebaseRepo implements AccountRepo {
         await _googleSignIn.signOut(); // Sign out from Google
 
         if (context.mounted) {
-          ErrorMessageWidget.showError(
+          AppSnackBar.showError(
             context,
             "Account not found. Please sign up first!",
           );
@@ -248,7 +248,7 @@ class FirebaseRepo implements AccountRepo {
       }
     } on FirebaseAuthException catch (e) {
       if (context.mounted) {
-        ErrorMessageWidget.showError(
+        AppSnackBar.showError(
           context,
           "An authentication error occurred: ${e.message}",
         );
@@ -290,7 +290,7 @@ class FirebaseRepo implements AccountRepo {
 
         if (userQuery.docs.isNotEmpty) {
           if (context.mounted) {
-            ErrorMessageWidget.showError(
+            AppSnackBar.showError(
               context,
               "You have already sign up. Please sign in!",
             );
@@ -365,7 +365,7 @@ class FirebaseRepo implements AccountRepo {
         if (userCredential.additionalUserInfo?.isNewUser != null) {
           if (!userCredential.additionalUserInfo!.isNewUser) {
             if (context.mounted) {
-              ErrorMessageWidget.showError(
+              AppSnackBar.showError(
                 context,
                 "You have already signed up. Please sign in!",
               );
@@ -432,7 +432,7 @@ class FirebaseRepo implements AccountRepo {
       }
 
       // Show error message
-      ErrorMessageWidget.showError(context, errorMessage);
+      AppSnackBar.showError(context, errorMessage);
     }
     return Future.error('An error occurred while signing up with Apple.');
   }
@@ -465,7 +465,7 @@ class FirebaseRepo implements AccountRepo {
         // Send an email verification if the user is created successfully and email is not verified
         await user.sendEmailVerification();
         // Show a message or navigate the user to the next screen
-        ErrorMessageWidget.showError(
+        AppSnackBar.showSuccess(
           context,
           "Verification email has been sent. Please check your inbox.",
         );
@@ -477,21 +477,21 @@ class FirebaseRepo implements AccountRepo {
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         // Show error message
-        ErrorMessageWidget.showError(
+        AppSnackBar.showError(
           context,
           "The password provided is too weak.",
         );
         throw Exception('The password provided is too weak.');
       } else if (e.code == 'email-already-in-use') {
         // Show error message
-        ErrorMessageWidget.showError(
+        AppSnackBar.showError(
           context,
           "The account already exists for that email.",
         );
       }
     } catch (e) {
       // Show error message
-      ErrorMessageWidget.showError(
+      AppSnackBar.showError(
         context,
         "An error occurred while signing up.",
       );
@@ -509,7 +509,7 @@ class FirebaseRepo implements AccountRepo {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
       // Show a message to the user indicating that the email was sent
 
-      ErrorMessageWidget.showError(
+      AppSnackBar.showInfo(
         context,
         "Password reset email will be sent to your email if the email exist in our system. Check your inbox.",
       );
@@ -518,13 +518,13 @@ class FirebaseRepo implements AccountRepo {
     } on FirebaseAuthException catch (e) {
       // Handle errors, such as invalid email
 
-      ErrorMessageWidget.showError(
+      AppSnackBar.showError(
         context,
         "Failed to send password reset email: ${e.message}",
       );
     } catch (e) {
       // Handle any other errors
-      ErrorMessageWidget.showError(
+      AppSnackBar.showError(
         context,
         "An unexpected error occurred. Please try again.",
       );
@@ -564,7 +564,7 @@ class FirebaseRepo implements AccountRepo {
     } on FirebaseAuthException catch (e) {
       if (e.code == 'requires-recent-login') {
         if (context.mounted) {
-          ErrorMessageWidget.showError(
+          AppSnackBar.showError(
             context,
             "Please sign out and sign in again to delete your account.",
           );
@@ -572,7 +572,7 @@ class FirebaseRepo implements AccountRepo {
       }
     } catch (e) {
       if (context.mounted) {
-        ErrorMessageWidget.showError(
+        AppSnackBar.showError(
           context,
           'Error deleting account. Please try again.',
         );

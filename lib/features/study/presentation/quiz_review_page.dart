@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../common_widgets/text_widgets.dart';
+import '../../../common_widgets/math_text_widget.dart';
+import '../../../common_widgets/app_snackbar_widget.dart';
 import '../domain/models/quiz.dart';
 import '../../../l10n/app_localizations.dart';
 
@@ -294,8 +296,9 @@ class QuizReviewPage extends StatelessWidget {
           const SizedBox(height: 12),
           
           // Question Text
-          TitleMediumText(
+          MathTextWidget(
             question.questionText,
+            style: Theme.of(context).textTheme.titleMedium,
             fontWeight: FontWeight.w500,
             color: Theme.of(context).colorScheme.onSurface,
           ),
@@ -357,8 +360,9 @@ class QuizReviewPage extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 6),
-                  BodySmallText(
+                  MathTextWidget(
                     question.explanation!,
+                    style: Theme.of(context).textTheme.bodySmall,
                     color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
                   ),
                 ],
@@ -490,8 +494,9 @@ class QuizReviewPage extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: BodyMediumText(
+                  child: MathTextWidget(
                     userAnswerText,
+                    style: Theme.of(context).textTheme.bodyMedium,
                     color: isCorrect ? Colors.green : Colors.red,
                     fontWeight: FontWeight.w500,
                   ),
@@ -552,8 +557,9 @@ class QuizReviewPage extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: BodyMediumText(
+                child: MathTextWidget(
                   correctAnswer,
+                  style: Theme.of(context).textTheme.bodyMedium,
                   color: Colors.green,
                   fontWeight: FontWeight.w500,
                 ),
@@ -621,11 +627,10 @@ ${AppLocalizations.of(context)!.totalQuestions(quiz.questions.length)}
 ''';
 
     // In a real app, you would use share_plus package
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: BodyMediumText(AppLocalizations.of(context)!.shareFunctionality(shareText)),
-        duration: const Duration(seconds: 3),
-      ),
+    AppSnackBar.showInfo(
+      context,
+      AppLocalizations.of(context)!.shareFunctionality(shareText),
+      duration: const Duration(seconds: 3),
     );
   }
 }

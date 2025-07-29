@@ -15,10 +15,10 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       toolbarHeight: preferredSize.height,
-      elevation: 5,
+      elevation: 0,
       title: TitleLargeText(title ?? ""),
       // centerTitle: true,
-      backgroundColor: Theme.of(context).colorScheme.surface,
+      backgroundColor: Colors.transparent,
 
       // actions: isAction == true ? [] : null,
     );

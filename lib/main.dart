@@ -108,6 +108,7 @@ class MyApp extends StatelessWidget {
               supportedLocales: const [
                 Locale('en'), // English
                 Locale('fr'), // French
+                Locale('es'), // Spanish
               ],
               // home: SigninPage(),
               // MainView(),

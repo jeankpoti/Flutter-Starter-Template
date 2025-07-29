@@ -99,7 +99,10 @@ class _StudyPageState extends State<StudyPage>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: BodyMediumText('${AppLocalizations.of(context)!.errorLoadingStudyData}: $e'),
+            content: BodyMediumText(
+              '${AppLocalizations.of(context)!.errorLoadingStudyData}: $e',
+              color: Theme.of(context).colorScheme.onErrorContainer,
+            ),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -720,7 +723,9 @@ class _StudyPageState extends State<StudyPage>
                           (context) => [
                             PopupMenuItem(
                               value: 'delete',
-                              child: LabelLargeText(AppLocalizations.of(context)!.deletePlan),
+                              child: LabelLargeText(
+                                AppLocalizations.of(context)!.deletePlan,
+                              ),
                             ),
                           ],
                     ),
@@ -854,10 +859,14 @@ class _StudyPageState extends State<StudyPage>
                                       ),
                                     ),
                                     const SizedBox(width: 6),
-                                    LabelSmallText(AppLocalizations.of(context)!.loading),
+                                    LabelSmallText(
+                                      AppLocalizations.of(context)!.loading,
+                                    ),
                                   ],
                                 )
-                                : LabelMediumText(AppLocalizations.of(context)!.takeQuiz),
+                                : LabelMediumText(
+                                  AppLocalizations.of(context)!.takeQuiz,
+                                ),
                       ),
                     ),
                   ],
@@ -934,8 +943,16 @@ class _StudyPageState extends State<StudyPage>
           // Processing steps
           Row(
             children: [
-              _buildProcessingStep('📷', AppLocalizations.of(context)!.uploadStep, true),
-              _buildProcessingStep('🔍', AppLocalizations.of(context)!.analyzeStep, true),
+              _buildProcessingStep(
+                '📷',
+                AppLocalizations.of(context)!.uploadStep,
+                true,
+              ),
+              _buildProcessingStep(
+                '🔍',
+                AppLocalizations.of(context)!.analyzeStep,
+                true,
+              ),
               _buildProcessingStep('📚', 'Generate Plan', false),
             ],
           ),
@@ -1094,7 +1111,8 @@ class _StudyPageState extends State<StudyPage>
                     child: _buildQuizOptionButton(
                       icon: Icons.school,
                       title: AppLocalizations.of(context)!.practiceTest,
-                      subtitle: AppLocalizations.of(context)!.practiceTestSubtitle,
+                      subtitle:
+                          AppLocalizations.of(context)!.practiceTestSubtitle,
                       difficulty: QuizDifficulty.medium,
                       questionCount: 10,
                       timeLimit: 20,
@@ -1113,7 +1131,8 @@ class _StudyPageState extends State<StudyPage>
                   child: _buildQuizOptionButton(
                     icon: Icons.emoji_events,
                     title: AppLocalizations.of(context)!.challengeMode,
-                    subtitle: AppLocalizations.of(context)!.challengeModeSubtitle,
+                    subtitle:
+                        AppLocalizations.of(context)!.challengeModeSubtitle,
                     difficulty: QuizDifficulty.hard,
                     questionCount: 15,
                     timeLimit: 30,
@@ -1486,8 +1505,9 @@ class _StudyPageState extends State<StudyPage>
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const BodyMediumText(
+              content: BodyMediumText(
                 '📷 Material captured! Starting AI analysis...',
+                color: Theme.of(context).colorScheme.onSecondary,
               ),
               backgroundColor: Theme.of(context).colorScheme.secondary,
               duration: const Duration(seconds: 2),
@@ -1500,7 +1520,12 @@ class _StudyPageState extends State<StudyPage>
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: BodyMediumText('Error capturing photo: $e')),
+          SnackBar(
+            content: BodyMediumText(
+              'Error capturing photo: $e',
+              color: Theme.of(context).colorScheme.error,
+            ),
+          ),
         );
       }
     }
@@ -1529,6 +1554,7 @@ class _StudyPageState extends State<StudyPage>
             SnackBar(
               content: BodyMediumText(
                 '📱 ${images.length} material(s) uploaded! Starting AI analysis...',
+                color: Theme.of(context).colorScheme.onSecondary,
               ),
               backgroundColor: Theme.of(context).colorScheme.secondary,
               duration: const Duration(seconds: 2),
@@ -1544,7 +1570,12 @@ class _StudyPageState extends State<StudyPage>
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: BodyMediumText('Error uploading from gallery: $e')),
+          SnackBar(
+            content: BodyMediumText(
+              'Error uploading from gallery: $e',
+              color: Theme.of(context).colorScheme.onError,
+            ),
+          ),
         );
       }
     }
@@ -1607,8 +1638,9 @@ class _StudyPageState extends State<StudyPage>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const BodyMediumText(
+            content: BodyMediumText(
               '✅ Material analyzed successfully! Study plan created!',
+              color: Theme.of(context).colorScheme.onSecondary,
             ),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 3),
@@ -1625,7 +1657,13 @@ class _StudyPageState extends State<StudyPage>
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: BodyMediumText('Error processing material: $e')),
+          SnackBar(
+            content: BodyMediumText(
+              'Error processing material: $e',
+              color: Theme.of(context).colorScheme.onError,
+            ),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
         );
       }
     }
@@ -1720,7 +1758,10 @@ class _StudyPageState extends State<StudyPage>
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: BodyMediumText('Processing text material...'),
+          content: BodyMediumText(
+            'Processing text material...',
+            color: Theme.of(context).colorScheme.onSecondary,
+          ),
           backgroundColor: Theme.of(context).colorScheme.secondary,
         ),
       );
@@ -1757,7 +1798,10 @@ class _StudyPageState extends State<StudyPage>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: BodyMediumText('Study plan "${studyPlan.title}" created!'),
+            content: BodyMediumText(
+              'Study plan "${studyPlan.title}" created!',
+              color: Theme.of(context).colorScheme.onSecondary,
+            ),
             backgroundColor: Theme.of(context).colorScheme.secondary,
           ),
         );
@@ -1769,7 +1813,13 @@ class _StudyPageState extends State<StudyPage>
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: BodyMediumText('Error generating study plan: $e')),
+          SnackBar(
+            content: BodyMediumText(
+              'Error generating study plan: $e',
+              color: Theme.of(context).colorScheme.onError,
+            ),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
         );
       }
     }
@@ -1821,10 +1871,12 @@ class _StudyPageState extends State<StudyPage>
       });
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: BodyMediumText(
               'No study materials or plans available for quiz generation',
+              color: Theme.of(context).colorScheme.onSecondary,
             ),
+            backgroundColor: Theme.of(context).colorScheme.secondary,
           ),
         );
       }
@@ -1841,6 +1893,7 @@ class _StudyPageState extends State<StudyPage>
           SnackBar(
             content: BodyMediumText(
               'Generating quiz with $questionCount questions...',
+              color: Theme.of(context).colorScheme.onSecondary,
             ),
             backgroundColor: Theme.of(context).colorScheme.secondary,
           ),
@@ -1886,7 +1939,13 @@ class _StudyPageState extends State<StudyPage>
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: BodyMediumText('Error generating quiz: $e')),
+          SnackBar(
+            content: BodyMediumText(
+              'Error generating quiz: $e',
+              color: Theme.of(context).colorScheme.onErrorContainer,
+            ),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
         );
       }
     }
@@ -1912,10 +1971,11 @@ class _StudyPageState extends State<StudyPage>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const BodyMediumText(
+            content: BodyMediumText(
               'No study materials available to generate quiz from',
+              color: Theme.of(context).colorScheme.onSecondary,
             ),
-            backgroundColor: Theme.of(context).colorScheme.error,
+            backgroundColor: Theme.of(context).colorScheme.secondary,
           ),
         );
       }
@@ -1930,8 +1990,9 @@ class _StudyPageState extends State<StudyPage>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const BodyMediumText(
+            content: BodyMediumText(
               'Generating comprehensive quiz from all your study materials...',
+              color: Theme.of(context).colorScheme.onSecondary,
             ),
             backgroundColor: Theme.of(context).colorScheme.secondary,
           ),
@@ -1965,7 +2026,10 @@ class _StudyPageState extends State<StudyPage>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: BodyMediumText('Error generating comprehensive quiz: $e'),
+            content: BodyMediumText(
+              'Error generating comprehensive quiz: $e',
+              color: Theme.of(context).colorScheme.onErrorContainer,
+            ),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -2088,6 +2152,7 @@ class _StudyPageState extends State<StudyPage>
           SnackBar(
             content: BodyMediumText(
               'Generating quiz from "${plan.title}" with $questionCount questions...',
+              color: Theme.of(context).colorScheme.onSecondary,
             ),
             backgroundColor: Theme.of(context).colorScheme.secondary,
           ),
@@ -2120,7 +2185,13 @@ class _StudyPageState extends State<StudyPage>
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: BodyMediumText('Error generating quiz: $e')),
+          SnackBar(
+            content: BodyMediumText(
+              'Error generating quiz: $e',
+              color: Theme.of(context).colorScheme.onErrorContainer,
+            ),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
         );
       }
     }
@@ -2140,7 +2211,10 @@ class _StudyPageState extends State<StudyPage>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const BodyMediumText('Study plan deleted'),
+            content: BodyMediumText(
+              'Study plan deleted',
+              color: Theme.of(context).colorScheme.onSecondary,
+            ),
             backgroundColor: Theme.of(context).colorScheme.secondary,
           ),
         );
@@ -2150,7 +2224,10 @@ class _StudyPageState extends State<StudyPage>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: BodyMediumText('Error deleting study plan: $e'),
+            content: BodyMediumText(
+              'Error deleting study plan: $e',
+              color: Theme.of(context).colorScheme.onErrorContainer,
+            ),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -2228,7 +2305,10 @@ class _StudyPageState extends State<StudyPage>
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: BodyMediumText('Error generating quiz: $e'),
+            content: BodyMediumText(
+              'Error generating quiz: $e',
+              color: Theme.of(context).colorScheme.onErrorContainer,
+            ),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -2274,7 +2354,10 @@ class _StudyPageState extends State<StudyPage>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: BodyMediumText('Error updating progress: $e'),
+            content: BodyMediumText(
+              'Error updating progress: $e',
+              color: Theme.of(context).colorScheme.onErrorContainer,
+            ),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -2337,7 +2420,10 @@ class _StudyPageState extends State<StudyPage>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const BodyMediumText('📚 Topic started!'),
+            content: BodyMediumText(
+              '📚 Topic started!',
+              color: Theme.of(context).colorScheme.onSecondary,
+            ),
             backgroundColor: Theme.of(context).colorScheme.secondary,
             duration: const Duration(seconds: 1),
           ),

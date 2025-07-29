@@ -6,6 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
 import 'app_localizations_en.dart';
+import 'app_localizations_es.dart';
 import 'app_localizations_fr.dart';
 
 // ignore_for_file: type=lint
@@ -95,6 +96,7 @@ abstract class AppLocalizations {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('en'),
+    Locale('es'),
     Locale('fr'),
   ];
 
@@ -439,6 +441,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Choose your education level for personalized explanations'**
   String get mathLevelDescription;
+
+  /// No description provided for @language.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language;
+
+  /// No description provided for @englishLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get englishLanguage;
+
+  /// No description provided for @frenchLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'French'**
+  String get frenchLanguage;
+
+  /// No description provided for @spanishLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Spanish'**
+  String get spanishLanguage;
+
+  /// No description provided for @elementary.
+  ///
+  /// In en, this message translates to:
+  /// **'Elementary'**
+  String get elementary;
+
+  /// No description provided for @elementaryAgeRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Ages 6-11'**
+  String get elementaryAgeRange;
+
+  /// No description provided for @elementaryDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Simple explanations with easy words'**
+  String get elementaryDescription;
+
+  /// No description provided for @highSchool.
+  ///
+  /// In en, this message translates to:
+  /// **'High School'**
+  String get highSchool;
+
+  /// No description provided for @highSchoolAgeRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Ages 14-18'**
+  String get highSchoolAgeRange;
+
+  /// No description provided for @highSchoolDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Standard mathematical explanations'**
+  String get highSchoolDescription;
+
+  /// No description provided for @college.
+  ///
+  /// In en, this message translates to:
+  /// **'College'**
+  String get college;
+
+  /// No description provided for @collegeAgeRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Ages 18+'**
+  String get collegeAgeRange;
+
+  /// No description provided for @collegeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced mathematical concepts'**
+  String get collegeDescription;
 
   /// No description provided for @getPremium.
   ///
@@ -1946,7 +2026,7 @@ class _AppLocalizationsDelegate
 
   @override
   bool isSupported(Locale locale) =>
-      <String>['en', 'fr'].contains(locale.languageCode);
+      <String>['en', 'es', 'fr'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -1957,6 +2037,8 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   switch (locale.languageCode) {
     case 'en':
       return AppLocalizationsEn();
+    case 'es':
+      return AppLocalizationsEs();
     case 'fr':
       return AppLocalizationsFr();
   }

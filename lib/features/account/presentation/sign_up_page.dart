@@ -10,6 +10,7 @@ import '../../../common_widgets/google_signin_button_widget.dart';
 import '../../../common_widgets/loader_widget.dart';
 import '../../../common_widgets/text_form_field_widget.dart';
 import '../../../common_widgets/text_widgets.dart';
+import '../../../common_widgets/app_snackbar_widget.dart';
 import '../../../constants/terms_conditions_widget.dart';
 import '../../../utils/responsive.dart';
 import 'account_cubit.dart';
@@ -73,9 +74,7 @@ class _SignUpPageState extends State<SignUpPage> {
           listener: (context, accountState) {
             // If there's an error message, show a SnackBar (optional)
             if (accountState.errorMsg != null) {
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(SnackBar(content: Text(accountState.errorMsg!)));
+              AppSnackBar.showError(context, accountState.errorMsg!);
             } else if (accountState.isSuccess) {
               // context.goNamed(AppRoute.signInPage.name);
 
