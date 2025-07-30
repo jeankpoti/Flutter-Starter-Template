@@ -1279,8 +1279,8 @@ abstract class AppLocalizations {
   /// No description provided for @completedOn.
   ///
   /// In en, this message translates to:
-  /// **'Completed on'**
-  String get completedOn;
+  /// **'Completed on {date}'**
+  String completedOn(Object date);
 
   /// No description provided for @quizStatistics.
   ///
@@ -1708,6 +1708,42 @@ abstract class AppLocalizations {
   /// **'points'**
   String get points;
 
+  /// No description provided for @minute.
+  ///
+  /// In en, this message translates to:
+  /// **'minute'**
+  String get minute;
+
+  /// No description provided for @minutes.
+  ///
+  /// In en, this message translates to:
+  /// **'minutes'**
+  String get minutes;
+
+  /// No description provided for @concept.
+  ///
+  /// In en, this message translates to:
+  /// **'concept'**
+  String get concept;
+
+  /// No description provided for @concepts.
+  ///
+  /// In en, this message translates to:
+  /// **'concepts'**
+  String get concepts;
+
+  /// No description provided for @problem.
+  ///
+  /// In en, this message translates to:
+  /// **'problem'**
+  String get problem;
+
+  /// No description provided for @problems.
+  ///
+  /// In en, this message translates to:
+  /// **'problems'**
+  String get problems;
+
   /// No description provided for @pointsDisplay.
   ///
   /// In en, this message translates to:
@@ -1990,6 +2026,12 @@ abstract class AppLocalizations {
   /// **'Type DELETE'**
   String get typeDeleteHint;
 
+  /// No description provided for @deleteText.
+  ///
+  /// In en, this message translates to:
+  /// **'DELETE'**
+  String get deleteText;
+
   /// No description provided for @deleteConfirmationError.
   ///
   /// In en, this message translates to:
@@ -2013,6 +2055,372 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Check out this amazing app: https://apps.apple.com/app/id6739957932'**
   String get shareAppText;
+
+  /// No description provided for @generatePlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate Plan'**
+  String get generatePlan;
+
+  /// No description provided for @generateQuizWithAllMaterials.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate Quiz with All Materials'**
+  String get generateQuizWithAllMaterials;
+
+  /// No description provided for @addStudyMaterial.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Study Material'**
+  String get addStudyMaterial;
+
+  /// No description provided for @addMaterial.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Material'**
+  String get addMaterial;
+
+  /// No description provided for @studyPlanCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Study plan \"{title}\" created!'**
+  String studyPlanCreated(Object title);
+
+  /// No description provided for @noStudyMaterialsForQuiz.
+  ///
+  /// In en, this message translates to:
+  /// **'No study materials or plans available for quiz generation'**
+  String get noStudyMaterialsForQuiz;
+
+  /// No description provided for @noStudyMaterialsAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No study materials available to generate quiz from'**
+  String get noStudyMaterialsAvailable;
+
+  /// No description provided for @selectStudyPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Study Plan'**
+  String get selectStudyPlan;
+
+  /// No description provided for @generatingQuizFromPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Generating quiz from \"{title}\" with {count} questions...'**
+  String generatingQuizFromPlan(Object count, Object title);
+
+  /// No description provided for @studyPlanDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Study plan deleted'**
+  String get studyPlanDeleted;
+
+  /// No description provided for @errorDeletingStudyPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Error deleting study plan: {error}'**
+  String errorDeletingStudyPlan(Object error);
+
+  /// No description provided for @errorGeneratingStudyPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Error generating study plan: {error}'**
+  String errorGeneratingStudyPlan(Object error);
+
+  /// No description provided for @totalTopics.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Topics'**
+  String get totalTopics;
+
+  /// No description provided for @completedStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get completedStatus;
+
+  /// No description provided for @inProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'In Progress'**
+  String get inProgress;
+
+  /// No description provided for @start.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get start;
+
+  /// No description provided for @complete.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete'**
+  String get complete;
+
+  /// No description provided for @done.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get done;
+
+  /// No description provided for @description.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get description;
+
+  /// No description provided for @keyConcepts.
+  ///
+  /// In en, this message translates to:
+  /// **'Key Concepts'**
+  String get keyConcepts;
+
+  /// No description provided for @aiExplanation.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Explanation'**
+  String get aiExplanation;
+
+  /// No description provided for @practiceProblems.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice Problems'**
+  String get practiceProblems;
+
+  /// No description provided for @prerequisites.
+  ///
+  /// In en, this message translates to:
+  /// **'Prerequisites'**
+  String get prerequisites;
+
+  /// No description provided for @unknownTopic.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown Topic'**
+  String get unknownTopic;
+
+  /// No description provided for @startTopic.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Topic'**
+  String get startTopic;
+
+  /// No description provided for @markComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark Complete'**
+  String get markComplete;
+
+  /// No description provided for @markIncomplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark Incomplete'**
+  String get markIncomplete;
+
+  /// No description provided for @enterStudyMaterialText.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your study material text:'**
+  String get enterStudyMaterialText;
+
+  /// No description provided for @processingTextMaterial.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing text material...'**
+  String get processingTextMaterial;
+
+  /// No description provided for @generatingComprehensiveQuiz.
+  ///
+  /// In en, this message translates to:
+  /// **'Generating comprehensive quiz from all your study materials...'**
+  String get generatingComprehensiveQuiz;
+
+  /// No description provided for @chooseStudyPlanForQuiz.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose which study plan to generate the quiz from:'**
+  String get chooseStudyPlanForQuiz;
+
+  /// No description provided for @generatingQuiz.
+  ///
+  /// In en, this message translates to:
+  /// **'Generating quiz...'**
+  String get generatingQuiz;
+
+  /// No description provided for @completeTheseTopicsFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete these topics first:'**
+  String get completeTheseTopicsFirst;
+
+  /// No description provided for @topicCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Topic Completed!'**
+  String get topicCompleted;
+
+  /// No description provided for @allMaterialsQuizDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'12 questions • 25 min • All study materials included'**
+  String get allMaterialsQuizDescription;
+
+  /// No description provided for @materialCaptured.
+  ///
+  /// In en, this message translates to:
+  /// **'📷 Material captured! Starting AI analysis...'**
+  String get materialCaptured;
+
+  /// No description provided for @errorCapturingPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Error capturing photo: {error}'**
+  String errorCapturingPhoto(Object error);
+
+  /// No description provided for @materialsUploaded.
+  ///
+  /// In en, this message translates to:
+  /// **'📱 {count} material(s) uploaded! Starting AI analysis...'**
+  String materialsUploaded(Object count);
+
+  /// No description provided for @errorUploadingFromGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Error uploading from gallery: {error}'**
+  String errorUploadingFromGallery(Object error);
+
+  /// No description provided for @studyMaterialTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Study Material {number}'**
+  String studyMaterialTitle(Object number);
+
+  /// No description provided for @textMaterialTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Text Material {number}'**
+  String textMaterialTitle(Object number);
+
+  /// No description provided for @materialAnalyzedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Material analyzed successfully! Study plan created!'**
+  String get materialAnalyzedSuccess;
+
+  /// No description provided for @errorProcessingMaterial.
+  ///
+  /// In en, this message translates to:
+  /// **'Error processing material: {error}'**
+  String errorProcessingMaterial(Object error);
+
+  /// No description provided for @permissionRequiredTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{permission} Permission Required'**
+  String permissionRequiredTitle(Object permission);
+
+  /// No description provided for @permissionRequiredMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enable {permission} access in your device settings to upload study materials.'**
+  String permissionRequiredMessage(Object permission);
+
+  /// No description provided for @pasteOrTypeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste or type your math content here...\n\nExample:\n• Chapter 5: Quadratic Equations\n• Solving ax² + bx + c = 0\n• Practice problems 1-15'**
+  String get pasteOrTypeHint;
+
+  /// No description provided for @generatingQuizWithCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Generating quiz with {count} questions...'**
+  String generatingQuizWithCount(Object count);
+
+  /// No description provided for @errorGeneratingQuiz.
+  ///
+  /// In en, this message translates to:
+  /// **'Error generating quiz: {error}'**
+  String errorGeneratingQuiz(Object error);
+
+  /// No description provided for @errorGeneratingComprehensiveQuiz.
+  ///
+  /// In en, this message translates to:
+  /// **'Error generating comprehensive quiz: {error}'**
+  String errorGeneratingComprehensiveQuiz(Object error);
+
+  /// No description provided for @planTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan: {title}'**
+  String planTitle(Object title);
+
+  /// No description provided for @progressUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Progress updated: {progress}%'**
+  String progressUpdated(Object progress);
+
+  /// No description provided for @errorUpdatingProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Error updating progress: {error}'**
+  String errorUpdatingProgress(Object error);
+
+  /// No description provided for @topicMarkedComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'✅ Topic marked as complete!'**
+  String get topicMarkedComplete;
+
+  /// No description provided for @errorMarkingTopicComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Error marking topic complete: {error}'**
+  String errorMarkingTopicComplete(Object error);
+
+  /// No description provided for @topicStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'📚 Topic started!'**
+  String get topicStarted;
+
+  /// No description provided for @errorStartingTopic.
+  ///
+  /// In en, this message translates to:
+  /// **'Error starting topic: {error}'**
+  String errorStartingTopic(Object error);
+
+  /// No description provided for @comprehensiveQuizTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Comprehensive Quiz - All Materials'**
+  String get comprehensiveQuizTitle;
+
+  /// No description provided for @daysAgoFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} days ago'**
+  String daysAgoFormat(Object days);
+
+  /// No description provided for @dateFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'{day}/{month}/{year}'**
+  String dateFormat(Object day, Object month, Object year);
+
+  /// No description provided for @maxMaterialsReached.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum of {count} study materials allowed'**
+  String maxMaterialsReached(Object count);
+
+  /// No description provided for @maxMaterialsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select up to {count} of your most important study materials for best results'**
+  String maxMaterialsHint(Object count);
 }
 
 class _AppLocalizationsDelegate

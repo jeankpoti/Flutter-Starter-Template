@@ -620,7 +620,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get attempts => 'attempts';
 
   @override
-  String get completedOn => 'Completed on';
+  String completedOn(Object date) {
+    return 'Completed on $date';
+  }
 
   @override
   String get quizStatistics => 'Quiz Statistics';
@@ -878,6 +880,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get points => 'points';
 
   @override
+  String get minute => 'minute';
+
+  @override
+  String get minutes => 'minutes';
+
+  @override
+  String get concept => 'concept';
+
+  @override
+  String get concepts => 'concepts';
+
+  @override
+  String get problem => 'problem';
+
+  @override
+  String get problems => 'problems';
+
+  @override
   String pointsDisplay(Object count, Object points) {
     return '$count $points';
   }
@@ -1036,6 +1056,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get typeDeleteHint => 'Type DELETE';
 
   @override
+  String get deleteText => 'DELETE';
+
+  @override
   String get deleteConfirmationError => 'Please type DELETE to confirm';
 
   @override
@@ -1049,4 +1072,243 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get shareAppText =>
       'Check out this amazing app: https://apps.apple.com/app/id6739957932';
+
+  @override
+  String get generatePlan => 'Generate Plan';
+
+  @override
+  String get generateQuizWithAllMaterials => 'Generate Quiz with All Materials';
+
+  @override
+  String get addStudyMaterial => 'Add Study Material';
+
+  @override
+  String get addMaterial => 'Add Material';
+
+  @override
+  String studyPlanCreated(Object title) {
+    return 'Study plan \"$title\" created!';
+  }
+
+  @override
+  String get noStudyMaterialsForQuiz =>
+      'No study materials or plans available for quiz generation';
+
+  @override
+  String get noStudyMaterialsAvailable =>
+      'No study materials available to generate quiz from';
+
+  @override
+  String get selectStudyPlan => 'Select Study Plan';
+
+  @override
+  String generatingQuizFromPlan(Object count, Object title) {
+    return 'Generating quiz from \"$title\" with $count questions...';
+  }
+
+  @override
+  String get studyPlanDeleted => 'Study plan deleted';
+
+  @override
+  String errorDeletingStudyPlan(Object error) {
+    return 'Error deleting study plan: $error';
+  }
+
+  @override
+  String errorGeneratingStudyPlan(Object error) {
+    return 'Error generating study plan: $error';
+  }
+
+  @override
+  String get totalTopics => 'Total Topics';
+
+  @override
+  String get completedStatus => 'Completed';
+
+  @override
+  String get inProgress => 'In Progress';
+
+  @override
+  String get start => 'Start';
+
+  @override
+  String get complete => 'Complete';
+
+  @override
+  String get done => 'Done';
+
+  @override
+  String get description => 'Description';
+
+  @override
+  String get keyConcepts => 'Key Concepts';
+
+  @override
+  String get aiExplanation => 'AI Explanation';
+
+  @override
+  String get practiceProblems => 'Practice Problems';
+
+  @override
+  String get prerequisites => 'Prerequisites';
+
+  @override
+  String get unknownTopic => 'Unknown Topic';
+
+  @override
+  String get startTopic => 'Start Topic';
+
+  @override
+  String get markComplete => 'Mark Complete';
+
+  @override
+  String get markIncomplete => 'Mark Incomplete';
+
+  @override
+  String get enterStudyMaterialText => 'Enter your study material text:';
+
+  @override
+  String get processingTextMaterial => 'Processing text material...';
+
+  @override
+  String get generatingComprehensiveQuiz =>
+      'Generating comprehensive quiz from all your study materials...';
+
+  @override
+  String get chooseStudyPlanForQuiz =>
+      'Choose which study plan to generate the quiz from:';
+
+  @override
+  String get generatingQuiz => 'Generating quiz...';
+
+  @override
+  String get completeTheseTopicsFirst => 'Complete these topics first:';
+
+  @override
+  String get topicCompleted => 'Topic Completed!';
+
+  @override
+  String get allMaterialsQuizDescription =>
+      '12 questions • 25 min • All study materials included';
+
+  @override
+  String get materialCaptured =>
+      '📷 Material captured! Starting AI analysis...';
+
+  @override
+  String errorCapturingPhoto(Object error) {
+    return 'Error capturing photo: $error';
+  }
+
+  @override
+  String materialsUploaded(Object count) {
+    return '📱 $count material(s) uploaded! Starting AI analysis...';
+  }
+
+  @override
+  String errorUploadingFromGallery(Object error) {
+    return 'Error uploading from gallery: $error';
+  }
+
+  @override
+  String studyMaterialTitle(Object number) {
+    return 'Study Material $number';
+  }
+
+  @override
+  String textMaterialTitle(Object number) {
+    return 'Text Material $number';
+  }
+
+  @override
+  String get materialAnalyzedSuccess =>
+      '✅ Material analyzed successfully! Study plan created!';
+
+  @override
+  String errorProcessingMaterial(Object error) {
+    return 'Error processing material: $error';
+  }
+
+  @override
+  String permissionRequiredTitle(Object permission) {
+    return '$permission Permission Required';
+  }
+
+  @override
+  String permissionRequiredMessage(Object permission) {
+    return 'Please enable $permission access in your device settings to upload study materials.';
+  }
+
+  @override
+  String get pasteOrTypeHint =>
+      'Paste or type your math content here...\n\nExample:\n• Chapter 5: Quadratic Equations\n• Solving ax² + bx + c = 0\n• Practice problems 1-15';
+
+  @override
+  String generatingQuizWithCount(Object count) {
+    return 'Generating quiz with $count questions...';
+  }
+
+  @override
+  String errorGeneratingQuiz(Object error) {
+    return 'Error generating quiz: $error';
+  }
+
+  @override
+  String errorGeneratingComprehensiveQuiz(Object error) {
+    return 'Error generating comprehensive quiz: $error';
+  }
+
+  @override
+  String planTitle(Object title) {
+    return 'Plan: $title';
+  }
+
+  @override
+  String progressUpdated(Object progress) {
+    return 'Progress updated: $progress%';
+  }
+
+  @override
+  String errorUpdatingProgress(Object error) {
+    return 'Error updating progress: $error';
+  }
+
+  @override
+  String get topicMarkedComplete => '✅ Topic marked as complete!';
+
+  @override
+  String errorMarkingTopicComplete(Object error) {
+    return 'Error marking topic complete: $error';
+  }
+
+  @override
+  String get topicStarted => '📚 Topic started!';
+
+  @override
+  String errorStartingTopic(Object error) {
+    return 'Error starting topic: $error';
+  }
+
+  @override
+  String get comprehensiveQuizTitle => 'Comprehensive Quiz - All Materials';
+
+  @override
+  String daysAgoFormat(Object days) {
+    return '$days days ago';
+  }
+
+  @override
+  String dateFormat(Object day, Object month, Object year) {
+    return '$day/$month/$year';
+  }
+
+  @override
+  String maxMaterialsReached(Object count) {
+    return 'Maximum of $count study materials allowed';
+  }
+
+  @override
+  String maxMaterialsHint(Object count) {
+    return 'Select up to $count of your most important study materials for best results';
+  }
 }

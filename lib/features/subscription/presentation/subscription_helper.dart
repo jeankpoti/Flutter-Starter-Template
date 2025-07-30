@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../main.dart';
 import 'subscription_cubit.dart';
-import 'subscription_state.dart';
 
 class SubscriptionHelper {
   /// Check if user has premium access, and prompt to upgrade if not

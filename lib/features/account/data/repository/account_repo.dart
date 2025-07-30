@@ -95,15 +95,6 @@ class FirebaseRepo implements AccountRepo {
         // ),
       );
 
-      // It's good practice to check if appleCredential is null, though getAppleIDCredential throws on cancellation.
-      // However, to be absolutely safe or if the behavior of the package changes:
-      if (appleCredential == null) {
-        print("Apple ID Credential is null after call.");
-        // Consider showing a generic error message if not already handled by the package's exception
-        // AppSnackBar.showError(context, "Apple Sign-In failed to get credentials.");
-        return false; // ADDED: Return false if credential is null
-      }
-
       // Create an OAuth credential for Firebase
       final oauthCredential = OAuthProvider("apple.com").credential(
         idToken: appleCredential.identityToken,
@@ -477,10 +468,7 @@ class FirebaseRepo implements AccountRepo {
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         // Show error message
-        AppSnackBar.showError(
-          context,
-          "The password provided is too weak.",
-        );
+        AppSnackBar.showError(context, "The password provided is too weak.");
         throw Exception('The password provided is too weak.');
       } else if (e.code == 'email-already-in-use') {
         // Show error message
@@ -491,10 +479,7 @@ class FirebaseRepo implements AccountRepo {
       }
     } catch (e) {
       // Show error message
-      AppSnackBar.showError(
-        context,
-        "An error occurred while signing up.",
-      );
+      AppSnackBar.showError(context, "An error occurred while signing up.");
     }
   }
 

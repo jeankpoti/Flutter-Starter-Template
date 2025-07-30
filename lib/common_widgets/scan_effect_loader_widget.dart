@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
@@ -11,7 +10,7 @@ class ModernScanEffectLoader extends StatefulWidget {
   final bool showGlow;
 
   const ModernScanEffectLoader({
-    Key? key,
+    super.key,
     this.size = 200.0,
     this.primaryColor = Colors.white,
     // const Color(0xFF00D4FF),
@@ -20,7 +19,7 @@ class ModernScanEffectLoader extends StatefulWidget {
     this.duration = const Duration(milliseconds: 2500),
     this.showPulse = true,
     this.showGlow = true,
-  }) : super(key: key);
+  });
 
   @override
   State<ModernScanEffectLoader> createState() => _ModernScanEffectLoaderState();
@@ -88,7 +87,7 @@ class _ModernScanEffectLoaderState extends State<ModernScanEffectLoader>
         _rotationAnimation,
       ]),
       builder: (context, child) {
-        return Container(
+        return SizedBox(
           width: widget.size,
           height: widget.size,
           child: Stack(

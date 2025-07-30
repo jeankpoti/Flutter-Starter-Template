@@ -6,7 +6,8 @@ import 'dart:io';
 import '../../domain/models/study_material.dart';
 
 class StudyMaterialRepository {
-  static final StudyMaterialRepository _instance = StudyMaterialRepository._internal();
+  static final StudyMaterialRepository _instance =
+      StudyMaterialRepository._internal();
   late final FirebaseFirestore _firestore;
   late final FirebaseStorage _storage;
   late final String _collection;
@@ -32,17 +33,21 @@ class StudyMaterialRepository {
       }
 
       debugPrint('Saving study material to Firestore: ${material.id}');
-      debugPrint('Material data: title=${material.title}, type=${material.type}');
-      
+      debugPrint(
+        'Material data: title=${material.title}, type=${material.type}',
+      );
+
       final materialData = material.toMap();
       debugPrint('Material map keys: ${materialData.keys.toList()}');
-      
+
       await _firestore
           .collection(_collection)
           .doc(material.id)
           .set(materialData);
-      
-      debugPrint('Study material saved successfully to Firestore: ${material.id}');
+
+      debugPrint(
+        'Study material saved successfully to Firestore: ${material.id}',
+      );
     } catch (e) {
       debugPrint('Error saving study material to Firestore: $e');
       rethrow;
@@ -58,14 +63,15 @@ class StudyMaterialRepository {
       }
 
       debugPrint('Uploading image for material: $materialId');
-      
-      final fileName = '${materialId}_${DateTime.now().millisecondsSinceEpoch}.jpg';
+
+      final fileName =
+          '${materialId}_${DateTime.now().millisecondsSinceEpoch}.jpg';
       final ref = _storage.ref().child('$_storagePath/$userId/$fileName');
-      
+
       final uploadTask = ref.putFile(imageFile);
       final snapshot = await uploadTask;
       final downloadUrl = await snapshot.ref.getDownloadURL();
-      
+
       debugPrint('Image uploaded successfully: $downloadUrl');
       return downloadUrl;
     } catch (e) {
@@ -83,16 +89,18 @@ class StudyMaterialRepository {
       }
 
       debugPrint('Fetching study materials for user: $userId');
-      
-      final querySnapshot = await _firestore
-          .collection(_collection)
-          .where('userId', isEqualTo: userId)
-          .orderBy('createdAt', descending: true)
-          .get();
 
-      final materials = querySnapshot.docs
-          .map((doc) => StudyMaterial.fromMap(doc.data()))
-          .toList();
+      final querySnapshot =
+          await _firestore
+              .collection(_collection)
+              .where('userId', isEqualTo: userId)
+              .orderBy('createdAt', descending: true)
+              .get();
+
+      final materials =
+          querySnapshot.docs
+              .map((doc) => StudyMaterial.fromMap(doc.data()))
+              .toList();
 
       debugPrint('Fetched ${materials.length} study materials from Firestore');
       return materials;
@@ -124,12 +132,18 @@ class StudyMaterialRepository {
       }
 
       final querySnapshot = await query.get();
-      
-      final materials = querySnapshot.docs
-          .map((doc) => StudyMaterial.fromMap(doc.data() as Map<String, dynamic>))
-          .toList();
 
-      debugPrint('Fetched ${materials.length} study materials (paginated) from Firestore');
+      final materials =
+          querySnapshot.docs
+              .map(
+                (doc) =>
+                    StudyMaterial.fromMap(doc.data() as Map<String, dynamic>),
+              )
+              .toList();
+
+      debugPrint(
+        'Fetched ${materials.length} study materials (paginated) from Firestore',
+      );
       return materials;
     } catch (e) {
       debugPrint('Error fetching paginated study materials: $e');
@@ -150,15 +164,15 @@ class StudyMaterialRepository {
       }
 
       debugPrint('Updating study material: ${material.id}');
-      
+
       final materialData = material.toMap();
       materialData['updatedAt'] = Timestamp.now();
-      
+
       await _firestore
           .collection(_collection)
           .doc(material.id)
           .update(materialData);
-      
+
       debugPrint('Study material updated successfully: ${material.id}');
     } catch (e) {
       debugPrint('Error updating study material: $e');
@@ -175,12 +189,10 @@ class StudyMaterialRepository {
       }
 
       debugPrint('Deleting study material: $materialId');
-      
+
       // Get the material to check ownership and get image URL
-      final docSnapshot = await _firestore
-          .collection(_collection)
-          .doc(materialId)
-          .get();
+      final docSnapshot =
+          await _firestore.collection(_collection).doc(materialId).get();
 
       if (!docSnapshot.exists) {
         throw Exception('Study material not found');
@@ -195,7 +207,9 @@ class StudyMaterialRepository {
       if (material.firebaseStoragePath != null) {
         try {
           await _storage.refFromURL(material.firebaseStoragePath!).delete();
-          debugPrint('Image deleted from storage: ${material.firebaseStoragePath}');
+          debugPrint(
+            'Image deleted from storage: ${material.firebaseStoragePath}',
+          );
         } catch (e) {
           debugPrint('Warning: Could not delete image from storage: $e');
           // Continue with document deletion even if image deletion fails
@@ -204,7 +218,7 @@ class StudyMaterialRepository {
 
       // Delete the document
       await _firestore.collection(_collection).doc(materialId).delete();
-      
+
       debugPrint('Study material deleted successfully: $materialId');
     } catch (e) {
       debugPrint('Error deleting study material: $e');
@@ -220,18 +234,22 @@ class StudyMaterialRepository {
         throw Exception('User not authenticated');
       }
 
-      final querySnapshot = await _firestore
-          .collection(_collection)
-          .where('userId', isEqualTo: userId)
-          .where('type', isEqualTo: type.name)
-          .orderBy('createdAt', descending: true)
-          .get();
+      final querySnapshot =
+          await _firestore
+              .collection(_collection)
+              .where('userId', isEqualTo: userId)
+              .where('type', isEqualTo: type.name)
+              .orderBy('createdAt', descending: true)
+              .get();
 
-      final materials = querySnapshot.docs
-          .map((doc) => StudyMaterial.fromMap(doc.data()))
-          .toList();
+      final materials =
+          querySnapshot.docs
+              .map((doc) => StudyMaterial.fromMap(doc.data()))
+              .toList();
 
-      debugPrint('Fetched ${materials.length} ${type.name} materials from Firestore');
+      debugPrint(
+        'Fetched ${materials.length} ${type.name} materials from Firestore',
+      );
       return materials;
     } catch (e) {
       debugPrint('Error fetching materials by type: $e');
@@ -249,17 +267,19 @@ class StudyMaterialRepository {
 
       // Note: Firestore doesn't support full-text search natively
       // This is a basic implementation that searches by title prefix
-      final querySnapshot = await _firestore
-          .collection(_collection)
-          .where('userId', isEqualTo: userId)
-          .where('title', isGreaterThanOrEqualTo: searchQuery)
-          .where('title', isLessThanOrEqualTo: searchQuery + '\uf8ff')
-          .orderBy('title')
-          .get();
+      final querySnapshot =
+          await _firestore
+              .collection(_collection)
+              .where('userId', isEqualTo: userId)
+              .where('title', isGreaterThanOrEqualTo: searchQuery)
+              .where('title', isLessThanOrEqualTo: '$searchQuery\uf8ff')
+              .orderBy('title')
+              .get();
 
-      final materials = querySnapshot.docs
-          .map((doc) => StudyMaterial.fromMap(doc.data()))
-          .toList();
+      final materials =
+          querySnapshot.docs
+              .map((doc) => StudyMaterial.fromMap(doc.data()))
+              .toList();
 
       debugPrint('Found ${materials.length} materials matching "$searchQuery"');
       return materials;
@@ -277,23 +297,32 @@ class StudyMaterialRepository {
         throw Exception('User not authenticated');
       }
 
-      final querySnapshot = await _firestore
-          .collection(_collection)
-          .where('userId', isEqualTo: userId)
-          .get();
+      final querySnapshot =
+          await _firestore
+              .collection(_collection)
+              .where('userId', isEqualTo: userId)
+              .get();
 
-      final materials = querySnapshot.docs
-          .map((doc) => StudyMaterial.fromMap(doc.data()))
-          .toList();
+      final materials =
+          querySnapshot.docs
+              .map((doc) => StudyMaterial.fromMap(doc.data()))
+              .toList();
 
       final stats = {
         'totalMaterials': materials.length,
-        'imageCount': materials.where((m) => m.type == MaterialType.image).length,
+        'imageCount':
+            materials.where((m) => m.type == MaterialType.image).length,
         'textCount': materials.where((m) => m.type == MaterialType.text).length,
-        'documentCount': materials.where((m) => m.type == MaterialType.document).length,
-        'completedCount': materials.where((m) => m.status == MaterialStatus.completed).length,
-        'processingCount': materials.where((m) => m.status == MaterialStatus.processing).length,
-        'failedCount': materials.where((m) => m.status == MaterialStatus.failed).length,
+        'documentCount':
+            materials.where((m) => m.type == MaterialType.document).length,
+        'completedCount':
+            materials.where((m) => m.status == MaterialStatus.completed).length,
+        'processingCount':
+            materials
+                .where((m) => m.status == MaterialStatus.processing)
+                .length,
+        'failedCount':
+            materials.where((m) => m.status == MaterialStatus.failed).length,
       };
 
       debugPrint('Material statistics: $stats');

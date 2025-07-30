@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +7,6 @@ import 'package:go_router/go_router.dart';
 // import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:math_ai/features/account/presentation/sign_up_page.dart';
 import 'package:math_ai/features/solve_math/data/repository/gemini_solve_math_repo.dart';
-import 'package:math_ai/features/solve_math/domain/respository/firebase_collection_repo.dart';
 import 'package:math_ai/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

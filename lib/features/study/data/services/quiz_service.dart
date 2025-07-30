@@ -135,7 +135,7 @@ class QuizService {
     final response = await _geminiService!.generateTextContent(prompt);
     final questionText = response.text ?? '';
     
-    return _parseQuestionsFromAIResponse(questionText);
+    return _parseQuestionsFromAIResponse(questionText, locale);
   }
 
   /// Generate questions from study topics
@@ -158,16 +158,17 @@ class QuizService {
   }
 
   /// Parse AI response into quiz questions
-  List<QuizQuestion> _parseQuestionsFromAIResponse(String response) {
+  List<QuizQuestion> _parseQuestionsFromAIResponse(String response, String locale) {
     final questions = <QuizQuestion>[];
-    final questionBlocks = response.split(RegExp(r'QUESTION \d+:'));
+    // Support English, French, and Spanish question headers
+    final questionBlocks = response.split(RegExp(r'(QUESTION \d+:|QUESTION \d+ :|PREGUNTA \d+:)'));
     
     for (int i = 1; i < questionBlocks.length; i++) {
       final block = questionBlocks[i].trim();
       if (block.isEmpty) continue;
       
       try {
-        final question = _parseQuestionBlock(block, i);
+        final question = _parseQuestionBlock(block, i, locale);
         if (question != null) {
           questions.add(question);
         }
@@ -180,7 +181,7 @@ class QuizService {
   }
 
   /// Parse individual question block
-  QuizQuestion? _parseQuestionBlock(String block, int questionNumber) {
+  QuizQuestion? _parseQuestionBlock(String block, int questionNumber, String locale) {
     final lines = block.split('\n').map((line) => line.trim()).where((line) => line.isNotEmpty).toList();
     
     QuestionType? type;
@@ -239,7 +240,8 @@ class QuizService {
         correctAnswerId = correctAnswer;
         break;
       case QuestionType.trueFalse:
-        answers = _createTrueFalseAnswers(correctAnswer?.toLowerCase() == 'true');
+        bool isTrue = _isTrueAnswer(correctAnswer, locale);
+        answers = _createTrueFalseAnswers(isTrue, locale);
         correctAnswerId = answers.firstWhere((a) => a.isCorrect).id;
         break;
     }
@@ -291,17 +293,49 @@ class QuizService {
     return answers;
   }
 
+  /// Check if answer represents "true" in any supported language
+  bool _isTrueAnswer(String? answer, String locale) {
+    if (answer == null) return false;
+    final lowerAnswer = answer.toLowerCase().trim();
+    
+    switch (locale) {
+      case 'fr':
+        return lowerAnswer == 'true' || lowerAnswer == 'vrai' || lowerAnswer == 'v';
+      case 'es':
+        return lowerAnswer == 'true' || lowerAnswer == 'verdadero' || lowerAnswer == 'v';
+      default:
+        return lowerAnswer == 'true' || lowerAnswer == 't';
+    }
+  }
+
   /// Create true/false answers
-  List<QuizAnswer> _createTrueFalseAnswers(bool correctIsTrue) {
+  List<QuizAnswer> _createTrueFalseAnswers(bool correctIsTrue, String locale) {
+    String trueText = 'True';
+    String falseText = 'False';
+    
+    switch (locale) {
+      case 'fr':
+        trueText = 'Vrai';
+        falseText = 'Faux';
+        break;
+      case 'es':
+        trueText = 'Verdadero';
+        falseText = 'Falso';
+        break;
+      default:
+        trueText = 'True';
+        falseText = 'False';
+    }
+    
     return [
       QuizAnswer(
         id: _generateId(),
-        text: 'True',
+        text: trueText,
         isCorrect: correctIsTrue,
       ),
       QuizAnswer(
         id: _generateId(),
-        text: 'False',
+        text: falseText,
         isCorrect: !correctIsTrue,
       ),
     ];

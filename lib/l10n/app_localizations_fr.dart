@@ -640,7 +640,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get attempts => 'tentatives';
 
   @override
-  String get completedOn => 'Terminé le';
+  String completedOn(Object date) {
+    return 'Terminé le $date';
+  }
 
   @override
   String get quizStatistics => 'Statistiques des quiz';
@@ -900,6 +902,24 @@ class AppLocalizationsFr extends AppLocalizations {
   String get points => 'points';
 
   @override
+  String get minute => 'minute';
+
+  @override
+  String get minutes => 'minutes';
+
+  @override
+  String get concept => 'concept';
+
+  @override
+  String get concepts => 'concepts';
+
+  @override
+  String get problem => 'problème';
+
+  @override
+  String get problems => 'problèmes';
+
+  @override
   String pointsDisplay(Object count, Object points) {
     return '$count $points';
   }
@@ -1056,13 +1076,17 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get deleteAccountConfirmation =>
-      'Cette action ne peut pas être annulée. Toutes vos données seront supprimées. Veuillez taper \"DELETE\" pour confirmer.';
+      'Cette action ne peut pas être annulée. Toutes vos données seront supprimées. Veuillez taper \"SUPPRIMER\" pour confirmer.';
 
   @override
-  String get typeDeleteHint => 'Tapez DELETE';
+  String get typeDeleteHint => 'Tapez SUPPRIMER';
 
   @override
-  String get deleteConfirmationError => 'Veuillez taper DELETE pour confirmer';
+  String get deleteText => 'SUPPRIMER';
+
+  @override
+  String get deleteConfirmationError =>
+      'Veuillez taper SUPPRIMER pour confirmer';
 
   @override
   String get choosePreferredLanguage => 'Choisissez votre langue préférée';
@@ -1075,4 +1099,245 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get shareAppText =>
       'Découvrez cette application incroyable : https://apps.apple.com/app/id6739957932';
+
+  @override
+  String get generatePlan => 'Générer un plan';
+
+  @override
+  String get generateQuizWithAllMaterials =>
+      'Générer un quiz avec tous les matériaux';
+
+  @override
+  String get addStudyMaterial => 'Ajouter du matériel d\'étude';
+
+  @override
+  String get addMaterial => 'Ajouter du matériel';
+
+  @override
+  String studyPlanCreated(Object title) {
+    return 'Plan d\'étude \"$title\" créé !';
+  }
+
+  @override
+  String get noStudyMaterialsForQuiz =>
+      'Aucun matériel d\'étude ou plan disponible pour la génération de quiz';
+
+  @override
+  String get noStudyMaterialsAvailable =>
+      'Aucun matériel d\'étude disponible pour générer un quiz';
+
+  @override
+  String get selectStudyPlan => 'Sélectionner un plan d\'étude';
+
+  @override
+  String generatingQuizFromPlan(Object count, Object title) {
+    return 'Génération d\'un quiz à partir de \"$title\" avec $count questions...';
+  }
+
+  @override
+  String get studyPlanDeleted => 'Plan d\'étude supprimé';
+
+  @override
+  String errorDeletingStudyPlan(Object error) {
+    return 'Erreur lors de la suppression du plan d\'étude : $error';
+  }
+
+  @override
+  String errorGeneratingStudyPlan(Object error) {
+    return 'Erreur lors de la génération du plan d\'étude : $error';
+  }
+
+  @override
+  String get totalTopics => 'Total des sujets';
+
+  @override
+  String get completedStatus => 'Terminé';
+
+  @override
+  String get inProgress => 'En cours';
+
+  @override
+  String get start => 'Commencer';
+
+  @override
+  String get complete => 'Terminer';
+
+  @override
+  String get done => 'Fait';
+
+  @override
+  String get description => 'Description';
+
+  @override
+  String get keyConcepts => 'Concepts clés';
+
+  @override
+  String get aiExplanation => 'Explication IA';
+
+  @override
+  String get practiceProblems => 'Problèmes de pratique';
+
+  @override
+  String get prerequisites => 'Prérequis';
+
+  @override
+  String get unknownTopic => 'Sujet inconnu';
+
+  @override
+  String get startTopic => 'Commencer le sujet';
+
+  @override
+  String get markComplete => 'Marquer comme terminé';
+
+  @override
+  String get markIncomplete => 'Marquer comme incomplet';
+
+  @override
+  String get enterStudyMaterialText =>
+      'Entrez le texte de votre matériel d\'étude :';
+
+  @override
+  String get processingTextMaterial => 'Traitement du matériel texte...';
+
+  @override
+  String get generatingComprehensiveQuiz =>
+      'Génération d\'un quiz complet à partir de tous vos matériaux d\'étude...';
+
+  @override
+  String get chooseStudyPlanForQuiz =>
+      'Choisissez le plan d\'étude pour générer le quiz :';
+
+  @override
+  String get generatingQuiz => 'Génération du quiz...';
+
+  @override
+  String get completeTheseTopicsFirst => 'Terminez d\'abord ces sujets :';
+
+  @override
+  String get topicCompleted => 'Sujet terminé !';
+
+  @override
+  String get allMaterialsQuizDescription =>
+      '12 questions • 25 min • Tous les matériaux d\'étude inclus';
+
+  @override
+  String get materialCaptured =>
+      '📷 Matériel capturé ! Démarrage de l\'analyse IA...';
+
+  @override
+  String errorCapturingPhoto(Object error) {
+    return 'Erreur lors de la capture de photo : $error';
+  }
+
+  @override
+  String materialsUploaded(Object count) {
+    return '📱 $count matériel(s) téléchargé(s) ! Démarrage de l\'analyse IA...';
+  }
+
+  @override
+  String errorUploadingFromGallery(Object error) {
+    return 'Erreur lors du téléchargement depuis la galerie : $error';
+  }
+
+  @override
+  String studyMaterialTitle(Object number) {
+    return 'Matériel d\'étude $number';
+  }
+
+  @override
+  String textMaterialTitle(Object number) {
+    return 'Matériel texte $number';
+  }
+
+  @override
+  String get materialAnalyzedSuccess =>
+      '✅ Matériel analysé avec succès ! Plan d\'étude créé !';
+
+  @override
+  String errorProcessingMaterial(Object error) {
+    return 'Erreur lors du traitement du matériel : $error';
+  }
+
+  @override
+  String permissionRequiredTitle(Object permission) {
+    return 'Permission $permission requise';
+  }
+
+  @override
+  String permissionRequiredMessage(Object permission) {
+    return 'Veuillez activer l\'accès $permission dans les paramètres de votre appareil pour télécharger du matériel d\'étude.';
+  }
+
+  @override
+  String get pasteOrTypeHint =>
+      'Collez ou tapez votre contenu math ici...\n\nExemple :\n• Chapitre 5 : Équations quadratiques\n• Résoudre ax² + bx + c = 0\n• Problèmes de pratique 1-15';
+
+  @override
+  String generatingQuizWithCount(Object count) {
+    return 'Génération d\'un quiz avec $count questions...';
+  }
+
+  @override
+  String errorGeneratingQuiz(Object error) {
+    return 'Erreur lors de la génération du quiz : $error';
+  }
+
+  @override
+  String errorGeneratingComprehensiveQuiz(Object error) {
+    return 'Erreur lors de la génération du quiz complet : $error';
+  }
+
+  @override
+  String planTitle(Object title) {
+    return 'Plan : $title';
+  }
+
+  @override
+  String progressUpdated(Object progress) {
+    return 'Progrès mis à jour : $progress%';
+  }
+
+  @override
+  String errorUpdatingProgress(Object error) {
+    return 'Erreur lors de la mise à jour du progrès : $error';
+  }
+
+  @override
+  String get topicMarkedComplete => '✅ Sujet marqué comme terminé !';
+
+  @override
+  String errorMarkingTopicComplete(Object error) {
+    return 'Erreur lors du marquage du sujet comme terminé : $error';
+  }
+
+  @override
+  String get topicStarted => '📚 Sujet commencé !';
+
+  @override
+  String errorStartingTopic(Object error) {
+    return 'Erreur lors du démarrage du sujet : $error';
+  }
+
+  @override
+  String get comprehensiveQuizTitle => 'Quiz complet - Tous les matériaux';
+
+  @override
+  String daysAgoFormat(Object days) {
+    return 'Il y a $days jours';
+  }
+
+  @override
+  String dateFormat(Object day, Object month, Object year) {
+    return '$day/$month/$year';
+  }
+
+  @override
+  String maxMaterialsReached(Object count) {
+    return 'Maximum de $count matériaux d\'étude autorisés';
+  }
+
+  @override
+  String maxMaterialsHint(Object count) {
+    return 'Sélectionnez jusqu\'à $count de vos matériaux d\'étude les plus importants pour de meilleurs résultats';
+  }
 }

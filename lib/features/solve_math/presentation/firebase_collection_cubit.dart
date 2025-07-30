@@ -70,8 +70,9 @@ class FirebaseCollectionCubit extends Cubit<FirebaseCollectionState> {
     if (_isFetchingMore ||
         state.isLoadingMore ||
         !state.hasMoreData ||
-        state.isLoading)
+        state.isLoading) {
       return;
+    }
 
     _isFetchingMore = true;
 

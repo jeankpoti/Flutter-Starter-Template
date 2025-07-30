@@ -202,7 +202,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                       onTap: () async {
                         const url =
-                            "https://itunes.apple.com/app/id\id6739957932?action=write-review";
+                            "https://itunes.apple.com/app/idid6739957932?action=write-review";
                         if (await canLaunchUrl(Uri.parse(url))) {
                           await launchUrl(Uri.parse(url));
                         } else {
@@ -391,7 +391,10 @@ class _SettingsPageState extends State<SettingsPage> {
                                       ),
                                       TextButton(
                                         onPressed: () {
-                                          if (confirmText == 'DELETE') {
+                                          if (confirmText ==
+                                              AppLocalizations.of(
+                                                context,
+                                              )!.deleteText) {
                                             Navigator.pop(context, true);
                                           } else {
                                             AppSnackBar.showError(

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'l10n/app_localizations.dart';
 
 import 'features/solve_math/presentation/collections_page.dart';
 import 'features/solve_math/presentation/home_page.dart';
@@ -41,21 +42,21 @@ class _MainPageState extends State<MainPage> {
       BottomNavigationBarItem(
         backgroundColor: Theme.of(context).colorScheme.surface,
         icon: Icon(CupertinoIcons.function),
-        label: 'Solve',
+        label: AppLocalizations.of(context)!.solve,
       ),
     );
     items.add(
       BottomNavigationBarItem(
         backgroundColor: Theme.of(context).colorScheme.surface,
         icon: Icon(CupertinoIcons.book),
-        label: 'Study',
+        label: AppLocalizations.of(context)!.study,
       ),
     );
     items.add(
       BottomNavigationBarItem(
         backgroundColor: Theme.of(context).colorScheme.surface,
         icon: Icon(CupertinoIcons.time),
-        label: 'History',
+        label: AppLocalizations.of(context)!.history,
       ),
     );
 
@@ -63,7 +64,7 @@ class _MainPageState extends State<MainPage> {
       BottomNavigationBarItem(
         backgroundColor: Theme.of(context).colorScheme.surface,
         icon: Icon(CupertinoIcons.settings),
-        label: 'Settings',
+        label: AppLocalizations.of(context)!.settings,
       ),
     );
 
@@ -72,21 +73,21 @@ class _MainPageState extends State<MainPage> {
       NavigationRailDestination(
         icon: Icon(CupertinoIcons.function),
         selectedIcon: Icon(CupertinoIcons.function),
-        label: LabelSmallText('Solve'),
+        label: LabelSmallText(AppLocalizations.of(context)!.solve),
       ),
     );
     railItems.add(
       NavigationRailDestination(
         icon: Icon(CupertinoIcons.book),
         selectedIcon: Icon(CupertinoIcons.book),
-        label: LabelSmallText('Study'),
+        label: LabelSmallText(AppLocalizations.of(context)!.study),
       ),
     );
     railItems.add(
       NavigationRailDestination(
         icon: Icon(CupertinoIcons.time),
         selectedIcon: Icon(CupertinoIcons.time),
-        label: LabelSmallText('History'),
+        label: LabelSmallText(AppLocalizations.of(context)!.history),
       ),
     );
 
@@ -95,7 +96,7 @@ class _MainPageState extends State<MainPage> {
         icon: Icon(CupertinoIcons.settings),
         selectedIcon: Icon(CupertinoIcons.settings),
         // indicatorColor: Colors.amber,
-        label: LabelSmallText('Settings'),
+        label: LabelSmallText(AppLocalizations.of(context)!.settings),
       ),
     );
   }

@@ -19,14 +19,14 @@ class SolveMathCubit extends Cubit<SolveMathState> {
     emit(state.copyWith(isIdentifying: true));
     try {
       String result;
-      
+
       // Check if input is text (String) and call appropriate method
       if (input is String && input.trim().isNotEmpty) {
         result = await solveMathRepo.solveMathWithText(input.trim());
       } else {
         result = await solveMathRepo.solveMath(input);
       }
-      
+
       print('SolveMathCubit: Got result, saving collection...');
 
       final collection = Collection(
@@ -34,7 +34,7 @@ class SolveMathCubit extends Cubit<SolveMathState> {
         imageUrl: '',
         solution: result,
       );
-      
+
       await firebaseCollectionRepo.saveCollection(collection);
       print('SolveMathCubit: Collection saved successfully');
 
@@ -44,7 +44,8 @@ class SolveMathCubit extends Cubit<SolveMathState> {
     } catch (e) {
       emit(
         state.copyWith(
-          result: 'Error solving math problem. Please check your internet connection and try again.',
+          result:
+              'Error solving math problem. Please check your internet connection and try again.',
           isIdentifying: false,
           isError: true,
         ),
@@ -56,13 +57,8 @@ class SolveMathCubit extends Cubit<SolveMathState> {
     try {
       final String text = "Math Problem Solution:\n\n$result";
 
-      if (imageFile != null) {
-        final params = ShareParams(text: text, files: [XFile(imageFile.path)]);
-        await SharePlus.instance.share(params);
-      } else {
-        final params = ShareParams(text: text);
-        await SharePlus.instance.share(params);
-      }
+      final params = ShareParams(text: text, files: [XFile(imageFile.path)]);
+      await SharePlus.instance.share(params);
     } catch (e) {
       emit(state.copyWith(isError: false));
     }

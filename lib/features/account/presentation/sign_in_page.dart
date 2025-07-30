@@ -6,14 +6,11 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import '../../../l10n/app_localizations.dart';
 
-import '../../../common_widgets/app_bar_widget.dart';
 import '../../../common_widgets/apple_signin_button_widget.dart';
-import '../../../common_widgets/elevated_button_widget.dart';
 import '../../../common_widgets/google_signin_button_widget.dart';
 import '../../../common_widgets/loader_widget.dart';
 import '../../../common_widgets/text_form_field_widget.dart';
 import '../../../common_widgets/text_widgets.dart';
-import '../../../helpers/validator.dart';
 
 import '../../../main.dart';
 import '../../../utils/responsive.dart';

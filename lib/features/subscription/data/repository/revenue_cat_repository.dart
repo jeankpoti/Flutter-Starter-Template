@@ -83,7 +83,7 @@ class RevenueCatRepository implements SubscriptionRepository {
       return _mapCustomerInfoToSubscriptionModel(purchaseResult);
     } catch (e) {
       if (e is PurchasesErrorCode) {
-        debugPrint('Purchase error: ${e}');
+        debugPrint('Purchase error: $e');
       } else {
         debugPrint('Failed to purchase package: $e');
       }
@@ -153,14 +153,12 @@ class RevenueCatRepository implements SubscriptionRepository {
         productIdentifier = entitlement.productIdentifier;
 
         // Determine subscription type based on product identifier
-        if (productIdentifier != null) {
-          if (productIdentifier.contains('weekly')) {
-            type = SubscriptionType.weekly;
-          } else if (productIdentifier.contains('monthly')) {
-            type = SubscriptionType.monthly;
-          } else if (productIdentifier.contains('yearly')) {
-            type = SubscriptionType.yearly;
-          }
+        if (productIdentifier.contains('weekly')) {
+          type = SubscriptionType.weekly;
+        } else if (productIdentifier.contains('monthly')) {
+          type = SubscriptionType.monthly;
+        } else if (productIdentifier.contains('yearly')) {
+          type = SubscriptionType.yearly;
         }
       }
     }

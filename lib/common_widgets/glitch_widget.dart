@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:math' as math;
-import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 
 class GlitchImageWidget extends StatefulWidget {
@@ -14,7 +13,7 @@ class GlitchImageWidget extends StatefulWidget {
   final double glitchIntensity;
 
   const GlitchImageWidget({
-    Key? key,
+    super.key,
     required this.imagePath,
     this.width = 300,
     this.height = 300,
@@ -22,7 +21,7 @@ class GlitchImageWidget extends StatefulWidget {
     this.enableGlitch = true,
     this.glitchDuration = const Duration(milliseconds: 150),
     this.glitchIntensity = 1.0,
-  }) : super(key: key);
+  });
 
   @override
   State<GlitchImageWidget> createState() => _GlitchImageWidgetState();
@@ -264,7 +263,7 @@ class _GlitchImageWidgetState extends State<GlitchImageWidget>
               if (_colorController.value > 0)
                 ClipRRect(
                   borderRadius: BorderRadius.circular(20),
-                  child: Container(
+                  child: SizedBox(
                     width: widget.isTablet ? double.infinity : widget.width,
                     height: widget.isTablet ? 600 : widget.height,
                     child: CustomPaint(
@@ -332,7 +331,7 @@ class DigitalNoisePainter extends CustomPainter {
     for (int i = 0; i < (50 * intensity * progress).round(); i++) {
       final x = random.nextDouble() * size.width;
       final y = random.nextDouble() * size.height;
-      final size_dot = random.nextDouble() * 2 + 1;
+      final sizeDot = random.nextDouble() * 2 + 1;
 
       paint.color = Color.fromARGB(
         (255 * progress * 0.6).round(),
@@ -341,7 +340,7 @@ class DigitalNoisePainter extends CustomPainter {
         random.nextInt(256),
       );
 
-      canvas.drawCircle(Offset(x, y), size_dot, paint);
+      canvas.drawCircle(Offset(x, y), sizeDot, paint);
     }
   }
 
@@ -357,12 +356,12 @@ class SimpleGlitchImage extends StatefulWidget {
   final bool isTablet;
 
   const SimpleGlitchImage({
-    Key? key,
+    super.key,
     required this.imagePath,
     this.width = 300,
     this.height = 300,
     this.isTablet = false,
-  }) : super(key: key);
+  });
 
   @override
   State<SimpleGlitchImage> createState() => _SimpleGlitchImageState();

@@ -6,7 +6,6 @@ import '../../../common_widgets/text_widgets.dart';
 import '../../../common_widgets/icon_widget.dart';
 import '../domain/models/collection.dart';
 import 'firebase_collection_cubit.dart';
-import 'solve_math_cubit.dart';
 
 class ListTileWidget extends StatefulWidget {
   // final String? imageUrl, desc;

@@ -36,6 +36,9 @@ class _StudyPageState extends State<StudyPage>
   bool _isProcessing = false;
   String? _processingPlanId;
 
+  // Material upload limits
+  static const int _maxMaterialsLimit = 5;
+
   // Design system spacing constants
   static const double _spacing4 = 16.0;
   static const double _spacing6 = 24.0;
@@ -271,6 +274,10 @@ class _StudyPageState extends State<StudyPage>
 
           const SizedBox(height: _spacing8),
 
+          // Materials count indicator
+          _buildMaterialsCountIndicator(),
+          const SizedBox(height: _spacing4),
+
           // Loading Progress Bar
           if (_isProcessing) ...[
             _buildProcessingIndicator(),
@@ -281,8 +288,12 @@ class _StudyPageState extends State<StudyPage>
           _buildUploadOption(
             icon: Icons.camera_alt,
             title: AppLocalizations.of(context)!.takePhoto,
-            subtitle: AppLocalizations.of(context)!.takePhotoSubtitle,
-            onTap: () => _handlePhotoUpload(),
+            subtitle: _studyMaterials.length < _maxMaterialsLimit 
+                ? AppLocalizations.of(context)!.takePhotoSubtitle
+                : AppLocalizations.of(context)!.maxMaterialsReached(_maxMaterialsLimit),
+            onTap: _studyMaterials.length < _maxMaterialsLimit 
+                ? () => _handlePhotoUpload()
+                : null,
           ),
 
           const SizedBox(height: 16),
@@ -290,8 +301,12 @@ class _StudyPageState extends State<StudyPage>
           _buildUploadOption(
             icon: Icons.photo_library,
             title: AppLocalizations.of(context)!.uploadFromGallery,
-            subtitle: AppLocalizations.of(context)!.uploadFromGallerySubtitle,
-            onTap: () => _handleGalleryUpload(),
+            subtitle: _studyMaterials.length < _maxMaterialsLimit 
+                ? AppLocalizations.of(context)!.uploadFromGallerySubtitle
+                : AppLocalizations.of(context)!.maxMaterialsReached(_maxMaterialsLimit),
+            onTap: _studyMaterials.length < _maxMaterialsLimit 
+                ? () => _handleGalleryUpload()
+                : null,
           ),
 
           const SizedBox(height: 16),
@@ -316,9 +331,9 @@ class _StudyPageState extends State<StudyPage>
     required IconData icon,
     required String title,
     required String subtitle,
-    required VoidCallback onTap,
+    required VoidCallback? onTap,
   }) {
-    final isDisabled = _isProcessing;
+    final isDisabled = _isProcessing || onTap == null;
 
     return Container(
       decoration: BoxDecoration(
@@ -786,7 +801,8 @@ class _StudyPageState extends State<StudyPage>
                     Flexible(
                       child: _buildStatChip(
                         icon: Icons.list_alt,
-                        label: '${plan.topics.length} Topics',
+                        label:
+                            '${plan.topics.length} ${AppLocalizations.of(context)!.topics}',
                       ),
                     ),
                     const SizedBox(width: 6),
@@ -953,7 +969,11 @@ class _StudyPageState extends State<StudyPage>
                 AppLocalizations.of(context)!.analyzeStep,
                 true,
               ),
-              _buildProcessingStep('📚', 'Generate Plan', false),
+              _buildProcessingStep(
+                '📚',
+                AppLocalizations.of(context)!.generatePlan,
+                false,
+              ),
             ],
           ),
         ],
@@ -1010,6 +1030,91 @@ class _StudyPageState extends State<StudyPage>
                     ).colorScheme.onSurface.withValues(alpha: 0.6),
             fontWeight: isCompleted ? FontWeight.w600 : FontWeight.normal,
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMaterialsCountIndicator() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: _spacing4, vertical: 12),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        children: [
+          // Materials counter icon
+          Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              color: _studyMaterials.length >= _maxMaterialsLimit
+                  ? Theme.of(context).colorScheme.errorContainer
+                  : Theme.of(context).colorScheme.secondaryContainer,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              Icons.collections_bookmark_outlined,
+              size: 18,
+              color: _studyMaterials.length >= _maxMaterialsLimit
+                  ? Theme.of(context).colorScheme.onErrorContainer
+                  : Theme.of(context).colorScheme.onSecondaryContainer,
+            ),
+          ),
+          const SizedBox(width: 12),
+          
+          // Progress text and bar
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Counter text - dynamic translation based on current state
+                BodyMediumText(
+                  _studyMaterials.length >= _maxMaterialsLimit
+                      ? AppLocalizations.of(context)!.maxMaterialsReached(_maxMaterialsLimit)
+                      : '${_studyMaterials.length}/$_maxMaterialsLimit ${AppLocalizations.of(context)!.materials}',
+                  fontWeight: FontWeight.w600,
+                  color: _studyMaterials.length >= _maxMaterialsLimit
+                      ? Theme.of(context).colorScheme.error
+                      : Theme.of(context).colorScheme.onSurface,
+                ),
+                const SizedBox(height: 4),
+                
+                // Progress bar
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(2),
+                  child: LinearProgressIndicator(
+                    value: _studyMaterials.length / _maxMaterialsLimit,
+                    backgroundColor: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      _studyMaterials.length >= _maxMaterialsLimit
+                          ? Theme.of(context).colorScheme.error
+                          : Theme.of(context).colorScheme.secondary,
+                    ),
+                    minHeight: 4,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          // Hint icon
+          if (_studyMaterials.length < _maxMaterialsLimit) ...[
+            const SizedBox(width: 8),
+            Tooltip(
+              message: AppLocalizations.of(context)!.maxMaterialsHint(_maxMaterialsLimit),
+              child: Icon(
+                Icons.info_outline,
+                size: 18,
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -1335,12 +1440,14 @@ class _StudyPageState extends State<StudyPage>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     TitleMediumText(
-                      'Generate Quiz with All Materials',
+                      AppLocalizations.of(
+                        context,
+                      )!.generateQuizWithAllMaterials,
                       fontWeight: FontWeight.w600,
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
                     BodySmallText(
-                      '12 questions • 25 min • All study materials included',
+                      AppLocalizations.of(context)!.allMaterialsQuizDescription,
                       color: Theme.of(
                         context,
                       ).colorScheme.onSurface.withValues(alpha: 0.7),
@@ -1432,49 +1539,6 @@ class _StudyPageState extends State<StudyPage>
               ),
             ],
           ),
-
-          // if (material.extractedTopics.isNotEmpty) ...[
-          //   const SizedBox(height: 12),
-          //   LabelMediumText(
-          //     'Topics Found:',
-          //     fontWeight: FontWeight.w600,
-          //     color: Theme.of(context).colorScheme.onSurface,
-          //   ),
-          //   const SizedBox(height: 6),
-          //   Wrap(
-          //     spacing: 6,
-          //     runSpacing: 6,
-          //     children:
-          //         material.extractedTopics.take(3).map((topic) {
-          //           return Container(
-          //             padding: const EdgeInsets.symmetric(
-          //               horizontal: 8,
-          //               vertical: 4,
-          //             ),
-          //             decoration: BoxDecoration(
-          //               color: Theme.of(
-          //                 context,
-          //               ).colorScheme.secondary.withValues(alpha: 0.2),
-          //               borderRadius: BorderRadius.circular(12),
-          //             ),
-          //             child: LabelSmallText(
-          //               topic,
-          //               color: Theme.of(context).colorScheme.onSurface,
-          //             ),
-          //           );
-          //         }).toList(),
-          //   ),
-          //   if (material.extractedTopics.length > 3)
-          //     Padding(
-          //       padding: const EdgeInsets.only(top: 6),
-          //       child: LabelSmallText(
-          //         '+${material.extractedTopics.length - 3} more topics',
-          //         color: Theme.of(
-          //           context,
-          //         ).colorScheme.onSurface.withValues(alpha: 0.6),
-          //       ),
-          //     ),
-          // ],
         ],
       ),
     );
@@ -1483,11 +1547,28 @@ class _StudyPageState extends State<StudyPage>
   // Upload functionality methods
   Future<void> _handlePhotoUpload() async {
     try {
+      // Check if maximum materials limit reached
+      if (_studyMaterials.length >= _maxMaterialsLimit) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: BodyMediumText(
+                AppLocalizations.of(context)!.maxMaterialsReached(_maxMaterialsLimit),
+                color: Theme.of(context).colorScheme.onErrorContainer,
+              ),
+              backgroundColor: Theme.of(context).colorScheme.errorContainer,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
+        return;
+      }
+
       // Check camera permission
       if (Platform.isAndroid) {
         final cameraStatus = await Permission.camera.request();
         if (cameraStatus.isDenied || cameraStatus.isPermanentlyDenied) {
-          _showPermissionDialog('Camera');
+          _showPermissionDialog(AppLocalizations.of(context)!.camera);
           return;
         }
       }
@@ -1506,7 +1587,7 @@ class _StudyPageState extends State<StudyPage>
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: BodyMediumText(
-                '📷 Material captured! Starting AI analysis...',
+                AppLocalizations.of(context)!.materialCaptured,
                 color: Theme.of(context).colorScheme.onSecondary,
               ),
               backgroundColor: Theme.of(context).colorScheme.secondary,
@@ -1522,7 +1603,7 @@ class _StudyPageState extends State<StudyPage>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: BodyMediumText(
-              'Error capturing photo: $e',
+              AppLocalizations.of(context)!.errorCapturingPhoto(e.toString()),
               color: Theme.of(context).colorScheme.error,
             ),
           ),
@@ -1533,15 +1614,35 @@ class _StudyPageState extends State<StudyPage>
 
   Future<void> _handleGalleryUpload() async {
     try {
+      // Check if maximum materials limit reached
+      if (_studyMaterials.length >= _maxMaterialsLimit) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: BodyMediumText(
+                AppLocalizations.of(context)!.maxMaterialsReached(_maxMaterialsLimit),
+                color: Theme.of(context).colorScheme.onErrorContainer,
+              ),
+              backgroundColor: Theme.of(context).colorScheme.errorContainer,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
+        return;
+      }
+
       // Check photo permission
       if (Platform.isAndroid) {
         final photosStatus = await Permission.photos.request();
         if (photosStatus.isDenied || photosStatus.isPermanentlyDenied) {
-          _showPermissionDialog('Photo Library');
+          _showPermissionDialog(AppLocalizations.of(context)!.photoLibrary);
           return;
         }
       }
 
+      // Calculate how many images user can still select
+      final remainingSlots = _maxMaterialsLimit - _studyMaterials.length;
+      
       final List<XFile> images = await _picker.pickMultiImage(
         maxWidth: 2400,
         maxHeight: 2400,
@@ -1549,22 +1650,44 @@ class _StudyPageState extends State<StudyPage>
       );
 
       if (images.isNotEmpty) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: BodyMediumText(
-                '📱 ${images.length} material(s) uploaded! Starting AI analysis...',
-                color: Theme.of(context).colorScheme.onSecondary,
+        // Limit to maximum 5 images total, but respect remaining slots
+        final maxAllowedImages = remainingSlots.clamp(0, _maxMaterialsLimit);
+        final imagesToProcess = images.take(maxAllowedImages).toList();
+        
+        // Show feedback about selection limit
+        if (images.length > maxAllowedImages) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: BodyMediumText(
+                  AppLocalizations.of(context)!.maxMaterialsHint(_maxMaterialsLimit),
+                  color: Theme.of(context).colorScheme.onErrorContainer,
+                ),
+                backgroundColor: Theme.of(context).colorScheme.errorContainer,
+                duration: const Duration(seconds: 4),
               ),
-              backgroundColor: Theme.of(context).colorScheme.secondary,
-              duration: const Duration(seconds: 2),
-            ),
-          );
+            );
+          }
         }
+        
+        if (imagesToProcess.isNotEmpty) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: BodyMediumText(
+                  AppLocalizations.of(context)!.materialsUploaded(imagesToProcess.length),
+                  color: Theme.of(context).colorScheme.onSecondary,
+                ),
+                backgroundColor: Theme.of(context).colorScheme.secondary,
+                duration: const Duration(seconds: 2),
+              ),
+            );
+          }
 
-        for (final xFile in images) {
-          final imageFile = File(xFile.path);
-          await _processUploadedMaterial(imageFile, study.MaterialType.image);
+          for (final xFile in imagesToProcess) {
+            final imageFile = File(xFile.path);
+            await _processUploadedMaterial(imageFile, study.MaterialType.image);
+          }
         }
       }
     } catch (e) {
@@ -1572,7 +1695,9 @@ class _StudyPageState extends State<StudyPage>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: BodyMediumText(
-              'Error uploading from gallery: $e',
+              AppLocalizations.of(
+                context,
+              )!.errorUploadingFromGallery(e.toString()),
               color: Theme.of(context).colorScheme.onError,
             ),
           ),
@@ -1598,8 +1723,12 @@ class _StudyPageState extends State<StudyPage>
       final materialId = DateTime.now().millisecondsSinceEpoch.toString();
       final title =
           type == study.MaterialType.image
-              ? 'Study Material ${_studyMaterials.length + 1}'
-              : 'Text Material ${_studyMaterials.length + 1}';
+              ? AppLocalizations.of(
+                context,
+              )!.studyMaterialTitle(_studyMaterials.length + 1)
+              : AppLocalizations.of(
+                context,
+              )!.textMaterialTitle(_studyMaterials.length + 1);
 
       // Analyze the material
       final studyMaterial = await _studyPlanService.analyzeMaterial(
@@ -1639,7 +1768,7 @@ class _StudyPageState extends State<StudyPage>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: BodyMediumText(
-              '✅ Material analyzed successfully! Study plan created!',
+              AppLocalizations.of(context)!.materialAnalyzedSuccess,
               color: Theme.of(context).colorScheme.onSecondary,
             ),
             backgroundColor: Colors.green,
@@ -1659,7 +1788,9 @@ class _StudyPageState extends State<StudyPage>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: BodyMediumText(
-              'Error processing material: $e',
+              AppLocalizations.of(
+                context,
+              )!.errorProcessingMaterial(e.toString()),
               color: Theme.of(context).colorScheme.onError,
             ),
             backgroundColor: Theme.of(context).colorScheme.error,
@@ -1674,21 +1805,29 @@ class _StudyPageState extends State<StudyPage>
       context: context,
       builder:
           (ctx) => AlertDialog(
-            title: TitleLargeText('$permissionType Permission Required'),
+            title: TitleLargeText(
+              AppLocalizations.of(
+                context,
+              )!.permissionRequiredTitle(permissionType),
+            ),
             content: BodyMediumText(
-              'Please enable $permissionType access in your device settings to upload study materials.',
+              AppLocalizations.of(
+                context,
+              )!.permissionRequiredMessage(permissionType),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(ctx).pop(),
-                child: const LabelLargeText('Cancel'),
+                child: LabelLargeText(AppLocalizations.of(context)!.cancel),
               ),
               TextButton(
                 onPressed: () {
                   Navigator.of(ctx).pop();
                   openAppSettings();
                 },
-                child: const LabelLargeText('Open Settings'),
+                child: LabelLargeText(
+                  AppLocalizations.of(context)!.openSettings,
+                ),
               ),
             ],
           ),
@@ -1699,7 +1838,7 @@ class _StudyPageState extends State<StudyPage>
     final TextEditingController textController = TextEditingController();
 
     return AlertDialog(
-      title: const TitleLargeText('Add Study Material'),
+      title: TitleLargeText(AppLocalizations.of(context)!.addStudyMaterial),
       content: SizedBox(
         width: double.maxFinite,
         height: 500, // Fixed height to prevent overflow
@@ -1707,14 +1846,15 @@ class _StudyPageState extends State<StudyPage>
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              BodyMediumText('Enter your study material text:'),
+              BodyMediumText(
+                AppLocalizations.of(context)!.enterStudyMaterialText,
+              ),
               const SizedBox(height: 16),
               TextField(
                 controller: textController,
                 maxLines: 6, // Reduced to make room for keyboard
                 decoration: InputDecoration(
-                  hintText:
-                      'Paste or type your math content here...\n\nExample:\n• Chapter 5: Quadratic Equations\n• Solving ax² + bx + c = 0\n• Practice problems 1-15',
+                  hintText: AppLocalizations.of(context)!.pasteOrTypeHint,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -1731,7 +1871,7 @@ class _StudyPageState extends State<StudyPage>
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const LabelLargeText('Cancel'),
+          child: LabelLargeText(AppLocalizations.of(context)!.cancel),
         ),
         ElevatedButton(
           onPressed: () async {
@@ -1746,7 +1886,7 @@ class _StudyPageState extends State<StudyPage>
             backgroundColor: Theme.of(context).colorScheme.secondary,
           ),
           child: LabelLargeText(
-            'Add Material',
+            AppLocalizations.of(context)!.addMaterial,
             color: Theme.of(context).colorScheme.onSecondary,
           ),
         ),
@@ -1759,7 +1899,7 @@ class _StudyPageState extends State<StudyPage>
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: BodyMediumText(
-            'Processing text material...',
+            AppLocalizations.of(context)!.processingTextMaterial,
             color: Theme.of(context).colorScheme.onSecondary,
           ),
           backgroundColor: Theme.of(context).colorScheme.secondary,
@@ -1799,7 +1939,7 @@ class _StudyPageState extends State<StudyPage>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: BodyMediumText(
-              'Study plan "${studyPlan.title}" created!',
+              AppLocalizations.of(context)!.studyPlanCreated(studyPlan.title),
               color: Theme.of(context).colorScheme.onSecondary,
             ),
             backgroundColor: Theme.of(context).colorScheme.secondary,
@@ -1815,7 +1955,9 @@ class _StudyPageState extends State<StudyPage>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: BodyMediumText(
-              'Error generating study plan: $e',
+              AppLocalizations.of(
+                context,
+              )!.errorGeneratingStudyPlan(e.toString()),
               color: Theme.of(context).colorScheme.onError,
             ),
             backgroundColor: Theme.of(context).colorScheme.error,
@@ -1873,7 +2015,7 @@ class _StudyPageState extends State<StudyPage>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: BodyMediumText(
-              'No study materials or plans available for quiz generation',
+              AppLocalizations.of(context)!.noStudyMaterialsForQuiz,
               color: Theme.of(context).colorScheme.onSecondary,
             ),
             backgroundColor: Theme.of(context).colorScheme.secondary,
@@ -1892,7 +2034,9 @@ class _StudyPageState extends State<StudyPage>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: BodyMediumText(
-              'Generating quiz with $questionCount questions...',
+              AppLocalizations.of(
+                context,
+              )!.generatingQuizWithCount(questionCount),
               color: Theme.of(context).colorScheme.onSecondary,
             ),
             backgroundColor: Theme.of(context).colorScheme.secondary,
@@ -1941,7 +2085,7 @@ class _StudyPageState extends State<StudyPage>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: BodyMediumText(
-              'Error generating quiz: $e',
+              AppLocalizations.of(context)!.errorGeneratingQuiz(e.toString()),
               color: Theme.of(context).colorScheme.onErrorContainer,
             ),
             backgroundColor: Theme.of(context).colorScheme.error,
@@ -1972,7 +2116,7 @@ class _StudyPageState extends State<StudyPage>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: BodyMediumText(
-              'No study materials available to generate quiz from',
+              AppLocalizations.of(context)!.noStudyMaterialsAvailable,
               color: Theme.of(context).colorScheme.onSecondary,
             ),
             backgroundColor: Theme.of(context).colorScheme.secondary,
@@ -1991,7 +2135,7 @@ class _StudyPageState extends State<StudyPage>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: BodyMediumText(
-              'Generating comprehensive quiz from all your study materials...',
+              AppLocalizations.of(context)!.generatingComprehensiveQuiz,
               color: Theme.of(context).colorScheme.onSecondary,
             ),
             backgroundColor: Theme.of(context).colorScheme.secondary,
@@ -2005,7 +2149,7 @@ class _StudyPageState extends State<StudyPage>
         difficulty: QuizDifficulty.medium,
         questionCount: 12,
         timeLimit: 25,
-        customTitle: 'Comprehensive Quiz - All Materials',
+        customTitle: AppLocalizations.of(context)!.comprehensiveQuizTitle,
       );
 
       setState(() {
@@ -2027,7 +2171,9 @@ class _StudyPageState extends State<StudyPage>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: BodyMediumText(
-              'Error generating comprehensive quiz: $e',
+              AppLocalizations.of(
+                context,
+              )!.errorGeneratingComprehensiveQuiz(e.toString()),
               color: Theme.of(context).colorScheme.onErrorContainer,
             ),
             backgroundColor: Theme.of(context).colorScheme.error,
@@ -2044,7 +2190,7 @@ class _StudyPageState extends State<StudyPage>
       builder:
           (context) => AlertDialog(
             title: TitleLargeText(
-              'Select Study Plan',
+              AppLocalizations.of(context)!.selectStudyPlan,
               fontWeight: FontWeight.bold,
             ),
             content: SizedBox(
@@ -2053,7 +2199,7 @@ class _StudyPageState extends State<StudyPage>
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   BodyMediumText(
-                    'Choose which study plan to generate the quiz from:',
+                    AppLocalizations.of(context)!.chooseStudyPlanForQuiz,
                     color: Theme.of(
                       context,
                     ).colorScheme.onSurface.withValues(alpha: 0.7),
@@ -2091,7 +2237,7 @@ class _StudyPageState extends State<StudyPage>
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 BodySmallText(
-                                  '${plan.topics.length} topics • ${plan.calculateProgress().toStringAsFixed(0)}% complete',
+                                  '${plan.topics.length} ${AppLocalizations.of(context)!.topics} • ${plan.calculateProgress().toStringAsFixed(0)}% ${AppLocalizations.of(context)!.complete}',
                                 ),
                                 const SizedBox(height: 4),
                                 LinearProgressIndicator(
@@ -2124,7 +2270,7 @@ class _StudyPageState extends State<StudyPage>
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
                 child: LabelLargeText(
-                  'Cancel',
+                  AppLocalizations.of(context)!.cancel,
                   color: Theme.of(
                     context,
                   ).colorScheme.onSurface.withValues(alpha: 0.7),
@@ -2151,7 +2297,9 @@ class _StudyPageState extends State<StudyPage>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: BodyMediumText(
-              'Generating quiz from "${plan.title}" with $questionCount questions...',
+              AppLocalizations.of(
+                context,
+              )!.generatingQuizFromPlan(questionCount, plan.title),
               color: Theme.of(context).colorScheme.onSecondary,
             ),
             backgroundColor: Theme.of(context).colorScheme.secondary,
@@ -2187,7 +2335,7 @@ class _StudyPageState extends State<StudyPage>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: BodyMediumText(
-              'Error generating quiz: $e',
+              AppLocalizations.of(context)!.errorGeneratingQuiz(e.toString()),
               color: Theme.of(context).colorScheme.onErrorContainer,
             ),
             backgroundColor: Theme.of(context).colorScheme.error,
@@ -2212,7 +2360,7 @@ class _StudyPageState extends State<StudyPage>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: BodyMediumText(
-              'Study plan deleted',
+              AppLocalizations.of(context)!.studyPlanDeleted,
               color: Theme.of(context).colorScheme.onSecondary,
             ),
             backgroundColor: Theme.of(context).colorScheme.secondary,
@@ -2225,7 +2373,9 @@ class _StudyPageState extends State<StudyPage>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: BodyMediumText(
-              'Error deleting study plan: $e',
+              AppLocalizations.of(
+                context,
+              )!.errorDeletingStudyPlan(e.toString()),
               color: Theme.of(context).colorScheme.onErrorContainer,
             ),
             backgroundColor: Theme.of(context).colorScheme.error,
@@ -2263,7 +2413,7 @@ class _StudyPageState extends State<StudyPage>
                   ),
                 ),
                 const SizedBox(width: 12),
-                const BodyMediumText('Generating quiz...'),
+                BodyMediumText(AppLocalizations.of(context)!.generatingQuiz),
               ],
             ),
             backgroundColor: Theme.of(context).colorScheme.secondary,
@@ -2306,7 +2456,7 @@ class _StudyPageState extends State<StudyPage>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: BodyMediumText(
-              'Error generating quiz: $e',
+              AppLocalizations.of(context)!.errorGeneratingQuiz(e.toString()),
               color: Theme.of(context).colorScheme.onErrorContainer,
             ),
             backgroundColor: Theme.of(context).colorScheme.error,
@@ -2342,7 +2492,9 @@ class _StudyPageState extends State<StudyPage>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: BodyMediumText(
-              'Progress updated: ${progress.toStringAsFixed(0)}%',
+              AppLocalizations.of(
+                context,
+              )!.progressUpdated(progress.toStringAsFixed(0)),
             ),
             backgroundColor: Theme.of(context).colorScheme.secondary,
             duration: const Duration(seconds: 1),
@@ -2350,12 +2502,11 @@ class _StudyPageState extends State<StudyPage>
         );
       }
     } catch (e) {
-      debugPrint('Error updating topic progress: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: BodyMediumText(
-              'Error updating progress: $e',
+              AppLocalizations.of(context)!.errorUpdatingProgress(e.toString()),
               color: Theme.of(context).colorScheme.onErrorContainer,
             ),
             backgroundColor: Theme.of(context).colorScheme.error,
@@ -2372,15 +2523,6 @@ class _StudyPageState extends State<StudyPage>
 
       final plan = _studyPlans[planIndex];
 
-      // Debug: Log topic IDs to help identify duplicates
-      debugPrint('Marking topic complete: $topicId');
-      debugPrint(
-        'All topic IDs in plan: ${plan.topics.map((t) => t.id).toList()}',
-      );
-      debugPrint(
-        'Topics with matching ID: ${plan.topics.where((t) => t.id == topicId).length}',
-      );
-
       final updatedPlan = plan.markTopicComplete(topicId);
 
       setState(() {
@@ -2392,14 +2534,29 @@ class _StudyPageState extends State<StudyPage>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const BodyMediumText('✅ Topic marked as complete!'),
+            content: BodyMediumText(
+              AppLocalizations.of(context)!.topicMarkedComplete,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
             backgroundColor: Colors.green,
             duration: const Duration(seconds: 1),
           ),
         );
       }
     } catch (e) {
-      debugPrint('Error marking topic complete: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: BodyMediumText(
+              AppLocalizations.of(
+                context,
+              )!.errorMarkingTopicComplete(e.toString()),
+              color: Theme.of(context).colorScheme.onErrorContainer,
+            ),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
     }
   }
 
@@ -2421,7 +2578,7 @@ class _StudyPageState extends State<StudyPage>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: BodyMediumText(
-              '📚 Topic started!',
+              AppLocalizations.of(context)!.topicStarted,
               color: Theme.of(context).colorScheme.onSecondary,
             ),
             backgroundColor: Theme.of(context).colorScheme.secondary,
@@ -2430,7 +2587,17 @@ class _StudyPageState extends State<StudyPage>
         );
       }
     } catch (e) {
-      debugPrint('Error starting topic: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: BodyMediumText(
+              AppLocalizations.of(context)!.errorStartingTopic(e.toString()),
+              color: Theme.of(context).colorScheme.onErrorContainer,
+            ),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
     }
   }
 
@@ -2502,7 +2669,7 @@ class _StudyPageState extends State<StudyPage>
                           ),
                           const SizedBox(width: 12),
                           LabelMediumText(
-                            '${currentPlan.calculateProgress().toStringAsFixed(0)}% Complete',
+                            '${currentPlan.calculateProgress().toStringAsFixed(0)}% ${AppLocalizations.of(context)!.complete}',
                             fontWeight: FontWeight.bold,
                             color: Theme.of(context).colorScheme.secondary,
                           ),
@@ -2515,13 +2682,13 @@ class _StudyPageState extends State<StudyPage>
                       Row(
                         children: [
                           _buildTopicStat(
-                            'Total Topics',
+                            AppLocalizations.of(context)!.totalTopics,
                             currentPlan.topics.length.toString(),
                             Icons.list_alt,
                           ),
                           const SizedBox(width: 16),
                           _buildTopicStat(
-                            'Completed',
+                            AppLocalizations.of(context)!.completedStatus,
                             currentPlan
                                 .getCompletionStats()['completed']
                                 .toString(),
@@ -2529,7 +2696,7 @@ class _StudyPageState extends State<StudyPage>
                           ),
                           const SizedBox(width: 16),
                           _buildTopicStat(
-                            'In Progress',
+                            AppLocalizations.of(context)!.inProgress,
                             currentPlan
                                 .getCompletionStats()['inProgress']
                                 .toString(),
@@ -2698,7 +2865,7 @@ class _StudyPageState extends State<StudyPage>
                   ),
                   const SizedBox(width: 4),
                   LabelSmallText(
-                    '${topic.estimatedMinutes} min',
+                    '${topic.estimatedMinutes} ${AppLocalizations.of(context)!.minutes}',
                     color: Theme.of(
                       context,
                     ).colorScheme.onSurface.withValues(alpha: 0.6),
@@ -2715,7 +2882,7 @@ class _StudyPageState extends State<StudyPage>
                   ),
                   const SizedBox(width: 4),
                   LabelSmallText(
-                    '${topic.keyConceptsList.length} concepts',
+                    '${topic.keyConceptsList.length} ${AppLocalizations.of(context)!.concepts}',
                     color: Theme.of(
                       context,
                     ).colorScheme.onSurface.withValues(alpha: 0.6),
@@ -2743,7 +2910,7 @@ class _StudyPageState extends State<StudyPage>
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: LabelSmallText(
-                            'Start',
+                            AppLocalizations.of(context)!.start,
                             color: Theme.of(context).colorScheme.secondary,
                             fontWeight: FontWeight.w600,
                           ),
@@ -2765,7 +2932,7 @@ class _StudyPageState extends State<StudyPage>
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: LabelSmallText(
-                          'Complete',
+                          AppLocalizations.of(context)!.complete,
                           color: Colors.green,
                           fontWeight: FontWeight.w600,
                         ),
@@ -2787,7 +2954,7 @@ class _StudyPageState extends State<StudyPage>
                           Icon(Icons.check, size: 12, color: Colors.green),
                           const SizedBox(width: 4),
                           LabelSmallText(
-                            'Done',
+                            AppLocalizations.of(context)!.done,
                             color: Colors.green,
                             fontWeight: FontWeight.w600,
                           ),
@@ -2919,7 +3086,7 @@ class _StudyPageState extends State<StudyPage>
                           ),
                           const SizedBox(width: 12),
                           LabelLargeText(
-                            '${currentTopic.progressPercentage.toStringAsFixed(0)}% Complete',
+                            '${currentTopic.progressPercentage.toStringAsFixed(0)}% ${AppLocalizations.of(context)!.complete}',
                             fontWeight: FontWeight.bold,
                             color: _getTopicStatusColor(currentTopic.status),
                           ),
@@ -2933,18 +3100,18 @@ class _StudyPageState extends State<StudyPage>
                         children: [
                           _buildTopicMetadata(
                             Icons.schedule,
-                            '${currentTopic.estimatedMinutes} min',
+                            '${currentTopic.estimatedMinutes} ${AppLocalizations.of(context)!.minutes}',
                           ),
                           const SizedBox(width: 24),
                           _buildTopicMetadata(
                             Icons.lightbulb_outline,
-                            '${currentTopic.keyConceptsList.length} concepts',
+                            '${currentTopic.keyConceptsList.length} ${AppLocalizations.of(context)!.concepts}',
                           ),
                           if (currentTopic.practiceProblems.isNotEmpty) ...[
                             const SizedBox(width: 24),
                             _buildTopicMetadata(
                               Icons.quiz,
-                              '${currentTopic.practiceProblems.length} problems',
+                              '${currentTopic.practiceProblems.length} ${AppLocalizations.of(context)!.problems}',
                             ),
                           ],
                         ],
@@ -2962,7 +3129,7 @@ class _StudyPageState extends State<StudyPage>
                       children: [
                         // Description
                         _buildTopicSection(
-                          'Description',
+                          AppLocalizations.of(context)!.description,
                           Icons.description,
                           child: BodyLargeText(
                             currentTopic.description,
@@ -2975,7 +3142,7 @@ class _StudyPageState extends State<StudyPage>
                         // Key Concepts
                         if (currentTopic.keyConceptsList.isNotEmpty) ...[
                           _buildTopicSection(
-                            'Key Concepts',
+                            AppLocalizations.of(context)!.keyConcepts,
                             Icons.lightbulb_outline,
                             child: Wrap(
                               spacing: 8,
@@ -3023,7 +3190,7 @@ class _StudyPageState extends State<StudyPage>
                         if (currentTopic.aiExplanation != null &&
                             currentTopic.aiExplanation!.isNotEmpty) ...[
                           _buildTopicSection(
-                            'AI Explanation',
+                            AppLocalizations.of(context)!.aiExplanation,
                             Icons.auto_awesome,
                             child: Container(
                               padding: const EdgeInsets.all(16),
@@ -3051,7 +3218,7 @@ class _StudyPageState extends State<StudyPage>
                         // Practice Problems
                         if (currentTopic.practiceProblems.isNotEmpty) ...[
                           _buildTopicSection(
-                            'Practice Problems',
+                            AppLocalizations.of(context)!.practiceProblems,
                             Icons.quiz,
                             child: Column(
                               children:
@@ -3124,13 +3291,15 @@ class _StudyPageState extends State<StudyPage>
                         // Prerequisites
                         if (currentTopic.prerequisites.isNotEmpty) ...[
                           _buildTopicSection(
-                            'Prerequisites',
+                            AppLocalizations.of(context)!.prerequisites,
                             Icons.account_tree,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 BodyMediumText(
-                                  'Complete these topics first:',
+                                  AppLocalizations.of(
+                                    context,
+                                  )!.completeTheseTopicsFirst,
                                   color: Theme.of(context).colorScheme.onSurface
                                       .withValues(alpha: 0.7),
                                 ),
@@ -3162,7 +3331,9 @@ class _StudyPageState extends State<StudyPage>
                                         Expanded(
                                           child: BodySmallText(
                                             prereqTopic?.title ??
-                                                'Unknown Topic',
+                                                AppLocalizations.of(
+                                                  context,
+                                                )!.unknownTopic,
                                           ),
                                         ),
                                       ],
@@ -3200,12 +3371,14 @@ class _StudyPageState extends State<StudyPage>
                                         CrossAxisAlignment.start,
                                     children: [
                                       TitleMediumText(
-                                        'Topic Completed!',
+                                        AppLocalizations.of(
+                                          context,
+                                        )!.topicCompleted,
                                         fontWeight: FontWeight.bold,
                                         color: Colors.green,
                                       ),
                                       BodySmallText(
-                                        'Completed on ${_formatDate(currentTopic.completedAt!)}',
+                                        '${AppLocalizations.of(context)!.completedOn} ${_formatDate(currentTopic.completedAt!)}',
                                         color: Colors.green.withValues(
                                           alpha: 0.8,
                                         ),
@@ -3251,8 +3424,10 @@ class _StudyPageState extends State<StudyPage>
                             ),
                             label: LabelLargeText(
                               currentTopic.status == StudyTopicStatus.notStarted
-                                  ? 'Start Topic'
-                                  : 'Continue',
+                                  ? AppLocalizations.of(context)!.startTopic
+                                  : AppLocalizations.of(
+                                    context,
+                                  )!.continueAction,
                               color: Theme.of(context).colorScheme.onSecondary,
                             ),
                             style: ElevatedButton.styleFrom(
@@ -3277,7 +3452,7 @@ class _StudyPageState extends State<StudyPage>
                             },
                             icon: const Icon(Icons.check_circle),
                             label: LabelLargeText(
-                              'Mark Complete',
+                              AppLocalizations.of(context)!.markComplete,
                               color: Theme.of(context).colorScheme.onSecondary,
                             ),
                             style: ElevatedButton.styleFrom(
@@ -3300,7 +3475,9 @@ class _StudyPageState extends State<StudyPage>
                               onUpdate?.call(); // Refresh parent sheet
                             },
                             icon: const Icon(Icons.refresh),
-                            label: const LabelLargeText('Mark Incomplete'),
+                            label: LabelLargeText(
+                              AppLocalizations.of(context)!.markIncomplete,
+                            ),
                             style: ElevatedButton.styleFrom(
                               backgroundColor:
                                   Theme.of(context).colorScheme.error,
@@ -3410,11 +3587,11 @@ class _StudyPageState extends State<StudyPage>
     final difference = now.difference(date).inDays;
 
     if (difference == 0) {
-      return 'Today';
+      return AppLocalizations.of(context)!.today;
     } else if (difference == 1) {
-      return 'Yesterday';
+      return AppLocalizations.of(context)!.yesterday;
     } else if (difference < 7) {
-      return '$difference days ago';
+      return AppLocalizations.of(context)!.daysAgo(difference);
     } else {
       return '${date.day}/${date.month}/${date.year}';
     }

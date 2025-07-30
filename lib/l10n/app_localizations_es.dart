@@ -634,7 +634,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get attempts => 'intentos';
 
   @override
-  String get completedOn => 'Completado el';
+  String completedOn(Object date) {
+    return 'Completado el $date';
+  }
 
   @override
   String get quizStatistics => 'Estadísticas de cuestionarios';
@@ -894,6 +896,24 @@ class AppLocalizationsEs extends AppLocalizations {
   String get points => 'puntos';
 
   @override
+  String get minute => 'minuto';
+
+  @override
+  String get minutes => 'minutos';
+
+  @override
+  String get concept => 'concepto';
+
+  @override
+  String get concepts => 'conceptos';
+
+  @override
+  String get problem => 'problema';
+
+  @override
+  String get problems => 'problemas';
+
+  @override
   String pointsDisplay(Object count, Object points) {
     return '$count $points';
   }
@@ -1046,14 +1066,17 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get deleteAccountConfirmation =>
-      'Esta acción no se puede deshacer. Todos tus datos serán eliminados. Por favor escribe \"DELETE\" para confirmar.';
+      'Esta acción no se puede deshacer. Todos tus datos serán eliminados. Por favor escribe \"ELIMINAR\" para confirmar.';
 
   @override
-  String get typeDeleteHint => 'Escribe DELETE';
+  String get typeDeleteHint => 'Escribe ELIMINAR';
+
+  @override
+  String get deleteText => 'ELIMINAR';
 
   @override
   String get deleteConfirmationError =>
-      'Por favor escribe DELETE para confirmar';
+      'Por favor escribe ELIMINAR para confirmar';
 
   @override
   String get choosePreferredLanguage => 'Elige tu idioma preferido';
@@ -1066,4 +1089,246 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get shareAppText =>
       'Mira esta aplicación increíble: https://apps.apple.com/app/id6739957932';
+
+  @override
+  String get generatePlan => 'Generar plan';
+
+  @override
+  String get generateQuizWithAllMaterials =>
+      'Generar cuestionario con todos los materiales';
+
+  @override
+  String get addStudyMaterial => 'Agregar material de estudio';
+
+  @override
+  String get addMaterial => 'Agregar material';
+
+  @override
+  String studyPlanCreated(Object title) {
+    return 'Plan de estudio \"$title\" creado!';
+  }
+
+  @override
+  String get noStudyMaterialsForQuiz =>
+      'No hay materiales de estudio o planes disponibles para generar cuestionario';
+
+  @override
+  String get noStudyMaterialsAvailable =>
+      'No hay materiales de estudio disponibles para generar cuestionario';
+
+  @override
+  String get selectStudyPlan => 'Seleccionar plan de estudio';
+
+  @override
+  String generatingQuizFromPlan(Object count, Object title) {
+    return 'Generando cuestionario de \"$title\" con $count preguntas...';
+  }
+
+  @override
+  String get studyPlanDeleted => 'Plan de estudio eliminado';
+
+  @override
+  String errorDeletingStudyPlan(Object error) {
+    return 'Error al eliminar el plan de estudio: $error';
+  }
+
+  @override
+  String errorGeneratingStudyPlan(Object error) {
+    return 'Error al generar plan de estudio: $error';
+  }
+
+  @override
+  String get totalTopics => 'Total de temas';
+
+  @override
+  String get completedStatus => 'Completado';
+
+  @override
+  String get inProgress => 'En progreso';
+
+  @override
+  String get start => 'Comenzar';
+
+  @override
+  String get complete => 'Completar';
+
+  @override
+  String get done => 'Hecho';
+
+  @override
+  String get description => 'Descripción';
+
+  @override
+  String get keyConcepts => 'Conceptos clave';
+
+  @override
+  String get aiExplanation => 'Explicación IA';
+
+  @override
+  String get practiceProblems => 'Problemas de práctica';
+
+  @override
+  String get prerequisites => 'Prerrequisitos';
+
+  @override
+  String get unknownTopic => 'Tema desconocido';
+
+  @override
+  String get startTopic => 'Iniciar tema';
+
+  @override
+  String get markComplete => 'Marcar como completado';
+
+  @override
+  String get markIncomplete => 'Marcar como incompleto';
+
+  @override
+  String get enterStudyMaterialText =>
+      'Ingresa el texto de tu material de estudio:';
+
+  @override
+  String get processingTextMaterial => 'Procesando material de texto...';
+
+  @override
+  String get generatingComprehensiveQuiz =>
+      'Generando cuestionario integral de todos tus materiales de estudio...';
+
+  @override
+  String get chooseStudyPlanForQuiz =>
+      'Elige cuál plan de estudio usar para generar el cuestionario:';
+
+  @override
+  String get generatingQuiz => 'Generando cuestionario...';
+
+  @override
+  String get completeTheseTopicsFirst => 'Completa estos temas primero:';
+
+  @override
+  String get topicCompleted => '¡Tema completado!';
+
+  @override
+  String get allMaterialsQuizDescription =>
+      '12 preguntas • 25 min • Todos los materiales de estudio incluidos';
+
+  @override
+  String get materialCaptured =>
+      '¡Material capturado! Iniciando análisis IA...';
+
+  @override
+  String errorCapturingPhoto(Object error) {
+    return 'Error al capturar foto: $error';
+  }
+
+  @override
+  String materialsUploaded(Object count) {
+    return '¡$count material(es) subido(s)! Iniciando análisis IA...';
+  }
+
+  @override
+  String errorUploadingFromGallery(Object error) {
+    return 'Error al subir desde galería: $error';
+  }
+
+  @override
+  String studyMaterialTitle(Object number) {
+    return 'Material de estudio $number';
+  }
+
+  @override
+  String textMaterialTitle(Object number) {
+    return 'Material de texto $number';
+  }
+
+  @override
+  String get materialAnalyzedSuccess =>
+      '¡Material analizado exitosamente! ¡Plan de estudio creado!';
+
+  @override
+  String errorProcessingMaterial(Object error) {
+    return 'Error al procesar material: $error';
+  }
+
+  @override
+  String permissionRequiredTitle(Object permission) {
+    return 'Permiso de $permission requerido';
+  }
+
+  @override
+  String permissionRequiredMessage(Object permission) {
+    return 'Por favor habilita el acceso a $permission en la configuración de tu dispositivo para subir materiales de estudio.';
+  }
+
+  @override
+  String get pasteOrTypeHint =>
+      'Pega o escribe tu contenido matemático aquí...\n\nEjemplo:\n• Capítulo 5: Ecuaciones cuadráticas\n• Resolver ax² + bx + c = 0\n• Problemas de práctica 1-15';
+
+  @override
+  String generatingQuizWithCount(Object count) {
+    return 'Generando cuestionario con $count preguntas...';
+  }
+
+  @override
+  String errorGeneratingQuiz(Object error) {
+    return 'Error al generar cuestionario: $error';
+  }
+
+  @override
+  String errorGeneratingComprehensiveQuiz(Object error) {
+    return 'Error al generar cuestionario integral: $error';
+  }
+
+  @override
+  String planTitle(Object title) {
+    return 'Plan: $title';
+  }
+
+  @override
+  String progressUpdated(Object progress) {
+    return 'Progreso actualizado: $progress%';
+  }
+
+  @override
+  String errorUpdatingProgress(Object error) {
+    return 'Error al actualizar progreso: $error';
+  }
+
+  @override
+  String get topicMarkedComplete => '✅ ¡Tema marcado como completado!';
+
+  @override
+  String errorMarkingTopicComplete(Object error) {
+    return 'Error al marcar tema como completado: $error';
+  }
+
+  @override
+  String get topicStarted => '📚 ¡Tema iniciado!';
+
+  @override
+  String errorStartingTopic(Object error) {
+    return 'Error al iniciar tema: $error';
+  }
+
+  @override
+  String get comprehensiveQuizTitle =>
+      'Cuestionario integral - Todos los materiales';
+
+  @override
+  String daysAgoFormat(Object days) {
+    return 'Hace $days días';
+  }
+
+  @override
+  String dateFormat(Object day, Object month, Object year) {
+    return '$day/$month/$year';
+  }
+
+  @override
+  String maxMaterialsReached(Object count) {
+    return 'Máximo de $count materiales de estudio permitidos';
+  }
+
+  @override
+  String maxMaterialsHint(Object count) {
+    return 'Selecciona hasta $count de tus materiales de estudio más importantes para mejores resultados';
+  }
 }
