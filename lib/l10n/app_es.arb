@@ -403,5 +403,19 @@
   "daysAgoFormat": "Hace {days} días",
   "dateFormat": "{day}/{month}/{year}",
   "maxMaterialsReached": "Máximo de {count} materiales de estudio permitidos",
-  "maxMaterialsHint": "Selecciona hasta {count} de tus materiales de estudio más importantes para mejores resultados"
+  "maxMaterialsHint": "Selecciona hasta {count} de tus materiales de estudio más importantes para mejores resultados",
+  "reviewMainConcepts": "Revisar y comprender los conceptos principales de {topic}",
+  "practiceExercisesFocusing": "Ejercicios prácticos enfocados en {concepts}",
+  "workThroughProblems": "Trabajar en problemas que involucren {concepts}",
+  "completeWorksheets": "Completar hojas de trabajo o ejercicios de libro de texto sobre {topic}",
+  "takeTopicQuiz": "Tomar un cuestionario o autoevaluación sobre este tema",
+  "errorAnalyzingContent": "Error al analizar contenido. Por favor intenta de nuevo.",
+  "unableToAnalyzeContent": "No se puede analizar el contenido",
+  "unableToAnalyzeImage": "No se puede analizar el contenido de la imagen: {error}",
+  "targetCompletionDate": "Fecha objetivo de finalización: {date}",
+  "noSpecificTargetDate": "Sin fecha objetivo específica",
+  "unableToGenerateStudyPlan": "No se puede generar el plan de estudio",
+  "studyPlanSingle": "Plan de Estudio: {title}",
+  "studyPlanMultiple": "Plan de Estudio: {count} Materiales",
+  "aiGeneratedStudyPlanDescription": "Plan de estudio generado por IA basado en tus materiales subidos"
 }

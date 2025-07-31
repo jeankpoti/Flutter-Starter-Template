@@ -403,5 +403,19 @@
   "daysAgoFormat": "{days} days ago",
   "dateFormat": "{day}/{month}/{year}",
   "maxMaterialsReached": "Maximum of {count} study materials allowed",
-  "maxMaterialsHint": "Select up to {count} of your most important study materials for best results"
+  "maxMaterialsHint": "Select up to {count} of your most important study materials for best results",
+  "reviewMainConcepts": "Review and understand the main concepts of {topic}",
+  "practiceExercisesFocusing": "Practice exercises focusing on {concepts}",
+  "workThroughProblems": "Work through problems involving {concepts}",
+  "completeWorksheets": "Complete practice worksheets or textbook exercises on {topic}",
+  "takeTopicQuiz": "Take a quiz or self-assessment on this topic",
+  "errorAnalyzingContent": "Error analyzing content. Please try again.",
+  "unableToAnalyzeContent": "Unable to analyze content",
+  "unableToAnalyzeImage": "Unable to analyze image content: {error}",
+  "targetCompletionDate": "Target completion date: {date}",
+  "noSpecificTargetDate": "No specific target date",
+  "unableToGenerateStudyPlan": "Unable to generate study plan",
+  "studyPlanSingle": "Study Plan: {title}",
+  "studyPlanMultiple": "Study Plan: {count} Materials",
+  "aiGeneratedStudyPlanDescription": "AI-generated study plan based on your uploaded materials"
 }

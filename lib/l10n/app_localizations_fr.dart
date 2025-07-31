@@ -1340,4 +1340,66 @@ class AppLocalizationsFr extends AppLocalizations {
   String maxMaterialsHint(Object count) {
     return 'Sélectionnez jusqu\'à $count de vos matériaux d\'étude les plus importants pour de meilleurs résultats';
   }
+
+  @override
+  String reviewMainConcepts(Object topic) {
+    return 'Réviser et comprendre les concepts principaux de $topic';
+  }
+
+  @override
+  String practiceExercisesFocusing(Object concepts) {
+    return 'Exercices pratiques axés sur $concepts';
+  }
+
+  @override
+  String workThroughProblems(Object concepts) {
+    return 'Travailler sur des problèmes impliquant $concepts';
+  }
+
+  @override
+  String completeWorksheets(Object topic) {
+    return 'Compléter les feuilles d\'exercices ou les exercices du manuel sur $topic';
+  }
+
+  @override
+  String get takeTopicQuiz =>
+      'Passer un quiz ou une auto-évaluation sur ce sujet';
+
+  @override
+  String get errorAnalyzingContent =>
+      'Erreur lors de l\'analyse du contenu. Veuillez réessayer.';
+
+  @override
+  String get unableToAnalyzeContent => 'Impossible d\'analyser le contenu';
+
+  @override
+  String unableToAnalyzeImage(Object error) {
+    return 'Impossible d\'analyser le contenu de l\'image : $error';
+  }
+
+  @override
+  String targetCompletionDate(Object date) {
+    return 'Date de fin prévue : $date';
+  }
+
+  @override
+  String get noSpecificTargetDate => 'Aucune date cible spécifique';
+
+  @override
+  String get unableToGenerateStudyPlan =>
+      'Impossible de générer le plan d\'étude';
+
+  @override
+  String studyPlanSingle(Object title) {
+    return 'Plan d\'étude : $title';
+  }
+
+  @override
+  String studyPlanMultiple(Object count) {
+    return 'Plan d\'étude : $count matériaux';
+  }
+
+  @override
+  String get aiGeneratedStudyPlanDescription =>
+      'Plan d\'étude généré par IA basé sur vos matériaux téléchargés';
 }

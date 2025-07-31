@@ -37,7 +37,7 @@ class _StudyPageState extends State<StudyPage>
   String? _processingPlanId;
 
   // Material upload limits
-  static const int _maxMaterialsLimit = 5;
+  static const int _maxImagesPerSelection = 5;
 
   // Design system spacing constants
   static const double _spacing4 = 16.0;
@@ -274,10 +274,6 @@ class _StudyPageState extends State<StudyPage>
 
           const SizedBox(height: _spacing8),
 
-          // Materials count indicator
-          _buildMaterialsCountIndicator(),
-          const SizedBox(height: _spacing4),
-
           // Loading Progress Bar
           if (_isProcessing) ...[
             _buildProcessingIndicator(),
@@ -288,12 +284,8 @@ class _StudyPageState extends State<StudyPage>
           _buildUploadOption(
             icon: Icons.camera_alt,
             title: AppLocalizations.of(context)!.takePhoto,
-            subtitle: _studyMaterials.length < _maxMaterialsLimit 
-                ? AppLocalizations.of(context)!.takePhotoSubtitle
-                : AppLocalizations.of(context)!.maxMaterialsReached(_maxMaterialsLimit),
-            onTap: _studyMaterials.length < _maxMaterialsLimit 
-                ? () => _handlePhotoUpload()
-                : null,
+            subtitle: AppLocalizations.of(context)!.takePhotoSubtitle,
+            onTap: () => _handlePhotoUpload(),
           ),
 
           const SizedBox(height: 16),
@@ -301,12 +293,9 @@ class _StudyPageState extends State<StudyPage>
           _buildUploadOption(
             icon: Icons.photo_library,
             title: AppLocalizations.of(context)!.uploadFromGallery,
-            subtitle: _studyMaterials.length < _maxMaterialsLimit 
-                ? AppLocalizations.of(context)!.uploadFromGallerySubtitle
-                : AppLocalizations.of(context)!.maxMaterialsReached(_maxMaterialsLimit),
-            onTap: _studyMaterials.length < _maxMaterialsLimit 
-                ? () => _handleGalleryUpload()
-                : null,
+            subtitle:
+                '${AppLocalizations.of(context)!.uploadFromGallerySubtitle} (Max $_maxImagesPerSelection images per selection)',
+            onTap: () => _handleGalleryUpload(),
           ),
 
           const SizedBox(height: 16),
@@ -331,9 +320,9 @@ class _StudyPageState extends State<StudyPage>
     required IconData icon,
     required String title,
     required String subtitle,
-    required VoidCallback? onTap,
+    required VoidCallback onTap,
   }) {
-    final isDisabled = _isProcessing || onTap == null;
+    final isDisabled = _isProcessing;
 
     return Container(
       decoration: BoxDecoration(
@@ -1035,91 +1024,6 @@ class _StudyPageState extends State<StudyPage>
     );
   }
 
-  Widget _buildMaterialsCountIndicator() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: _spacing4, vertical: 12),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
-          width: 1,
-        ),
-      ),
-      child: Row(
-        children: [
-          // Materials counter icon
-          Container(
-            width: 32,
-            height: 32,
-            decoration: BoxDecoration(
-              color: _studyMaterials.length >= _maxMaterialsLimit
-                  ? Theme.of(context).colorScheme.errorContainer
-                  : Theme.of(context).colorScheme.secondaryContainer,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(
-              Icons.collections_bookmark_outlined,
-              size: 18,
-              color: _studyMaterials.length >= _maxMaterialsLimit
-                  ? Theme.of(context).colorScheme.onErrorContainer
-                  : Theme.of(context).colorScheme.onSecondaryContainer,
-            ),
-          ),
-          const SizedBox(width: 12),
-          
-          // Progress text and bar
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Counter text - dynamic translation based on current state
-                BodyMediumText(
-                  _studyMaterials.length >= _maxMaterialsLimit
-                      ? AppLocalizations.of(context)!.maxMaterialsReached(_maxMaterialsLimit)
-                      : '${_studyMaterials.length}/$_maxMaterialsLimit ${AppLocalizations.of(context)!.materials}',
-                  fontWeight: FontWeight.w600,
-                  color: _studyMaterials.length >= _maxMaterialsLimit
-                      ? Theme.of(context).colorScheme.error
-                      : Theme.of(context).colorScheme.onSurface,
-                ),
-                const SizedBox(height: 4),
-                
-                // Progress bar
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(2),
-                  child: LinearProgressIndicator(
-                    value: _studyMaterials.length / _maxMaterialsLimit,
-                    backgroundColor: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
-                    valueColor: AlwaysStoppedAnimation<Color>(
-                      _studyMaterials.length >= _maxMaterialsLimit
-                          ? Theme.of(context).colorScheme.error
-                          : Theme.of(context).colorScheme.secondary,
-                    ),
-                    minHeight: 4,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          
-          // Hint icon
-          if (_studyMaterials.length < _maxMaterialsLimit) ...[
-            const SizedBox(width: 8),
-            Tooltip(
-              message: AppLocalizations.of(context)!.maxMaterialsHint(_maxMaterialsLimit),
-              child: Icon(
-                Icons.info_outline,
-                size: 18,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
   Widget _buildQuizSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1547,23 +1451,6 @@ class _StudyPageState extends State<StudyPage>
   // Upload functionality methods
   Future<void> _handlePhotoUpload() async {
     try {
-      // Check if maximum materials limit reached
-      if (_studyMaterials.length >= _maxMaterialsLimit) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: BodyMediumText(
-                AppLocalizations.of(context)!.maxMaterialsReached(_maxMaterialsLimit),
-                color: Theme.of(context).colorScheme.onErrorContainer,
-              ),
-              backgroundColor: Theme.of(context).colorScheme.errorContainer,
-              duration: const Duration(seconds: 3),
-            ),
-          );
-        }
-        return;
-      }
-
       // Check camera permission
       if (Platform.isAndroid) {
         final cameraStatus = await Permission.camera.request();
@@ -1614,23 +1501,6 @@ class _StudyPageState extends State<StudyPage>
 
   Future<void> _handleGalleryUpload() async {
     try {
-      // Check if maximum materials limit reached
-      if (_studyMaterials.length >= _maxMaterialsLimit) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: BodyMediumText(
-                AppLocalizations.of(context)!.maxMaterialsReached(_maxMaterialsLimit),
-                color: Theme.of(context).colorScheme.onErrorContainer,
-              ),
-              backgroundColor: Theme.of(context).colorScheme.errorContainer,
-              duration: const Duration(seconds: 3),
-            ),
-          );
-        }
-        return;
-      }
-
       // Check photo permission
       if (Platform.isAndroid) {
         final photosStatus = await Permission.photos.request();
@@ -1640,54 +1510,51 @@ class _StudyPageState extends State<StudyPage>
         }
       }
 
-      // Calculate how many images user can still select
-      final remainingSlots = _maxMaterialsLimit - _studyMaterials.length;
-      
       final List<XFile> images = await _picker.pickMultiImage(
         maxWidth: 2400,
         maxHeight: 2400,
         imageQuality: 85,
+        limit: _maxImagesPerSelection,
       );
 
       if (images.isNotEmpty) {
-        // Limit to maximum 5 images total, but respect remaining slots
-        final maxAllowedImages = remainingSlots.clamp(0, _maxMaterialsLimit);
-        final imagesToProcess = images.take(maxAllowedImages).toList();
-        
-        // Show feedback about selection limit
-        if (images.length > maxAllowedImages) {
+        // Limit selection to maximum 5 images
+        final imagesToProcess = images.take(_maxImagesPerSelection).toList();
+
+        // Show feedback about selection limit if user selected more than 5
+        if (images.length > _maxImagesPerSelection) {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: BodyMediumText(
-                  AppLocalizations.of(context)!.maxMaterialsHint(_maxMaterialsLimit),
+                  'You selected ${images.length} images, but only $_maxImagesPerSelection can be processed per selection. The first $_maxImagesPerSelection images will be uploaded.',
                   color: Theme.of(context).colorScheme.onErrorContainer,
                 ),
                 backgroundColor: Theme.of(context).colorScheme.errorContainer,
-                duration: const Duration(seconds: 4),
+                duration: const Duration(seconds: 5),
               ),
             );
           }
         }
-        
-        if (imagesToProcess.isNotEmpty) {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: BodyMediumText(
-                  AppLocalizations.of(context)!.materialsUploaded(imagesToProcess.length),
-                  color: Theme.of(context).colorScheme.onSecondary,
-                ),
-                backgroundColor: Theme.of(context).colorScheme.secondary,
-                duration: const Duration(seconds: 2),
-              ),
-            );
-          }
 
-          for (final xFile in imagesToProcess) {
-            final imageFile = File(xFile.path);
-            await _processUploadedMaterial(imageFile, study.MaterialType.image);
-          }
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: BodyMediumText(
+                AppLocalizations.of(
+                  context,
+                )!.materialsUploaded(imagesToProcess.length),
+                color: Theme.of(context).colorScheme.onSecondary,
+              ),
+              backgroundColor: Theme.of(context).colorScheme.secondary,
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        }
+
+        for (final xFile in imagesToProcess) {
+          final imageFile = File(xFile.path);
+          await _processUploadedMaterial(imageFile, study.MaterialType.image);
         }
       }
     } catch (e) {
@@ -3186,35 +3053,6 @@ class _StudyPageState extends State<StudyPage>
                           const SizedBox(height: _spacing6),
                         ],
 
-                        // AI Explanation
-                        if (currentTopic.aiExplanation != null &&
-                            currentTopic.aiExplanation!.isNotEmpty) ...[
-                          _buildTopicSection(
-                            AppLocalizations.of(context)!.aiExplanation,
-                            Icons.auto_awesome,
-                            child: Container(
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .primaryContainer
-                                    .withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.primary.withValues(alpha: 0.2),
-                                ),
-                              ),
-                              child: BodyMediumText(
-                                currentTopic.aiExplanation!,
-                                color: Theme.of(context).colorScheme.onSurface,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: _spacing6),
-                        ],
-
                         // Practice Problems
                         if (currentTopic.practiceProblems.isNotEmpty) ...[
                           _buildTopicSection(
@@ -3283,64 +3121,6 @@ class _StudyPageState extends State<StudyPage>
                                         );
                                       })
                                       .toList(),
-                            ),
-                          ),
-                          const SizedBox(height: _spacing6),
-                        ],
-
-                        // Prerequisites
-                        if (currentTopic.prerequisites.isNotEmpty) ...[
-                          _buildTopicSection(
-                            AppLocalizations.of(context)!.prerequisites,
-                            Icons.account_tree,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                BodyMediumText(
-                                  AppLocalizations.of(
-                                    context,
-                                  )!.completeTheseTopicsFirst,
-                                  color: Theme.of(context).colorScheme.onSurface
-                                      .withValues(alpha: 0.7),
-                                ),
-                                const SizedBox(height: 8),
-                                ...currentTopic.prerequisites.map((prereqId) {
-                                  final prereqTopic =
-                                      currentPlan.topics
-                                          .where((t) => t.id == prereqId)
-                                          .firstOrNull;
-                                  return Container(
-                                    margin: const EdgeInsets.only(bottom: 4),
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          prereqTopic?.status ==
-                                                  StudyTopicStatus.completed
-                                              ? Icons.check_circle
-                                              : Icons.radio_button_unchecked,
-                                          size: 16,
-                                          color:
-                                              prereqTopic?.status ==
-                                                      StudyTopicStatus.completed
-                                                  ? Colors.green
-                                                  : Theme.of(
-                                                    context,
-                                                  ).colorScheme.outline,
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Expanded(
-                                          child: BodySmallText(
-                                            prereqTopic?.title ??
-                                                AppLocalizations.of(
-                                                  context,
-                                                )!.unknownTopic,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                }),
-                              ],
                             ),
                           ),
                           const SizedBox(height: _spacing6),

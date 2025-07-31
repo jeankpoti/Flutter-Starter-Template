@@ -1311,4 +1311,64 @@ class AppLocalizationsEn extends AppLocalizations {
   String maxMaterialsHint(Object count) {
     return 'Select up to $count of your most important study materials for best results';
   }
+
+  @override
+  String reviewMainConcepts(Object topic) {
+    return 'Review and understand the main concepts of $topic';
+  }
+
+  @override
+  String practiceExercisesFocusing(Object concepts) {
+    return 'Practice exercises focusing on $concepts';
+  }
+
+  @override
+  String workThroughProblems(Object concepts) {
+    return 'Work through problems involving $concepts';
+  }
+
+  @override
+  String completeWorksheets(Object topic) {
+    return 'Complete practice worksheets or textbook exercises on $topic';
+  }
+
+  @override
+  String get takeTopicQuiz => 'Take a quiz or self-assessment on this topic';
+
+  @override
+  String get errorAnalyzingContent =>
+      'Error analyzing content. Please try again.';
+
+  @override
+  String get unableToAnalyzeContent => 'Unable to analyze content';
+
+  @override
+  String unableToAnalyzeImage(Object error) {
+    return 'Unable to analyze image content: $error';
+  }
+
+  @override
+  String targetCompletionDate(Object date) {
+    return 'Target completion date: $date';
+  }
+
+  @override
+  String get noSpecificTargetDate => 'No specific target date';
+
+  @override
+  String get unableToGenerateStudyPlan => 'Unable to generate study plan';
+
+  @override
+  String studyPlanSingle(Object title) {
+    return 'Study Plan: $title';
+  }
+
+  @override
+  String studyPlanMultiple(Object count) {
+    return 'Study Plan: $count Materials';
+  }
+
+  @override
+  String get aiGeneratedStudyPlanDescription =>
+      'AI-generated study plan based on your uploaded materials';
 }

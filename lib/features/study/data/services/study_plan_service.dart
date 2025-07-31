@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart' hide MaterialType;
 import '../../../solve_math/data/repository/gemini_solve_math_repo.dart';
 import '../../../settings/data/preferences_service.dart';
 import '../../../settings/domain/models/math_level.dart';
@@ -45,7 +46,7 @@ class StudyPlanService {
       if (type == MaterialType.text && content != null) {
         aiAnalysis = await _analyzeTextContent(content, mathLevel, locale);
       } else if (type == MaterialType.image && imageFile != null) {
-        aiAnalysis = await _analyzeImageContent(imageFile, mathLevel);
+        aiAnalysis = await _analyzeImageContent(imageFile, mathLevel, locale);
       }
 
       // Extract topics from AI analysis
@@ -53,7 +54,13 @@ class StudyPlanService {
     } catch (e) {
       // Log error (in production, use proper logging framework)
       debugPrint('Error analyzing material: $e');
-      aiAnalysis = 'Error analyzing content. Please try again.';
+      if (locale == 'fr') {
+        aiAnalysis = 'Erreur lors de l\'analyse du contenu. Veuillez réessayer.';
+      } else if (locale == 'es') {
+        aiAnalysis = 'Error al analizar contenido. Por favor intenta de nuevo.';
+      } else {
+        aiAnalysis = 'Error analyzing content. Please try again.';
+      }
     }
 
     return StudyMaterial(
@@ -98,14 +105,14 @@ class StudyPlanService {
     );
 
     // Parse AI response into structured study plan
-    final topics = _parseStudyTopics(studyPlanResponse);
+    final topics = _parseStudyTopics(studyPlanResponse, locale);
     final totalHours = _calculateTotalHours(topics);
 
     final studyPlan = StudyPlan(
       id: _generateId(),
       userId: userId,
-      title: customTitle ?? _generatePlanTitle(materials),
-      description: 'AI-generated study plan based on your uploaded materials',
+      title: customTitle ?? _generatePlanTitle(materials, locale),
+      description: _getStudyPlanDescription(locale),
       materialIds: materials.map((m) => m.id).toList(),
       topics: topics,
       difficulty: _determineDifficulty(mathLevel),
@@ -132,13 +139,20 @@ class StudyPlanService {
     );
 
     final response = await _geminiService.generateTextContent(prompt);
-    return response.text ?? 'Unable to analyze content';
+    if (locale == 'fr') {
+      return response.text ?? 'Impossible d\'analyser le contenu';
+    } else if (locale == 'es') {
+      return response.text ?? 'No se puede analizar el contenido';
+    } else {
+      return response.text ?? 'Unable to analyze content';
+    }
   }
 
   /// Analyze image content using Gemini AI
   Future<String> _analyzeImageContent(
     File imageFile,
     MathLevel mathLevel,
+    String locale,
   ) async {
     try {
       // Use the existing solveMath method which handles image analysis
@@ -146,7 +160,13 @@ class StudyPlanService {
       final response = await _geminiService.solveMath(imageFile);
       return response;
     } catch (e) {
-      return 'Unable to analyze image content: $e';
+      if (locale == 'fr') {
+        return 'Impossible d\'analyser le contenu de l\'image : $e';
+      } else if (locale == 'es') {
+        return 'No se puede analizar el contenido de la imagen: $e';
+      } else {
+        return 'Unable to analyze image content: $e';
+      }
     }
   }
 
@@ -159,10 +179,8 @@ class StudyPlanService {
   ) async {
     final targetInfo =
         targetDate != null
-            ? 'Target completion date: ${targetDate.toLocal().toString().split(' ')[0]}'
-            : 'No specific target date';
-
-    print('Locale: $locale');
+            ? _getTargetDateText(targetDate, locale)
+            : _getNoTargetDateText(locale);
 
     String prompt = '';
 
@@ -290,7 +308,13 @@ Haz esto apropiado para estudiantes de nivel ${mathLevel.displayName} con progre
     }
 
     final response = await _geminiService.generateTextContent(prompt);
-    return response.text ?? 'Unable to generate study plan';
+    if (locale == 'fr') {
+      return response.text ?? 'Impossible de générer le plan d\'étude';
+    } else if (locale == 'es') {
+      return response.text ?? 'No se puede generar el plan de estudio';
+    } else {
+      return response.text ?? 'Unable to generate study plan';
+    }
   }
 
   // Helper methods for parsing and processing
@@ -354,11 +378,10 @@ Haz esto apropiado para estudiantes de nivel ${mathLevel.displayName} con progre
     return buffer.toString();
   }
 
-  List<StudyTopic> _parseStudyTopics(String studyPlanResponse) {
+  List<StudyTopic> _parseStudyTopics(String studyPlanResponse, String locale) {
     final topics = <StudyTopic>[];
     final lines = studyPlanResponse.split('\n');
 
-    StudyTopic? currentTopic;
     String currentTopicTitle = '';
     String description = '';
     List<String> keyConcepts = [];
@@ -375,8 +398,28 @@ Haz esto apropiado para estudiantes de nivel ${mathLevel.displayName} con progre
               trimmedLine.startsWith('**TEMA ')) &&
           trimmedLine.contains(':')) {
         // Save previous topic if exists
-        if (currentTopic != null && currentTopicTitle.isNotEmpty) {
-          topics.add(currentTopic);
+        if (currentTopicTitle.isNotEmpty) {
+          // Generate fallback practice problems if none were parsed
+          if (practiceProblems.isEmpty) {
+            practiceProblems = _generateFallbackPracticeProblems(
+              currentTopicTitle,
+              keyConcepts,
+              locale,
+            );
+          }
+
+          final topic = StudyTopic(
+            id: _generateId(),
+            title: currentTopicTitle,
+            description: description,
+            keyConceptsList: keyConcepts,
+            estimatedMinutes: estimatedMinutes,
+            status: StudyTopicStatus.notStarted,
+            prerequisites: prerequisites,
+            aiExplanation: description, // Use description as AI explanation
+            practiceProblems: practiceProblems,
+          );
+          topics.add(topic);
         }
 
         // Start new topic
@@ -476,35 +519,135 @@ Haz esto apropiado para estudiantes de nivel ${mathLevel.displayName} con progre
                 .replaceAll('- Problemas de práctica:', '')
                 .replaceAll('- Problemas de práctica :', '')
                 .trim();
-        practiceProblems =
-            problemsText
-                .split(',')
-                .map((p) => p.trim())
-                .where((p) => p.isNotEmpty)
-                .toList();
+        // Handle different formats: comma-separated, semicolon-separated, or bracket format
+        if (problemsText.contains('[') && problemsText.contains(']')) {
+          // Handle format like: [Problem 1], [Problem 2], [Problem 3]
+          final bracketPattern = RegExp(r'\[([^\]]+)\]');
+          final matches = bracketPattern.allMatches(problemsText);
+          practiceProblems =
+              matches
+                  .map((match) => match.group(1)?.trim() ?? '')
+                  .where((p) => p.isNotEmpty)
+                  .toList();
+        } else if (problemsText.contains(';')) {
+          // Handle semicolon-separated format
+          practiceProblems =
+              problemsText
+                  .split(';')
+                  .map((p) => p.trim())
+                  .where((p) => p.isNotEmpty)
+                  .toList();
+        } else {
+          // Handle comma-separated format (original)
+          practiceProblems =
+              problemsText
+                  .split(',')
+                  .map((p) => p.trim())
+                  .where((p) => p.isNotEmpty)
+                  .toList();
+        }
       }
 
-      // If we have a complete topic, create it
-      if (currentTopicTitle.isNotEmpty && description.isNotEmpty) {
-        currentTopic = StudyTopic(
-          id: _generateId(),
-          title: currentTopicTitle,
-          description: description,
-          keyConceptsList: keyConcepts,
-          estimatedMinutes: estimatedMinutes,
-          status: StudyTopicStatus.notStarted,
-          prerequisites: prerequisites,
-          practiceProblems: practiceProblems,
-        );
-      }
+      // Don't create topic here - wait until we have all the data
     }
 
     // Add the last topic
-    if (currentTopic != null && currentTopicTitle.isNotEmpty) {
-      topics.add(currentTopic);
+    if (currentTopicTitle.isNotEmpty) {
+      // Generate fallback practice problems if none were parsed
+      if (practiceProblems.isEmpty) {
+        practiceProblems = _generateFallbackPracticeProblems(
+          currentTopicTitle,
+          keyConcepts,
+          locale,
+        );
+      }
+
+      final topic = StudyTopic(
+        id: _generateId(),
+        title: currentTopicTitle,
+        description: description,
+        keyConceptsList: keyConcepts,
+        estimatedMinutes: estimatedMinutes,
+        status: StudyTopicStatus.notStarted,
+        prerequisites: prerequisites,
+        aiExplanation: description, // Use description as AI explanation
+        practiceProblems: practiceProblems,
+      );
+      topics.add(topic);
     }
 
     return topics;
+  }
+
+  List<String> _generateFallbackPracticeProblems(
+    String topicTitle,
+    List<String> keyConcepts,
+    String locale,
+  ) {
+    final problems = <String>[];
+
+    // Generate localized practice problems based on topic title and key concepts
+    if (locale == 'fr') {
+      problems.add('Réviser et comprendre les concepts principaux de $topicTitle');
+
+      if (keyConcepts.isNotEmpty) {
+        problems.add(
+          'Exercices pratiques axés sur ${keyConcepts.take(2).join(' et ')}',
+        );
+
+        if (keyConcepts.length > 2) {
+          problems.add(
+            'Travailler sur des problèmes impliquant ${keyConcepts.skip(2).take(2).join(' et ')}',
+          );
+        }
+      }
+
+      problems.add(
+        'Compléter les feuilles d\'exercices ou les exercices du manuel sur $topicTitle',
+      );
+      problems.add('Passer un quiz ou une auto-évaluation sur ce sujet');
+    } else if (locale == 'es') {
+      problems.add('Revisar y comprender los conceptos principales de $topicTitle');
+
+      if (keyConcepts.isNotEmpty) {
+        problems.add(
+          'Ejercicios prácticos enfocados en ${keyConcepts.take(2).join(' y ')}',
+        );
+
+        if (keyConcepts.length > 2) {
+          problems.add(
+            'Trabajar en problemas que involucren ${keyConcepts.skip(2).take(2).join(' y ')}',
+          );
+        }
+      }
+
+      problems.add(
+        'Completar hojas de trabajo o ejercicios de libro de texto sobre $topicTitle',
+      );
+      problems.add('Tomar un cuestionario o autoevaluación sobre este tema');
+    } else {
+      // Default to English
+      problems.add('Review and understand the main concepts of $topicTitle');
+
+      if (keyConcepts.isNotEmpty) {
+        problems.add(
+          'Practice exercises focusing on ${keyConcepts.take(2).join(' and ')}',
+        );
+
+        if (keyConcepts.length > 2) {
+          problems.add(
+            'Work through problems involving ${keyConcepts.skip(2).take(2).join(' and ')}',
+          );
+        }
+      }
+
+      problems.add(
+        'Complete practice worksheets or textbook exercises on $topicTitle',
+      );
+      problems.add('Take a quiz or self-assessment on this topic');
+    }
+
+    return problems;
   }
 
   int _calculateTotalHours(List<StudyTopic> topics) {
@@ -515,11 +658,54 @@ Haz esto apropiado para estudiantes de nivel ${mathLevel.displayName} con progre
     return (totalMinutes / 60).ceil();
   }
 
-  String _generatePlanTitle(List<StudyMaterial> materials) {
-    if (materials.length == 1) {
-      return 'Study Plan: ${materials.first.title}';
+  String _getTargetDateText(DateTime targetDate, String locale) {
+    final dateStr = targetDate.toLocal().toString().split(' ')[0];
+    if (locale == 'fr') {
+      return 'Date de fin prévue : $dateStr';
+    } else if (locale == 'es') {
+      return 'Fecha objetivo de finalización: $dateStr';
+    } else {
+      return 'Target completion date: $dateStr';
     }
-    return 'Study Plan: ${materials.length} Materials';
+  }
+
+  String _getNoTargetDateText(String locale) {
+    if (locale == 'fr') {
+      return 'Aucune date cible spécifique';
+    } else if (locale == 'es') {
+      return 'Sin fecha objetivo específica';
+    } else {
+      return 'No specific target date';
+    }
+  }
+
+  String _getStudyPlanDescription(String locale) {
+    if (locale == 'fr') {
+      return 'Plan d\'étude généré par IA basé sur vos matériaux téléchargés';
+    } else if (locale == 'es') {
+      return 'Plan de estudio generado por IA basado en tus materiales subidos';
+    } else {
+      return 'AI-generated study plan based on your uploaded materials';
+    }
+  }
+
+  String _generatePlanTitle(List<StudyMaterial> materials, String locale) {
+    if (materials.length == 1) {
+      if (locale == 'fr') {
+        return 'Plan d\'étude : ${materials.first.title}';
+      } else if (locale == 'es') {
+        return 'Plan de Estudio: ${materials.first.title}';
+      } else {
+        return 'Study Plan: ${materials.first.title}';
+      }
+    }
+    if (locale == 'fr') {
+      return 'Plan d\'étude : ${materials.length} matériaux';
+    } else if (locale == 'es') {
+      return 'Plan de Estudio: ${materials.length} Materiales';
+    } else {
+      return 'Study Plan: ${materials.length} Materials';
+    }
   }
 
   StudyPlanDifficulty _determineDifficulty(MathLevel mathLevel) {

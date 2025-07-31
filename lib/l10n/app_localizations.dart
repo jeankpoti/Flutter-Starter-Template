@@ -2421,6 +2421,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select up to {count} of your most important study materials for best results'**
   String maxMaterialsHint(Object count);
+
+  /// No description provided for @reviewMainConcepts.
+  ///
+  /// In en, this message translates to:
+  /// **'Review and understand the main concepts of {topic}'**
+  String reviewMainConcepts(Object topic);
+
+  /// No description provided for @practiceExercisesFocusing.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice exercises focusing on {concepts}'**
+  String practiceExercisesFocusing(Object concepts);
+
+  /// No description provided for @workThroughProblems.
+  ///
+  /// In en, this message translates to:
+  /// **'Work through problems involving {concepts}'**
+  String workThroughProblems(Object concepts);
+
+  /// No description provided for @completeWorksheets.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete practice worksheets or textbook exercises on {topic}'**
+  String completeWorksheets(Object topic);
+
+  /// No description provided for @takeTopicQuiz.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a quiz or self-assessment on this topic'**
+  String get takeTopicQuiz;
+
+  /// No description provided for @errorAnalyzingContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Error analyzing content. Please try again.'**
+  String get errorAnalyzingContent;
+
+  /// No description provided for @unableToAnalyzeContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to analyze content'**
+  String get unableToAnalyzeContent;
+
+  /// No description provided for @unableToAnalyzeImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to analyze image content: {error}'**
+  String unableToAnalyzeImage(Object error);
+
+  /// No description provided for @targetCompletionDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Target completion date: {date}'**
+  String targetCompletionDate(Object date);
+
+  /// No description provided for @noSpecificTargetDate.
+  ///
+  /// In en, this message translates to:
+  /// **'No specific target date'**
+  String get noSpecificTargetDate;
+
+  /// No description provided for @unableToGenerateStudyPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to generate study plan'**
+  String get unableToGenerateStudyPlan;
+
+  /// No description provided for @studyPlanSingle.
+  ///
+  /// In en, this message translates to:
+  /// **'Study Plan: {title}'**
+  String studyPlanSingle(Object title);
+
+  /// No description provided for @studyPlanMultiple.
+  ///
+  /// In en, this message translates to:
+  /// **'Study Plan: {count} Materials'**
+  String studyPlanMultiple(Object count);
+
+  /// No description provided for @aiGeneratedStudyPlanDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'AI-generated study plan based on your uploaded materials'**
+  String get aiGeneratedStudyPlanDescription;
 }
 
 class _AppLocalizationsDelegate

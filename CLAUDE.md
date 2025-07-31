@@ -124,10 +124,12 @@ Reusable UI components following consistent naming:
 ### Supported Languages
 - **English** (`en`) - Primary language
 - **French** (`fr`) - Secondary language
+- **Spanish** (`es`) - Tertiary language
 
 ### Translation File Locations
 - `lib/l10n/app_en.arb` - English translations
 - `lib/l10n/app_fr.arb` - French translations
+- `lib/l10n/app_es.arb` - Spanish translations
 - Generated files: `lib/l10n/app_localizations.dart` (auto-generated)
 
 ### **CRITICAL RULES - ALWAYS FOLLOW**
@@ -146,7 +148,7 @@ SnackBar(content: Text(AppLocalizations.of(context)!.success)),
 ```
 
 #### 2. **Add Translation Keys for All New Text**
-When adding new UI text, ALWAYS add keys to both `.arb` files:
+When adding new UI text, ALWAYS add keys to all three `.arb` files:
 
 **app_en.arb:**
 ```json
@@ -161,6 +163,14 @@ When adding new UI text, ALWAYS add keys to both `.arb` files:
 {
   "newFeatureTitle": "Nouvelle fonctionnalité",  
   "newFeatureDescription": "Ceci est une description de la nouvelle fonctionnalité"
+}
+```
+
+**app_es.arb:**
+```json
+{
+  "newFeatureTitle": "Nueva Característica",  
+  "newFeatureDescription": "Esta es una descripción de la nueva característica"
 }
 ```
 
@@ -257,18 +267,18 @@ TextFormField(
 
 #### Before Submitting Code:
 1. **Search for hardcoded strings**: `grep -r '"[A-Z]' lib/` 
-2. **Test both languages**: Switch between English and French in app
-3. **Verify all new text is translated**: Check both `.arb` files
+2. **Test all languages**: Switch between English, French, and Spanish in app
+3. **Verify all new text is translated**: Check all three `.arb` files
 4. **Run localization generation**: `flutter gen-l10n`
 5. **No compilation errors**: `flutter analyze`
 
 #### Translation Review Checklist:
 - [ ] All user-visible text uses `AppLocalizations.of(context)!`
-- [ ] Translation keys added to both `app_en.arb` and `app_fr.arb`
-- [ ] French translations are accurate and natural
+- [ ] Translation keys added to `app_en.arb`, `app_fr.arb`, and `app_es.arb`
+- [ ] French and Spanish translations are accurate and natural
 - [ ] Dynamic content uses parameterized translations
 - [ ] `flutter gen-l10n` executed successfully
-- [ ] App tested in both languages
+- [ ] App tested in all three languages (English, French, Spanish)
 - [ ] No hardcoded strings remain
 
 ### **Existing Translation Keys**
@@ -276,7 +286,7 @@ Key categories already available:
 - **Authentication**: signIn, signUp, email, password, etc.
 - **Navigation**: solve, study, history, settings, etc.
 - **Math Levels**: elementary, highSchool, college + descriptions
-- **Languages**: englishLanguage, frenchLanguage
+- **Languages**: englishLanguage, frenchLanguage, spanishLanguage
 - **UI Actions**: save, cancel, delete, retry, loading, etc.
 - **Messages**: success, error, somethingWentWrong, etc.
 
@@ -291,8 +301,8 @@ grep -r '"[A-Z]' lib/ --include="*.dart"
 # Search for specific translation key usage
 grep -r "AppLocalizations.of(context)" lib/
 
-# Validate app in French
-# Change device language to French and test the app
+# Validate app in French and Spanish
+# Change device language to French or Spanish and test the app
 ```
 
 ### **Resources**
