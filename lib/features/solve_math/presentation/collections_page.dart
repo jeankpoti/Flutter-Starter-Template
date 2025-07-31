@@ -88,10 +88,6 @@ class _CollectionsPageState extends State<CollectionsPage> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint(
-      'state.collections.isEmpty: ${context.read<FirebaseCollectionCubit>().state.collections.isEmpty}',
-    );
-
     return Scaffold(
       appBar: AppBarWidget(title: AppLocalizations.of(context)!.recentProblems),
       body: SafeArea(

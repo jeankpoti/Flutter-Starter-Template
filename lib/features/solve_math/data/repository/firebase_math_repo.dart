@@ -24,7 +24,6 @@ class FirebaseMathRepo implements FirebaseCollectionRepo {
     int limit = 10, // Number of problems to fetch per page
   }) async {
     try {
-      print('FirebaseMathRepo: Getting collections for user: ${user?.uid}');
       if (user != null) {
         final userId = user!.uid;
         Query query = _collection
@@ -42,13 +41,9 @@ class FirebaseMathRepo implements FirebaseCollectionRepo {
         }
 
         final snapshot = await query.limit(limit).get();
-        print('FirebaseMathRepo: Found ${snapshot.docs.length} documents');
 
         final collections =
             snapshot.docs.map((doc) {
-              print(
-                'FirebaseMathRepo: Processing doc ${doc.id}: ${doc.data()}',
-              );
               return Collection.fromJson({
                 'id': doc.id,
                 ...doc.data() as Map<String, dynamic>,
@@ -58,17 +53,12 @@ class FirebaseMathRepo implements FirebaseCollectionRepo {
         final DocumentSnapshot? newLastDocument =
             snapshot.docs.isNotEmpty ? snapshot.docs.last : null;
 
-        print('FirebaseMathRepo: Returning ${collections.length} collections');
         return CollectionFetchResult(
           collections: collections,
           lastDocument: newLastDocument,
         );
-      } else {
-        print('FirebaseMathRepo: No user logged in');
-      }
+      } else {}
     } catch (e) {
-      print('Error fetching collections in Repo: $e');
-      // Rethrow or handle as per your app's error strategy
       rethrow;
     }
     // Return an empty result if user is null or other unhandled cases

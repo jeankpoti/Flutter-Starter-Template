@@ -2356,6 +2356,12 @@ abstract class AppLocalizations {
   /// **'Plan: {title}'**
   String planTitle(Object title);
 
+  /// No description provided for @process.
+  ///
+  /// In en, this message translates to:
+  /// **'Process'**
+  String get process;
+
   /// No description provided for @progressUpdated.
   ///
   /// In en, this message translates to:
@@ -2458,6 +2464,12 @@ abstract class AppLocalizations {
   /// **'Error analyzing content. Please try again.'**
   String get errorAnalyzingContent;
 
+  /// No description provided for @analyzingContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyzing content...'**
+  String get analyzingContent;
+
   /// No description provided for @unableToAnalyzeContent.
   ///
   /// In en, this message translates to:
@@ -2505,6 +2517,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'AI-generated study plan based on your uploaded materials'**
   String get aiGeneratedStudyPlanDescription;
+
+  /// No description provided for @total.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get total;
+
+  /// No description provided for @uploadFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload File'**
+  String get uploadFile;
+
+  /// No description provided for @uploadFileSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select files from your device'**
+  String get uploadFileSubtitle;
+
+  /// No description provided for @extracting.
+  ///
+  /// In en, this message translates to:
+  /// **'Extracting'**
+  String get extracting;
+
+  /// No description provided for @analyzing.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyzing'**
+  String get analyzing;
+
+  /// No description provided for @generating.
+  ///
+  /// In en, this message translates to:
+  /// **'Generating'**
+  String get generating;
+
+  /// No description provided for @typeText.
+  ///
+  /// In en, this message translates to:
+  /// **'Type Text'**
+  String get typeText;
+
+  /// No description provided for @typeTextSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter text directly or paste from clipboard'**
+  String get typeTextSubtitle;
+
+  /// No description provided for @noRecentUploads.
+  ///
+  /// In en, this message translates to:
+  /// **'No Recent Uploads'**
+  String get noRecentUploads;
 }
 
 class _AppLocalizationsDelegate

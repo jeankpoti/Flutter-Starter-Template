@@ -392,6 +392,7 @@
   "errorGeneratingComprehensiveQuiz": "Error generating comprehensive quiz: {error}",
   "planTitle": "Plan: {title}",
   "errorGeneratingStudyPlan": "Error generating study plan: {error}",
+  "process": "Process",
   "progressUpdated": "Progress updated: {progress}%",
   "errorUpdatingProgress": "Error updating progress: {error}",
   "topicMarkedComplete": "✅ Topic marked as complete!",
@@ -410,6 +411,7 @@
   "completeWorksheets": "Complete practice worksheets or textbook exercises on {topic}",
   "takeTopicQuiz": "Take a quiz or self-assessment on this topic",
   "errorAnalyzingContent": "Error analyzing content. Please try again.",
+  "analyzingContent": "Analyzing content...",
   "unableToAnalyzeContent": "Unable to analyze content",
   "unableToAnalyzeImage": "Unable to analyze image content: {error}",
   "targetCompletionDate": "Target completion date: {date}",
@@ -417,5 +419,15 @@
   "unableToGenerateStudyPlan": "Unable to generate study plan",
   "studyPlanSingle": "Study Plan: {title}",
   "studyPlanMultiple": "Study Plan: {count} Materials",
-  "aiGeneratedStudyPlanDescription": "AI-generated study plan based on your uploaded materials"
+  "aiGeneratedStudyPlanDescription": "AI-generated study plan based on your uploaded materials",
+  "total": "Total",
+  "uploadFile": "Upload File",
+  "uploadFileSubtitle": "Select files from your device",
+  "extracting": "Extracting",
+  "analyzing": "Analyzing",
+  "generating": "Generating",
+  "typeText": "Type Text",
+  "typeTextSubtitle": "Enter text directly or paste from clipboard",
+  "noRecentUploads": "No Recent Uploads",
+  "process": "Process"
 }

@@ -391,6 +391,7 @@
   "errorGeneratingComprehensiveQuiz": "Erreur lors de la génération du quiz complet : {error}",
   "planTitle": "Plan : {title}",
   "errorGeneratingStudyPlan": "Erreur lors de la génération du plan d'étude : {error}",
+  "process": "Traiter",
   "progressUpdated": "Progrès mis à jour : {progress}%",
   "errorUpdatingProgress": "Erreur lors de la mise à jour du progrès : {error}",
   "topicMarkedComplete": "✅ Sujet marqué comme terminé !",
@@ -409,6 +410,7 @@
   "completeWorksheets": "Compléter les feuilles d'exercices ou les exercices du manuel sur {topic}",
   "takeTopicQuiz": "Passer un quiz ou une auto-évaluation sur ce sujet",
   "errorAnalyzingContent": "Erreur lors de l'analyse du contenu. Veuillez réessayer.",
+  "analyzingContent": "Analyse du contenu...",
   "unableToAnalyzeContent": "Impossible d'analyser le contenu",
   "unableToAnalyzeImage": "Impossible d'analyser le contenu de l'image : {error}",
   "targetCompletionDate": "Date de fin prévue : {date}",
@@ -416,5 +418,15 @@
   "unableToGenerateStudyPlan": "Impossible de générer le plan d'étude",
   "studyPlanSingle": "Plan d'étude : {title}",
   "studyPlanMultiple": "Plan d'étude : {count} matériaux",
-  "aiGeneratedStudyPlanDescription": "Plan d'étude généré par IA basé sur vos matériaux téléchargés"
+  "aiGeneratedStudyPlanDescription": "Plan d'étude généré par IA basé sur vos matériaux téléchargés",
+  "total": "Total",
+  "uploadFile": "Télécharger un fichier",
+  "uploadFileSubtitle": "Sélectionner des fichiers depuis votre appareil",
+  "extracting": "Extraction",
+  "analyzing": "Analyse",
+  "generating": "Génération",
+  "typeText": "Saisir du texte",
+  "typeTextSubtitle": "Entrer le texte directement ou coller depuis le presse-papiers",
+  "noRecentUploads": "Aucun téléchargement récent",
+  "process": "Traiter"
 }

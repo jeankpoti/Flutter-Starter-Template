@@ -57,10 +57,6 @@ class FirebaseRepo implements AccountRepo {
           "Email or password incorrect. Please try again.",
         );
       } else {
-        // Handle other FirebaseAuthExceptions that are not specifically listed
-        print(
-          "FirebaseAuthException during email/password sign-in: ${e.code} - ${e.message}",
-        );
         AppSnackBar.showError(
           context,
           "An authentication error occurred. Please try again.",

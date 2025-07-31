@@ -392,6 +392,7 @@
   "errorGeneratingComprehensiveQuiz": "Error al generar cuestionario integral: {error}",
   "planTitle": "Plan: {title}",
   "errorGeneratingStudyPlan": "Error al generar plan de estudio: {error}",
+  "process": "Procesar",
   "progressUpdated": "Progreso actualizado: {progress}%",
   "errorUpdatingProgress": "Error al actualizar progreso: {error}",
   "topicMarkedComplete": "✅ ¡Tema marcado como completado!",
@@ -410,6 +411,7 @@
   "completeWorksheets": "Completar hojas de trabajo o ejercicios de libro de texto sobre {topic}",
   "takeTopicQuiz": "Tomar un cuestionario o autoevaluación sobre este tema",
   "errorAnalyzingContent": "Error al analizar contenido. Por favor intenta de nuevo.",
+  "analyzingContent": "Analizando contenido...",
   "unableToAnalyzeContent": "No se puede analizar el contenido",
   "unableToAnalyzeImage": "No se puede analizar el contenido de la imagen: {error}",
   "targetCompletionDate": "Fecha objetivo de finalización: {date}",
@@ -417,5 +419,15 @@
   "unableToGenerateStudyPlan": "No se puede generar el plan de estudio",
   "studyPlanSingle": "Plan de Estudio: {title}",
   "studyPlanMultiple": "Plan de Estudio: {count} Materiales",
-  "aiGeneratedStudyPlanDescription": "Plan de estudio generado por IA basado en tus materiales subidos"
+  "aiGeneratedStudyPlanDescription": "Plan de estudio generado por IA basado en tus materiales subidos",
+  "total": "Total",
+  "uploadFile": "Subir archivo",
+  "uploadFileSubtitle": "Seleccionar archivos desde tu dispositivo",
+  "extracting": "Extrayendo",
+  "analyzing": "Analizando",
+  "generating": "Generando",
+  "typeText": "Escribir texto",
+  "typeTextSubtitle": "Ingresar texto directamente o pegar desde el portapapeles",
+  "noRecentUploads": "No hay subidas recientes",
+  "process": "Procesar"
 }

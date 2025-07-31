@@ -1293,6 +1293,9 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get process => 'Traiter';
+
+  @override
   String progressUpdated(Object progress) {
     return 'Progrès mis à jour : $progress%';
   }
@@ -1370,6 +1373,9 @@ class AppLocalizationsFr extends AppLocalizations {
       'Erreur lors de l\'analyse du contenu. Veuillez réessayer.';
 
   @override
+  String get analyzingContent => 'Analyse du contenu...';
+
+  @override
   String get unableToAnalyzeContent => 'Impossible d\'analyser le contenu';
 
   @override
@@ -1402,4 +1408,33 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get aiGeneratedStudyPlanDescription =>
       'Plan d\'étude généré par IA basé sur vos matériaux téléchargés';
+
+  @override
+  String get total => 'Total';
+
+  @override
+  String get uploadFile => 'Télécharger un fichier';
+
+  @override
+  String get uploadFileSubtitle =>
+      'Sélectionner des fichiers depuis votre appareil';
+
+  @override
+  String get extracting => 'Extraction';
+
+  @override
+  String get analyzing => 'Analyse';
+
+  @override
+  String get generating => 'Génération';
+
+  @override
+  String get typeText => 'Saisir du texte';
+
+  @override
+  String get typeTextSubtitle =>
+      'Entrer le texte directement ou coller depuis le presse-papiers';
+
+  @override
+  String get noRecentUploads => 'Aucun téléchargement récent';
 }

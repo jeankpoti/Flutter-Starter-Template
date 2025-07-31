@@ -32,24 +32,13 @@ class StudyMaterialRepository {
         throw Exception('User not authenticated');
       }
 
-      debugPrint('Saving study material to Firestore: ${material.id}');
-      debugPrint(
-        'Material data: title=${material.title}, type=${material.type}',
-      );
-
       final materialData = material.toMap();
-      debugPrint('Material map keys: ${materialData.keys.toList()}');
 
       await _firestore
           .collection(_collection)
           .doc(material.id)
           .set(materialData);
-
-      debugPrint(
-        'Study material saved successfully to Firestore: ${material.id}',
-      );
     } catch (e) {
-      debugPrint('Error saving study material to Firestore: $e');
       rethrow;
     }
   }
@@ -62,8 +51,6 @@ class StudyMaterialRepository {
         throw Exception('User not authenticated');
       }
 
-      debugPrint('Uploading image for material: $materialId');
-
       final fileName =
           '${materialId}_${DateTime.now().millisecondsSinceEpoch}.jpg';
       final ref = _storage.ref().child('$_storagePath/$userId/$fileName');
@@ -72,10 +59,8 @@ class StudyMaterialRepository {
       final snapshot = await uploadTask;
       final downloadUrl = await snapshot.ref.getDownloadURL();
 
-      debugPrint('Image uploaded successfully: $downloadUrl');
       return downloadUrl;
     } catch (e) {
-      debugPrint('Error uploading image: $e');
       rethrow;
     }
   }
@@ -87,8 +72,6 @@ class StudyMaterialRepository {
       if (userId == null) {
         throw Exception('User not authenticated');
       }
-
-      debugPrint('Fetching study materials for user: $userId');
 
       final querySnapshot =
           await _firestore
@@ -102,10 +85,8 @@ class StudyMaterialRepository {
               .map((doc) => StudyMaterial.fromMap(doc.data()))
               .toList();
 
-      debugPrint('Fetched ${materials.length} study materials from Firestore');
       return materials;
     } catch (e) {
-      debugPrint('Error fetching study materials: $e');
       return [];
     }
   }
@@ -141,12 +122,8 @@ class StudyMaterialRepository {
               )
               .toList();
 
-      debugPrint(
-        'Fetched ${materials.length} study materials (paginated) from Firestore',
-      );
       return materials;
     } catch (e) {
-      debugPrint('Error fetching paginated study materials: $e');
       return [];
     }
   }
@@ -163,8 +140,6 @@ class StudyMaterialRepository {
         throw Exception('Not authorized to update this material');
       }
 
-      debugPrint('Updating study material: ${material.id}');
-
       final materialData = material.toMap();
       materialData['updatedAt'] = Timestamp.now();
 
@@ -172,10 +147,7 @@ class StudyMaterialRepository {
           .collection(_collection)
           .doc(material.id)
           .update(materialData);
-
-      debugPrint('Study material updated successfully: ${material.id}');
     } catch (e) {
-      debugPrint('Error updating study material: $e');
       rethrow;
     }
   }
@@ -187,8 +159,6 @@ class StudyMaterialRepository {
       if (userId == null) {
         throw Exception('User not authenticated');
       }
-
-      debugPrint('Deleting study material: $materialId');
 
       // Get the material to check ownership and get image URL
       final docSnapshot =
@@ -207,9 +177,6 @@ class StudyMaterialRepository {
       if (material.firebaseStoragePath != null) {
         try {
           await _storage.refFromURL(material.firebaseStoragePath!).delete();
-          debugPrint(
-            'Image deleted from storage: ${material.firebaseStoragePath}',
-          );
         } catch (e) {
           debugPrint('Warning: Could not delete image from storage: $e');
           // Continue with document deletion even if image deletion fails
@@ -218,10 +185,7 @@ class StudyMaterialRepository {
 
       // Delete the document
       await _firestore.collection(_collection).doc(materialId).delete();
-
-      debugPrint('Study material deleted successfully: $materialId');
     } catch (e) {
-      debugPrint('Error deleting study material: $e');
       rethrow;
     }
   }
@@ -247,12 +211,8 @@ class StudyMaterialRepository {
               .map((doc) => StudyMaterial.fromMap(doc.data()))
               .toList();
 
-      debugPrint(
-        'Fetched ${materials.length} ${type.name} materials from Firestore',
-      );
       return materials;
     } catch (e) {
-      debugPrint('Error fetching materials by type: $e');
       return [];
     }
   }
@@ -281,10 +241,8 @@ class StudyMaterialRepository {
               .map((doc) => StudyMaterial.fromMap(doc.data()))
               .toList();
 
-      debugPrint('Found ${materials.length} materials matching "$searchQuery"');
       return materials;
     } catch (e) {
-      debugPrint('Error searching materials: $e');
       return [];
     }
   }
@@ -325,10 +283,8 @@ class StudyMaterialRepository {
             materials.where((m) => m.status == MaterialStatus.failed).length,
       };
 
-      debugPrint('Material statistics: $stats');
       return stats;
     } catch (e) {
-      debugPrint('Error getting material statistics: $e');
       return {};
     }
   }
