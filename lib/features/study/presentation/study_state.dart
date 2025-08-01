@@ -7,7 +7,6 @@ class StudyState extends Equatable {
   final List<StudyPlan> studyPlans;
   final bool isLoading; // General loading state
   final bool isProcessing; // Processing materials/plans
-  final bool isSuccess;
   final String? errorMsg;
 
   // Quiz generation loading states
@@ -20,13 +19,13 @@ class StudyState extends Equatable {
   // Upload states
   final bool isUploadingText;
   final bool isUploadingPhoto;
+  final bool studyPlanGenerated;
 
   const StudyState({
     this.studyMaterials = const [],
     this.studyPlans = const [],
     this.isLoading = false,
     this.isProcessing = false,
-    this.isSuccess = false,
     this.errorMsg,
     this.isQuickQuizLoading = false,
     this.isPracticeTestLoading = false,
@@ -35,6 +34,7 @@ class StudyState extends Equatable {
     this.processingPlanId,
     this.isUploadingText = false,
     this.isUploadingPhoto = false,
+    this.studyPlanGenerated = false,
   });
 
   StudyState copyWith({
@@ -42,7 +42,6 @@ class StudyState extends Equatable {
     List<StudyPlan>? studyPlans,
     bool? isLoading,
     bool? isProcessing,
-    bool? isSuccess,
     String? errorMsg,
     bool clearError = false,
     bool? isQuickQuizLoading,
@@ -53,13 +52,13 @@ class StudyState extends Equatable {
     bool clearProcessingPlanId = false,
     bool? isUploadingText,
     bool? isUploadingPhoto,
+    bool? studyPlanGenerated,
   }) {
     return StudyState(
       studyMaterials: studyMaterials ?? this.studyMaterials,
       studyPlans: studyPlans ?? this.studyPlans,
       isLoading: isLoading ?? this.isLoading,
       isProcessing: isProcessing ?? this.isProcessing,
-      isSuccess: isSuccess ?? this.isSuccess,
       errorMsg: clearError ? null : (errorMsg ?? this.errorMsg),
       isQuickQuizLoading: isQuickQuizLoading ?? this.isQuickQuizLoading,
       isPracticeTestLoading:
@@ -73,23 +72,24 @@ class StudyState extends Equatable {
               : (processingPlanId ?? this.processingPlanId),
       isUploadingText: isUploadingText ?? this.isUploadingText,
       isUploadingPhoto: isUploadingPhoto ?? this.isUploadingPhoto,
+      studyPlanGenerated: studyPlanGenerated ?? this.studyPlanGenerated,
     );
   }
 
   @override
   List<Object?> get props => [
-    studyMaterials,
-    studyPlans,
-    isLoading,
-    isProcessing,
-    isSuccess,
-    errorMsg,
-    isQuickQuizLoading,
-    isPracticeTestLoading,
-    isChallengeLoading,
-    isAllMaterialsQuizLoading,
-    processingPlanId,
-    isUploadingText,
-    isUploadingPhoto,
-  ];
+        studyMaterials,
+        studyPlans,
+        isLoading,
+        isProcessing,
+        errorMsg,
+        isQuickQuizLoading,
+        isPracticeTestLoading,
+        isChallengeLoading,
+        isAllMaterialsQuizLoading,
+        processingPlanId,
+        isUploadingText,
+        isUploadingPhoto,
+        studyPlanGenerated,
+      ];
 }

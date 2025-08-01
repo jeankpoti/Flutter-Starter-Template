@@ -59,7 +59,6 @@ class StudyCubit extends Cubit<StudyState> {
         studyMaterials: materials,
         studyPlans: plans,
         isLoading: false,
-        isSuccess: true,
       ));
     } catch (e) {
       emit(state.copyWith(
@@ -216,7 +215,6 @@ class StudyCubit extends Cubit<StudyState> {
         isProcessing: false,
         isUploadingPhoto: false,
         isUploadingText: false,
-        isSuccess: true,
       ));
 
       // Generate individual study plan for this material
@@ -248,7 +246,7 @@ class StudyCubit extends Cubit<StudyState> {
       emit(state.copyWith(
         studyPlans: updatedPlans,
         isProcessing: false,
-        isSuccess: true,
+        studyPlanGenerated: true,
       ));
     } catch (e) {
       emit(state.copyWith(
@@ -366,7 +364,6 @@ class StudyCubit extends Cubit<StudyState> {
       final updatedPlans = state.studyPlans.where((plan) => plan.id != planId).toList();
       emit(state.copyWith(
         studyPlans: updatedPlans,
-        isSuccess: true,
       ));
     } catch (e) {
       emit(state.copyWith(errorMsg: 'Error deleting study plan: $e'));
@@ -445,7 +442,7 @@ class StudyCubit extends Cubit<StudyState> {
     emit(state.copyWith(clearError: true));
   }
 
-  void clearSuccess() {
-    emit(state.copyWith(isSuccess: false));
+  void clearStudyPlanGenerated() {
+    emit(state.copyWith(studyPlanGenerated: false));
   }
 }

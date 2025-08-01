@@ -428,5 +428,6 @@
   "typeText": "Saisir du texte",
   "typeTextSubtitle": "Entrer le texte directement ou coller depuis le presse-papiers",
   "noRecentUploads": "Aucun téléchargement récent",
+  "studyPlanGeneratedSuccessfully": "Plan d'étude généré avec succès !",
   "process": "Traiter"
 }

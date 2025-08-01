@@ -28,19 +28,10 @@ class StudyPlanRepository {
         throw Exception('User not authenticated');
       }
 
-      debugPrint('Saving study plan to Firestore: ${plan.id}');
-      debugPrint(
-        'Plan data: title=${plan.title}, topics=${plan.topics.length}',
-      );
-
       final planData = plan.toMap();
-      debugPrint('Plan map keys: ${planData.keys.toList()}');
 
       await _firestore.collection(_collection).doc(plan.id).set(planData);
-
-      debugPrint('Study plan saved successfully to Firestore: ${plan.id}');
     } catch (e) {
-      debugPrint('Error saving study plan to Firestore: $e');
       rethrow;
     }
   }

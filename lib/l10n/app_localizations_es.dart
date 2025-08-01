@@ -1427,4 +1427,8 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get noRecentUploads => 'No hay subidas recientes';
+
+  @override
+  String get studyPlanGeneratedSuccessfully =>
+      '¡Plan de estudio generado con éxito!';
 }

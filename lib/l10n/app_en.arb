@@ -429,5 +429,6 @@
   "typeText": "Type Text",
   "typeTextSubtitle": "Enter text directly or paste from clipboard",
   "noRecentUploads": "No Recent Uploads",
+  "studyPlanGeneratedSuccessfully": "Study plan generated successfully!",
   "process": "Process"
 }

@@ -102,7 +102,12 @@ class _MainPageState extends State<MainPage> {
   }
 
   List<Widget> _buildScreens() {
-    return [const HomePage(), const StudyPage(), const CollectionsPage(), const SettingsPage()];
+    return [
+      const HomePage(),
+      const StudyPage(),
+      const CollectionsPage(),
+      const SettingsPage(),
+    ];
   }
 
   @override

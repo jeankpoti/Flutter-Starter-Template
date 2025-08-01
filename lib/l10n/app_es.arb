@@ -429,5 +429,6 @@
   "typeText": "Escribir texto",
   "typeTextSubtitle": "Ingresar texto directamente o pegar desde el portapapeles",
   "noRecentUploads": "No hay subidas recientes",
+  "studyPlanGeneratedSuccessfully": "¡Plan de estudio generado con éxito!",
   "process": "Procesar"
 }

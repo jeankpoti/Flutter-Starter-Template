@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../common_widgets/app_snackbar_widget.dart';
 import '../../../common_widgets/text_widgets.dart';
 import '../data/services/study_plan_service.dart';
 import '../data/services/quiz_service.dart';
@@ -64,22 +65,14 @@ class _StudyPageViewState extends State<_StudyPageView>
   @override
   Widget build(BuildContext context) {
     return BlocListener<StudyCubit, StudyState>(
+      listenWhen:
+          (previous, current) =>
+              previous.studyPlans.length < current.studyPlans.length,
       listener: (context, state) {
-        if (state.errorMsg != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: BodyMediumText(
-                state.errorMsg!,
-                color: Theme.of(context).colorScheme.onErrorContainer,
-              ),
-              backgroundColor: Theme.of(context).colorScheme.errorContainer,
-            ),
-          );
-        }
-
-        if (state.isSuccess) {
-          context.read<StudyCubit>().clearSuccess();
-        }
+        AppSnackBar.showSuccess(
+          context,
+          AppLocalizations.of(context)!.studyPlanGeneratedSuccessfully,
+        );
       },
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
@@ -243,6 +236,7 @@ class _StudyPageViewState extends State<_StudyPageView>
   }
 
   void _showStudyPlanTopics(StudyPlan plan) {
+    final studyCubit = context.read<StudyCubit>();
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -251,21 +245,18 @@ class _StudyPageViewState extends State<_StudyPageView>
       ),
       builder:
           (context) => BlocProvider.value(
-            value: context.read<StudyCubit>(),
+            value: studyCubit,
             child: StudyPlanTopicsSheet(
               plan: plan,
-              studyPlans: context.read<StudyCubit>().state.studyPlans,
+              studyPlans: studyCubit.state.studyPlans,
               onUpdateTopicProgress:
-                  (planId, topicId, progress) => context
-                      .read<StudyCubit>()
-                      .updateTopicProgress(planId, topicId, progress),
+                  (planId, topicId, progress) =>
+                      studyCubit.updateTopicProgress(planId, topicId, progress),
               onMarkTopicComplete:
-                  (planId, topicId) => context
-                      .read<StudyCubit>()
-                      .markTopicComplete(planId, topicId),
-              onStartTopic:
                   (planId, topicId) =>
-                      context.read<StudyCubit>().startTopic(planId, topicId),
+                      studyCubit.markTopicComplete(planId, topicId),
+              onStartTopic:
+                  (planId, topicId) => studyCubit.startTopic(planId, topicId),
             ),
           ),
     );

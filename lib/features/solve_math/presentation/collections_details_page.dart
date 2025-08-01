@@ -26,7 +26,9 @@ class CollectionsDetailsPage extends StatelessWidget {
     final isTablet = Responsive.isTablet(context);
 
     return Scaffold(
-      appBar: AppBarWidget(title: AppLocalizations.of(context)!.problemsDetails),
+      appBar: AppBarWidget(
+        title: AppLocalizations.of(context)!.problemsDetails,
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Center(
@@ -48,7 +50,7 @@ class CollectionsDetailsPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.black.withValues(alpha: 0.1),
                           spreadRadius: 2,
                           blurRadius: 5,
                           offset: const Offset(
@@ -101,7 +103,9 @@ class CollectionsDetailsPage extends StatelessWidget {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: BodyMediumText(
-                                      AppLocalizations.of(context)!.solutionCopiedToClipboard,
+                                      AppLocalizations.of(
+                                        context,
+                                      )!.solutionCopiedToClipboard,
                                     ),
                                     duration: Duration(seconds: 2),
                                   ),
@@ -111,7 +115,11 @@ class CollectionsDetailsPage extends StatelessWidget {
                               if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content: BodyMediumText(AppLocalizations.of(context)!.unableToCopySolution),
+                                    content: BodyMediumText(
+                                      AppLocalizations.of(
+                                        context,
+                                      )!.unableToCopySolution,
+                                    ),
                                     duration: Duration(seconds: 2),
                                   ),
                                 );
@@ -126,27 +134,39 @@ class CollectionsDetailsPage extends StatelessWidget {
                           text: AppLocalizations.of(context)!.shareSolution,
                           onPressed: () async {
                             try {
-                              final String shareText = AppLocalizations.of(context)!.shareText(collection.solution ?? '');
+                              final String shareText = AppLocalizations.of(
+                                context,
+                              )!.shareText(collection.solution ?? '');
 
                               if (collection.imageUrl != null &&
                                   collection.imageUrl!.isNotEmpty) {
                                 // Share with image if available
                                 await Share.share(
                                   shareText,
-                                  subject: AppLocalizations.of(context)!.mathProblemSolution,
+                                  subject:
+                                      AppLocalizations.of(
+                                        context,
+                                      )!.mathProblemSolution,
                                 );
                               } else {
                                 // Share text only
                                 await Share.share(
                                   shareText,
-                                  subject: AppLocalizations.of(context)!.mathProblemSolution,
+                                  subject:
+                                      AppLocalizations.of(
+                                        context,
+                                      )!.mathProblemSolution,
                                 );
                               }
                             } catch (e) {
                               if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content: BodyMediumText(AppLocalizations.of(context)!.unableToShareSolution),
+                                    content: BodyMediumText(
+                                      AppLocalizations.of(
+                                        context,
+                                      )!.unableToShareSolution,
+                                    ),
                                     duration: Duration(seconds: 2),
                                   ),
                                 );

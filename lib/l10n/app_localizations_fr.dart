@@ -1437,4 +1437,8 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get noRecentUploads => 'Aucun téléchargement récent';
+
+  @override
+  String get studyPlanGeneratedSuccessfully =>
+      'Plan d\'étude généré avec succès !';
 }

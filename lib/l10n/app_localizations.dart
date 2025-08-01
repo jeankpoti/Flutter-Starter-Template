@@ -2571,6 +2571,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No Recent Uploads'**
   String get noRecentUploads;
+
+  /// No description provided for @studyPlanGeneratedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Study plan generated successfully!'**
+  String get studyPlanGeneratedSuccessfully;
 }
 
 class _AppLocalizationsDelegate

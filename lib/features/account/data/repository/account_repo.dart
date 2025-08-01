@@ -65,7 +65,6 @@ class FirebaseRepo implements AccountRepo {
       return false; // MODIFIED: Return false for any FirebaseAuthException
     } catch (e) {
       // Handle any other errors
-      print("Unexpected error during email/password sign-in: $e");
       AppSnackBar.showError(
         context,
         "An unexpected error occurred. Please try again.",
@@ -126,7 +125,6 @@ class FirebaseRepo implements AccountRepo {
         }
       } else {
         // User is null after successful credential exchange, which is unexpected.
-        print("Firebase user is null after Apple sign-in credential exchange.");
         AppSnackBar.showError(
           context,
           "Failed to retrieve user information after Apple Sign-In.",
@@ -136,9 +134,7 @@ class FirebaseRepo implements AccountRepo {
     } on SignInWithAppleAuthorizationException catch (e) {
       // ADDED: Specific catch for Apple Sign In Authorization exceptions
       // This is the error you were originally seeing. Handle it gracefully.
-      print(
-        "Error signing in with Apple (AuthorizationException): ${e.code} - ${e.message}",
-      );
+
       String displayMessage = "Sign in with Apple failed.";
       if (e.code == AuthorizationErrorCode.canceled) {
         displayMessage = "Sign in with Apple was cancelled.";
@@ -157,18 +153,13 @@ class FirebaseRepo implements AccountRepo {
       return false; // ADDED: Return false
     } on FirebaseAuthException catch (e) {
       // ADDED: Specific catch for Firebase Auth exceptions
-      print(
-        "Error signing in with Apple (FirebaseAuthException): ${e.code} - ${e.message}",
-      );
+
       AppSnackBar.showError(
         context,
         "Firebase authentication failed with Apple Sign-In: ${e.message}",
       );
       return false; // ADDED: Return false
     } catch (e) {
-      print(
-        "Error signing in with Apple (Generic Catch): $e",
-      ); // MODIFIED: More specific log
       AppSnackBar.showError(
         context,
         "An unexpected error occurred during Apple Sign-In!",
@@ -185,7 +176,6 @@ class FirebaseRepo implements AccountRepo {
           await _googleSignIn.signIn();
 
       if (googleSignInAccount == null) {
-        print('Google Sign In was cancelled by user.');
         return false;
       }
 
@@ -230,7 +220,6 @@ class FirebaseRepo implements AccountRepo {
         // GoRouter.of(context).pushReplacementNamed(AppRoute.mainView.name);
         return true;
       } else {
-        print('Firebase user is null after successful credential sign-in.');
         return false;
       }
     } on FirebaseAuthException catch (e) {
@@ -242,7 +231,6 @@ class FirebaseRepo implements AccountRepo {
       }
       return false;
     } catch (error) {
-      print('An unexpected error occurred during Google Sign In: $error');
       return false;
     }
   }
@@ -305,7 +293,6 @@ class FirebaseRepo implements AccountRepo {
                 'createdAt': DateTime.now(),
               });
         } catch (firestoreError) {
-          print('Failed to save user data: $firestoreError');
           // You might want to delete the Firebase Auth user if Firestore save fails
           await userCredential.user?.delete();
           throw Exception('Failed to save user data: $firestoreError');
@@ -414,7 +401,6 @@ class FirebaseRepo implements AccountRepo {
             errorMessage = 'An unknown error occurred.';
         }
       } else {
-        print('Unknown error: $e');
         errorMessage = 'An unknown error occurred.';
       }
 

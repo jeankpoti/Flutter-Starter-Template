@@ -1404,4 +1404,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noRecentUploads => 'No Recent Uploads';
+
+  @override
+  String get studyPlanGeneratedSuccessfully =>
+      'Study plan generated successfully!';
 }
