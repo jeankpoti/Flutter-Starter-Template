@@ -49,6 +49,9 @@ class _QuizPageState extends State<QuizPage> {
   }
 
   void _startTimer() {
+    // Cancel any existing timer before starting a new one
+    _timer?.cancel();
+    
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_remainingTime > 0) {
         setState(() {
@@ -889,7 +892,7 @@ class _QuizPageState extends State<QuizPage> {
 
   // Navigation methods
   void _goToPreviousQuestion() {
-    if (_currentQuestionIndex > 0) {
+    if (_currentQuestionIndex > 0 && _pageController.hasClients) {
       _pageController.previousPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
@@ -898,7 +901,7 @@ class _QuizPageState extends State<QuizPage> {
   }
 
   void _goToNextQuestion() {
-    if (_currentQuestionIndex < _currentQuiz.questions.length - 1) {
+    if (_currentQuestionIndex < _currentQuiz.questions.length - 1 && _pageController.hasClients) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
@@ -950,6 +953,9 @@ class _QuizPageState extends State<QuizPage> {
   }
 
   void _retakeQuiz() {
+    // Cancel existing timer before restarting
+    _timer?.cancel();
+    
     setState(() {
       _currentQuiz = _currentQuiz.copyWith(
         status: QuizStatus.notStarted,
@@ -962,11 +968,16 @@ class _QuizPageState extends State<QuizPage> {
       _isQuizCompleted = false;
     });
 
-    _pageController.animateToPage(
-      0,
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.easeInOut,
-    );
+    // Use WidgetsBinding to ensure the PageView is rebuilt before animating
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_pageController.hasClients) {
+        _pageController.animateToPage(
+          0,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
 
     _initializeQuiz();
   }
