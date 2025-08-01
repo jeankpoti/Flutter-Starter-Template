@@ -186,10 +186,33 @@ class _StudyPageViewState extends State<_StudyPageView>
     required int timeLimit,
   }) async {
     try {
-      final quiz = await context.read<StudyCubit>().generateQuiz(
+      final studyCubit = context.read<StudyCubit>();
+
+      StudyPlan? selectedPlan;
+
+      // Check if we need to show plan selection dialog
+      if (studyCubit.shouldShowPlanSelectionDialog()) {
+        final dialogResult = await _showStudyPlanSelectionDialog();
+        // dialogResult will be:
+        // - null if user cancelled (pressed back, outside, or cancel button)
+        // - StudyPlan if user selected a specific plan
+        // - 'ALL_MATERIALS' if user selected "All Study Materials"
+        if (dialogResult == null) {
+          // User cancelled selection
+          return;
+        } else if (dialogResult == 'ALL_MATERIALS') {
+          // User selected "All Study Materials", keep selectedPlan as null
+          selectedPlan = null;
+        } else if (dialogResult is StudyPlan) {
+          selectedPlan = dialogResult;
+        }
+      }
+
+      final quiz = await studyCubit.generateQuiz(
         difficulty: difficulty,
         questionCount: questionCount,
         timeLimit: timeLimit,
+        selectedPlan: selectedPlan,
       );
 
       if (mounted) {
@@ -200,6 +223,18 @@ class _StudyPageViewState extends State<_StudyPageView>
     } catch (e) {
       // Error is handled by BlocListener
     }
+  }
+
+  Future<dynamic> _showStudyPlanSelectionDialog() async {
+    final studyCubit = context.read<StudyCubit>();
+    return showDialog<dynamic>(
+      context: context,
+      builder:
+          (context) => StudyPlanSelectionDialog(
+            studyPlans: studyCubit.state.studyPlans,
+            hasStudyMaterials: studyCubit.state.studyMaterials.isNotEmpty,
+          ),
+    );
   }
 
   Future<void> _generateQuizFromAllMaterials() async {
@@ -316,8 +351,13 @@ class _TextInputDialogState extends State<TextInputDialog> {
 
 class StudyPlanSelectionDialog extends StatelessWidget {
   final List<StudyPlan> studyPlans;
+  final bool hasStudyMaterials;
 
-  const StudyPlanSelectionDialog({super.key, required this.studyPlans});
+  const StudyPlanSelectionDialog({
+    super.key,
+    required this.studyPlans,
+    required this.hasStudyMaterials,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -327,16 +367,60 @@ class StudyPlanSelectionDialog extends StatelessWidget {
         width: double.maxFinite,
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children:
-              studyPlans
-                  .map(
-                    (plan) => ListTile(
-                      title: BodyLargeText(plan.title),
-                      subtitle: BodyMediumText('${plan.topics.length} topics'),
-                      onTap: () => Navigator.of(context).pop(plan),
-                    ),
-                  )
-                  .toList(),
+          spacing: 12,
+          children: [
+            ...studyPlans.map(
+              (plan) => Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.surface.withValues(alpha: 0.8),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.outline.withValues(alpha: 0.2),
+                  ),
+                ),
+                child: ListTile(
+                  title: BodyLargeText(plan.title),
+                  subtitle: BodyMediumText('${plan.topics.length} topics'),
+                  onTap: () => Navigator.of(context).pop(plan),
+                ),
+              ),
+            ),
+            if (hasStudyMaterials) ...[
+              Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.surface.withValues(alpha: 0.8),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.outline.withValues(alpha: 0.2),
+                  ),
+                ),
+                child: ListTile(
+                  leading: Icon(
+                    Icons.library_books,
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
+                  title: BodyLargeText(
+                    AppLocalizations.of(context)!.allStudyMaterials,
+                  ),
+                  subtitle: BodyMediumText(
+                    AppLocalizations.of(context)!.generateFromAllMaterials,
+                  ),
+                  onTap:
+                      () => Navigator.of(context).pop(
+                        'ALL_MATERIALS',
+                      ), // Return special string to indicate "all materials"
+                ),
+              ),
+            ],
+          ],
         ),
       ),
       actions: [

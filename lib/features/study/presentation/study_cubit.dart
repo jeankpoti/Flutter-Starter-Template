@@ -261,20 +261,40 @@ class StudyCubit extends Cubit<StudyState> {
     required QuizDifficulty difficulty,
     required int questionCount,
     required int timeLimit,
+    StudyPlan? selectedPlan,
   }) async {
     _setQuizLoading(difficulty, true);
 
     try {
+      // Check if we have no materials or plans
+      if (state.studyMaterials.isEmpty && state.studyPlans.isEmpty) {
+        _setQuizLoading(difficulty, false);
+        emit(state.copyWith(errorMsg: 'No study materials or plans available for quiz generation'));
+        throw Exception('No study materials or plans available for quiz generation');
+      }
+
       Quiz quiz;
 
-      if (state.studyPlans.length == 1) {
+      // If a specific plan was selected (from dialog), use it
+      if (selectedPlan != null) {
+        quiz = await _quizService.generateQuizFromStudyPlan(
+          studyPlan: selectedPlan,
+          difficulty: difficulty,
+          questionCount: questionCount,
+          timeLimit: timeLimit,
+        );
+      }
+      // If we have exactly one study plan, use it automatically
+      else if (state.studyPlans.length == 1) {
         quiz = await _quizService.generateQuizFromStudyPlan(
           studyPlan: state.studyPlans.first,
           difficulty: difficulty,
           questionCount: questionCount,
           timeLimit: timeLimit,
         );
-      } else {
+      }
+      // Otherwise, generate from study materials
+      else {
         quiz = await _quizService.generateQuizFromMaterials(
           materials: state.studyMaterials,
           difficulty: difficulty,
@@ -290,6 +310,11 @@ class StudyCubit extends Cubit<StudyState> {
       emit(state.copyWith(errorMsg: 'Error generating quiz: $e'));
       rethrow;
     }
+  }
+
+  // Check if we need to show study plan selection dialog
+  bool shouldShowPlanSelectionDialog() {
+    return state.studyPlans.length > 1;
   }
 
   Future<Quiz> generateQuizFromPlan(

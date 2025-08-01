@@ -1221,6 +1221,13 @@ class AppLocalizationsFr extends AppLocalizations {
       '12 questions • 25 min • Tous les matériaux d\'étude inclus';
 
   @override
+  String get allStudyMaterials => 'Tous les matériaux d\'étude';
+
+  @override
+  String get generateFromAllMaterials =>
+      'Générer un quiz à partir de tous les matériaux téléchargés';
+
+  @override
   String get materialCaptured =>
       '📷 Matériel capturé ! Démarrage de l\'analyse IA...';
 

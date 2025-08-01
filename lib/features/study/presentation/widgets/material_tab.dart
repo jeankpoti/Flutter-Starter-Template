@@ -72,6 +72,7 @@ class MaterialsTab extends StatelessWidget {
                 isPracticeTestLoading: isPracticeTestLoading,
                 isChallengeLoading: isChallengeLoading,
                 isAllMaterialsQuizLoading: isAllMaterialsQuizLoading,
+                hasStudyMaterials: studyMaterials.isNotEmpty,
                 onGenerateQuiz: onGenerateQuiz,
                 onGenerateAllMaterialsQuiz: onGenerateAllMaterialsQuiz,
                 onShowHistory: onShowHistory,

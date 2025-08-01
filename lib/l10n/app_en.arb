@@ -376,6 +376,8 @@
   "completeTheseTopicsFirst": "Complete these topics first:",
   "topicCompleted": "Topic Completed!",
   "allMaterialsQuizDescription": "12 questions • 25 min • All study materials included",
+  "allStudyMaterials": "All Study Materials",
+  "generateFromAllMaterials": "Generate quiz from all uploaded materials",
   "materialCaptured": "📷 Material captured! Starting AI analysis...",
   "errorCapturingPhoto": "Error capturing photo: {error}",
   "materialsUploaded": "📱 {count} material(s) uploaded! Starting AI analysis...",

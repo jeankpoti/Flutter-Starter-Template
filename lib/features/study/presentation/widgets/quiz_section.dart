@@ -11,6 +11,7 @@ class QuizSection extends StatelessWidget {
   final bool isPracticeTestLoading;
   final bool isChallengeLoading;
   final bool isAllMaterialsQuizLoading;
+  final bool hasStudyMaterials;
   final void Function({
     required QuizDifficulty difficulty,
     required int questionCount,
@@ -27,6 +28,7 @@ class QuizSection extends StatelessWidget {
     required this.isPracticeTestLoading,
     required this.isChallengeLoading,
     required this.isAllMaterialsQuizLoading,
+    required this.hasStudyMaterials,
     required this.onGenerateQuiz,
     required this.onGenerateAllMaterialsQuiz,
     required this.onShowHistory,
@@ -62,10 +64,10 @@ class QuizSection extends StatelessWidget {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+                Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
                 Theme.of(
                   context,
-                ).colorScheme.secondaryContainer.withOpacity(0.2),
+                ).colorScheme.secondaryContainer.withValues(alpha: 0.2),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -95,7 +97,7 @@ class QuizSection extends StatelessWidget {
               const SizedBox(height: 12),
               BodyMediumText(
                 AppLocalizations.of(context)!.testKnowledgeDescription,
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
               ),
               const SizedBox(height: 20),
               Row(
@@ -152,13 +154,14 @@ class QuizSection extends StatelessWidget {
                   ),
                 ),
               const SizedBox(height: 12),
-              SizedBox(
-                width: double.infinity,
-                child: AllMaterialsQuizButton(
-                  onTap: onGenerateAllMaterialsQuiz,
-                  isLoading: isAllMaterialsQuizLoading,
+              if (hasStudyMaterials)
+                SizedBox(
+                  width: double.infinity,
+                  child: AllMaterialsQuizButton(
+                    onTap: onGenerateAllMaterialsQuiz,
+                    isLoading: isAllMaterialsQuizLoading,
+                  ),
                 ),
-              ),
             ],
           ),
         ),
@@ -189,10 +192,10 @@ class QuizOptionButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
+        color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
         ),
       ),
       child: InkWell(
@@ -230,7 +233,7 @@ class QuizOptionButton extends StatelessWidget {
                               subtitle,
                               color: Theme.of(
                                 context,
-                              ).colorScheme.onSurface.withOpacity(0.7),
+                              ).colorScheme.onSurface.withValues(alpha: 0.7),
                             ),
                           ],
                         ),
@@ -239,7 +242,7 @@ class QuizOptionButton extends StatelessWidget {
                         Icons.arrow_forward_ios,
                         color: Theme.of(
                           context,
-                        ).colorScheme.onSurface.withOpacity(0.4),
+                        ).colorScheme.onSurface.withValues(alpha: 0.4),
                         size: 16,
                       ),
                     ],
@@ -270,7 +273,7 @@ class QuizOptionButton extends StatelessWidget {
                         subtitle,
                         color: Theme.of(
                           context,
-                        ).colorScheme.onSurface.withOpacity(0.7),
+                        ).colorScheme.onSurface.withValues(alpha: 0.7),
                         textAlign: TextAlign.center,
                       ),
                     ],

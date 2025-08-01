@@ -16,10 +16,10 @@ class AllMaterialsQuizButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
+        color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
         ),
       ),
       child: InkWell(
@@ -57,14 +57,16 @@ class AllMaterialsQuizButton extends StatelessWidget {
                       AppLocalizations.of(context)!.allMaterialsQuizDescription,
                       color: Theme.of(
                         context,
-                      ).colorScheme.onSurface.withOpacity(0.7),
+                      ).colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
                   ],
                 ),
               ),
               Icon(
                 Icons.arrow_forward_ios,
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.4),
                 size: 16,
               ),
             ],

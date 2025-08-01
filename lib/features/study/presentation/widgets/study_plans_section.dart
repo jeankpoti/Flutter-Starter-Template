@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../common_widgets/text_widgets.dart';
 import '../../domain/models/study_plan.dart';
-import 'study_plan_card.dart';
 
 class StudyPlansSection extends StatelessWidget {
   final List<StudyPlan> studyPlans;
@@ -38,12 +37,13 @@ class StudyPlansSection extends StatelessWidget {
             itemCount: studyPlans.length,
             itemBuilder: (context, index) {
               final plan = studyPlans[index];
-              return StudyPlanCard(
-                plan: plan,
-                onDelete: () => onDeletePlan(plan.id),
-                onShowTopics: () => onShowStudyPlanTopics(plan),
-                onStartQuiz: () => onStartQuizFromPlan(plan),
-                isProcessing: processingPlanId == plan.id,
+              return _studyPlanCard(
+                context,
+                plan,
+                onDeletePlan,
+                onShowStudyPlanTopics,
+                onStartQuizFromPlan,
+                processingPlanId == plan.id,
               );
             },
           ),
@@ -53,120 +53,107 @@ class StudyPlansSection extends StatelessWidget {
   }
 }
 
-class StudyPlanCard extends StatelessWidget {
-  final StudyPlan plan;
-  final VoidCallback onDelete;
-  final VoidCallback onShowTopics;
-  final VoidCallback onStartQuiz;
-  final bool isProcessing;
-
-  const StudyPlanCard({
-    super.key,
-    required this.plan,
-    required this.onDelete,
-    required this.onShowTopics,
-    required this.onStartQuiz,
-    required this.isProcessing,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 280,
-      height: 250,
-      margin: const EdgeInsets.only(right: 16),
-      child: Card(
-        elevation: 2,
-        child: InkWell(
-          onTap: onShowTopics,
-          borderRadius: BorderRadius.circular(12),
-          child: Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Theme.of(
-                    context,
-                  ).colorScheme.secondaryContainer.withOpacity(0.3),
-                  Theme.of(
-                    context,
-                  ).colorScheme.tertiaryContainer.withOpacity(0.2),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _StudyPlanCardHeader(plan: plan, onDelete: onDelete),
-                const SizedBox(height: 6),
-                _StudyPlanCardDetails(plan: plan, onShowTopics: onShowTopics),
-                const Spacer(),
-                _StudyPlanCardActions(
-                  onShowTopics: onShowTopics,
-                  onStartQuiz: onStartQuiz,
-                  isProcessing: isProcessing,
-                ),
+Widget _studyPlanCard(
+  BuildContext context,
+  StudyPlan plan,
+  void Function(String) onDeletePlan,
+  void Function(StudyPlan) onShowStudyPlanTopics,
+  void Function(StudyPlan) onStartQuizFromPlan,
+  bool isProcessing,
+) {
+  return Container(
+    width: 280,
+    height: 250,
+    margin: const EdgeInsets.only(right: 16),
+    child: Card(
+      elevation: 2,
+      child: InkWell(
+        onTap: () => onShowStudyPlanTopics(plan),
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Theme.of(
+                  context,
+                ).colorScheme.secondaryContainer.withValues(alpha: 0.3),
+                Theme.of(
+                  context,
+                ).colorScheme.tertiaryContainer.withValues(alpha: 0.2),
               ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _studyPlanCardHeader(context, plan, onDeletePlan),
+              const SizedBox(height: 6),
+              _StudyPlanCardDetails(
+                plan: plan,
+                onShowTopics: () => onShowStudyPlanTopics(plan),
+              ),
+              const Spacer(),
+              _StudyPlanCardActions(
+                onShowTopics: () => onShowStudyPlanTopics(plan),
+                onStartQuiz: () => onStartQuizFromPlan(plan),
+                isProcessing: isProcessing,
+              ),
+            ],
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
 }
+// }
 
-class _StudyPlanCardHeader extends StatelessWidget {
-  final StudyPlan plan;
-  final VoidCallback onDelete;
-
-  const _StudyPlanCardHeader({required this.plan, required this.onDelete});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(
-          Icons.auto_awesome,
-          color: Theme.of(context).colorScheme.secondary,
+Widget _studyPlanCardHeader(
+  BuildContext context,
+  StudyPlan plan,
+  void Function(String) onDeletePlan,
+) {
+  return Row(
+    children: [
+      Icon(
+        Icons.auto_awesome,
+        color: Theme.of(context).colorScheme.secondary,
+        size: 20,
+      ),
+      const SizedBox(width: 8),
+      Expanded(
+        child: TitleMediumText(
+          plan.title,
+          fontWeight: FontWeight.bold,
+          color: Theme.of(context).colorScheme.onSurface,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ),
+      PopupMenuButton<String>(
+        icon: Icon(
+          Icons.more_vert,
+          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
           size: 20,
         ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: TitleMediumText(
-            plan.title,
-            fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.onSurface,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-        PopupMenuButton<String>(
-          icon: Icon(
-            Icons.more_vert,
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-            size: 20,
-          ),
-          onSelected: (value) {
-            if (value == 'delete') {
-              onDelete();
-            }
-          },
-          itemBuilder:
-              (context) => [
-                PopupMenuItem(
-                  value: 'delete',
-                  child: LabelLargeText(
-                    AppLocalizations.of(context)!.deletePlan,
-                  ),
-                ),
-              ],
-        ),
-      ],
-    );
-  }
+        onSelected: (value) {
+          if (value == 'delete') {
+            onDeletePlan(plan.id);
+          }
+        },
+        itemBuilder:
+            (context) => [
+              PopupMenuItem(
+                value: 'delete',
+                child: LabelLargeText(AppLocalizations.of(context)!.deletePlan),
+              ),
+            ],
+      ),
+    ],
+  );
 }
 
 class _StudyPlanCardDetails extends StatelessWidget {
@@ -182,7 +169,7 @@ class _StudyPlanCardDetails extends StatelessWidget {
       children: [
         BodySmallText(
           plan.description,
-          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
           maxLines: 3,
           overflow: TextOverflow.ellipsis,
         ),
@@ -199,7 +186,7 @@ class _StudyPlanCardDetails extends StatelessWidget {
                     value: plan.calculateProgress() / 100,
                     backgroundColor: Theme.of(
                       context,
-                    ).colorScheme.outline.withOpacity(0.3),
+                    ).colorScheme.outline.withValues(alpha: 0.3),
                     valueColor: AlwaysStoppedAnimation<Color>(
                       Theme.of(context).colorScheme.secondary,
                     ),
@@ -281,7 +268,9 @@ class _StudyPlanCardActions extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor:
                   isProcessing
-                      ? Theme.of(context).colorScheme.secondary.withOpacity(0.6)
+                      ? Theme.of(
+                        context,
+                      ).colorScheme.secondary.withValues(alpha: 0.6)
                       : Theme.of(context).colorScheme.secondary,
               foregroundColor: Theme.of(context).colorScheme.onSecondary,
               padding: const EdgeInsets.symmetric(vertical: 6),
@@ -327,7 +316,7 @@ class StatChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
+        color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(

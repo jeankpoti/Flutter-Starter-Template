@@ -375,6 +375,8 @@
   "completeTheseTopicsFirst": "Terminez d'abord ces sujets :",
   "topicCompleted": "Sujet terminé !",
   "allMaterialsQuizDescription": "12 questions • 25 min • Tous les matériaux d'étude inclus",
+  "allStudyMaterials": "Tous les matériaux d'étude",
+  "generateFromAllMaterials": "Générer un quiz à partir de tous les matériaux téléchargés",
   "materialCaptured": "📷 Matériel capturé ! Démarrage de l'analyse IA...",
   "errorCapturingPhoto": "Erreur lors de la capture de photo : {error}",
   "materialsUploaded": "📱 {count} matériel(s) téléchargé(s) ! Démarrage de l'analyse IA...",

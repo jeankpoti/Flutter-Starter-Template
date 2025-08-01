@@ -2266,6 +2266,18 @@ abstract class AppLocalizations {
   /// **'12 questions • 25 min • All study materials included'**
   String get allMaterialsQuizDescription;
 
+  /// No description provided for @allStudyMaterials.
+  ///
+  /// In en, this message translates to:
+  /// **'All Study Materials'**
+  String get allStudyMaterials;
+
+  /// No description provided for @generateFromAllMaterials.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate quiz from all uploaded materials'**
+  String get generateFromAllMaterials;
+
   /// No description provided for @materialCaptured.
   ///
   /// In en, this message translates to:
