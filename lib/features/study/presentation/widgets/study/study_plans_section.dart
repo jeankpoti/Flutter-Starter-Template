@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../../l10n/app_localizations.dart';
-import '../../../../common_widgets/text_widgets.dart';
-import '../../domain/models/study_plan.dart';
+import '../../../../../l10n/app_localizations.dart';
+import '../../../../../common_widgets/text_widgets.dart';
+import '../../../domain/models/study_plan.dart';
 
 class StudyPlansSection extends StatelessWidget {
   final List<StudyPlan> studyPlans;

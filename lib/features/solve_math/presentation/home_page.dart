@@ -15,6 +15,8 @@ import '../../../common_widgets/math_markdown_widget.dart';
 import '../../../common_widgets/math_symbols_widget.dart';
 import '../../../common_widgets/scan_effect_loader_widget.dart';
 import '../../../common_widgets/text_widgets.dart';
+import '../../../common_widgets/report_content_dialog_widget.dart';
+import '../../common/domain/models/content_report.dart';
 import '../../../utils/responsive.dart';
 import '../../subscription/presentation/subscription_cubit.dart';
 import 'firebase_collection_cubit.dart';
@@ -354,27 +356,55 @@ class _HomePageState extends State<HomePage>
               ),
             ),
             actions: [
-              TextButton(
-                onPressed: () => Navigator.of(ctx).pop(),
-                child: LabelLargeText(
-                  AppLocalizations.of(context)!.close,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-              ),
-              ElevatedButton.icon(
-                onPressed: () {
-                  _shareResult(result, _imageFile);
-                  Navigator.of(ctx).pop();
-                },
-                icon: const Icon(Icons.share, size: 18),
-                label: LabelLargeText(
-                  AppLocalizations.of(context)!.share,
-                  color: Theme.of(context).colorScheme.onSecondary,
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.secondary,
-                  foregroundColor: Theme.of(context).colorScheme.onSecondary,
-                ),
+              Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.of(ctx).pop(),
+                        child: LabelLargeText(
+                          AppLocalizations.of(context)!.close,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                      TextButton.icon(
+                        onPressed: () {
+                          _shareResult(result, _imageFile);
+                          Navigator.of(ctx).pop();
+                        },
+                        icon: const Icon(Icons.share, size: 16),
+                        label: LabelMediumText(
+                          AppLocalizations.of(context)!.share,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                    ],
+                  ),
+                  TextButton.icon(
+                    onPressed: () {
+                      Navigator.of(ctx).pop();
+                      ReportContentDialogWidget.show(
+                        context: context,
+                        contentId:
+                            DateTime.now().millisecondsSinceEpoch.toString(),
+                        contentType: ContentType.mathSolution,
+                        contentSnapshot: result,
+                        contentTitle:
+                            AppLocalizations.of(context)!.mathSolution,
+                      );
+                    },
+                    icon: const Icon(Icons.flag_outlined, size: 16),
+                    label: LabelMediumText(
+                      AppLocalizations.of(context)!.reportContent,
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                    style: TextButton.styleFrom(
+                      foregroundColor: Theme.of(context).colorScheme.error,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

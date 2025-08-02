@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../../common_widgets/math_markdown_widget.dart';
+import '../../../common_widgets/report_content_dialog_widget.dart';
+import '../../common/domain/models/content_report.dart';
 
 import '../../../common_widgets/app_bar_widget.dart';
 import '../../../l10n/app_localizations.dart';
@@ -176,6 +178,31 @@ class CollectionsDetailsPage extends StatelessWidget {
                         ),
                       ),
                     ],
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // Report button
+                  Center(
+                    child: TextButton.icon(
+                      onPressed: () {
+                        ReportContentDialogWidget.show(
+                          context: context,
+                          contentId: collection.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+                          contentType: ContentType.mathSolution,
+                          contentSnapshot: collection.solution ?? '',
+                          contentTitle: AppLocalizations.of(context)!.mathSolution,
+                        );
+                      },
+                      icon: const Icon(Icons.flag_outlined, size: 20),
+                      label: BodyMediumText(
+                        AppLocalizations.of(context)!.reportContent,
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                      style: TextButton.styleFrom(
+                        foregroundColor: Theme.of(context).colorScheme.error,
+                      ),
+                    ),
                   ),
                 ],
               ),

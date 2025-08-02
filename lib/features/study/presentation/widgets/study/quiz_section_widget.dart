@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../common_widgets/text_widgets.dart';
-import '../../../../l10n/app_localizations.dart';
-import '../../domain/models/quiz.dart';
-import '../../domain/models/study_plan.dart';
-import '../study_cubit.dart';
-import '../study_state.dart';
+import '../../../../../common_widgets/text_widgets.dart';
+import '../../../../../l10n/app_localizations.dart';
+import '../../../domain/models/quiz.dart';
+import '../../../domain/models/study_plan.dart';
+import '../../study_cubit.dart';
+import '../../study_state.dart';
 
 class QuizSectionWidget extends StatelessWidget {
   final Function({
@@ -14,12 +14,10 @@ class QuizSectionWidget extends StatelessWidget {
     int questionCount,
     int timeLimit,
     StudyPlan? selectedPlan,
-  }) onGenerateQuiz;
+  })
+  onGenerateQuiz;
 
-  const QuizSectionWidget({
-    super.key,
-    required this.onGenerateQuiz,
-  });
+  const QuizSectionWidget({super.key, required this.onGenerateQuiz});
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +33,9 @@ class QuizSectionWidget extends StatelessWidget {
             const SizedBox(height: 8),
             BodyMediumText(
               AppLocalizations.of(context)!.testKnowledgeDescription,
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.7),
             ),
             const SizedBox(height: 24),
 
@@ -55,11 +55,12 @@ class QuizSectionWidget extends StatelessWidget {
                   icon: Icons.flash_on,
                   color: Colors.blue,
                   isLoading: state.isQuickQuizLoading,
-                  onPressed: () => onGenerateQuiz(
-                    difficulty: QuizDifficulty.easy,
-                    questionCount: 5,
-                    timeLimit: 10,
-                  ),
+                  onPressed:
+                      () => onGenerateQuiz(
+                        difficulty: QuizDifficulty.easy,
+                        questionCount: 5,
+                        timeLimit: 10,
+                      ),
                 ),
                 _buildQuizCard(
                   context,
@@ -68,11 +69,12 @@ class QuizSectionWidget extends StatelessWidget {
                   icon: Icons.assignment,
                   color: Colors.orange,
                   isLoading: state.isPracticeTestLoading,
-                  onPressed: () => onGenerateQuiz(
-                    difficulty: QuizDifficulty.medium,
-                    questionCount: 10,
-                    timeLimit: 20,
-                  ),
+                  onPressed:
+                      () => onGenerateQuiz(
+                        difficulty: QuizDifficulty.medium,
+                        questionCount: 10,
+                        timeLimit: 20,
+                      ),
                 ),
                 _buildQuizCard(
                   context,
@@ -81,24 +83,27 @@ class QuizSectionWidget extends StatelessWidget {
                   icon: Icons.psychology,
                   color: Colors.red,
                   isLoading: state.isChallengeLoading,
-                  onPressed: () => onGenerateQuiz(
-                    difficulty: QuizDifficulty.hard,
-                    questionCount: 15,
-                    timeLimit: 30,
-                  ),
+                  onPressed:
+                      () => onGenerateQuiz(
+                        difficulty: QuizDifficulty.hard,
+                        questionCount: 15,
+                        timeLimit: 30,
+                      ),
                 ),
                 _buildQuizCard(
                   context,
                   title: AppLocalizations.of(context)!.allStudyMaterials,
-                  subtitle: AppLocalizations.of(context)!.allMaterialsQuizDescription,
+                  subtitle:
+                      AppLocalizations.of(context)!.allMaterialsQuizDescription,
                   icon: Icons.library_books,
                   color: Colors.purple,
                   isLoading: state.isAllMaterialsQuizLoading,
-                  onPressed: () => onGenerateQuiz(
-                    difficulty: QuizDifficulty.medium,
-                    questionCount: 12,
-                    timeLimit: 25,
-                  ),
+                  onPressed:
+                      () => onGenerateQuiz(
+                        difficulty: QuizDifficulty.medium,
+                        questionCount: 12,
+                        timeLimit: 25,
+                      ),
                 ),
               ],
             ),
@@ -120,17 +125,12 @@ class QuizSectionWidget extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            color.withValues(alpha: 0.1),
-            color.withValues(alpha: 0.05),
-          ],
+          colors: [color.withValues(alpha: 0.1), color.withValues(alpha: 0.05)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: color.withValues(alpha: 0.2),
-        ),
+        border: Border.all(color: color.withValues(alpha: 0.2)),
       ),
       child: Material(
         color: Colors.transparent,
@@ -151,11 +151,7 @@ class QuizSectionWidget extends StatelessWidget {
                         color: color.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Icon(
-                        icon,
-                        color: color,
-                        size: 20,
-                      ),
+                      child: Icon(icon, color: color, size: 20),
                     ),
                     const Spacer(),
                     if (isLoading)
@@ -168,11 +164,7 @@ class QuizSectionWidget extends StatelessWidget {
                         ),
                       )
                     else
-                      Icon(
-                        Icons.arrow_forward_ios,
-                        color: color,
-                        size: 16,
-                      ),
+                      Icon(Icons.arrow_forward_ios, color: color, size: 16),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -186,7 +178,9 @@ class QuizSectionWidget extends StatelessWidget {
                 const SizedBox(height: 4),
                 BodySmallText(
                   subtitle,
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.7),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),

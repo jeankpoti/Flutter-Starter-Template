@@ -14,12 +14,12 @@ import 'study_cubit.dart';
 import 'study_state.dart';
 import 'quiz_page.dart';
 import 'quiz_history_page.dart';
-import 'widgets/material_tab.dart';
-import 'widgets/modern_tab_bar.dart';
-import 'widgets/upload_tab.dart';
-import 'widgets/topic_details_dialog_widget.dart';
-import 'widgets/study_plan_topics_sheet_widget.dart';
-import 'widgets/study_plan_selection_dialog_widget.dart';
+import 'widgets/study/material_tab.dart';
+import 'widgets/study/modern_tab_bar.dart';
+import 'widgets/study/upload_tab.dart';
+import 'widgets/study/topic_details_dialog_widget.dart';
+import 'widgets/study/study_plan_topics_sheet_widget.dart';
+import 'widgets/study/study_plan_selection_dialog_widget.dart';
 
 class StudyPage extends StatelessWidget {
   const StudyPage({super.key});
@@ -407,11 +407,11 @@ class _StudyPageViewState extends State<_StudyPageView>
     final studyCubit = context.read<StudyCubit>();
     showDialog(
       context: context,
-      builder: (dialogContext) => BlocProvider.value(
-        value: studyCubit,
-        child: TopicDetailsDialogWidget(plan: plan, topic: topic),
-      ),
+      builder:
+          (dialogContext) => BlocProvider.value(
+            value: studyCubit,
+            child: TopicDetailsDialogWidget(plan: plan, topic: topic),
+          ),
     );
   }
 }
-

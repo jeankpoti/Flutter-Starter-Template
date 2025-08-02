@@ -2667,6 +2667,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No AI explanation available'**
   String get noAiExplanation;
+
+  /// No description provided for @reportContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Content'**
+  String get reportContent;
+
+  /// No description provided for @pleaseSelectReportType.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a report type'**
+  String get pleaseSelectReportType;
+
+  /// No description provided for @pleaseProvideDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Please provide a description'**
+  String get pleaseProvideDescription;
+
+  /// No description provided for @reportSubmittedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Report submitted successfully'**
+  String get reportSubmittedSuccessfully;
+
+  /// No description provided for @errorSubmittingReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Error submitting report'**
+  String get errorSubmittingReport;
+
+  /// No description provided for @reportTypeInappropriate.
+  ///
+  /// In en, this message translates to:
+  /// **'Inappropriate content'**
+  String get reportTypeInappropriate;
+
+  /// No description provided for @reportTypeIncorrect.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect information'**
+  String get reportTypeIncorrect;
+
+  /// No description provided for @reportTypeHarmful.
+  ///
+  /// In en, this message translates to:
+  /// **'Harmful or dangerous'**
+  String get reportTypeHarmful;
+
+  /// No description provided for @reportTypeSpam.
+  ///
+  /// In en, this message translates to:
+  /// **'Spam or misleading'**
+  String get reportTypeSpam;
+
+  /// No description provided for @reportTypeOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other issue'**
+  String get reportTypeOther;
+
+  /// No description provided for @alreadyReportedContent.
+  ///
+  /// In en, this message translates to:
+  /// **'You have already reported this content'**
+  String get alreadyReportedContent;
+
+  /// No description provided for @selectReportReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a reason for reporting'**
+  String get selectReportReason;
+
+  /// No description provided for @additionalDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Additional details'**
+  String get additionalDetails;
+
+  /// No description provided for @describeIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'Please describe the issue in detail...'**
+  String get describeIssue;
+
+  /// No description provided for @submitReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Report'**
+  String get submitReport;
+
+  /// No description provided for @reportDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports are reviewed to improve content quality. False reports may result in account restrictions.'**
+  String get reportDisclaimer;
+
+  /// No description provided for @requiredFieldsNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Fields marked with * are required'**
+  String get requiredFieldsNote;
+
+  /// No description provided for @descriptionTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Description must be at least 10 characters long'**
+  String get descriptionTooShort;
 }
 
 class _AppLocalizationsDelegate

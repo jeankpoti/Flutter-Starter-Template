@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../common_widgets/text_widgets.dart';
-import '../../../../l10n/app_localizations.dart';
-import '../../domain/models/study_plan.dart';
-import '../study_cubit.dart';
-import '../study_state.dart';
+import '../../../../../common_widgets/text_widgets.dart';
+import '../../../../../l10n/app_localizations.dart';
+import '../../../domain/models/study_plan.dart';
+import '../../study_cubit.dart';
+import '../../study_state.dart';
 
 class TopicDetailsDialogWidget extends StatefulWidget {
   final StudyPlan plan;
@@ -18,7 +18,8 @@ class TopicDetailsDialogWidget extends StatefulWidget {
   });
 
   @override
-  State<TopicDetailsDialogWidget> createState() => _TopicDetailsDialogWidgetState();
+  State<TopicDetailsDialogWidget> createState() =>
+      _TopicDetailsDialogWidgetState();
 }
 
 class _TopicDetailsDialogWidgetState extends State<TopicDetailsDialogWidget> {
@@ -48,7 +49,11 @@ class _TopicDetailsDialogWidgetState extends State<TopicDetailsDialogWidget> {
     }
   }
 
-  Widget _buildTopicSection(String title, IconData icon, {required Widget child}) {
+  Widget _buildTopicSection(
+    String title,
+    IconData icon, {
+    required Widget child,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -57,7 +62,9 @@ class _TopicDetailsDialogWidgetState extends State<TopicDetailsDialogWidget> {
             Container(
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.3),
+                color: Theme.of(
+                  context,
+                ).colorScheme.secondaryContainer.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(
@@ -67,10 +74,7 @@ class _TopicDetailsDialogWidgetState extends State<TopicDetailsDialogWidget> {
               ),
             ),
             const SizedBox(width: 12),
-            TitleMediumText(
-              title,
-              fontWeight: FontWeight.w600,
-            ),
+            TitleMediumText(title, fontWeight: FontWeight.w600),
           ],
         ),
         const SizedBox(height: 12),
@@ -99,7 +103,9 @@ class _TopicDetailsDialogWidgetState extends State<TopicDetailsDialogWidget> {
         );
 
         return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -109,8 +115,12 @@ class _TopicDetailsDialogWidgetState extends State<TopicDetailsDialogWidget> {
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      _getTopicStatusColor(currentTopic.status).withValues(alpha: 0.1),
-                      _getTopicStatusColor(currentTopic.status).withValues(alpha: 0.05),
+                      _getTopicStatusColor(
+                        currentTopic.status,
+                      ).withValues(alpha: 0.1),
+                      _getTopicStatusColor(
+                        currentTopic.status,
+                      ).withValues(alpha: 0.05),
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -128,7 +138,9 @@ class _TopicDetailsDialogWidgetState extends State<TopicDetailsDialogWidget> {
                         Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: _getTopicStatusColor(currentTopic.status).withValues(alpha: 0.2),
+                            color: _getTopicStatusColor(
+                              currentTopic.status,
+                            ).withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Icon(
@@ -149,7 +161,9 @@ class _TopicDetailsDialogWidgetState extends State<TopicDetailsDialogWidget> {
                           onPressed: () => Navigator.of(context).pop(),
                           icon: const Icon(Icons.close),
                           style: IconButton.styleFrom(
-                            backgroundColor: Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
+                            backgroundColor: Theme.of(
+                              context,
+                            ).colorScheme.surface.withValues(alpha: 0.8),
                           ),
                         ),
                       ],
@@ -161,7 +175,9 @@ class _TopicDetailsDialogWidgetState extends State<TopicDetailsDialogWidget> {
                         Expanded(
                           child: LinearProgressIndicator(
                             value: currentTopic.progressPercentage / 100,
-                            backgroundColor: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
+                            backgroundColor: Theme.of(
+                              context,
+                            ).colorScheme.outline.withValues(alpha: 0.3),
                             valueColor: AlwaysStoppedAnimation<Color>(
                               _getTopicStatusColor(currentTopic.status),
                             ),
@@ -177,8 +193,12 @@ class _TopicDetailsDialogWidgetState extends State<TopicDetailsDialogWidget> {
                     ),
                     const SizedBox(height: 12),
                     BodySmallText(
-                      AppLocalizations.of(context)!.estimatedTime(currentTopic.estimatedMinutes),
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                      AppLocalizations.of(
+                        context,
+                      )!.estimatedTime(currentTopic.estimatedMinutes),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
                   ],
                 ),
@@ -209,28 +229,40 @@ class _TopicDetailsDialogWidgetState extends State<TopicDetailsDialogWidget> {
                           child: Wrap(
                             spacing: 8,
                             runSpacing: 8,
-                            children: currentTopic.keyConceptsList
-                                .map(
-                                  (concept) => Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 8,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.3),
-                                      borderRadius: BorderRadius.circular(16),
-                                      border: Border.all(
-                                        color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.2),
+                            children:
+                                currentTopic.keyConceptsList
+                                    .map(
+                                      (concept) => Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 12,
+                                          vertical: 8,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondaryContainer
+                                              .withValues(alpha: 0.3),
+                                          borderRadius: BorderRadius.circular(
+                                            16,
+                                          ),
+                                          border: Border.all(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondary
+                                                .withValues(alpha: 0.2),
+                                          ),
+                                        ),
+                                        child: BodyMediumText(
+                                          concept,
+                                          color:
+                                              Theme.of(context)
+                                                  .colorScheme
+                                                  .onSecondaryContainer,
+                                          fontWeight: FontWeight.w500,
+                                        ),
                                       ),
-                                    ),
-                                    child: BodyMediumText(
-                                      concept,
-                                      color: Theme.of(context).colorScheme.onSecondaryContainer,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                )
-                                .toList(),
+                                    )
+                                    .toList(),
                           ),
                         ),
                         const SizedBox(height: 24),
@@ -242,49 +274,68 @@ class _TopicDetailsDialogWidgetState extends State<TopicDetailsDialogWidget> {
                           AppLocalizations.of(context)!.practiceProblemsTitle,
                           Icons.quiz,
                           child: Column(
-                            children: currentTopic.practiceProblems
-                                .asMap()
-                                .entries
-                                .map((entry) {
-                                  final index = entry.key;
-                                  final problem = entry.value;
-                                  return Container(
-                                    margin: const EdgeInsets.only(bottom: 12),
-                                    padding: const EdgeInsets.all(16),
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context).colorScheme.surface,
-                                      borderRadius: BorderRadius.circular(12),
-                                      border: Border.all(
-                                        color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
-                                      ),
-                                    ),
-                                    child: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                          width: 24,
-                                          height: 24,
-                                          decoration: BoxDecoration(
-                                            color: Theme.of(context).colorScheme.secondary,
-                                            borderRadius: BorderRadius.circular(12),
+                            children:
+                                currentTopic.practiceProblems
+                                    .asMap()
+                                    .entries
+                                    .map((entry) {
+                                      final index = entry.key;
+                                      final problem = entry.value;
+                                      return Container(
+                                        margin: const EdgeInsets.only(
+                                          bottom: 12,
+                                        ),
+                                        padding: const EdgeInsets.all(16),
+                                        decoration: BoxDecoration(
+                                          color:
+                                              Theme.of(
+                                                context,
+                                              ).colorScheme.surface,
+                                          borderRadius: BorderRadius.circular(
+                                            12,
                                           ),
-                                          child: Center(
-                                            child: LabelSmallText(
-                                              '${index + 1}',
-                                              color: Theme.of(context).colorScheme.onSecondary,
-                                              fontWeight: FontWeight.bold,
+                                          border: Border.all(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .outline
+                                                .withValues(alpha: 0.2),
+                                          ),
+                                        ),
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Container(
+                                              width: 24,
+                                              height: 24,
+                                              decoration: BoxDecoration(
+                                                color:
+                                                    Theme.of(
+                                                      context,
+                                                    ).colorScheme.secondary,
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                              ),
+                                              child: Center(
+                                                child: LabelSmallText(
+                                                  '${index + 1}',
+                                                  color:
+                                                      Theme.of(
+                                                        context,
+                                                      ).colorScheme.onSecondary,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
                                             ),
-                                          ),
+                                            const SizedBox(width: 12),
+                                            Expanded(
+                                              child: BodyMediumText(problem),
+                                            ),
+                                          ],
                                         ),
-                                        const SizedBox(width: 12),
-                                        Expanded(
-                                          child: BodyMediumText(problem),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                })
-                                .toList(),
+                                      );
+                                    })
+                                    .toList(),
                           ),
                         ),
                         const SizedBox(height: 24),
@@ -314,13 +365,17 @@ class _TopicDetailsDialogWidgetState extends State<TopicDetailsDialogWidget> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     TitleMediumText(
-                                      AppLocalizations.of(context)!.topicCompleted,
+                                      AppLocalizations.of(
+                                        context,
+                                      )!.topicCompleted,
                                       fontWeight: FontWeight.bold,
                                       color: Colors.green,
                                     ),
                                     BodySmallText(
                                       '${AppLocalizations.of(context)!.completedOn} ${_formatDate(currentTopic.completedAt!)}',
-                                      color: Colors.green.withValues(alpha: 0.8),
+                                      color: Colors.green.withValues(
+                                        alpha: 0.8,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -338,7 +393,9 @@ class _TopicDetailsDialogWidgetState extends State<TopicDetailsDialogWidget> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                   borderRadius: const BorderRadius.only(
                     bottomLeft: Radius.circular(16),
                     bottomRight: Radius.circular(16),
@@ -346,37 +403,48 @@ class _TopicDetailsDialogWidgetState extends State<TopicDetailsDialogWidget> {
                 ),
                 child: SizedBox(
                   width: double.infinity,
-                  child: currentTopic.status != StudyTopicStatus.completed
-                      ? ElevatedButton.icon(
-                          onPressed: () async {
-                            await studyCubit.markTopicComplete(widget.plan.id, currentTopic.id);
-                          },
-                          icon: const Icon(Icons.check_circle),
-                          label: LabelLargeText(
-                            AppLocalizations.of(context)!.markComplete,
-                            color: Theme.of(context).colorScheme.onSecondary,
+                  child:
+                      currentTopic.status != StudyTopicStatus.completed
+                          ? ElevatedButton.icon(
+                            onPressed: () async {
+                              await studyCubit.markTopicComplete(
+                                widget.plan.id,
+                                currentTopic.id,
+                              );
+                            },
+                            icon: const Icon(Icons.check_circle),
+                            label: LabelLargeText(
+                              AppLocalizations.of(context)!.markComplete,
+                              color: Theme.of(context).colorScheme.onSecondary,
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.secondary,
+                              foregroundColor:
+                                  Theme.of(context).colorScheme.onSecondary,
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                            ),
+                          )
+                          : ElevatedButton.icon(
+                            onPressed: () async {
+                              await studyCubit.markTopicIncomplete(
+                                widget.plan.id,
+                                currentTopic.id,
+                              );
+                            },
+                            icon: const Icon(Icons.refresh),
+                            label: LabelLargeText(
+                              AppLocalizations.of(context)!.markIncomplete,
+                              color: Theme.of(context).colorScheme.onSecondary,
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.secondary,
+                              foregroundColor:
+                                  Theme.of(context).colorScheme.onSecondary,
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                            ),
                           ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Theme.of(context).colorScheme.secondary,
-                            foregroundColor: Theme.of(context).colorScheme.onSecondary,
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                          ),
-                        )
-                      : ElevatedButton.icon(
-                          onPressed: () async {
-                            await studyCubit.markTopicIncomplete(widget.plan.id, currentTopic.id);
-                          },
-                          icon: const Icon(Icons.refresh),
-                          label: LabelLargeText(
-                            AppLocalizations.of(context)!.markIncomplete,
-                            color: Theme.of(context).colorScheme.onSecondary,
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Theme.of(context).colorScheme.secondary,
-                            foregroundColor: Theme.of(context).colorScheme.onSecondary,
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                          ),
-                        ),
                 ),
               ),
             ],

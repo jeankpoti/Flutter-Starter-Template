@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../domain/models/study_material.dart' as study;
-import '../../domain/models/study_plan.dart';
-import '../../domain/models/quiz.dart';
+import '../../../domain/models/study_material.dart' as study;
+import '../../../domain/models/study_plan.dart';
+import '../../../domain/models/quiz.dart';
 import 'matrial_list_section.dart';
 import 'quiz_section.dart';
 import 'study_plans_section.dart';

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../../../l10n/app_localizations.dart';
-import '../../../../common_widgets/text_widgets.dart';
-import '../../domain/models/study_material.dart' as study;
-import '../../../../common_widgets/math_symbols_widget.dart';
+import '../../../../../l10n/app_localizations.dart';
+import '../../../../../common_widgets/text_widgets.dart';
+import '../../../domain/models/study_material.dart' as study;
+import '../../../../../common_widgets/math_symbols_widget.dart';
 
 class UploadTab extends StatelessWidget {
   final bool isProcessing;

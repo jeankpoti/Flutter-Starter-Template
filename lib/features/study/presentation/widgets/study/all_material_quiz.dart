@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../l10n/app_localizations.dart';
-import '../../../../common_widgets/text_widgets.dart';
+import '../../../../../l10n/app_localizations.dart';
+import '../../../../../common_widgets/text_widgets.dart';
 
 class AllMaterialsQuizButton extends StatelessWidget {
   final VoidCallback onTap;

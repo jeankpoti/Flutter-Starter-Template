@@ -3,11 +3,20 @@ import 'package:flutter/material.dart';
 import '../domain/models/quiz.dart';
 import '../data/services/quiz_service.dart';
 import 'quiz_review_page.dart';
-import '../../../common_widgets/math_symbols_widget.dart';
 import '../../../common_widgets/text_widgets.dart';
 import '../../../common_widgets/math_text_widget.dart';
 import '../../../common_widgets/app_snackbar_widget.dart';
+import '../../../common_widgets/report_content_dialog_widget.dart';
+import '../../common/domain/models/content_report.dart';
 import '../../../l10n/app_localizations.dart';
+
+// Refactored quiz widgets
+import 'widgets/quiz/quiz_timer_widget.dart';
+import 'widgets/quiz/quiz_navigation_widget.dart';
+import 'widgets/quiz/multiple_choice_question_widget.dart';
+import 'widgets/quiz/true_false_question_widget.dart';
+import 'widgets/quiz/short_answer_question_widget.dart';
+import 'widgets/quiz/fill_in_blank_question_widget.dart';
 
 class QuizPage extends StatefulWidget {
   final Quiz quiz;
@@ -111,6 +120,22 @@ class _QuizPageState extends State<QuizPage> {
               }
             },
           ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.flag_outlined),
+              onPressed: () {
+                final currentQuestion = _currentQuiz.questions[_currentQuestionIndex];
+                ReportContentDialogWidget.show(
+                  context: context,
+                  contentId: '${_currentQuiz.id}_${currentQuestion.id}',
+                  contentType: ContentType.quizQuestion,
+                  contentSnapshot: '${currentQuestion.questionText}\nOptions: ${currentQuestion.answers.map((a) => a.text).join(", ")}',
+                  contentTitle: '${AppLocalizations.of(context)!.quiz}: ${_currentQuiz.title}',
+                );
+              },
+              tooltip: AppLocalizations.of(context)!.reportContent,
+            ),
+          ],
         ),
         body: Column(
           children: [
@@ -158,45 +183,9 @@ class _QuizPageState extends State<QuizPage> {
               ),
               const Spacer(),
               if (_currentQuiz.timeLimit > 0)
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color:
-                        _remainingTime <
-                                300 // Less than 5 minutes
-                            ? Theme.of(context).colorScheme.errorContainer
-                            : Theme.of(context).colorScheme.secondaryContainer,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.timer,
-                        size: 16,
-                        color:
-                            _remainingTime < 300
-                                ? Theme.of(context).colorScheme.onErrorContainer
-                                : Theme.of(
-                                  context,
-                                ).colorScheme.onSecondaryContainer,
-                      ),
-                      const SizedBox(width: 4),
-                      LabelLargeText(
-                        _formatTime(_remainingTime),
-                        fontWeight: FontWeight.w600,
-                        color:
-                            _remainingTime < 300
-                                ? Theme.of(context).colorScheme.onErrorContainer
-                                : Theme.of(
-                                  context,
-                                ).colorScheme.onSecondaryContainer,
-                      ),
-                    ],
-                  ),
+                QuizTimerWidget(
+                  remainingTimeInSeconds: _remainingTime,
+                  totalTimeInMinutes: _currentQuiz.timeLimit,
                 ),
             ],
           ),
@@ -359,281 +348,50 @@ class _QuizPageState extends State<QuizPage> {
   Widget _buildAnswerSection(QuizQuestion question) {
     switch (question.type) {
       case QuestionType.multipleChoice:
-        return _buildMultipleChoiceAnswers(question);
+        return MultipleChoiceQuestionWidget(
+          question: question,
+          selectedAnswer: _selectedAnswers[question.id],
+          onAnswerSelected: (answerId) {
+            setState(() {
+              _selectedAnswers[question.id] = answerId;
+            });
+          },
+        );
       case QuestionType.trueFalse:
-        return _buildTrueFalseAnswers(question);
+        return TrueFalseQuestionWidget(
+          question: question,
+          selectedAnswer: _selectedAnswers[question.id],
+          onAnswerSelected: (answerId) {
+            setState(() {
+              _selectedAnswers[question.id] = answerId;
+            });
+          },
+        );
       case QuestionType.shortAnswer:
-        return _buildShortAnswerInput(question);
+        return ShortAnswerQuestionWidget(
+          question: question,
+          controller: _getTextController(question.id),
+          onAnswerChanged: (value) {
+            _textAnswers[question.id] = value;
+          },
+        );
       case QuestionType.fillInTheBlank:
-        return _buildFillInBlankInput(question);
+        return FillInBlankQuestionWidget(
+          question: question,
+          controller: _getTextController(question.id),
+          onAnswerChanged: (value) {
+            _textAnswers[question.id] = value;
+          },
+        );
     }
   }
 
-  Widget _buildMultipleChoiceAnswers(QuizQuestion question) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        TitleMediumText(
-          AppLocalizations.of(context)!.selectCorrectAnswer,
-          fontWeight: FontWeight.w600,
-          color: Theme.of(context).colorScheme.onSurface,
-        ),
-        const SizedBox(height: 16),
-        ...question.answers.asMap().entries.map((entry) {
-          final index = entry.key;
-          final answer = entry.value;
-          final isSelected = _selectedAnswers[question.id] == answer.id;
-          final optionLetter = String.fromCharCode(65 + index); // A, B, C, D
 
-          return Container(
-            margin: const EdgeInsets.only(bottom: 12),
-            child: InkWell(
-              onTap: () {
-                setState(() {
-                  _selectedAnswers[question.id] = answer.id;
-                });
-              },
-              borderRadius: BorderRadius.circular(12),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color:
-                      isSelected
-                          ? Theme.of(context).colorScheme.secondaryContainer
-                              .withValues(alpha: 0.5)
-                          : Theme.of(context).colorScheme.surface,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color:
-                        isSelected
-                            ? Theme.of(context).colorScheme.secondary
-                            : Theme.of(
-                              context,
-                            ).colorScheme.outline.withValues(alpha: 0.3),
-                    width: isSelected ? 2 : 1,
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 32,
-                      height: 32,
-                      decoration: BoxDecoration(
-                        color:
-                            isSelected
-                                ? Theme.of(context).colorScheme.secondary
-                                : Colors.transparent,
-                        border: Border.all(
-                          color:
-                              isSelected
-                                  ? Theme.of(context).colorScheme.secondary
-                                  : Theme.of(context).colorScheme.outline,
-                          width: 2,
-                        ),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Center(
-                        child: TitleSmallText(
-                          optionLetter,
-                          fontWeight: FontWeight.bold,
-                          color:
-                              isSelected
-                                  ? Theme.of(context).colorScheme.onSecondary
-                                  : Theme.of(context).colorScheme.onSurface,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: BodyMediumText(
-                        answer.text,
-                        color: Theme.of(context).colorScheme.onSurface,
-                        fontWeight:
-                            isSelected ? FontWeight.w600 : FontWeight.normal,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        }),
-      ],
-    );
-  }
 
-  Widget _buildTrueFalseAnswers(QuizQuestion question) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        TitleMediumText(
-          AppLocalizations.of(context)!.selectTrueFalse,
-          fontWeight: FontWeight.w600,
-          color: Theme.of(context).colorScheme.onSurface,
-        ),
-        const SizedBox(height: 16),
-        Row(
-          children:
-              question.answers.map((answer) {
-                final isSelected = _selectedAnswers[question.id] == answer.id;
-                final isTrue = answer.text.toLowerCase() == 'true';
 
-                return Expanded(
-                  child: Container(
-                    margin: EdgeInsets.only(
-                      right: isTrue ? 8 : 0,
-                      left: isTrue ? 0 : 8,
-                    ),
-                    child: InkWell(
-                      onTap: () {
-                        setState(() {
-                          _selectedAnswers[question.id] = answer.id;
-                        });
-                      },
-                      borderRadius: BorderRadius.circular(12),
-                      child: Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color:
-                              isSelected
-                                  ? (isTrue
-                                      ? Colors.green.withValues(alpha: 0.1)
-                                      : Colors.red.withValues(alpha: 0.1))
-                                  : Theme.of(context).colorScheme.surface,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color:
-                                isSelected
-                                    ? (isTrue ? Colors.green : Colors.red)
-                                    : Theme.of(context).colorScheme.outline
-                                        .withValues(alpha: 0.3),
-                            width: isSelected ? 2 : 1,
-                          ),
-                        ),
-                        child: Center(
-                          child: Column(
-                            children: [
-                              Icon(
-                                isTrue ? Icons.check_circle : Icons.cancel,
-                                color:
-                                    isSelected
-                                        ? (isTrue ? Colors.green : Colors.red)
-                                        : Theme.of(context)
-                                            .colorScheme
-                                            .onSurface
-                                            .withValues(alpha: 0.6),
-                                size: 32,
-                              ),
-                              const SizedBox(height: 8),
-                              TitleMediumText(
-                                answer.text,
-                                fontWeight: FontWeight.w600,
-                                color:
-                                    isSelected
-                                        ? (isTrue ? Colors.green : Colors.red)
-                                        : Theme.of(
-                                          context,
-                                        ).colorScheme.onSurface,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              }).toList(),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildShortAnswerInput(QuizQuestion question) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        TitleMediumText(
-          AppLocalizations.of(context)!.enterYourAnswer,
-          fontWeight: FontWeight.w600,
-          color: Theme.of(context).colorScheme.onSurface,
-        ),
-        const SizedBox(height: 16),
-        Column(
-          children: [
-            TextField(
-              onChanged: (value) {
-                _textAnswers[question.id] = value;
-              },
-              controller: _getTextController(question.id),
-              decoration: InputDecoration(
-                hintText: AppLocalizations.of(context)!.typeAnswerHere,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.secondary,
-                    width: 2,
-                  ),
-                ),
-              ),
-              maxLines: 3,
-            ),
-            const SizedBox(height: 12),
-            MathSymbolsWidget(controller: _getTextController(question.id)),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildFillInBlankInput(QuizQuestion question) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        TitleMediumText(
-          AppLocalizations.of(context)!.fillInBlank,
-          fontWeight: FontWeight.w600,
-          color: Theme.of(context).colorScheme.onSurface,
-        ),
-        const SizedBox(height: 16),
-        Column(
-          children: [
-            TextField(
-              onChanged: (value) {
-                _textAnswers[question.id] = value;
-              },
-              controller: _getTextController(question.id),
-              decoration: InputDecoration(
-                hintText: AppLocalizations.of(context)!.enterMissingWord,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.secondary,
-                    width: 2,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            MathSymbolsWidget(controller: _getTextController(question.id)),
-          ],
-        ),
-      ],
-    );
-  }
 
   Widget _buildQuizNavigation() {
-    final canGoBack = _currentQuestionIndex > 0;
-    final isLastQuestion =
-        _currentQuestionIndex == _currentQuiz.questions.length - 1;
-
     return Container(
-      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
         boxShadow: [
@@ -645,43 +403,13 @@ class _QuizPageState extends State<QuizPage> {
           ),
         ],
       ),
-      child: Row(
-        children: [
-          if (canGoBack)
-            Expanded(
-              child: ElevatedButton.icon(
-                onPressed: _goToPreviousQuestion,
-                icon: const Icon(Icons.arrow_back),
-                label: LabelLargeText(AppLocalizations.of(context)!.previous),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      Theme.of(context).colorScheme.surfaceContainerHighest,
-                  foregroundColor: Theme.of(context).colorScheme.onSurface,
-                ),
-              ),
-            )
-          else
-            const Expanded(child: SizedBox()),
-
-          const SizedBox(width: 16),
-
-          Expanded(
-            child: ElevatedButton.icon(
-              onPressed: isLastQuestion ? _finishQuiz : _goToNextQuestion,
-              icon: Icon(isLastQuestion ? Icons.check : Icons.arrow_forward),
-              label: LabelLargeText(
-                isLastQuestion
-                    ? AppLocalizations.of(context)!.finishQuiz
-                    : AppLocalizations.of(context)!.next,
-                color: Theme.of(context).colorScheme.onSecondary,
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.secondary,
-                foregroundColor: Theme.of(context).colorScheme.onSecondary,
-              ),
-            ),
-          ),
-        ],
+      child: QuizNavigationWidget(
+        currentQuestionIndex: _currentQuestionIndex,
+        totalQuestions: _currentQuiz.questions.length,
+        isLastQuestion: _currentQuestionIndex == _currentQuiz.questions.length - 1,
+        onPrevious: _goToPreviousQuestion,
+        onNext: _goToNextQuestion,
+        onFinish: _finishQuiz,
       ),
     );
   }
@@ -1009,11 +737,6 @@ class _QuizPageState extends State<QuizPage> {
     }
   }
 
-  String _formatTime(int seconds) {
-    final minutes = seconds ~/ 60;
-    final remainingSeconds = seconds % 60;
-    return '$minutes:${remainingSeconds.toString().padLeft(2, '0')}';
-  }
 
   String _getScoreMessage(double score) {
     if (score >= 90) {

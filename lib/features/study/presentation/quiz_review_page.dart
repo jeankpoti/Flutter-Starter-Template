@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../../common_widgets/text_widgets.dart';
 import '../../../common_widgets/math_text_widget.dart';
 import '../../../common_widgets/app_snackbar_widget.dart';
@@ -611,7 +612,7 @@ class QuizReviewPage extends StatelessWidget {
     return '$displayHour:$minute $period';
   }
 
-  void _shareQuizResults(BuildContext context) {
+  void _shareQuizResults(BuildContext context) async {
     final score = quiz.lastScore ?? 0.0;
     final summary = quiz.getPerformanceSummary();
     
@@ -626,11 +627,16 @@ ${AppLocalizations.of(context)!.shareUnanswered(summary['unanswered']!)}
 ${AppLocalizations.of(context)!.totalQuestions(quiz.questions.length)}
 ''';
 
-    // In a real app, you would use share_plus package
-    AppSnackBar.showInfo(
-      context,
-      AppLocalizations.of(context)!.shareFunctionality(shareText),
-      duration: const Duration(seconds: 3),
-    );
+    try {
+      await Share.share(shareText);
+    } catch (e) {
+      // If sharing fails, show a fallback message
+      if (context.mounted) {
+        AppSnackBar.showError(
+          context,
+          AppLocalizations.of(context)!.somethingWentWrong,
+        );
+      }
+    }
   }
 }

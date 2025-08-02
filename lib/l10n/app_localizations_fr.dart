@@ -1489,4 +1489,64 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get noAiExplanation => 'Aucune explication IA disponible';
+
+  @override
+  String get reportContent => 'Signaler le contenu';
+
+  @override
+  String get pleaseSelectReportType =>
+      'Veuillez sélectionner un type de signalement';
+
+  @override
+  String get pleaseProvideDescription => 'Veuillez fournir une description';
+
+  @override
+  String get reportSubmittedSuccessfully => 'Signalement soumis avec succès';
+
+  @override
+  String get errorSubmittingReport =>
+      'Erreur lors de la soumission du signalement';
+
+  @override
+  String get reportTypeInappropriate => 'Contenu inapproprié';
+
+  @override
+  String get reportTypeIncorrect => 'Information incorrecte';
+
+  @override
+  String get reportTypeHarmful => 'Dangereux ou nuisible';
+
+  @override
+  String get reportTypeSpam => 'Spam ou trompeur';
+
+  @override
+  String get reportTypeOther => 'Autre problème';
+
+  @override
+  String get alreadyReportedContent => 'Vous avez déjà signalé ce contenu';
+
+  @override
+  String get selectReportReason =>
+      'Sélectionnez une raison pour le signalement';
+
+  @override
+  String get additionalDetails => 'Détails supplémentaires';
+
+  @override
+  String get describeIssue => 'Veuillez décrire le problème en détail...';
+
+  @override
+  String get submitReport => 'Soumettre le signalement';
+
+  @override
+  String get reportDisclaimer =>
+      'Les signalements sont examinés pour améliorer la qualité du contenu. Les faux signalements peuvent entraîner des restrictions de compte.';
+
+  @override
+  String get requiredFieldsNote =>
+      'Les champs marqués d\'un * sont obligatoires';
+
+  @override
+  String get descriptionTooShort =>
+      'La description doit contenir au moins 10 caractères';
 }

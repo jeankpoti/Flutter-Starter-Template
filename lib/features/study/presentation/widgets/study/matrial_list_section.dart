@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../../l10n/app_localizations.dart';
-import '../../../../common_widgets/text_widgets.dart';
-import '../../domain/models/study_material.dart' as study;
+import '../../../../../l10n/app_localizations.dart';
+import '../../../../../common_widgets/text_widgets.dart';
+import '../../../domain/models/study_material.dart' as study;
 
 class MaterialsListSection extends StatelessWidget {
   final List<study.StudyMaterial> studyMaterials;

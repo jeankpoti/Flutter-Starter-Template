@@ -1456,4 +1456,60 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noAiExplanation => 'No AI explanation available';
+
+  @override
+  String get reportContent => 'Report Content';
+
+  @override
+  String get pleaseSelectReportType => 'Please select a report type';
+
+  @override
+  String get pleaseProvideDescription => 'Please provide a description';
+
+  @override
+  String get reportSubmittedSuccessfully => 'Report submitted successfully';
+
+  @override
+  String get errorSubmittingReport => 'Error submitting report';
+
+  @override
+  String get reportTypeInappropriate => 'Inappropriate content';
+
+  @override
+  String get reportTypeIncorrect => 'Incorrect information';
+
+  @override
+  String get reportTypeHarmful => 'Harmful or dangerous';
+
+  @override
+  String get reportTypeSpam => 'Spam or misleading';
+
+  @override
+  String get reportTypeOther => 'Other issue';
+
+  @override
+  String get alreadyReportedContent => 'You have already reported this content';
+
+  @override
+  String get selectReportReason => 'Select a reason for reporting';
+
+  @override
+  String get additionalDetails => 'Additional details';
+
+  @override
+  String get describeIssue => 'Please describe the issue in detail...';
+
+  @override
+  String get submitReport => 'Submit Report';
+
+  @override
+  String get reportDisclaimer =>
+      'Reports are reviewed to improve content quality. False reports may result in account restrictions.';
+
+  @override
+  String get requiredFieldsNote => 'Fields marked with * are required';
+
+  @override
+  String get descriptionTooShort =>
+      'Description must be at least 10 characters long';
 }

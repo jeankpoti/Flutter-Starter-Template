@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../../../l10n/app_localizations.dart';
-import '../../../../common_widgets/text_widgets.dart';
-import '../../domain/models/study_plan.dart';
-import '../../domain/models/quiz.dart';
+import '../../../../../l10n/app_localizations.dart';
+import '../../../../../common_widgets/text_widgets.dart';
+import '../../../domain/models/study_plan.dart';
+import '../../../domain/models/quiz.dart';
 import 'all_material_quiz.dart';
 
 class QuizSection extends StatelessWidget {
@@ -64,7 +64,9 @@ class QuizSection extends StatelessWidget {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
+                Theme.of(
+                  context,
+                ).colorScheme.primaryContainer.withValues(alpha: 0.3),
                 Theme.of(
                   context,
                 ).colorScheme.secondaryContainer.withValues(alpha: 0.2),
@@ -97,7 +99,9 @@ class QuizSection extends StatelessWidget {
               const SizedBox(height: 12),
               BodyMediumText(
                 AppLocalizations.of(context)!.testKnowledgeDescription,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.8),
               ),
               const SizedBox(height: 20),
               Row(
