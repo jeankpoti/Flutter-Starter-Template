@@ -2278,6 +2278,24 @@ abstract class AppLocalizations {
   /// **'Generate quiz from all uploaded materials'**
   String get generateFromAllMaterials;
 
+  /// No description provided for @overallProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Overall Progress'**
+  String get overallProgress;
+
+  /// No description provided for @continueText.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueText;
+
+  /// No description provided for @topicStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'📚 Topic started!'**
+  String get topicStarted;
+
   /// No description provided for @materialCaptured.
   ///
   /// In en, this message translates to:
@@ -2397,12 +2415,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Error marking topic complete: {error}'**
   String errorMarkingTopicComplete(Object error);
-
-  /// No description provided for @topicStarted.
-  ///
-  /// In en, this message translates to:
-  /// **'📚 Topic started!'**
-  String get topicStarted;
 
   /// No description provided for @errorStartingTopic.
   ///
@@ -2589,6 +2601,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Study plan generated successfully!'**
   String get studyPlanGeneratedSuccessfully;
+
+  /// No description provided for @topicDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Topic Details'**
+  String get topicDetails;
+
+  /// No description provided for @estimatedTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated time: {minutes} minutes'**
+  String estimatedTime(Object minutes);
+
+  /// No description provided for @topicDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get topicDescription;
+
+  /// No description provided for @keyConceptsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Key Concepts'**
+  String get keyConceptsTitle;
+
+  /// No description provided for @aiExplanationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Explanation'**
+  String get aiExplanationTitle;
+
+  /// No description provided for @practiceProblemsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice Problems'**
+  String get practiceProblemsTitle;
+
+  /// No description provided for @prerequisitesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Prerequisites'**
+  String get prerequisitesTitle;
+
+  /// No description provided for @noDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'No description available'**
+  String get noDescription;
+
+  /// No description provided for @noPracticeProblems.
+  ///
+  /// In en, this message translates to:
+  /// **'No practice problems available'**
+  String get noPracticeProblems;
+
+  /// No description provided for @noPrerequisites.
+  ///
+  /// In en, this message translates to:
+  /// **'No prerequisites required'**
+  String get noPrerequisites;
+
+  /// No description provided for @noAiExplanation.
+  ///
+  /// In en, this message translates to:
+  /// **'No AI explanation available'**
+  String get noAiExplanation;
 }
 
 class _AppLocalizationsDelegate

@@ -40,7 +40,9 @@ class StudyCubit extends Cubit<StudyState> {
       await _quizService.initialize();
       await loadData();
     } catch (e) {
-      emit(state.copyWith(errorMsg: 'Error initializing services: $e'));
+      if (!isClosed) {
+        emit(state.copyWith(errorMsg: 'Error initializing services: $e'));
+      }
     }
   }
 
@@ -55,16 +57,20 @@ class StudyCubit extends Cubit<StudyState> {
       final materials = futures[0] as List<StudyMaterial>;
       final plans = futures[1] as List<StudyPlan>;
 
-      emit(state.copyWith(
-        studyMaterials: materials,
-        studyPlans: plans,
-        isLoading: false,
-      ));
+      if (!isClosed) {
+        emit(state.copyWith(
+          studyMaterials: materials,
+          studyPlans: plans,
+          isLoading: false,
+        ));
+      }
     } catch (e) {
-      emit(state.copyWith(
-        isLoading: false,
-        errorMsg: 'Error loading study data: $e',
-      ));
+      if (!isClosed) {
+        emit(state.copyWith(
+          isLoading: false,
+          errorMsg: 'Error loading study data: $e',
+        ));
+      }
     }
   }
 
@@ -100,10 +106,12 @@ class StudyCubit extends Cubit<StudyState> {
         emit(state.copyWith(isUploadingPhoto: false));
       }
     } catch (e) {
-      emit(state.copyWith(
-        isUploadingPhoto: false,
-        errorMsg: 'Error capturing photo: $e',
-      ));
+      if (!isClosed) {
+        emit(state.copyWith(
+          isUploadingPhoto: false,
+          errorMsg: 'Error capturing photo: $e',
+        ));
+      }
     }
   }
 
@@ -144,10 +152,12 @@ class StudyCubit extends Cubit<StudyState> {
         emit(state.copyWith(isUploadingPhoto: false));
       }
     } catch (e) {
-      emit(state.copyWith(
-        isUploadingPhoto: false,
-        errorMsg: 'Error uploading from gallery: $e',
-      ));
+      if (!isClosed) {
+        emit(state.copyWith(
+          isUploadingPhoto: false,
+          errorMsg: 'Error uploading from gallery: $e',
+        ));
+      }
     }
   }
 
@@ -156,10 +166,12 @@ class StudyCubit extends Cubit<StudyState> {
     try {
       await _processUploadedMaterial(null, MaterialType.text, textContent: text);
     } catch (e) {
-      emit(state.copyWith(
-        isUploadingText: false,
-        errorMsg: 'Error processing text material: $e',
-      ));
+      if (!isClosed) {
+        emit(state.copyWith(
+          isUploadingText: false,
+          errorMsg: 'Error processing text material: $e',
+        ));
+      }
     }
   }
 
@@ -210,22 +222,26 @@ class StudyCubit extends Cubit<StudyState> {
 
       // Update state with new material
       final updatedMaterials = [...state.studyMaterials, finalMaterial];
-      emit(state.copyWith(
-        studyMaterials: updatedMaterials,
-        isProcessing: false,
-        isUploadingPhoto: false,
-        isUploadingText: false,
-      ));
+      if (!isClosed) {
+        emit(state.copyWith(
+          studyMaterials: updatedMaterials,
+          isProcessing: false,
+          isUploadingPhoto: false,
+          isUploadingText: false,
+        ));
+      }
 
       // Generate individual study plan for this material
       await _generateIndividualStudyPlan(finalMaterial);
     } catch (e) {
-      emit(state.copyWith(
-        isProcessing: false,
-        isUploadingPhoto: false,
-        isUploadingText: false,
-        errorMsg: 'Error processing material: $e',
-      ));
+      if (!isClosed) {
+        emit(state.copyWith(
+          isProcessing: false,
+          isUploadingPhoto: false,
+          isUploadingText: false,
+          errorMsg: 'Error processing material: $e',
+        ));
+      }
     }
   }
 
@@ -243,16 +259,20 @@ class StudyCubit extends Cubit<StudyState> {
 
       // Update state with new plan
       final updatedPlans = [...state.studyPlans, studyPlan];
-      emit(state.copyWith(
-        studyPlans: updatedPlans,
-        isProcessing: false,
-        studyPlanGenerated: true,
-      ));
+      if (!isClosed) {
+        emit(state.copyWith(
+          studyPlans: updatedPlans,
+          isProcessing: false,
+          studyPlanGenerated: true,
+        ));
+      }
     } catch (e) {
-      emit(state.copyWith(
-        isProcessing: false,
-        errorMsg: 'Error generating study plan: $e',
-      ));
+      if (!isClosed) {
+        emit(state.copyWith(
+          isProcessing: false,
+          errorMsg: 'Error generating study plan: $e',
+        ));
+      }
     }
   }
 
@@ -307,7 +327,9 @@ class StudyCubit extends Cubit<StudyState> {
       return quiz;
     } catch (e) {
       _setQuizLoading(difficulty, false);
-      emit(state.copyWith(errorMsg: 'Error generating quiz: $e'));
+      if (!isClosed) {
+        emit(state.copyWith(errorMsg: 'Error generating quiz: $e'));
+      }
       rethrow;
     }
   }
@@ -333,13 +355,17 @@ class StudyCubit extends Cubit<StudyState> {
         timeLimit: timeLimit,
       );
 
-      emit(state.copyWith(clearProcessingPlanId: true));
+      if (!isClosed) {
+        emit(state.copyWith(clearProcessingPlanId: true));
+      }
       return quiz;
     } catch (e) {
-      emit(state.copyWith(
-        clearProcessingPlanId: true,
-        errorMsg: 'Error generating quiz: $e',
-      ));
+      if (!isClosed) {
+        emit(state.copyWith(
+          clearProcessingPlanId: true,
+          errorMsg: 'Error generating quiz: $e',
+        ));
+      }
       rethrow;
     }
   }
@@ -356,28 +382,34 @@ class StudyCubit extends Cubit<StudyState> {
         customTitle: 'Comprehensive Quiz - All Materials',
       );
 
-      emit(state.copyWith(isAllMaterialsQuizLoading: false));
+      if (!isClosed) {
+        emit(state.copyWith(isAllMaterialsQuizLoading: false));
+      }
       return quiz;
     } catch (e) {
-      emit(state.copyWith(
-        isAllMaterialsQuizLoading: false,
-        errorMsg: 'Error generating comprehensive quiz: $e',
-      ));
+      if (!isClosed) {
+        emit(state.copyWith(
+          isAllMaterialsQuizLoading: false,
+          errorMsg: 'Error generating comprehensive quiz: $e',
+        ));
+      }
       rethrow;
     }
   }
 
   void _setQuizLoading(QuizDifficulty difficulty, bool isLoading) {
-    switch (difficulty) {
-      case QuizDifficulty.easy:
-        emit(state.copyWith(isQuickQuizLoading: isLoading));
-        break;
-      case QuizDifficulty.medium:
-        emit(state.copyWith(isPracticeTestLoading: isLoading));
-        break;
-      case QuizDifficulty.hard:
-        emit(state.copyWith(isChallengeLoading: isLoading));
-        break;
+    if (!isClosed) {
+      switch (difficulty) {
+        case QuizDifficulty.easy:
+          emit(state.copyWith(isQuickQuizLoading: isLoading));
+          break;
+        case QuizDifficulty.medium:
+          emit(state.copyWith(isPracticeTestLoading: isLoading));
+          break;
+        case QuizDifficulty.hard:
+          emit(state.copyWith(isChallengeLoading: isLoading));
+          break;
+      }
     }
   }
 
@@ -387,11 +419,15 @@ class StudyCubit extends Cubit<StudyState> {
       await _planRepository.deletePlan(planId);
 
       final updatedPlans = state.studyPlans.where((plan) => plan.id != planId).toList();
-      emit(state.copyWith(
-        studyPlans: updatedPlans,
-      ));
+      if (!isClosed) {
+        emit(state.copyWith(
+          studyPlans: updatedPlans,
+        ));
+      }
     } catch (e) {
-      emit(state.copyWith(errorMsg: 'Error deleting study plan: $e'));
+      if (!isClosed) {
+        emit(state.copyWith(errorMsg: 'Error deleting study plan: $e'));
+      }
     }
   }
 
@@ -417,7 +453,9 @@ class StudyCubit extends Cubit<StudyState> {
       // Persist to database
       await _planRepository.updatePlan(updatedPlan);
     } catch (e) {
-      emit(state.copyWith(errorMsg: 'Error updating progress: $e'));
+      if (!isClosed) {
+        emit(state.copyWith(errorMsg: 'Error updating progress: $e'));
+      }
     }
   }
 
@@ -438,7 +476,32 @@ class StudyCubit extends Cubit<StudyState> {
       // Persist to database
       await _planRepository.updatePlan(updatedPlan);
     } catch (e) {
-      emit(state.copyWith(errorMsg: 'Error marking topic complete: $e'));
+      if (!isClosed) {
+        emit(state.copyWith(errorMsg: 'Error marking topic complete: $e'));
+      }
+    }
+  }
+
+  Future<void> markTopicIncomplete(String planId, String topicId) async {
+    try {
+      final planIndex = state.studyPlans.indexWhere((plan) => plan.id == planId);
+      if (planIndex == -1) return;
+
+      final plan = state.studyPlans[planIndex];
+      final updatedPlan = plan.markTopicIncomplete(topicId);
+
+      // Update local state
+      final updatedPlans = [...state.studyPlans];
+      updatedPlans[planIndex] = updatedPlan;
+
+      emit(state.copyWith(studyPlans: updatedPlans));
+
+      // Persist to database
+      await _planRepository.updatePlan(updatedPlan);
+    } catch (e) {
+      if (!isClosed) {
+        emit(state.copyWith(errorMsg: 'Error marking topic incomplete: $e'));
+      }
     }
   }
 
@@ -459,15 +522,21 @@ class StudyCubit extends Cubit<StudyState> {
       // Persist to database
       await _planRepository.updatePlan(updatedPlan);
     } catch (e) {
-      emit(state.copyWith(errorMsg: 'Error starting topic: $e'));
+      if (!isClosed) {
+        emit(state.copyWith(errorMsg: 'Error starting topic: $e'));
+      }
     }
   }
 
   void clearError() {
-    emit(state.copyWith(clearError: true));
+    if (!isClosed) {
+      emit(state.copyWith(clearError: true));
+    }
   }
 
   void clearStudyPlanGenerated() {
-    emit(state.copyWith(studyPlanGenerated: false));
+    if (!isClosed) {
+      emit(state.copyWith(studyPlanGenerated: false));
+    }
   }
 }

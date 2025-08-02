@@ -378,6 +378,9 @@
   "allMaterialsQuizDescription": "12 preguntas • 25 min • Todos los materiales de estudio incluidos",
   "allStudyMaterials": "Todos los materiales de estudio",
   "generateFromAllMaterials": "Generar quiz con todos los materiales subidos",
+  "overallProgress": "Progreso general",
+  "continueText": "Continuar",
+  "topicStarted": "Tema iniciado",
   "materialCaptured": "¡Material capturado! Iniciando análisis IA...",
   "errorCapturingPhoto": "Error al capturar foto: {error}",
   "materialsUploaded": "¡{count} material(es) subido(s)! Iniciando análisis IA...",
@@ -432,5 +435,16 @@
   "typeTextSubtitle": "Ingresar texto directamente o pegar desde el portapapeles",
   "noRecentUploads": "No hay subidas recientes",
   "studyPlanGeneratedSuccessfully": "¡Plan de estudio generado con éxito!",
-  "process": "Procesar"
+  "process": "Procesar",
+  "topicDetails": "Detalles del tema",
+  "estimatedTime": "Tiempo estimado: {minutes} minutos", 
+  "topicDescription": "Descripción",
+  "keyConceptsTitle": "Conceptos clave",
+  "aiExplanationTitle": "Explicación IA",
+  "practiceProblemsTitle": "Problemas de práctica",
+  "prerequisitesTitle": "Prerrequisitos",
+  "noDescription": "No hay descripción disponible",
+  "noPracticeProblems": "No hay problemas de práctica disponibles",
+  "noPrerequisites": "No se requieren prerrequisitos",
+  "noAiExplanation": "No hay explicación IA disponible"
 }

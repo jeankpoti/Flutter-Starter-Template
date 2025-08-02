@@ -378,6 +378,9 @@
   "allMaterialsQuizDescription": "12 questions • 25 min • All study materials included",
   "allStudyMaterials": "All Study Materials",
   "generateFromAllMaterials": "Generate quiz from all uploaded materials",
+  "overallProgress": "Overall Progress",
+  "continueText": "Continue",
+  "topicStarted": "Topic started",
   "materialCaptured": "📷 Material captured! Starting AI analysis...",
   "errorCapturingPhoto": "Error capturing photo: {error}",
   "materialsUploaded": "📱 {count} material(s) uploaded! Starting AI analysis...",
@@ -432,5 +435,16 @@
   "typeTextSubtitle": "Enter text directly or paste from clipboard",
   "noRecentUploads": "No Recent Uploads",
   "studyPlanGeneratedSuccessfully": "Study plan generated successfully!",
-  "process": "Process"
+  "process": "Process",
+  "topicDetails": "Topic Details",
+  "estimatedTime": "Estimated time: {minutes} minutes",
+  "topicDescription": "Description",
+  "keyConceptsTitle": "Key Concepts",
+  "aiExplanationTitle": "AI Explanation", 
+  "practiceProblemsTitle": "Practice Problems",
+  "prerequisitesTitle": "Prerequisites",
+  "noDescription": "No description available",
+  "noPracticeProblems": "No practice problems available",
+  "noPrerequisites": "No prerequisites required",
+  "noAiExplanation": "No AI explanation available"
 }

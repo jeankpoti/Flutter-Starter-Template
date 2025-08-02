@@ -17,6 +17,9 @@ import 'quiz_history_page.dart';
 import 'widgets/material_tab.dart';
 import 'widgets/modern_tab_bar.dart';
 import 'widgets/upload_tab.dart';
+import 'widgets/topic_details_dialog_widget.dart';
+import 'widgets/study_plan_topics_sheet_widget.dart';
+import 'widgets/study_plan_selection_dialog_widget.dart';
 
 class StudyPage extends StatelessWidget {
   const StudyPage({super.key});
@@ -177,7 +180,15 @@ class _StudyPageViewState extends State<_StudyPageView>
   }
 
   void _handleTextInput() {
-    showDialog(context: context, builder: (context) => const TextInputDialog());
+    final studyCubit = context.read<StudyCubit>();
+    showDialog(
+      context: context,
+      builder:
+          (context) => BlocProvider.value(
+            value: studyCubit,
+            child: const TextInputDialog(),
+          ),
+    );
   }
 
   Future<void> _generateAndStartQuiz({
@@ -281,232 +292,126 @@ class _StudyPageViewState extends State<_StudyPageView>
       builder:
           (context) => BlocProvider.value(
             value: studyCubit,
-            child: StudyPlanTopicsSheet(
-              plan: plan,
-              studyPlans: studyCubit.state.studyPlans,
-              onUpdateTopicProgress:
-                  (planId, topicId, progress) =>
-                      studyCubit.updateTopicProgress(planId, topicId, progress),
-              onMarkTopicComplete:
-                  (planId, topicId) =>
-                      studyCubit.markTopicComplete(planId, topicId),
-              onStartTopic:
-                  (planId, topicId) => studyCubit.startTopic(planId, topicId),
-            ),
-          ),
-    );
-  }
-}
-
-class TextInputDialog extends StatefulWidget {
-  const TextInputDialog({super.key});
-
-  @override
-  State<TextInputDialog> createState() => _TextInputDialogState();
-}
-
-class _TextInputDialogState extends State<TextInputDialog> {
-  final TextEditingController _textController = TextEditingController();
-
-  @override
-  void dispose() {
-    _textController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: HeadlineSmallText(AppLocalizations.of(context)!.typeText),
-      content: SizedBox(
-        width: double.maxFinite,
-        child: TextField(
-          controller: _textController,
-          maxLines: 8,
-          decoration: InputDecoration(
-            hintText: AppLocalizations.of(context)!.typeTextSubtitle,
-            border: const OutlineInputBorder(),
-          ),
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: LabelLargeText(AppLocalizations.of(context)!.cancel),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            final text = _textController.text.trim();
-            if (text.isNotEmpty) {
-              context.read<StudyCubit>().processTextMaterial(text);
-              Navigator.of(context).pop();
-            }
-          },
-          child: LabelLargeText(AppLocalizations.of(context)!.process),
-        ),
-      ],
-    );
-  }
-}
-
-class StudyPlanSelectionDialog extends StatelessWidget {
-  final List<StudyPlan> studyPlans;
-  final bool hasStudyMaterials;
-
-  const StudyPlanSelectionDialog({
-    super.key,
-    required this.studyPlans,
-    required this.hasStudyMaterials,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: HeadlineSmallText(AppLocalizations.of(context)!.selectStudyPlan),
-      content: SizedBox(
-        width: double.maxFinite,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          spacing: 12,
-          children: [
-            ...studyPlans.map(
-              (plan) => Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.surface.withValues(alpha: 0.8),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.outline.withValues(alpha: 0.2),
-                  ),
-                ),
-                child: ListTile(
-                  title: BodyLargeText(plan.title),
-                  subtitle: BodyMediumText('${plan.topics.length} topics'),
-                  onTap: () => Navigator.of(context).pop(plan),
-                ),
-              ),
-            ),
-            if (hasStudyMaterials) ...[
-              Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.surface.withValues(alpha: 0.8),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.outline.withValues(alpha: 0.2),
-                  ),
-                ),
-                child: ListTile(
-                  leading: Icon(
-                    Icons.library_books,
-                    color: Theme.of(context).colorScheme.secondary,
-                  ),
-                  title: BodyLargeText(
-                    AppLocalizations.of(context)!.allStudyMaterials,
-                  ),
-                  subtitle: BodyMediumText(
-                    AppLocalizations.of(context)!.generateFromAllMaterials,
-                  ),
-                  onTap:
-                      () => Navigator.of(context).pop(
-                        'ALL_MATERIALS',
-                      ), // Return special string to indicate "all materials"
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: LabelLargeText(AppLocalizations.of(context)!.cancel),
-        ),
-      ],
-    );
-  }
-}
-
-class StudyPlanTopicsSheet extends StatelessWidget {
-  final StudyPlan plan;
-  final List<StudyPlan> studyPlans;
-  final Function(String, String, double) onUpdateTopicProgress;
-  final Function(String, String) onMarkTopicComplete;
-  final Function(String, String) onStartTopic;
-
-  const StudyPlanTopicsSheet({
-    super.key,
-    required this.plan,
-    required this.studyPlans,
-    required this.onUpdateTopicProgress,
-    required this.onMarkTopicComplete,
-    required this.onStartTopic,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.8,
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          HeadlineSmallText(plan.title),
-          const SizedBox(height: 16),
-          Expanded(
-            child: ListView.builder(
-              itemCount: plan.topics.length,
-              itemBuilder: (context, index) {
-                final topic = plan.topics[index];
-                return Card(
-                  child: ListTile(
-                    title: BodyLargeText(topic.title),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        BodyMediumText(topic.description),
-                        const SizedBox(height: 8),
-                        LinearProgressIndicator(
-                          value: topic.progressPercentage / 100,
+            child: BlocListener<StudyCubit, StudyState>(
+              listener: (context, state) {
+                // Show success message when topic is started
+                final updatedPlan = state.studyPlans.firstWhere(
+                  (p) => p.id == plan.id,
+                  orElse: () => plan,
+                );
+                if (updatedPlan != plan) {
+                  // Check if any topic changed from notStarted to inProgress
+                  for (int i = 0; i < plan.topics.length; i++) {
+                    if (i < updatedPlan.topics.length &&
+                        plan.topics[i].status == StudyTopicStatus.notStarted &&
+                        updatedPlan.topics[i].status ==
+                            StudyTopicStatus.inProgress) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Row(
+                            children: [
+                              Icon(
+                                Icons.check_circle,
+                                color:
+                                    Theme.of(context).colorScheme.onSecondary,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      '${AppLocalizations.of(context)!.topicStarted}!',
+                                      style: TextStyle(
+                                        color:
+                                            Theme.of(
+                                              context,
+                                            ).colorScheme.onSecondary,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    Text(
+                                      updatedPlan.topics[i].title,
+                                      style: TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSecondary
+                                            .withValues(alpha: 0.9),
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                           backgroundColor:
-                              Theme.of(
-                                context,
-                              ).colorScheme.surfaceContainerHighest,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            Theme.of(context).colorScheme.primary,
+                              Theme.of(context).colorScheme.secondary,
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          duration: const Duration(seconds: 4),
+                          action: SnackBarAction(
+                            label: AppLocalizations.of(context)!.takeQuiz,
+                            textColor:
+                                Theme.of(context).colorScheme.onSecondary,
+                            onPressed: () {
+                              // Close the bottom sheet and start a quiz
+                              Navigator.of(context).pop();
+                              _generateAndStartQuiz(
+                                difficulty: QuizDifficulty.medium,
+                                questionCount: 5,
+                                timeLimit: 10,
+                              );
+                            },
                           ),
                         ),
-                        const SizedBox(height: 4),
-                        BodySmallText(
-                          '${topic.progressPercentage.toInt()}% complete',
-                        ),
-                      ],
-                    ),
-                    trailing:
-                        topic.status == StudyTopicStatus.completed
-                            ? Icon(
-                              Icons.check_circle,
-                              color: Theme.of(context).colorScheme.primary,
-                            )
-                            : ElevatedButton(
-                              onPressed: () => onStartTopic(plan.id, topic.id),
-                              child: LabelMediumText(
-                                AppLocalizations.of(context)!.start,
-                              ),
-                            ),
-                  ),
-                );
+                      );
+                      break;
+                    }
+                  }
+                }
               },
+              child: BlocBuilder<StudyCubit, StudyState>(
+                builder: (context, state) {
+                  final currentPlan = state.studyPlans.firstWhere(
+                    (p) => p.id == plan.id,
+                    orElse: () => plan,
+                  );
+                  return StudyPlanTopicsSheetWidget(
+                    plan: currentPlan,
+                    studyPlans: state.studyPlans,
+                    onUpdateTopicProgress:
+                        (planId, topicId, progress) => studyCubit
+                            .updateTopicProgress(planId, topicId, progress),
+                    onMarkTopicComplete:
+                        (planId, topicId) =>
+                            studyCubit.markTopicComplete(planId, topicId),
+                    onTopicTap: _showTopicDetailsDialog,
+                  );
+                },
+              ),
             ),
           ),
-        ],
+    );
+  }
+
+  void _showTopicDetailsDialog(
+    BuildContext context,
+    StudyPlan plan,
+    StudyTopic topic,
+  ) {
+    final studyCubit = context.read<StudyCubit>();
+    showDialog(
+      context: context,
+      builder: (dialogContext) => BlocProvider.value(
+        value: studyCubit,
+        child: TopicDetailsDialogWidget(plan: plan, topic: topic),
       ),
     );
   }
 }
+

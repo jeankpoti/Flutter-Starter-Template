@@ -57,8 +57,12 @@ class _UploadHeader extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.3),
-            Theme.of(context).colorScheme.tertiaryContainer.withOpacity(0.2),
+            Theme.of(
+              context,
+            ).colorScheme.secondaryContainer.withValues(alpha: 0.3),
+            Theme.of(
+              context,
+            ).colorScheme.tertiaryContainer.withValues(alpha: 0.2),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -88,7 +92,9 @@ class _UploadHeader extends StatelessWidget {
           const SizedBox(height: 12),
           BodyMediumText(
             AppLocalizations.of(context)!.uploadDescription,
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.8),
           ),
         ],
       ),
@@ -107,7 +113,7 @@ class _ProcessingIndicator extends StatelessWidget {
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Theme.of(context).colorScheme.secondary.withOpacity(0.2),
+          color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.2),
           width: 1,
         ),
       ),
@@ -140,7 +146,7 @@ class _ProcessingIndicator extends StatelessWidget {
                       AppLocalizations.of(context)!.processingDescription,
                       color: Theme.of(
                         context,
-                      ).colorScheme.onSurface.withOpacity(0.7),
+                      ).colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
                   ],
                 ),
@@ -151,7 +157,7 @@ class _ProcessingIndicator extends StatelessWidget {
           LinearProgressIndicator(
             backgroundColor: Theme.of(
               context,
-            ).colorScheme.outline.withOpacity(0.2),
+            ).colorScheme.outline.withValues(alpha: 0.2),
             valueColor: AlwaysStoppedAnimation<Color>(
               Theme.of(context).colorScheme.secondary,
             ),
@@ -204,8 +210,12 @@ class _ProcessingStep extends StatelessWidget {
             decoration: BoxDecoration(
               color:
                   isCompleted
-                      ? Theme.of(context).colorScheme.secondary.withOpacity(0.1)
-                      : Theme.of(context).colorScheme.outline.withOpacity(0.1),
+                      ? Theme.of(
+                        context,
+                      ).colorScheme.secondary.withValues(alpha: 0.1)
+                      : Theme.of(
+                        context,
+                      ).colorScheme.outline.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color:
@@ -213,7 +223,7 @@ class _ProcessingStep extends StatelessWidget {
                         ? Theme.of(context).colorScheme.secondary
                         : Theme.of(
                           context,
-                        ).colorScheme.outline.withOpacity(0.3),
+                        ).colorScheme.outline.withValues(alpha: 0.3),
                 width: 1,
               ),
             ),
@@ -234,7 +244,9 @@ class _ProcessingStep extends StatelessWidget {
             color:
                 isCompleted
                     ? Theme.of(context).colorScheme.secondary
-                    : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                    : Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.6),
             fontWeight: isCompleted ? FontWeight.w600 : FontWeight.normal,
           ),
         ],
@@ -310,14 +322,16 @@ class _UploadOption extends StatelessWidget {
       decoration: BoxDecoration(
         color:
             isDisabled
-                ? Theme.of(context).colorScheme.surface.withOpacity(0.5)
+                ? Theme.of(context).colorScheme.surface.withValues(alpha: 0.5)
                 : Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color:
               isDisabled
-                  ? Theme.of(context).colorScheme.outline.withOpacity(0.1)
-                  : Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                  ? Theme.of(context).colorScheme.outline.withValues(alpha: 0.1)
+                  : Theme.of(
+                    context,
+                  ).colorScheme.outline.withValues(alpha: 0.2),
         ),
       ),
       child: InkWell(
@@ -332,7 +346,7 @@ class _UploadOption extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Theme.of(
                     context,
-                  ).colorScheme.secondaryContainer.withOpacity(0.3),
+                  ).colorScheme.secondaryContainer.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(
@@ -341,7 +355,7 @@ class _UploadOption extends StatelessWidget {
                       isDisabled
                           ? Theme.of(
                             context,
-                          ).colorScheme.secondary.withOpacity(0.4)
+                          ).colorScheme.secondary.withValues(alpha: 0.4)
                           : Theme.of(context).colorScheme.secondary,
                   size: 24,
                 ),
@@ -358,7 +372,7 @@ class _UploadOption extends StatelessWidget {
                           isDisabled
                               ? Theme.of(
                                 context,
-                              ).colorScheme.onSurface.withOpacity(0.4)
+                              ).colorScheme.onSurface.withValues(alpha: 0.4)
                               : Theme.of(context).colorScheme.onSurface,
                     ),
                     const SizedBox(height: 4),
@@ -368,10 +382,10 @@ class _UploadOption extends StatelessWidget {
                           isDisabled
                               ? Theme.of(
                                 context,
-                              ).colorScheme.onSurface.withOpacity(0.3)
+                              ).colorScheme.onSurface.withValues(alpha: 0.3)
                               : Theme.of(
                                 context,
-                              ).colorScheme.onSurface.withOpacity(0.7),
+                              ).colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
                   ],
                 ),
@@ -382,10 +396,10 @@ class _UploadOption extends StatelessWidget {
                     isDisabled
                         ? Theme.of(
                           context,
-                        ).colorScheme.onSurface.withOpacity(0.2)
+                        ).colorScheme.onSurface.withValues(alpha: 0.2)
                         : Theme.of(
                           context,
-                        ).colorScheme.onSurface.withOpacity(0.4),
+                        ).colorScheme.onSurface.withValues(alpha: 0.4),
                 size: 16,
               ),
             ],
@@ -441,7 +455,7 @@ class _EmptyUploads extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(
           context,
-        ).colorScheme.surfaceContainerHighest.withOpacity(0.3),
+        ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -449,17 +463,23 @@ class _EmptyUploads extends StatelessWidget {
           Icon(
             Icons.upload_file,
             size: 48,
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.4),
           ),
           const SizedBox(height: 12),
           BodyMediumText(
             AppLocalizations.of(context)!.noMaterialsUploaded,
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.6),
           ),
           const SizedBox(height: 8),
           BodySmallText(
             AppLocalizations.of(context)!.uploadFirstMaterial,
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.5),
             textAlign: TextAlign.center,
           ),
         ],
@@ -482,7 +502,7 @@ class _RecentUploadCard extends StatelessWidget {
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
         ),
       ),
       child: Padding(
@@ -536,7 +556,7 @@ class _RecentUploadCard extends StatelessWidget {
                     '${material.extractedTopics.length} ${AppLocalizations.of(context)!.topics}',
                     color: Theme.of(
                       context,
-                    ).colorScheme.onSurface.withOpacity(0.6),
+                    ).colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
                 ],
               ),

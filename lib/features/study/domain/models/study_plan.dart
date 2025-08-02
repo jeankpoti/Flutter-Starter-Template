@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:equatable/equatable.dart';
 
 enum StudyTopicStatus { notStarted, inProgress, completed, needsReview }
 
 enum StudyPlanDifficulty { beginner, intermediate, advanced }
 
-class StudyTopic {
+class StudyTopic extends Equatable {
   final String id;
   final String title;
   final String description;
@@ -94,9 +95,24 @@ class StudyTopic {
       progressPercentage: progressPercentage ?? this.progressPercentage,
     );
   }
+
+  @override
+  List<Object?> get props => [
+        id,
+        title,
+        description,
+        keyConceptsList,
+        estimatedMinutes,
+        status,
+        prerequisites,
+        aiExplanation,
+        practiceProblems,
+        completedAt,
+        progressPercentage,
+      ];
 }
 
-class StudyPlan {
+class StudyPlan extends Equatable {
   final String id;
   final String userId;
   final String title;
@@ -376,11 +392,19 @@ class StudyPlan {
   }
 
   @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    return other is StudyPlan && other.id == id;
-  }
-
-  @override
-  int get hashCode => id.hashCode;
+  List<Object?> get props => [
+        id,
+        userId,
+        title,
+        description,
+        materialIds,
+        topics,
+        difficulty,
+        totalEstimatedHours,
+        targetCompletionDate,
+        createdAt,
+        updatedAt,
+        overallProgress,
+        aiRecommendations,
+      ];
 }

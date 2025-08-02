@@ -347,6 +347,59 @@ BlocListener<FeatureCubit, FeatureState>(
 )
 ```
 
+### Equatable for State Management
+
+**IMPORTANT**: All state classes and data models used in state management MUST extend `Equatable` to ensure proper state change detection by BlocBuilder/BlocListener.
+
+#### Why Equatable is Required
+- Without Equatable, BlocBuilder won't detect changes when model properties are updated
+- Default object equality only checks references, not content
+- UI won't update immediately when state changes occur
+
+#### Implementation Pattern
+```dart
+import 'package:equatable/equatable.dart';
+
+// State class example
+class FeatureState extends Equatable {
+  final List<Item> items;
+  final bool isLoading;
+  final String? errorMsg;
+
+  const FeatureState({
+    this.items = const [],
+    this.isLoading = false,
+    this.errorMsg,
+  });
+
+  @override
+  List<Object?> get props => [items, isLoading, errorMsg];
+}
+
+// Model class example
+class Item extends Equatable {
+  final String id;
+  final String title;
+  final bool isCompleted;
+
+  const Item({
+    required this.id,
+    required this.title,
+    required this.isCompleted,
+  });
+
+  @override
+  List<Object?> get props => [id, title, isCompleted];
+}
+```
+
+#### Rules for Equatable Usage
+1. **All state classes** must extend Equatable
+2. **All model classes** used in state must extend Equatable
+3. **Include all properties** in the props getter
+4. **Use const constructors** where possible
+5. **Don't override == and hashCode** when using Equatable
+
 ## Theme and Color Guidelines
 
 The app supports both **dark mode** and **light mode** themes.

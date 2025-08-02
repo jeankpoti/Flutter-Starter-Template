@@ -1218,6 +1218,15 @@ class AppLocalizationsEs extends AppLocalizations {
       'Generar quiz con todos los materiales subidos';
 
   @override
+  String get overallProgress => 'Progreso general';
+
+  @override
+  String get continueText => 'Continuar';
+
+  @override
+  String get topicStarted => '📚 ¡Tema iniciado!';
+
+  @override
   String get materialCaptured =>
       '¡Material capturado! Iniciando análisis IA...';
 
@@ -1309,9 +1318,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String errorMarkingTopicComplete(Object error) {
     return 'Error al marcar tema como completado: $error';
   }
-
-  @override
-  String get topicStarted => '📚 ¡Tema iniciado!';
 
   @override
   String errorStartingTopic(Object error) {
@@ -1438,4 +1444,39 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get studyPlanGeneratedSuccessfully =>
       '¡Plan de estudio generado con éxito!';
+
+  @override
+  String get topicDetails => 'Detalles del tema';
+
+  @override
+  String estimatedTime(Object minutes) {
+    return 'Tiempo estimado: $minutes minutos';
+  }
+
+  @override
+  String get topicDescription => 'Descripción';
+
+  @override
+  String get keyConceptsTitle => 'Conceptos clave';
+
+  @override
+  String get aiExplanationTitle => 'Explicación IA';
+
+  @override
+  String get practiceProblemsTitle => 'Problemas de práctica';
+
+  @override
+  String get prerequisitesTitle => 'Prerrequisitos';
+
+  @override
+  String get noDescription => 'No hay descripción disponible';
+
+  @override
+  String get noPracticeProblems => 'No hay problemas de práctica disponibles';
+
+  @override
+  String get noPrerequisites => 'No se requieren prerrequisitos';
+
+  @override
+  String get noAiExplanation => 'No hay explicación IA disponible';
 }
