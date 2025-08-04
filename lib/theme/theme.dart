@@ -6,10 +6,10 @@ ThemeData lightMode = ThemeData(
   colorScheme: ColorScheme.light(
     surface: const Color(0xFFE5E2E7),
     primary: Colors.black,
-    secondary:
+    secondary: Colors.red.shade600,
+
     //  const Color(0xFF023e8a),
-    const Color(0xFF03045e),
-    // Colors.red.shade600,
+    // const Color(0xFF03045e),
     onSecondary: Colors.white,
     tertiary: Colors.grey.shade600,
     onSurface: Colors.black,

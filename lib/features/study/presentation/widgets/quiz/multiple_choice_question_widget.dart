@@ -37,14 +37,18 @@ class MultipleChoiceQuestionWidget extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: isSelected
-                      ? Theme.of(context).colorScheme.secondaryContainer
-                      : Theme.of(context).colorScheme.surface,
+                  color:
+                      isSelected
+                          ? Theme.of(context).colorScheme.secondaryContainer
+                          : Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: isSelected
-                        ? Theme.of(context).colorScheme.secondary
-                        : Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
+                    color:
+                        isSelected
+                            ? Theme.of(context).colorScheme.secondary
+                            : Theme.of(
+                              context,
+                            ).colorScheme.outline.withValues(alpha: 0.3),
                     width: isSelected ? 2 : 1,
                   ),
                 ),
@@ -56,36 +60,53 @@ class MultipleChoiceQuestionWidget extends StatelessWidget {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: isSelected
-                              ? Theme.of(context).colorScheme.secondary
-                              : Theme.of(context).colorScheme.outline,
+                          color:
+                              isSelected
+                                  ? Theme.of(context).colorScheme.secondary
+                                  : Theme.of(context).colorScheme.outline,
                           width: 2,
                         ),
-                        color: isSelected
-                            ? Theme.of(context).colorScheme.secondary
-                            : Colors.transparent,
+                        color:
+                            isSelected
+                                ? Theme.of(context).colorScheme.secondary
+                                : Colors.transparent,
                       ),
-                      child: isSelected
-                          ? const Icon(
-                              Icons.check,
-                              size: 16,
-                              color: Colors.white,
-                            )
-                          : null,
+                      child:
+                          isSelected
+                              ? const Icon(
+                                Icons.check,
+                                size: 16,
+                                color: Colors.white,
+                              )
+                              : null,
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: answer.text.contains(r'$') || answer.text.contains(r'\(')
-                          ? MathTextWidget(
-                              answer.text,
-                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                    color: Theme.of(context).colorScheme.onSurface,
-                                  ),
-                            )
-                          : BodyLargeText(
-                              answer.text,
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
+                      child:
+                          answer.text.contains(r'$') ||
+                                  answer.text.contains(r'\(')
+                              ? MathTextWidget(
+                                answer.text,
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.bodyLarge?.copyWith(
+                                  color:
+                                      isSelected
+                                          ? Colors.white
+                                          : Theme.of(
+                                            context,
+                                          ).colorScheme.onSurface,
+                                ),
+                              )
+                              : BodyLargeText(
+                                answer.text,
+                                color:
+                                    isSelected
+                                        ? Colors.white
+                                        : Theme.of(
+                                          context,
+                                        ).colorScheme.onSurface,
+                              ),
                     ),
                   ],
                 ),

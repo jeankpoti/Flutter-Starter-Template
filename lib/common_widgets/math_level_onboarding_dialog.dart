@@ -37,11 +37,12 @@ class _MathLevelOnboardingDialogState extends State<MathLevelOnboardingDialog> {
           borderRadius: BorderRadius.circular(20),
         ),
         child: Container(
-          padding: const EdgeInsets.all(24),
-          constraints: const BoxConstraints(maxWidth: 400),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
+          constraints: const BoxConstraints(maxWidth: 400, maxHeight: 600),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
               // Header
               Container(
                 padding: const EdgeInsets.all(16),
@@ -136,6 +137,7 @@ class _MathLevelOnboardingDialogState extends State<MathLevelOnboardingDialog> {
                 ),
               ),
             ],
+            ),
           ),
         ),
       ),

@@ -465,5 +465,21 @@
   "reportDisclaimer": "Reports are reviewed to improve content quality. False reports may result in account restrictions.",
   "mathSolution": "Math Solution",
   "requiredFieldsNote": "Fields marked with * are required",
-  "descriptionTooShort": "Description must be at least 10 characters long"
+  "descriptionTooShort": "Description must be at least 10 characters long",
+  "permissionDenied": "Permission Denied",
+  "permissionDeniedMessage": "Please enable {permission} access in your device settings to use this feature",
+  "@permissionDeniedMessage": {
+    "placeholders": {
+      "permission": {
+        "type": "String"
+      }
+    }
+  },
+  "openSettings": "Open Settings",
+  "camera": "Camera",
+  "photoLibrary": "Photo Library",
+  "errorTakingPicture": "Failed to take picture",
+  "errorSelectingPicture": "Failed to select picture",
+  "takePicture": "Take Picture",
+  "uploadPicture": "Upload Picture"
 }

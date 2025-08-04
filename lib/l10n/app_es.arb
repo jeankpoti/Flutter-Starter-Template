@@ -465,5 +465,21 @@
   "reportDisclaimer": "Los reportes se revisan para mejorar la calidad del contenido. Los reportes falsos pueden resultar en restricciones de cuenta.",
   "mathSolution": "Solución matemática",
   "requiredFieldsNote": "Los campos marcados con * son obligatorios",
-  "descriptionTooShort": "La descripción debe tener al menos 10 caracteres"
+  "descriptionTooShort": "La descripción debe tener al menos 10 caracteres",
+  "permissionDenied": "Permiso denegado",
+  "permissionDeniedMessage": "Por favor habilita el acceso a {permission} en la configuración de tu dispositivo para usar esta función",
+  "@permissionDeniedMessage": {
+    "placeholders": {
+      "permission": {
+        "type": "String"
+      }
+    }
+  },
+  "openSettings": "Abrir configuración",
+  "camera": "Cámara",
+  "photoLibrary": "Biblioteca de fotos",
+  "errorTakingPicture": "Error al tomar la foto",
+  "errorSelectingPicture": "Error al seleccionar la foto",
+  "takePicture": "Tomar foto",
+  "uploadPicture": "Subir foto"
 }

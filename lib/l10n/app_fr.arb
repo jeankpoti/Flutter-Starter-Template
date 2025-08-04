@@ -464,5 +464,21 @@
   "reportDisclaimer": "Les signalements sont examinés pour améliorer la qualité du contenu. Les faux signalements peuvent entraîner des restrictions de compte.",
   "mathSolution": "Solution mathématique",
   "requiredFieldsNote": "Les champs marqués d'un * sont obligatoires",
-  "descriptionTooShort": "La description doit contenir au moins 10 caractères"
+  "descriptionTooShort": "La description doit contenir au moins 10 caractères",
+  "permissionDenied": "Permission refusée",
+  "permissionDeniedMessage": "Veuillez activer l'accès {permission} dans les paramètres de votre appareil pour utiliser cette fonctionnalité",
+  "@permissionDeniedMessage": {
+    "placeholders": {
+      "permission": {
+        "type": "String"
+      }
+    }
+  },
+  "openSettings": "Ouvrir les paramètres",
+  "camera": "Caméra",
+  "photoLibrary": "Photothèque",
+  "errorTakingPicture": "Échec de la prise de photo",
+  "errorSelectingPicture": "Échec de la sélection de photo",
+  "takePicture": "Prendre une photo",
+  "uploadPicture": "Télécharger une photo"
 }

@@ -2775,6 +2775,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Description must be at least 10 characters long'**
   String get descriptionTooShort;
+
+  /// No description provided for @permissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission Denied'**
+  String get permissionDenied;
+
+  /// No description provided for @permissionDeniedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enable {permission} access in your device settings to use this feature'**
+  String permissionDeniedMessage(String permission);
+
+  /// No description provided for @errorTakingPicture.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to take picture'**
+  String get errorTakingPicture;
+
+  /// No description provided for @errorSelectingPicture.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to select picture'**
+  String get errorSelectingPicture;
+
+  /// No description provided for @takePicture.
+  ///
+  /// In en, this message translates to:
+  /// **'Take Picture'**
+  String get takePicture;
+
+  /// No description provided for @uploadPicture.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload Picture'**
+  String get uploadPicture;
 }
 
 class _AppLocalizationsDelegate

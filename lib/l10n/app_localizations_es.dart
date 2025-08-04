@@ -1537,4 +1537,24 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get descriptionTooShort =>
       'La descripción debe tener al menos 10 caracteres';
+
+  @override
+  String get permissionDenied => 'Permiso denegado';
+
+  @override
+  String permissionDeniedMessage(String permission) {
+    return 'Por favor habilita el acceso a $permission en la configuración de tu dispositivo para usar esta función';
+  }
+
+  @override
+  String get errorTakingPicture => 'Error al tomar la foto';
+
+  @override
+  String get errorSelectingPicture => 'Error al seleccionar la foto';
+
+  @override
+  String get takePicture => 'Tomar foto';
+
+  @override
+  String get uploadPicture => 'Subir foto';
 }

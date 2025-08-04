@@ -363,10 +363,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'Veuillez activer l\'accès dans les paramètres de votre appareil pour continuer.';
 
   @override
-  String get camera => 'Appareil photo';
+  String get camera => 'Caméra';
 
   @override
-  String get photoLibrary => 'Bibliothèque de photos';
+  String get photoLibrary => 'Photothèque';
 
   @override
   String get openSettings => 'Ouvrir les paramètres';
@@ -1549,4 +1549,24 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get descriptionTooShort =>
       'La description doit contenir au moins 10 caractères';
+
+  @override
+  String get permissionDenied => 'Permission refusée';
+
+  @override
+  String permissionDeniedMessage(String permission) {
+    return 'Veuillez activer l\'accès $permission dans les paramètres de votre appareil pour utiliser cette fonctionnalité';
+  }
+
+  @override
+  String get errorTakingPicture => 'Échec de la prise de photo';
+
+  @override
+  String get errorSelectingPicture => 'Échec de la sélection de photo';
+
+  @override
+  String get takePicture => 'Prendre une photo';
+
+  @override
+  String get uploadPicture => 'Télécharger une photo';
 }

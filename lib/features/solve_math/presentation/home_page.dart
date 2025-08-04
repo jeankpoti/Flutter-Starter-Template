@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../l10n/app_localizations.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as path;
@@ -31,12 +32,18 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   File? _imageFile;
   final ImagePicker _picker = ImagePicker();
   final TextEditingController _textController = TextEditingController();
   late TabController _tabController;
-  bool _isLoading = false, _isCamera = false, _isGallery = false;
+  bool _isLoading = false,
+      _isCamera = false,
+      _isGallery = false,
+      _isFirstTimeCamera = true,
+      _isFirstTimeGallery = true,
+      _pendingCameraPermission = false,
+      _pendingGalleryPermission = false;
 
   // Design system spacing constants
   static const double _spacing4 = 16.0;
@@ -46,13 +53,457 @@ class _HomePageState extends State<HomePage>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    // Register as an observer to detect app lifecycle changes
+    WidgetsBinding.instance.addObserver(this);
+
+    // Load the first time flags from SharedPreferences
+    _loadFirstTimeFlags();
   }
 
   @override
   void dispose() {
+    // Clean up observer when the widget is disposed
+    WidgetsBinding.instance.removeObserver(this);
     _textController.dispose();
     _tabController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    try {
+      if (state == AppLifecycleState.resumed ||
+          state == AppLifecycleState.inactive) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) _checkPendingPermissions();
+        });
+      }
+    } catch (e, stack) {
+      // log('Error in lifecycle state: $e\n$stack');
+    }
+  }
+
+  Future<void> _checkPendingPermissions() async {
+    if (_pendingCameraPermission) {
+      await Future.delayed(const Duration(milliseconds: 500));
+      final cameraStatus = await Permission.camera.status;
+
+      if (mounted) {
+        setState(() {
+          _pendingCameraPermission = false;
+          _isLoading = false;
+        });
+      }
+
+      if (cameraStatus.isGranted && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Camera permission granted. Please take the picture again.',
+            ),
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
+    }
+
+    if (_pendingGalleryPermission) {
+      await Future.delayed(const Duration(milliseconds: 500));
+      final photoStatus = await Permission.photos.status;
+
+      if (mounted) {
+        setState(() {
+          _pendingGalleryPermission = false;
+          _isLoading = false;
+        });
+      }
+
+      if (photoStatus.isGranted && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Photo library permission granted. Please upload the picture again.',
+            ),
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
+    }
+  }
+
+  // Add these new helper methods
+  // Future<void> _takePictureAfterPermissionGranted() async {
+  //   try {
+  //     // Take the picture
+  //     final XFile? photo = await _picker.pickImage(
+  //       source: ImageSource.camera,
+  //       maxWidth: 1800,
+  //       maxHeight: 1800,
+  //       imageQuality: 85,
+  //     );
+
+  //     if (photo == null) {
+  //       // User canceled the picker
+  //       setState(() => _isLoading = false);
+  //       return;
+  //     }
+
+  //     // Create secure local path to save the image
+  //     final Directory appDir = await getApplicationDocumentsDirectory();
+  //     final String fileName = path.basename(photo.path);
+  //     final String secureFilePath = path.join(appDir.path, fileName);
+
+  //     // Copy the image to the secure location
+  //     final File localImage = File(secureFilePath);
+  //     await localImage.writeAsBytes(await photo.readAsBytes());
+
+  //     setState(() {
+  //       _imageFile = localImage;
+  //       _isLoading = false;
+  //     });
+  //   } catch (e) {
+  //     log('Error in _takePictureAfterPermissionGranted: $e');
+  //     setState(() => _isLoading = false);
+  //   }
+  // }
+
+  Future<void> _takePictureAfterPermissionGranted() async {
+    try {
+      final XFile? photo = await _picker.pickImage(
+        source: ImageSource.camera,
+        maxWidth: 1800,
+        maxHeight: 1800,
+        imageQuality: 85,
+      );
+
+      if (!mounted) return;
+
+      if (photo == null) {
+        if (mounted) setState(() => _isLoading = false);
+        return;
+      }
+
+      final Directory appDir = await getApplicationDocumentsDirectory();
+      final String fileName = path.basename(photo.path);
+      final String secureFilePath = path.join(appDir.path, fileName);
+
+      final File localImage = File(secureFilePath);
+      await localImage.writeAsBytes(await photo.readAsBytes());
+
+      if (mounted) {
+        setState(() {
+          _imageFile = localImage;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      // log('Error: $e');
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _uploadPictureAfterPermissionGranted() async {
+    try {
+      final XFile? image = await _picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 1800,
+        maxHeight: 1800,
+        imageQuality: 85,
+      );
+
+      if (!mounted) return;
+
+      if (image == null) {
+        if (mounted) setState(() => _isLoading = false);
+        return;
+      }
+
+      final Directory appDir = await getApplicationDocumentsDirectory();
+      final String fileName = path.basename(image.path);
+      final String secureFilePath = path.join(appDir.path, fileName);
+
+      final File localImage = File(secureFilePath);
+      await localImage.writeAsBytes(await image.readAsBytes());
+
+      if (mounted) {
+        setState(() {
+          _imageFile = localImage;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      // log('Error in _uploadPictureAfterPermissionGranted: \$e');
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  // Future<void> _uploadPictureAfterPermissionGranted() async {
+  //   try {
+  //     // Pick from gallery
+  //     final XFile? image = await _picker.pickImage(
+  //       source: ImageSource.gallery,
+  //       maxWidth: 1800,
+  //       maxHeight: 1800,
+  //       imageQuality: 85,
+  //     );
+
+  //     if (image == null) {
+  //       // User canceled the picker
+  //       setState(() => _isLoading = false);
+  //       return;
+  //     }
+
+  //     // Create secure local path
+  //     final Directory appDir = await getApplicationDocumentsDirectory();
+  //     final String fileName = path.basename(image.path);
+  //     final String secureFilePath = path.join(appDir.path, fileName);
+
+  //     // Copy the image to secure location
+  //     final File localImage = File(secureFilePath);
+  //     await localImage.writeAsBytes(await image.readAsBytes());
+
+  //     setState(() {
+  //       _imageFile = localImage;
+  //       _isLoading = false;
+  //     });
+  //   } catch (e) {
+  //     log('Error in _uploadPictureAfterPermissionGranted: $e');
+  //     setState(() => _isLoading = false);
+  //   }
+  // }
+
+  Future<void> _loadFirstTimeFlags() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isFirstTimeCamera = prefs.getBool('isFirstTimeCamera') ?? true;
+      _isFirstTimeGallery = prefs.getBool('isFirstTimeGallery') ?? true;
+    });
+  }
+
+  Future<void> _takePicture() async {
+    setState(() {
+      _isGallery = false;
+      _isLoading = true;
+      _isCamera = true;
+    });
+
+    try {
+      // Initialize to a default; will be overwritten by platform-specific requests.
+      PermissionStatus cameraStatus = PermissionStatus.denied;
+      // Request camera permission
+      if (Platform.isAndroid) {
+        cameraStatus = await Permission.camera.request();
+
+        if (!_isFirstTimeCamera) {
+          if (cameraStatus.isDenied || cameraStatus.isPermanentlyDenied) {
+            setState(() {
+              _pendingCameraPermission =
+                  true; // Set the flag to check when app resumes
+            });
+            _showPermissionDeniedDialog('Camera');
+            setState(() => _isLoading = false);
+            return;
+          }
+        }
+      } else if (Platform.isIOS) {
+        cameraStatus = await Permission.camera.request();
+
+        // log('cameraStatus $cameraStatus');
+
+        if (!_isFirstTimeCamera) {
+          if (cameraStatus.isDenied || cameraStatus.isPermanentlyDenied) {
+            setState(() {
+              _pendingCameraPermission =
+                  true; // Set the flag to check when app resumes
+            });
+            _showPermissionDeniedDialog('Camera');
+            setState(() => _isLoading = false);
+            return;
+          }
+        }
+      }
+
+      // If it WAS the first time, update the flag and save it.
+      if (_isFirstTimeCamera) {
+        setState(() => _isFirstTimeCamera = false);
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('isFirstTimeCamera', false);
+      }
+
+      // If permission is currently denied (e.g., denied on first attempt and no dialog shown yet, or denied again),
+      // do not proceed.
+      if (cameraStatus.isDenied || cameraStatus.isPermanentlyDenied) {
+        setState(() => _isLoading = false);
+        return;
+      }
+
+      // Take the picture
+      await _takePictureAfterPermissionGranted();
+
+      // final XFile? photo = await _picker.pickImage(
+      //   source: ImageSource.camera,
+      //   maxWidth: 1800,
+      //   maxHeight: 1800,
+      //   imageQuality: 85, // Adjust quality for size/bandwidth concerns
+      // );
+
+      // if (photo == null) {
+      //   // User canceled the picker
+      //   setState(() => _isLoading = false);
+      //   return;
+      // }
+
+      // // Create secure local path to save the image
+      // final Directory appDir = await getApplicationDocumentsDirectory();
+      // final String fileName = path.basename(photo.path);
+      // final String secureFilePath = path.join(appDir.path, fileName);
+
+      // // Copy the image to the secure location
+      // final File localImage = File(secureFilePath);
+      // await localImage.writeAsBytes(await photo.readAsBytes());
+
+      // setState(() {
+      //   _imageFile = localImage;
+      //   _isLoading = false;
+      // });
+
+      // Here you would typically process the image for animal identification
+      // processImage(_imageFile);
+    } catch (e) {
+      setState(() => _isLoading = false);
+      // _showErrorDialog('Failed to take picture');
+    }
+  }
+
+  Future<void> _uploadPicture() async {
+    setState(() {
+      _isCamera = false;
+      _isLoading = true;
+      _isGallery = true;
+    });
+
+    try {
+      // Initialize to a default; will be overwritten by platform-specific requests.
+      PermissionStatus photoStatus = PermissionStatus.denied;
+
+      // Request photo library permission
+      if (Platform.isAndroid) {
+        photoStatus = await Permission.photos.request();
+
+        if (!_isFirstTimeGallery) {
+          if (photoStatus.isDenied || photoStatus.isPermanentlyDenied) {
+            setState(() {
+              _pendingGalleryPermission =
+                  true; // Set the flag to check when app resumes
+            });
+            _showPermissionDeniedDialog('Photo Library');
+            setState(() => _isLoading = false);
+            return;
+          }
+        }
+      } else if (Platform.isIOS) {
+        photoStatus = await Permission.photos.request();
+
+        if (!_isFirstTimeGallery) {
+          if (photoStatus.isDenied || photoStatus.isPermanentlyDenied) {
+            setState(() {
+              _pendingGalleryPermission =
+                  true; // Set the flag to check when app resumes
+            });
+            _showPermissionDeniedDialog('Photo Library');
+            setState(() => _isLoading = false);
+            return;
+          }
+        }
+      }
+
+      // If it WAS the first time, update the flag and save it.
+      if (_isFirstTimeGallery) {
+        setState(() => _isFirstTimeGallery = false);
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('isFirstTimeGallery', false);
+      }
+
+      // If permission is currently denied (e.g., denied on first attempt and no dialog shown yet, or denied again),
+      // do not proceed.
+      if (photoStatus.isDenied || photoStatus.isPermanentlyDenied) {
+        setState(() => _isLoading = false);
+        return;
+      }
+
+      // Pick from gallery
+      await _uploadPictureAfterPermissionGranted();
+      // final XFile? image = await _picker.pickImage(
+      //   source: ImageSource.gallery,
+      //   maxWidth: 1800,
+      //   maxHeight: 1800,
+      //   imageQuality: 85,
+      // );
+
+      // if (image == null) {
+      //   // User canceled the picker
+      //   setState(() => _isLoading = false);
+      //   return;
+      // }
+
+      // // Create secure local path
+      // final Directory appDir = await getApplicationDocumentsDirectory();
+      // final String fileName = path.basename(image.path);
+      // final String secureFilePath = path.join(appDir.path, fileName);
+
+      // // Copy the image to secure location
+      // final File localImage = File(secureFilePath);
+      // await localImage.writeAsBytes(await image.readAsBytes());
+
+      // setState(() {
+      //   _imageFile = localImage;
+      //   _isLoading = false;
+      // });
+
+      // Process the image
+      // processImage(_imageFile);
+    } catch (e) {
+      setState(() => _isLoading = false);
+      // _showErrorDialog('Failed to upload picture');
+    }
+  }
+
+  void _showPermissionDeniedDialog(String permissionType) {
+    if (!mounted) return;
+    showDialog(
+      context: context,
+      builder:
+          (ctx) => AlertDialog(
+            title: Text('$permissionType Permission Denied'),
+            content: Text(
+              'Please enable $permissionType access in your device settings to use this feature.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                  if (mounted) {
+                    setState(() {
+                      _isCamera = false;
+                      _isGallery = false;
+                      _isLoading = false;
+                    });
+                  }
+                },
+                child: const Text('Close'),
+              ),
+              TextButton(
+                onPressed: () {
+                  openAppSettings();
+                  // Future.delayed(Duration(milliseconds: 500), () => exit(0));
+
+                  Navigator.of(ctx).pop();
+                },
+                child: const Text('Open Settings'),
+              ),
+            ],
+          ),
+    );
   }
 
   Future<void> _handleSubscriptionAndSolve({
@@ -95,148 +546,45 @@ class _HomePageState extends State<HomePage>
     }
   }
 
-  Future<void> _takePicture() async {
-    setState(() {
-      _isGallery = false;
-      _isLoading = true;
-      _isCamera = true;
-    });
-
-    try {
-      if (Platform.isAndroid) {
-        final PermissionStatus photosStatus = await Permission.photos.request();
-        if (photosStatus.isDenied || photosStatus.isPermanentlyDenied) {
-          _showPermissionDeniedDialog('Photo Library');
-          setState(() => _isLoading = false);
-          return;
-        }
-      }
-
-      final XFile? photo = await _picker.pickImage(
-        source: ImageSource.camera,
-        maxWidth: 2400,
-        maxHeight: 2400,
-        imageQuality: 85,
-        preferredCameraDevice: CameraDevice.rear,
-      );
-
-      if (photo == null) {
-        setState(() => _isLoading = false);
-        return;
-      }
-
-      final Directory appDir = await getApplicationDocumentsDirectory();
-      final String fileName = path.basename(photo.path);
-      final String secureFilePath = path.join(appDir.path, fileName);
-
-      final File localImage = File(secureFilePath);
-      await localImage.writeAsBytes(await photo.readAsBytes());
-
-      setState(() {
-        _imageFile = localImage;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() => _isLoading = false);
-      if (mounted) {
-        _showSnackBarMessage(
-          AppLocalizations.of(context)!.takePictureError,
-          isError: true,
-        );
-      }
-    }
-  }
-
-  Future<void> _uploadPicture() async {
-    setState(() {
-      _isCamera = false;
-      _isLoading = true;
-      _isGallery = true;
-    });
-
-    try {
-      if (Platform.isAndroid) {
-        final PermissionStatus cameraStatus = await Permission.camera.request();
-        if (cameraStatus.isDenied || cameraStatus.isPermanentlyDenied) {
-          _showPermissionDeniedDialog('Camera');
-          setState(() => _isLoading = false);
-          return;
-        }
-      }
-
-      final XFile? image = await _picker.pickImage(
-        source: ImageSource.gallery,
-        maxWidth: 2400,
-        maxHeight: 2400,
-        imageQuality: 85,
-      );
-
-      if (image == null) {
-        setState(() => _isLoading = false);
-        return;
-      }
-
-      final Directory appDir = await getApplicationDocumentsDirectory();
-      final String fileName = path.basename(image.path);
-      final String secureFilePath = path.join(appDir.path, fileName);
-
-      final File localImage = File(secureFilePath);
-      await localImage.writeAsBytes(await image.readAsBytes());
-
-      setState(() {
-        _imageFile = localImage;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() => _isLoading = false);
-      if (mounted) {
-        _showSnackBarMessage(
-          AppLocalizations.of(context)!.uploadPictureError,
-          isError: true,
-        );
-      }
-    }
-  }
-
-  void _showPermissionDeniedDialog(String permissionType) {
-    showDialog(
-      context: context,
-      builder:
-          (ctx) => AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12.0),
-            ),
-            title: TitleLargeText(
-              '$permissionType ${AppLocalizations.of(context)!.permissionRequired}',
-            ),
-            content: BodyMediumText(
-              AppLocalizations.of(context)!.enableAccessMessage,
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(ctx).pop(),
-                child: LabelLargeText(
-                  AppLocalizations.of(context)!.cancel,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                  openAppSettings();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                ),
-                child: LabelLargeText(
-                  AppLocalizations.of(context)!.openSettings,
-                ),
-              ),
-            ],
-          ),
-    );
-  }
+  // void _showPermissionDeniedDialog(String permissionType) {
+  //   showDialog(
+  //     context: context,
+  //     builder:
+  //         (ctx) => AlertDialog(
+  //           shape: RoundedRectangleBorder(
+  //             borderRadius: BorderRadius.circular(12.0),
+  //           ),
+  //           title: TitleLargeText(
+  //             '$permissionType ${AppLocalizations.of(context)!.permissionRequired}',
+  //           ),
+  //           content: BodyMediumText(
+  //             AppLocalizations.of(context)!.enableAccessMessage,
+  //           ),
+  //           actions: [
+  //             TextButton(
+  //               onPressed: () => Navigator.of(ctx).pop(),
+  //               child: LabelLargeText(
+  //                 AppLocalizations.of(context)!.cancel,
+  //                 color: Theme.of(context).colorScheme.onSurface,
+  //               ),
+  //             ),
+  //             ElevatedButton(
+  //               onPressed: () {
+  //                 Navigator.of(ctx).pop();
+  //                 openAppSettings();
+  //               },
+  //               style: ElevatedButton.styleFrom(
+  //                 backgroundColor: Theme.of(context).colorScheme.primary,
+  //                 foregroundColor: Theme.of(context).colorScheme.onPrimary,
+  //               ),
+  //               child: LabelLargeText(
+  //                 AppLocalizations.of(context)!.openSettings,
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //   );
+  // }
 
   void _showSnackBarMessage(String message, {bool isError = false}) {
     if (!mounted) return;

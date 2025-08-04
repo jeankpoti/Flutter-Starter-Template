@@ -26,6 +26,7 @@ import 'features/solve_math/presentation/solve_math_cubit.dart';
 import 'features/subscription/data/repository/revenue_cat_repository.dart';
 import 'features/subscription/presentation/subscription_cubit.dart';
 import 'features/subscription/presentation/subscription_page.dart';
+import 'features/common/presentation/permission_cubit.dart';
 import 'firebase_options.dart';
 import 'main_page.dart';
 import 'onboarding_page.dart';
@@ -75,6 +76,10 @@ void main() async {
         BlocProvider<SubscriptionCubit>(
           create: (context) => SubscriptionCubit(subscriptionRepository),
         ),
+
+        // BlocProvider<PermissionCubit>(
+        //   create: (context) => PermissionCubit(),
+        // ),
       ],
       child: const MyApp(),
     ),
