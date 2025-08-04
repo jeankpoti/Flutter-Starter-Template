@@ -3,12 +3,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:math_ai/common_widgets/permission_denied_dialog_widget.dart';
 import '../../../l10n/app_localizations.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:path/path.dart' as path;
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
 
 import '../../../common_widgets/app_bar_widget.dart';
@@ -18,11 +14,14 @@ import '../../../common_widgets/scan_effect_loader_widget.dart';
 import '../../../common_widgets/text_widgets.dart';
 import '../../../common_widgets/report_content_dialog_widget.dart';
 import '../../common/domain/models/content_report.dart';
+import '../../common/presentation/permission_cubit.dart';
+import '../../common/presentation/mixins/permission_lifecycle_mixin.dart';
 import '../../../utils/responsive.dart';
 import '../../subscription/presentation/subscription_cubit.dart';
 import 'firebase_collection_cubit.dart';
 import 'solve_math_cubit.dart';
 import 'solve_math_state.dart';
+import 'image_capture_cubit.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -32,18 +31,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage>
-    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
-  File? _imageFile;
-  final ImagePicker _picker = ImagePicker();
+    with
+        SingleTickerProviderStateMixin,
+        WidgetsBindingObserver,
+        PermissionLifecycleMixin {
   final TextEditingController _textController = TextEditingController();
   late TabController _tabController;
-  bool _isLoading = false,
-      _isCamera = false,
-      _isGallery = false,
-      _isFirstTimeCamera = true,
-      _isFirstTimeGallery = true,
-      _pendingCameraPermission = false,
-      _pendingGalleryPermission = false;
 
   // Design system spacing constants
   static const double _spacing4 = 16.0;
@@ -53,463 +46,130 @@ class _HomePageState extends State<HomePage>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    // Register as an observer to detect app lifecycle changes
-    WidgetsBinding.instance.addObserver(this);
-
-    // Load the first time flags from SharedPreferences
-    _loadFirstTimeFlags();
+    // Initialize permissions
+    context.read<PermissionCubit>().initializePermissions();
   }
 
   @override
   void dispose() {
-    // Clean up observer when the widget is disposed
-    WidgetsBinding.instance.removeObserver(this);
     _textController.dispose();
     _tabController.dispose();
     super.dispose();
   }
 
+  // Override from PermissionLifecycleMixin - handles showing messages
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    try {
-      if (state == AppLifecycleState.resumed ||
-          state == AppLifecycleState.inactive) {
+    super.didChangeAppLifecycleState(state);
+
+    // Additional handling for permission state messages
+    if (state == AppLifecycleState.resumed) {
+      final permissionState = context.read<PermissionCubit>().state;
+      if (permissionState.message != null && mounted) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) _checkPendingPermissions();
+          context.read<ImageCaptureCubit>().resetLoadingState();
+          _showSnackBarMessage(permissionState.message!);
+          context.read<PermissionCubit>().clearMessage();
         });
       }
-    } catch (e, stack) {
-      // log('Error in lifecycle state: $e\n$stack');
     }
-  }
-
-  Future<void> _checkPendingPermissions() async {
-    if (_pendingCameraPermission) {
-      await Future.delayed(const Duration(milliseconds: 500));
-      final cameraStatus = await Permission.camera.status;
-
-      if (mounted) {
-        setState(() {
-          _pendingCameraPermission = false;
-          _isLoading = false;
-        });
-      }
-
-      if (cameraStatus.isGranted && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Camera permission granted. Please take the picture again.',
-            ),
-            duration: Duration(seconds: 3),
-          ),
-        );
-      }
-    }
-
-    if (_pendingGalleryPermission) {
-      await Future.delayed(const Duration(milliseconds: 500));
-      final photoStatus = await Permission.photos.status;
-
-      if (mounted) {
-        setState(() {
-          _pendingGalleryPermission = false;
-          _isLoading = false;
-        });
-      }
-
-      if (photoStatus.isGranted && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Photo library permission granted. Please upload the picture again.',
-            ),
-            duration: Duration(seconds: 3),
-          ),
-        );
-      }
-    }
-  }
-
-  // Add these new helper methods
-  // Future<void> _takePictureAfterPermissionGranted() async {
-  //   try {
-  //     // Take the picture
-  //     final XFile? photo = await _picker.pickImage(
-  //       source: ImageSource.camera,
-  //       maxWidth: 1800,
-  //       maxHeight: 1800,
-  //       imageQuality: 85,
-  //     );
-
-  //     if (photo == null) {
-  //       // User canceled the picker
-  //       setState(() => _isLoading = false);
-  //       return;
-  //     }
-
-  //     // Create secure local path to save the image
-  //     final Directory appDir = await getApplicationDocumentsDirectory();
-  //     final String fileName = path.basename(photo.path);
-  //     final String secureFilePath = path.join(appDir.path, fileName);
-
-  //     // Copy the image to the secure location
-  //     final File localImage = File(secureFilePath);
-  //     await localImage.writeAsBytes(await photo.readAsBytes());
-
-  //     setState(() {
-  //       _imageFile = localImage;
-  //       _isLoading = false;
-  //     });
-  //   } catch (e) {
-  //     log('Error in _takePictureAfterPermissionGranted: $e');
-  //     setState(() => _isLoading = false);
-  //   }
-  // }
-
-  Future<void> _takePictureAfterPermissionGranted() async {
-    try {
-      final XFile? photo = await _picker.pickImage(
-        source: ImageSource.camera,
-        maxWidth: 1800,
-        maxHeight: 1800,
-        imageQuality: 85,
-      );
-
-      if (!mounted) return;
-
-      if (photo == null) {
-        if (mounted) setState(() => _isLoading = false);
-        return;
-      }
-
-      final Directory appDir = await getApplicationDocumentsDirectory();
-      final String fileName = path.basename(photo.path);
-      final String secureFilePath = path.join(appDir.path, fileName);
-
-      final File localImage = File(secureFilePath);
-      await localImage.writeAsBytes(await photo.readAsBytes());
-
-      if (mounted) {
-        setState(() {
-          _imageFile = localImage;
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      // log('Error: $e');
-      if (mounted) setState(() => _isLoading = false);
-    }
-  }
-
-  Future<void> _uploadPictureAfterPermissionGranted() async {
-    try {
-      final XFile? image = await _picker.pickImage(
-        source: ImageSource.gallery,
-        maxWidth: 1800,
-        maxHeight: 1800,
-        imageQuality: 85,
-      );
-
-      if (!mounted) return;
-
-      if (image == null) {
-        if (mounted) setState(() => _isLoading = false);
-        return;
-      }
-
-      final Directory appDir = await getApplicationDocumentsDirectory();
-      final String fileName = path.basename(image.path);
-      final String secureFilePath = path.join(appDir.path, fileName);
-
-      final File localImage = File(secureFilePath);
-      await localImage.writeAsBytes(await image.readAsBytes());
-
-      if (mounted) {
-        setState(() {
-          _imageFile = localImage;
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      // log('Error in _uploadPictureAfterPermissionGranted: \$e');
-      if (mounted) setState(() => _isLoading = false);
-    }
-  }
-
-  // Future<void> _uploadPictureAfterPermissionGranted() async {
-  //   try {
-  //     // Pick from gallery
-  //     final XFile? image = await _picker.pickImage(
-  //       source: ImageSource.gallery,
-  //       maxWidth: 1800,
-  //       maxHeight: 1800,
-  //       imageQuality: 85,
-  //     );
-
-  //     if (image == null) {
-  //       // User canceled the picker
-  //       setState(() => _isLoading = false);
-  //       return;
-  //     }
-
-  //     // Create secure local path
-  //     final Directory appDir = await getApplicationDocumentsDirectory();
-  //     final String fileName = path.basename(image.path);
-  //     final String secureFilePath = path.join(appDir.path, fileName);
-
-  //     // Copy the image to secure location
-  //     final File localImage = File(secureFilePath);
-  //     await localImage.writeAsBytes(await image.readAsBytes());
-
-  //     setState(() {
-  //       _imageFile = localImage;
-  //       _isLoading = false;
-  //     });
-  //   } catch (e) {
-  //     log('Error in _uploadPictureAfterPermissionGranted: $e');
-  //     setState(() => _isLoading = false);
-  //   }
-  // }
-
-  Future<void> _loadFirstTimeFlags() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _isFirstTimeCamera = prefs.getBool('isFirstTimeCamera') ?? true;
-      _isFirstTimeGallery = prefs.getBool('isFirstTimeGallery') ?? true;
-    });
   }
 
   Future<void> _takePicture() async {
-    setState(() {
-      _isGallery = false;
-      _isLoading = true;
-      _isCamera = true;
-    });
+    // Capture context-dependent values before async operation
+    final imageCaptureCubit = context.read<ImageCaptureCubit>();
 
-    try {
-      // Initialize to a default; will be overwritten by platform-specific requests.
-      PermissionStatus cameraStatus = PermissionStatus.denied;
-      // Request camera permission
-      if (Platform.isAndroid) {
-        cameraStatus = await Permission.camera.request();
+    final handled = await imageCaptureCubit.captureFromCamera();
 
-        if (!_isFirstTimeCamera) {
-          if (cameraStatus.isDenied || cameraStatus.isPermanentlyDenied) {
-            setState(() {
-              _pendingCameraPermission =
-                  true; // Set the flag to check when app resumes
-            });
-            _showPermissionDeniedDialog('Camera');
-            setState(() => _isLoading = false);
-            return;
-          }
-        }
-      } else if (Platform.isIOS) {
-        cameraStatus = await Permission.camera.request();
+    if (!mounted) return;
 
-        // log('cameraStatus $cameraStatus');
-
-        if (!_isFirstTimeCamera) {
-          if (cameraStatus.isDenied || cameraStatus.isPermanentlyDenied) {
-            setState(() {
-              _pendingCameraPermission =
-                  true; // Set the flag to check when app resumes
-            });
-            _showPermissionDeniedDialog('Camera');
-            setState(() => _isLoading = false);
-            return;
-          }
-        }
+    if (!handled) {
+      // Show permission dialog
+      if (mounted) {
+        PermissionDeniedDialogWidget.show(
+          context: context,
+          permissionType: 'Camera',
+        );
       }
-
-      // If it WAS the first time, update the flag and save it.
-      if (_isFirstTimeCamera) {
-        setState(() => _isFirstTimeCamera = false);
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setBool('isFirstTimeCamera', false);
-      }
-
-      // If permission is currently denied (e.g., denied on first attempt and no dialog shown yet, or denied again),
-      // do not proceed.
-      if (cameraStatus.isDenied || cameraStatus.isPermanentlyDenied) {
-        setState(() => _isLoading = false);
-        return;
-      }
-
-      // Take the picture
-      await _takePictureAfterPermissionGranted();
-
-      // final XFile? photo = await _picker.pickImage(
-      //   source: ImageSource.camera,
-      //   maxWidth: 1800,
-      //   maxHeight: 1800,
-      //   imageQuality: 85, // Adjust quality for size/bandwidth concerns
-      // );
-
-      // if (photo == null) {
-      //   // User canceled the picker
-      //   setState(() => _isLoading = false);
-      //   return;
-      // }
-
-      // // Create secure local path to save the image
-      // final Directory appDir = await getApplicationDocumentsDirectory();
-      // final String fileName = path.basename(photo.path);
-      // final String secureFilePath = path.join(appDir.path, fileName);
-
-      // // Copy the image to the secure location
-      // final File localImage = File(secureFilePath);
-      // await localImage.writeAsBytes(await photo.readAsBytes());
-
-      // setState(() {
-      //   _imageFile = localImage;
-      //   _isLoading = false;
-      // });
-
-      // Here you would typically process the image for animal identification
-      // processImage(_imageFile);
-    } catch (e) {
-      setState(() => _isLoading = false);
-      // _showErrorDialog('Failed to take picture');
+    } else if (imageCaptureCubit.state.errorMessage != null && mounted) {
+      _showSnackBarMessage(
+        imageCaptureCubit.state.errorMessage!,
+        isError: true,
+      );
     }
   }
 
   Future<void> _uploadPicture() async {
-    setState(() {
-      _isCamera = false;
-      _isLoading = true;
-      _isGallery = true;
-    });
+    // Capture context-dependent values before async operation
+    final imageCaptureCubit = context.read<ImageCaptureCubit>();
 
-    try {
-      // Initialize to a default; will be overwritten by platform-specific requests.
-      PermissionStatus photoStatus = PermissionStatus.denied;
+    final handled = await imageCaptureCubit.selectFromGallery();
 
-      // Request photo library permission
-      if (Platform.isAndroid) {
-        photoStatus = await Permission.photos.request();
+    if (!mounted) return;
 
-        if (!_isFirstTimeGallery) {
-          if (photoStatus.isDenied || photoStatus.isPermanentlyDenied) {
-            setState(() {
-              _pendingGalleryPermission =
-                  true; // Set the flag to check when app resumes
-            });
-            _showPermissionDeniedDialog('Photo Library');
-            setState(() => _isLoading = false);
-            return;
-          }
-        }
-      } else if (Platform.isIOS) {
-        photoStatus = await Permission.photos.request();
-
-        if (!_isFirstTimeGallery) {
-          if (photoStatus.isDenied || photoStatus.isPermanentlyDenied) {
-            setState(() {
-              _pendingGalleryPermission =
-                  true; // Set the flag to check when app resumes
-            });
-            _showPermissionDeniedDialog('Photo Library');
-            setState(() => _isLoading = false);
-            return;
-          }
-        }
+    if (!handled) {
+      // Show permission dialog
+      if (mounted) {
+        PermissionDeniedDialogWidget.show(
+          context: context,
+          permissionType: 'Photo Library',
+        );
       }
-
-      // If it WAS the first time, update the flag and save it.
-      if (_isFirstTimeGallery) {
-        setState(() => _isFirstTimeGallery = false);
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setBool('isFirstTimeGallery', false);
-      }
-
-      // If permission is currently denied (e.g., denied on first attempt and no dialog shown yet, or denied again),
-      // do not proceed.
-      if (photoStatus.isDenied || photoStatus.isPermanentlyDenied) {
-        setState(() => _isLoading = false);
-        return;
-      }
-
-      // Pick from gallery
-      await _uploadPictureAfterPermissionGranted();
-      // final XFile? image = await _picker.pickImage(
-      //   source: ImageSource.gallery,
-      //   maxWidth: 1800,
-      //   maxHeight: 1800,
-      //   imageQuality: 85,
-      // );
-
-      // if (image == null) {
-      //   // User canceled the picker
-      //   setState(() => _isLoading = false);
-      //   return;
-      // }
-
-      // // Create secure local path
-      // final Directory appDir = await getApplicationDocumentsDirectory();
-      // final String fileName = path.basename(image.path);
-      // final String secureFilePath = path.join(appDir.path, fileName);
-
-      // // Copy the image to secure location
-      // final File localImage = File(secureFilePath);
-      // await localImage.writeAsBytes(await image.readAsBytes());
-
-      // setState(() {
-      //   _imageFile = localImage;
-      //   _isLoading = false;
-      // });
-
-      // Process the image
-      // processImage(_imageFile);
-    } catch (e) {
-      setState(() => _isLoading = false);
-      // _showErrorDialog('Failed to upload picture');
+    } else if (imageCaptureCubit.state.errorMessage != null && mounted) {
+      _showSnackBarMessage(
+        imageCaptureCubit.state.errorMessage!,
+        isError: true,
+      );
     }
   }
 
-  void _showPermissionDeniedDialog(String permissionType) {
-    if (!mounted) return;
-    showDialog(
-      context: context,
-      builder:
-          (ctx) => AlertDialog(
-            title: Text('$permissionType Permission Denied'),
-            content: Text(
-              'Please enable $permissionType access in your device settings to use this feature.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                  if (mounted) {
-                    setState(() {
-                      _isCamera = false;
-                      _isGallery = false;
-                      _isLoading = false;
-                    });
-                  }
-                },
-                child: const Text('Close'),
-              ),
-              TextButton(
-                onPressed: () {
-                  openAppSettings();
-                  // Future.delayed(Duration(milliseconds: 500), () => exit(0));
+  // void _showPermissionDeniedDialog(String permissionType) {
+  //   if (!mounted) return;
+  //   showDialog(
+  //     context: context,
+  //     builder:
+  //         (ctx) => AlertDialog(
+  //           title: Text('$permissionType Permission Denied'),
+  //           content: Text(
+  //             'Please enable $permissionType access in your device settings to use this feature.',
+  //           ),
+  //           actions: [
+  //             TextButton(
+  //               onPressed: () {
+  //                 Navigator.of(ctx).pop();
+  //                 if (mounted) {
+  //                   context.read<ImageCaptureCubit>().resetLoadingState();
+  //                 }
+  //               },
+  //               child: const Text('Close'),
+  //             ),
+  //             TextButton(
+  //               onPressed: () {
+  //                 context.read<PermissionCubit>().openSettings();
+  //                 Navigator.of(ctx).pop();
+  //               },
+  //               child: ElevatedButton(
+  //                 onPressed: () {
+  //                   Navigator.of(ctx).pop();
+  //                   openAppSettings();
+  //                 },
+  //                 style: ElevatedButton.styleFrom(
+  //                   backgroundColor: Theme.of(context).colorScheme.secondary,
+  //                   foregroundColor: Theme.of(context).colorScheme.onSecondary,
+  //                 ),
+  //                 child: LabelLargeText(
+  //                   AppLocalizations.of(context)!.openSettings,
+  //                   color: Theme.of(context).colorScheme.onSecondary,
+  //                 ),
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //   );
+  // }
 
-                  Navigator.of(ctx).pop();
-                },
-                child: const Text('Open Settings'),
-              ),
-            ],
-          ),
-    );
-  }
-
-  Future<void> _handleSubscriptionAndSolve({
-    File? imageFile,
-    String? textInput,
-  }) async {
+  Future<void> _handleSubscriptionAndSolve({String? textInput}) async {
+    final imageFile = context.read<ImageCaptureCubit>().state.imageFile;
     _solveMath(imageFile: imageFile, textInput: textInput);
 
     final subscriptionCubit = context.read<SubscriptionCubit>();
@@ -545,46 +205,6 @@ class _HomePageState extends State<HomePage>
       context.read<SolveMathCubit>().solveMath(textInput);
     }
   }
-
-  // void _showPermissionDeniedDialog(String permissionType) {
-  //   showDialog(
-  //     context: context,
-  //     builder:
-  //         (ctx) => AlertDialog(
-  //           shape: RoundedRectangleBorder(
-  //             borderRadius: BorderRadius.circular(12.0),
-  //           ),
-  //           title: TitleLargeText(
-  //             '$permissionType ${AppLocalizations.of(context)!.permissionRequired}',
-  //           ),
-  //           content: BodyMediumText(
-  //             AppLocalizations.of(context)!.enableAccessMessage,
-  //           ),
-  //           actions: [
-  //             TextButton(
-  //               onPressed: () => Navigator.of(ctx).pop(),
-  //               child: LabelLargeText(
-  //                 AppLocalizations.of(context)!.cancel,
-  //                 color: Theme.of(context).colorScheme.onSurface,
-  //               ),
-  //             ),
-  //             ElevatedButton(
-  //               onPressed: () {
-  //                 Navigator.of(ctx).pop();
-  //                 openAppSettings();
-  //               },
-  //               style: ElevatedButton.styleFrom(
-  //                 backgroundColor: Theme.of(context).colorScheme.primary,
-  //                 foregroundColor: Theme.of(context).colorScheme.onPrimary,
-  //               ),
-  //               child: LabelLargeText(
-  //                 AppLocalizations.of(context)!.openSettings,
-  //               ),
-  //             ),
-  //           ],
-  //         ),
-  //   );
-  // }
 
   void _showSnackBarMessage(String message, {bool isError = false}) {
     if (!mounted) return;
@@ -624,137 +244,149 @@ class _HomePageState extends State<HomePage>
     showDialog(
       context: context,
       builder:
-          (ctx) => AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16.0),
-            ),
-            title: Row(
-              children: [
-                Icon(
-                  Icons.check_circle_outline,
-                  color: Theme.of(context).colorScheme.secondary,
-                  size: 28,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: HeadlineSmallText(
-                    AppLocalizations.of(context)!.mathSolution,
-                    fontWeight: FontWeight.bold,
+          (ctx) => BlocBuilder<ImageCaptureCubit, ImageCaptureState>(
+            builder:
+                (context, imageCaptureState) => AlertDialog(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16.0),
                   ),
-                ),
-              ],
-            ),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (_imageFile != null) ...[
-                    Container(
-                      height: isTablet ? 300 : 150,
-                      width: double.infinity,
-                      margin: const EdgeInsets.only(bottom: _spacing4),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12.0),
-                        image: DecorationImage(
-                          image: FileImage(_imageFile!),
-                          fit: BoxFit.cover,
+                  title: Row(
+                    children: [
+                      Icon(
+                        Icons.check_circle_outline,
+                        color: Theme.of(context).colorScheme.secondary,
+                        size: 28,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: HeadlineSmallText(
+                          AppLocalizations.of(context)!.mathSolution,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                    ),
-                  ],
-                  Container(
-                    padding: const EdgeInsets.all(_spacing4),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceContainer,
-                      borderRadius: BorderRadius.circular(12.0),
-                    ),
-                    child: MathMarkdownWidget(data: result),
+                    ],
                   ),
-                  const SizedBox(height: _spacing4),
-                  Container(
-                    padding: const EdgeInsets.all(12.0),
-                    decoration: BoxDecoration(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.secondaryContainer.withValues(alpha: 0.3),
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    child: Row(
+                  content: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(
-                          Icons.info_outline,
-                          color: Theme.of(context).colorScheme.secondary,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: BodySmallText(
-                            AppLocalizations.of(context)!.aiDisclaimer,
+                        if (imageCaptureState.imageFile != null) ...[
+                          Container(
+                            height: isTablet ? 300 : 150,
+                            width: double.infinity,
+                            margin: const EdgeInsets.only(bottom: _spacing4),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12.0),
+                              image: DecorationImage(
+                                image: FileImage(imageCaptureState.imageFile!),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        ],
+                        Container(
+                          padding: const EdgeInsets.all(_spacing4),
+                          decoration: BoxDecoration(
                             color:
-                                Theme.of(
-                                  context,
-                                ).colorScheme.onSecondaryContainer,
+                                Theme.of(context).colorScheme.surfaceContainer,
+                            borderRadius: BorderRadius.circular(12.0),
+                          ),
+                          child: MathMarkdownWidget(data: result),
+                        ),
+                        const SizedBox(height: _spacing4),
+                        Container(
+                          padding: const EdgeInsets.all(12.0),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .secondaryContainer
+                                .withValues(alpha: 0.3),
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.info_outline,
+                                color: Theme.of(context).colorScheme.secondary,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: BodySmallText(
+                                  AppLocalizations.of(context)!.aiDisclaimer,
+                                  color:
+                                      Theme.of(
+                                        context,
+                                      ).colorScheme.onSecondaryContainer,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
                     ),
                   ),
-                ],
-              ),
-            ),
-            actions: [
-              Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        onPressed: () => Navigator.of(ctx).pop(),
-                        child: LabelLargeText(
-                          AppLocalizations.of(context)!.close,
-                          color: Theme.of(context).colorScheme.onSurface,
+                  actions: [
+                    Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            TextButton(
+                              onPressed: () => Navigator.of(ctx).pop(),
+                              child: LabelLargeText(
+                                AppLocalizations.of(context)!.close,
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
+                            ),
+                            TextButton.icon(
+                              onPressed: () {
+                                final imageFile =
+                                    context
+                                        .read<ImageCaptureCubit>()
+                                        .state
+                                        .imageFile;
+                                _shareResult(result, imageFile);
+                                Navigator.of(ctx).pop();
+                              },
+                              icon: const Icon(Icons.share, size: 16),
+                              label: LabelMediumText(
+                                AppLocalizations.of(context)!.share,
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      TextButton.icon(
-                        onPressed: () {
-                          _shareResult(result, _imageFile);
-                          Navigator.of(ctx).pop();
-                        },
-                        icon: const Icon(Icons.share, size: 16),
-                        label: LabelMediumText(
-                          AppLocalizations.of(context)!.share,
-                          color: Theme.of(context).colorScheme.onSurface,
+                        TextButton.icon(
+                          onPressed: () {
+                            Navigator.of(ctx).pop();
+                            ReportContentDialogWidget.show(
+                              context: context,
+                              contentId:
+                                  DateTime.now().millisecondsSinceEpoch
+                                      .toString(),
+                              contentType: ContentType.mathSolution,
+                              contentSnapshot: result,
+                              contentTitle:
+                                  AppLocalizations.of(context)!.mathSolution,
+                            );
+                          },
+                          icon: const Icon(Icons.flag_outlined, size: 16),
+                          label: LabelMediumText(
+                            AppLocalizations.of(context)!.reportContent,
+                            color: Theme.of(context).colorScheme.error,
+                          ),
+                          style: TextButton.styleFrom(
+                            foregroundColor:
+                                Theme.of(context).colorScheme.error,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  TextButton.icon(
-                    onPressed: () {
-                      Navigator.of(ctx).pop();
-                      ReportContentDialogWidget.show(
-                        context: context,
-                        contentId:
-                            DateTime.now().millisecondsSinceEpoch.toString(),
-                        contentType: ContentType.mathSolution,
-                        contentSnapshot: result,
-                        contentTitle:
-                            AppLocalizations.of(context)!.mathSolution,
-                      );
-                    },
-                    icon: const Icon(Icons.flag_outlined, size: 16),
-                    label: LabelMediumText(
-                      AppLocalizations.of(context)!.reportContent,
-                      color: Theme.of(context).colorScheme.error,
+                      ],
                     ),
-                    style: TextButton.styleFrom(
-                      foregroundColor: Theme.of(context).colorScheme.error,
-                    ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
           ),
     );
   }
@@ -768,28 +400,41 @@ class _HomePageState extends State<HomePage>
       appBar: AppBarWidget(
         title: AppLocalizations.of(context)!.solveMathProblem,
       ),
-      body: BlocListener<SolveMathCubit, SolveMathState>(
-        listenWhen:
-            (previous, current) =>
-                current.result.isNotEmpty &&
-                current.result != '' &&
-                !current.isIdentifying,
-        listener: (context, state) {
-          if (state.result.isNotEmpty &&
-              state.result != '' &&
-              !state.isIdentifying) {
-            context.read<FirebaseCollectionCubit>().getCollections(
-              isRefresh: true,
-            );
-            _showResultDialog(isTablet, state.result);
-          }
-          if (state.isError) {
-            _showSnackBarMessage(
-              AppLocalizations.of(context)!.mathSolvingError,
-              isError: true,
-            );
-          }
-        },
+      body: MultiBlocListener(
+        listeners: [
+          BlocListener<SolveMathCubit, SolveMathState>(
+            listenWhen:
+                (previous, current) =>
+                    current.result.isNotEmpty &&
+                    current.result != '' &&
+                    !current.isIdentifying,
+            listener: (context, state) {
+              if (state.result.isNotEmpty &&
+                  state.result != '' &&
+                  !state.isIdentifying) {
+                context.read<FirebaseCollectionCubit>().getCollections(
+                  isRefresh: true,
+                );
+                _showResultDialog(isTablet, state.result);
+              }
+              if (state.isError) {
+                _showSnackBarMessage(
+                  AppLocalizations.of(context)!.mathSolvingError,
+                  isError: true,
+                );
+              }
+            },
+          ),
+          BlocListener<PermissionCubit, PermissionState>(
+            listenWhen: (previous, current) => current.message != null,
+            listener: (context, state) {
+              if (state.message != null) {
+                _showSnackBarMessage(state.message!);
+                context.read<PermissionCubit>().clearMessage();
+              }
+            },
+          ),
+        ],
         child: SafeArea(
           child: BlocBuilder<SolveMathCubit, SolveMathState>(
             builder: (context, state) {
@@ -925,106 +570,118 @@ class _HomePageState extends State<HomePage>
     SolveMathState state,
     bool isTablet,
   ) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          // Image Preview Container
-          Container(
-            width: double.infinity,
-            height: isTablet ? 400 : 300,
-            margin: const EdgeInsets.only(bottom: _spacing6),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
-              borderRadius: BorderRadius.circular(16.0),
-              border: Border.all(
-                color: Theme.of(
-                  context,
-                ).colorScheme.outline.withValues(alpha: 0.2),
-                width: 1,
-              ),
-            ),
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                if (_imageFile != null)
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(16.0),
-                    child: Image.file(
-                      _imageFile!,
-                      width: double.infinity,
-                      height: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
-                  )
-                else
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.add_a_photo_outlined,
-                        size: isTablet ? 80 : 60,
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.onSurface.withValues(alpha: 0.4),
-                      ),
-                      const SizedBox(height: 16),
-                      BodyLargeText(
-                        AppLocalizations.of(context)!.noImageSelected,
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.onSurface.withValues(alpha: 0.6),
-                      ),
-                      const SizedBox(height: 8),
-                      BodyMediumText(
-                        AppLocalizations.of(context)!.captureOrUpload,
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.onSurface.withValues(alpha: 0.5),
-                      ),
-                    ],
+    return BlocBuilder<ImageCaptureCubit, ImageCaptureState>(
+      builder: (context, imageCaptureState) {
+        return SingleChildScrollView(
+          child: Column(
+            children: [
+              // Image Preview Container
+              Container(
+                width: double.infinity,
+                height: isTablet ? 400 : 300,
+                margin: const EdgeInsets.only(bottom: _spacing6),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(16.0),
+                  border: Border.all(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.outline.withValues(alpha: 0.2),
+                    width: 1,
                   ),
-
-                // Loading overlay
-                if (_isLoading || state.isIdentifying)
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.surface.withValues(alpha: 0.9),
-                      borderRadius: BorderRadius.circular(16.0),
-                    ),
-                    child: Center(
-                      child: Column(
+                ),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    if (imageCaptureState.imageFile != null)
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(16.0),
+                        child: Image.file(
+                          imageCaptureState.imageFile!,
+                          width: double.infinity,
+                          height: double.infinity,
+                          fit: BoxFit.cover,
+                        ),
+                      )
+                    else
+                      Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          ModernScanEffectLoader(
-                            size: isTablet ? 120 : 80,
-                            duration: const Duration(milliseconds: 1500),
+                          Icon(
+                            Icons.add_a_photo_outlined,
+                            size: isTablet ? 80 : 60,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withValues(alpha: 0.4),
                           ),
-                          const SizedBox(height: _spacing4),
+                          const SizedBox(height: 16),
+                          BodyLargeText(
+                            AppLocalizations.of(context)!.noImageSelected,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withValues(alpha: 0.6),
+                          ),
+                          const SizedBox(height: 8),
                           BodyMediumText(
-                            state.isIdentifying
-                                ? AppLocalizations.of(context)!.analyzingProblem
-                                : AppLocalizations.of(context)!.processingImage,
-                            color: Theme.of(context).colorScheme.primary,
-                            fontWeight: FontWeight.w500,
+                            AppLocalizations.of(context)!.captureOrUpload,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withValues(alpha: 0.5),
                           ),
                         ],
                       ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
 
-          // Action Buttons
-          _buildActionButtons(isTablet, state),
-        ],
-      ),
+                    // Loading overlay
+                    if (imageCaptureState.isLoading || state.isIdentifying)
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.surface.withValues(alpha: 0.9),
+                          borderRadius: BorderRadius.circular(16.0),
+                        ),
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ModernScanEffectLoader(
+                                size: isTablet ? 120 : 80,
+                                duration: const Duration(milliseconds: 1500),
+                              ),
+                              const SizedBox(height: _spacing4),
+                              BodyMediumText(
+                                state.isIdentifying
+                                    ? AppLocalizations.of(
+                                      context,
+                                    )!.analyzingProblem
+                                    : AppLocalizations.of(
+                                      context,
+                                    )!.processingImage,
+                                color: Theme.of(context).colorScheme.primary,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+
+              // Action Buttons
+              _buildActionButtons(isTablet, state, imageCaptureState),
+            ],
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildActionButtons(bool isTablet, SolveMathState state) {
+  Widget _buildActionButtons(
+    bool isTablet,
+    SolveMathState state,
+    ImageCaptureState imageCaptureState,
+  ) {
     return Column(
       children: [
         // Primary Actions Row
@@ -1034,27 +691,30 @@ class _HomePageState extends State<HomePage>
               child: _buildActionButton(
                 icon: Icons.camera_alt,
                 label:
-                    _isCamera && _imageFile != null && state.result.isEmpty
+                    imageCaptureState.isCamera &&
+                            imageCaptureState.imageFile != null &&
+                            state.result.isEmpty
                         ? AppLocalizations.of(context)!.solveProblem
                         : AppLocalizations.of(context)!.takePhoto,
                 onPressed:
-                    _isLoading
+                    imageCaptureState.isLoading
                         ? null
                         : () async {
-                          if (_isCamera &&
-                              _imageFile != null &&
+                          if (imageCaptureState.isCamera &&
+                              imageCaptureState.imageFile != null &&
                               state.result.isEmpty) {
-                            await _handleSubscriptionAndSolve(
-                              imageFile: _imageFile,
-                            );
+                            await _handleSubscriptionAndSolve();
                           } else {
                             context.read<SolveMathCubit>().emptyResult();
                             await _takePicture();
                           }
                         },
                 isPrimary:
-                    _isCamera && _imageFile != null && state.result.isEmpty,
-                isLoading: _isLoading && _isCamera,
+                    imageCaptureState.isCamera &&
+                    imageCaptureState.imageFile != null &&
+                    state.result.isEmpty,
+                isLoading:
+                    imageCaptureState.isLoading && imageCaptureState.isCamera,
               ),
             ),
             const SizedBox(width: 12),
@@ -1062,36 +722,39 @@ class _HomePageState extends State<HomePage>
               child: _buildActionButton(
                 icon: Icons.photo_library,
                 label:
-                    _isGallery && _imageFile != null && state.result.isEmpty
+                    imageCaptureState.isGallery &&
+                            imageCaptureState.imageFile != null &&
+                            state.result.isEmpty
                         ? AppLocalizations.of(context)!.solveProblem
                         : AppLocalizations.of(context)!.uploadPhoto,
                 onPressed:
-                    _isLoading
+                    imageCaptureState.isLoading
                         ? null
                         : () async {
-                          if (_isGallery &&
-                              _imageFile != null &&
+                          if (imageCaptureState.isGallery &&
+                              imageCaptureState.imageFile != null &&
                               state.result.isEmpty) {
-                            await _handleSubscriptionAndSolve(
-                              imageFile: _imageFile,
-                            );
+                            await _handleSubscriptionAndSolve();
                           } else {
                             context.read<SolveMathCubit>().emptyResult();
-                            setState(() => _imageFile = null);
+                            context.read<ImageCaptureCubit>().clearImage();
                             await _uploadPicture();
                           }
                         },
                 isPrimary:
-                    _isGallery && _imageFile != null && state.result.isEmpty,
-                isLoading: _isLoading && _isGallery,
+                    imageCaptureState.isGallery &&
+                    imageCaptureState.imageFile != null &&
+                    state.result.isEmpty,
+                isLoading:
+                    imageCaptureState.isLoading && imageCaptureState.isGallery,
               ),
             ),
           ],
         ),
 
         // Reset Button
-        if ((_isGallery || _isCamera) &&
-            _imageFile != null &&
+        if ((imageCaptureState.isGallery || imageCaptureState.isCamera) &&
+            imageCaptureState.imageFile != null &&
             state.result.isEmpty) ...[
           const SizedBox(height: 16),
           SizedBox(
@@ -1100,12 +763,7 @@ class _HomePageState extends State<HomePage>
               icon: Icons.refresh,
               label: AppLocalizations.of(context)!.reset,
               onPressed: () {
-                setState(() {
-                  _imageFile = null;
-                  _isLoading = false;
-                  _isCamera = false;
-                  _isGallery = false;
-                });
+                context.read<ImageCaptureCubit>().clearImage();
                 context.read<SolveMathCubit>().emptyResult();
               },
               isSecondary: true,

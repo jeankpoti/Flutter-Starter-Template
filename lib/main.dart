@@ -23,6 +23,7 @@ import 'features/solve_math/presentation/collections_details_page.dart';
 import 'features/solve_math/presentation/collections_page.dart';
 import 'features/solve_math/presentation/firebase_collection_cubit.dart';
 import 'features/solve_math/presentation/solve_math_cubit.dart';
+import 'features/solve_math/presentation/image_capture_cubit.dart';
 import 'features/subscription/data/repository/revenue_cat_repository.dart';
 import 'features/subscription/presentation/subscription_cubit.dart';
 import 'features/subscription/presentation/subscription_page.dart';
@@ -77,9 +78,13 @@ void main() async {
           create: (context) => SubscriptionCubit(subscriptionRepository),
         ),
 
-        // BlocProvider<PermissionCubit>(
-        //   create: (context) => PermissionCubit(),
-        // ),
+        BlocProvider<PermissionCubit>(create: (context) => PermissionCubit()),
+        
+        BlocProvider<ImageCaptureCubit>(
+          create: (context) => ImageCaptureCubit(
+            permissionCubit: context.read<PermissionCubit>(),
+          ),
+        ),
       ],
       child: const MyApp(),
     ),
