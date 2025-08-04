@@ -4,6 +4,9 @@ import 'package:image_picker/image_picker.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../common_widgets/app_snackbar_widget.dart';
 import '../../../common_widgets/text_widgets.dart';
+import '../../../common_widgets/permission_denied_dialog_widget.dart';
+import '../../common/presentation/permission_cubit.dart';
+import '../../common/presentation/mixins/permission_lifecycle_mixin.dart';
 import '../data/services/study_plan_service.dart';
 import '../data/services/quiz_service.dart';
 import '../data/repository/study_material_repository.dart';
@@ -34,6 +37,7 @@ class StudyPage extends StatelessWidget {
             studyPlanService: StudyPlanService(),
             quizService: QuizService(),
             picker: ImagePicker(),
+            permissionCubit: context.read<PermissionCubit>(),
           )..initializeServices(),
       child: const _StudyPageView(),
     );
@@ -48,7 +52,7 @@ class _StudyPageView extends StatefulWidget {
 }
 
 class _StudyPageViewState extends State<_StudyPageView>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver, PermissionLifecycleMixin {
   late TabController _tabController;
 
   static const double _spacing4 = 16.0;
@@ -57,6 +61,8 @@ class _StudyPageViewState extends State<_StudyPageView>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    // Initialize permissions
+    context.read<PermissionCubit>().initializePermissions();
   }
 
   @override
@@ -64,19 +70,72 @@ class _StudyPageViewState extends State<_StudyPageView>
     _tabController.dispose();
     super.dispose();
   }
+  
+  // Override from PermissionLifecycleMixin - handles showing messages
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    // Additional handling for permission state messages
+    if (state == AppLifecycleState.resumed) {
+      final permissionState = context.read<PermissionCubit>().state;
+      if (permissionState.message != null && mounted) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _showSnackBarMessage(permissionState.message!);
+          context.read<PermissionCubit>().clearMessage();
+        });
+      }
+    }
+  }
+  
+  void _showSnackBarMessage(String message, {bool isError = false}) {
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: BodyMediumText(
+          message,
+          color:
+              isError
+                  ? Theme.of(context).colorScheme.onErrorContainer
+                  : Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
+        backgroundColor:
+            isError
+                ? Theme.of(context).colorScheme.errorContainer
+                : Theme.of(context).colorScheme.surfaceContainer,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+        margin: const EdgeInsets.all(_spacing4),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<StudyCubit, StudyState>(
-      listenWhen:
-          (previous, current) =>
-              previous.studyPlans.length < current.studyPlans.length,
-      listener: (context, state) {
-        AppSnackBar.showSuccess(
-          context,
-          AppLocalizations.of(context)!.studyPlanGeneratedSuccessfully,
-        );
-      },
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<StudyCubit, StudyState>(
+          listenWhen:
+              (previous, current) =>
+                  previous.studyPlans.length < current.studyPlans.length,
+          listener: (context, state) {
+            AppSnackBar.showSuccess(
+              context,
+              AppLocalizations.of(context)!.studyPlanGeneratedSuccessfully,
+            );
+          },
+        ),
+        BlocListener<PermissionCubit, PermissionState>(
+          listenWhen: (previous, current) => current.message != null,
+          listener: (context, state) {
+            if (state.message != null) {
+              _showSnackBarMessage(state.message!);
+              context.read<PermissionCubit>().clearMessage();
+            }
+          },
+        ),
+      ],
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
         appBar: AppBar(
@@ -122,16 +181,8 @@ class _StudyPageViewState extends State<_StudyPageView>
                                   state.isUploadingPhoto ||
                                   state.isUploadingText,
                               studyMaterials: state.studyMaterials,
-                              onPhotoUpload:
-                                  () =>
-                                      context
-                                          .read<StudyCubit>()
-                                          .handlePhotoUpload(),
-                              onGalleryUpload:
-                                  () =>
-                                      context
-                                          .read<StudyCubit>()
-                                          .handleGalleryUpload(),
+                              onPhotoUpload: _handlePhotoUpload,
+                              onGalleryUpload: _handleGalleryUpload,
                               onTextInput: _handleTextInput,
                             ),
                             MaterialsTab(
@@ -177,6 +228,38 @@ class _StudyPageViewState extends State<_StudyPageView>
         ),
       ),
     );
+  }
+
+  Future<void> _handlePhotoUpload() async {
+    final handled = await context.read<StudyCubit>().handlePhotoUpload();
+    
+    if (!mounted) return;
+    
+    if (!handled) {
+      // Show permission dialog
+      if (mounted) {
+        PermissionDeniedDialogWidget.show(
+          context: context,
+          permissionType: 'Camera',
+        );
+      }
+    }
+  }
+  
+  Future<void> _handleGalleryUpload() async {
+    final handled = await context.read<StudyCubit>().handleGalleryUpload();
+    
+    if (!mounted) return;
+    
+    if (!handled) {
+      // Show permission dialog
+      if (mounted) {
+        PermissionDeniedDialogWidget.show(
+          context: context,
+          permissionType: 'Photo Library',
+        );
+      }
+    }
   }
 
   void _handleTextInput() {

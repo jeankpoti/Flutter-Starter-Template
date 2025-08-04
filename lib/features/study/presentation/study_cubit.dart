@@ -10,6 +10,7 @@ import '../data/services/quiz_service.dart';
 import '../domain/models/study_material.dart';
 import '../domain/models/study_plan.dart';
 import '../domain/models/quiz.dart';
+import '../../common/presentation/permission_cubit.dart';
 import 'study_state.dart';
 
 class StudyCubit extends Cubit<StudyState> {
@@ -18,6 +19,7 @@ class StudyCubit extends Cubit<StudyState> {
   final StudyPlanService _studyPlanService;
   final QuizService _quizService;
   final ImagePicker _picker;
+  final PermissionCubit _permissionCubit;
 
   static const int _maxImagesPerSelection = 5;
 
@@ -27,12 +29,14 @@ class StudyCubit extends Cubit<StudyState> {
     required StudyPlanService studyPlanService,
     required QuizService quizService,
     required ImagePicker picker,
-  })  : _materialRepository = materialRepository,
-        _planRepository = planRepository,
-        _studyPlanService = studyPlanService,
-        _quizService = quizService,
-        _picker = picker,
-        super(const StudyState());
+    required PermissionCubit permissionCubit,
+  }) : _materialRepository = materialRepository,
+       _planRepository = planRepository,
+       _studyPlanService = studyPlanService,
+       _quizService = quizService,
+       _picker = picker,
+       _permissionCubit = permissionCubit,
+       super(const StudyState());
 
   Future<void> initializeServices() async {
     try {
@@ -58,18 +62,22 @@ class StudyCubit extends Cubit<StudyState> {
       final plans = futures[1] as List<StudyPlan>;
 
       if (!isClosed) {
-        emit(state.copyWith(
-          studyMaterials: materials,
-          studyPlans: plans,
-          isLoading: false,
-        ));
+        emit(
+          state.copyWith(
+            studyMaterials: materials,
+            studyPlans: plans,
+            isLoading: false,
+          ),
+        );
       }
     } catch (e) {
       if (!isClosed) {
-        emit(state.copyWith(
-          isLoading: false,
-          errorMsg: 'Error loading study data: $e',
-        ));
+        emit(
+          state.copyWith(
+            isLoading: false,
+            errorMsg: 'Error loading study data: $e',
+          ),
+        );
       }
     }
   }
@@ -79,14 +87,25 @@ class StudyCubit extends Cubit<StudyState> {
   }
 
   // Upload Methods
-  Future<void> handlePhotoUpload() async {
+  Future<bool> handlePhotoUpload() async {
     try {
-      if (Platform.isAndroid) {
-        final cameraStatus = await Permission.camera.request();
-        if (cameraStatus.isDenied || cameraStatus.isPermanentlyDenied) {
-          emit(state.copyWith(errorMsg: 'Camera permission required'));
-          return;
-        }
+      // Check if we should show dialog BEFORE making the request
+      final shouldShowDialogBeforeRequest =
+          _permissionCubit.state.hasCameraBeenDenied;
+
+      // Request camera permission
+      final cameraStatus = await _permissionCubit.requestCameraPermission();
+
+      // Check if should show dialog based on the state before the request
+      if (shouldShowDialogBeforeRequest &&
+          (cameraStatus.isDenied || cameraStatus.isPermanentlyDenied)) {
+        _permissionCubit.setPendingCameraPermission(true);
+        return false; // Caller should show permission dialog
+      }
+
+      // If permission is denied, don't proceed
+      if (cameraStatus.isDenied || cameraStatus.isPermanentlyDenied) {
+        return true; // Permission was handled, but denied
       }
 
       final XFile? photo = await _picker.pickImage(
@@ -98,31 +117,44 @@ class StudyCubit extends Cubit<StudyState> {
 
       if (photo != null) {
         emit(state.copyWith(isUploadingPhoto: true));
-        await _processUploadedMaterial(
-          File(photo.path),
-          MaterialType.image,
-        );
+        await _processUploadedMaterial(File(photo.path), MaterialType.image);
       } else {
         emit(state.copyWith(isUploadingPhoto: false));
       }
+
+      return true; // Permission was handled successfully
     } catch (e) {
       if (!isClosed) {
-        emit(state.copyWith(
-          isUploadingPhoto: false,
-          errorMsg: 'Error capturing photo: $e',
-        ));
+        emit(
+          state.copyWith(
+            isUploadingPhoto: false,
+            errorMsg: 'Error capturing photo: $e',
+          ),
+        );
       }
+      return true;
     }
   }
 
-  Future<void> handleGalleryUpload() async {
+  Future<bool> handleGalleryUpload() async {
     try {
-      if (Platform.isAndroid) {
-        final photosStatus = await Permission.photos.request();
-        if (photosStatus.isDenied || photosStatus.isPermanentlyDenied) {
-          emit(state.copyWith(errorMsg: 'Photos permission required'));
-          return;
-        }
+      // Check if we should show dialog BEFORE making the request
+      final shouldShowDialogBeforeRequest =
+          _permissionCubit.state.hasGalleryBeenDenied;
+
+      // Request gallery permission
+      final photoStatus = await _permissionCubit.requestGalleryPermission();
+
+      // Check if should show dialog based on the state before the request
+      if (shouldShowDialogBeforeRequest &&
+          (photoStatus.isDenied || photoStatus.isPermanentlyDenied)) {
+        _permissionCubit.setPendingGalleryPermission(true);
+        return false; // Caller should show permission dialog
+      }
+
+      // If permission is denied, don't proceed
+      if (photoStatus.isDenied || photoStatus.isPermanentlyDenied) {
+        return true; // Permission was handled, but denied
       }
 
       final List<XFile> images = await _picker.pickMultiImage(
@@ -137,40 +169,51 @@ class StudyCubit extends Cubit<StudyState> {
         final imagesToProcess = images.take(_maxImagesPerSelection).toList();
 
         if (images.length > _maxImagesPerSelection) {
-          emit(state.copyWith(
-            errorMsg: 'Only $_maxImagesPerSelection images can be processed per selection',
-          ));
+          emit(
+            state.copyWith(
+              errorMsg:
+                  'Only $_maxImagesPerSelection images can be processed per selection',
+            ),
+          );
         }
 
         for (final xFile in imagesToProcess) {
-          await _processUploadedMaterial(
-            File(xFile.path),
-            MaterialType.image,
-          );
+          await _processUploadedMaterial(File(xFile.path), MaterialType.image);
         }
       } else {
         emit(state.copyWith(isUploadingPhoto: false));
       }
+
+      return true; // Permission was handled successfully
     } catch (e) {
       if (!isClosed) {
-        emit(state.copyWith(
-          isUploadingPhoto: false,
-          errorMsg: 'Error uploading from gallery: $e',
-        ));
+        emit(
+          state.copyWith(
+            isUploadingPhoto: false,
+            errorMsg: 'Error uploading from gallery: $e',
+          ),
+        );
       }
+      return true;
     }
   }
 
   Future<void> processTextMaterial(String text) async {
     emit(state.copyWith(isUploadingText: true));
     try {
-      await _processUploadedMaterial(null, MaterialType.text, textContent: text);
+      await _processUploadedMaterial(
+        null,
+        MaterialType.text,
+        textContent: text,
+      );
     } catch (e) {
       if (!isClosed) {
-        emit(state.copyWith(
-          isUploadingText: false,
-          errorMsg: 'Error processing text material: $e',
-        ));
+        emit(
+          state.copyWith(
+            isUploadingText: false,
+            errorMsg: 'Error processing text material: $e',
+          ),
+        );
       }
     }
   }
@@ -188,9 +231,10 @@ class StudyCubit extends Cubit<StudyState> {
 
     try {
       final materialId = DateTime.now().millisecondsSinceEpoch.toString();
-      final title = type == MaterialType.image
-          ? 'Study Material ${state.studyMaterials.length + 1}'
-          : 'Text Material ${state.studyMaterials.length + 1}';
+      final title =
+          type == MaterialType.image
+              ? 'Study Material ${state.studyMaterials.length + 1}'
+              : 'Text Material ${state.studyMaterials.length + 1}';
 
       // Analyze the material
       final studyMaterial = await _studyPlanService.analyzeMaterial(
@@ -223,24 +267,28 @@ class StudyCubit extends Cubit<StudyState> {
       // Update state with new material
       final updatedMaterials = [...state.studyMaterials, finalMaterial];
       if (!isClosed) {
-        emit(state.copyWith(
-          studyMaterials: updatedMaterials,
-          isProcessing: false,
-          isUploadingPhoto: false,
-          isUploadingText: false,
-        ));
+        emit(
+          state.copyWith(
+            studyMaterials: updatedMaterials,
+            isProcessing: false,
+            isUploadingPhoto: false,
+            isUploadingText: false,
+          ),
+        );
       }
 
       // Generate individual study plan for this material
       await _generateIndividualStudyPlan(finalMaterial);
     } catch (e) {
       if (!isClosed) {
-        emit(state.copyWith(
-          isProcessing: false,
-          isUploadingPhoto: false,
-          isUploadingText: false,
-          errorMsg: 'Error processing material: $e',
-        ));
+        emit(
+          state.copyWith(
+            isProcessing: false,
+            isUploadingPhoto: false,
+            isUploadingText: false,
+            errorMsg: 'Error processing material: $e',
+          ),
+        );
       }
     }
   }
@@ -260,18 +308,22 @@ class StudyCubit extends Cubit<StudyState> {
       // Update state with new plan
       final updatedPlans = [...state.studyPlans, studyPlan];
       if (!isClosed) {
-        emit(state.copyWith(
-          studyPlans: updatedPlans,
-          isProcessing: false,
-          studyPlanGenerated: true,
-        ));
+        emit(
+          state.copyWith(
+            studyPlans: updatedPlans,
+            isProcessing: false,
+            studyPlanGenerated: true,
+          ),
+        );
       }
     } catch (e) {
       if (!isClosed) {
-        emit(state.copyWith(
-          isProcessing: false,
-          errorMsg: 'Error generating study plan: $e',
-        ));
+        emit(
+          state.copyWith(
+            isProcessing: false,
+            errorMsg: 'Error generating study plan: $e',
+          ),
+        );
       }
     }
   }
@@ -289,8 +341,15 @@ class StudyCubit extends Cubit<StudyState> {
       // Check if we have no materials or plans
       if (state.studyMaterials.isEmpty && state.studyPlans.isEmpty) {
         _setQuizLoading(difficulty, false);
-        emit(state.copyWith(errorMsg: 'No study materials or plans available for quiz generation'));
-        throw Exception('No study materials or plans available for quiz generation');
+        emit(
+          state.copyWith(
+            errorMsg:
+                'No study materials or plans available for quiz generation',
+          ),
+        );
+        throw Exception(
+          'No study materials or plans available for quiz generation',
+        );
       }
 
       Quiz quiz;
@@ -361,10 +420,12 @@ class StudyCubit extends Cubit<StudyState> {
       return quiz;
     } catch (e) {
       if (!isClosed) {
-        emit(state.copyWith(
-          clearProcessingPlanId: true,
-          errorMsg: 'Error generating quiz: $e',
-        ));
+        emit(
+          state.copyWith(
+            clearProcessingPlanId: true,
+            errorMsg: 'Error generating quiz: $e',
+          ),
+        );
       }
       rethrow;
     }
@@ -388,10 +449,12 @@ class StudyCubit extends Cubit<StudyState> {
       return quiz;
     } catch (e) {
       if (!isClosed) {
-        emit(state.copyWith(
-          isAllMaterialsQuizLoading: false,
-          errorMsg: 'Error generating comprehensive quiz: $e',
-        ));
+        emit(
+          state.copyWith(
+            isAllMaterialsQuizLoading: false,
+            errorMsg: 'Error generating comprehensive quiz: $e',
+          ),
+        );
       }
       rethrow;
     }
@@ -418,11 +481,10 @@ class StudyCubit extends Cubit<StudyState> {
     try {
       await _planRepository.deletePlan(planId);
 
-      final updatedPlans = state.studyPlans.where((plan) => plan.id != planId).toList();
+      final updatedPlans =
+          state.studyPlans.where((plan) => plan.id != planId).toList();
       if (!isClosed) {
-        emit(state.copyWith(
-          studyPlans: updatedPlans,
-        ));
+        emit(state.copyWith(studyPlans: updatedPlans));
       }
     } catch (e) {
       if (!isClosed) {
@@ -438,7 +500,9 @@ class StudyCubit extends Cubit<StudyState> {
     double progress,
   ) async {
     try {
-      final planIndex = state.studyPlans.indexWhere((plan) => plan.id == planId);
+      final planIndex = state.studyPlans.indexWhere(
+        (plan) => plan.id == planId,
+      );
       if (planIndex == -1) return;
 
       final plan = state.studyPlans[planIndex];
@@ -461,7 +525,9 @@ class StudyCubit extends Cubit<StudyState> {
 
   Future<void> markTopicComplete(String planId, String topicId) async {
     try {
-      final planIndex = state.studyPlans.indexWhere((plan) => plan.id == planId);
+      final planIndex = state.studyPlans.indexWhere(
+        (plan) => plan.id == planId,
+      );
       if (planIndex == -1) return;
 
       final plan = state.studyPlans[planIndex];
@@ -484,7 +550,9 @@ class StudyCubit extends Cubit<StudyState> {
 
   Future<void> markTopicIncomplete(String planId, String topicId) async {
     try {
-      final planIndex = state.studyPlans.indexWhere((plan) => plan.id == planId);
+      final planIndex = state.studyPlans.indexWhere(
+        (plan) => plan.id == planId,
+      );
       if (planIndex == -1) return;
 
       final plan = state.studyPlans[planIndex];
@@ -507,7 +575,9 @@ class StudyCubit extends Cubit<StudyState> {
 
   Future<void> startTopic(String planId, String topicId) async {
     try {
-      final planIndex = state.studyPlans.indexWhere((plan) => plan.id == planId);
+      final planIndex = state.studyPlans.indexWhere(
+        (plan) => plan.id == planId,
+      );
       if (planIndex == -1) return;
 
       final plan = state.studyPlans[planIndex];
