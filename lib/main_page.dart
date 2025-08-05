@@ -1,18 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'l10n/app_localizations.dart';
 
-import 'features/solve_math/presentation/collections_page.dart';
-import 'features/solve_math/presentation/home_page.dart';
-import 'features/study/presentation/study_page.dart';
-import 'settings_page.dart';
 import 'theme/theme_cubit.dart';
 import 'utils/responsive.dart';
 import 'common_widgets/text_widgets.dart';
 
 class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+  final Widget child;
+
+  const MainPage({super.key, required this.child});
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -101,24 +100,41 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  List<Widget> _buildScreens() {
-    return [
-      const HomePage(),
-      const StudyPage(),
-      const CollectionsPage(),
-      const SettingsPage(),
-    ];
+  int _calculateSelectedIndex(BuildContext context) {
+    final String location = GoRouterState.of(context).uri.toString();
+    if (location.startsWith('/study')) {
+      return 1;
+    }
+    if (location.startsWith('/collections')) {
+      return 2;
+    }
+    if (location.startsWith('/settings')) {
+      return 3;
+    }
+    return 0;
+  }
+
+  void _onItemTapped(int index, BuildContext context) {
+    switch (index) {
+      case 0:
+        context.go('/');
+        break;
+      case 1:
+        context.go('/study');
+        break;
+      case 2:
+        context.go('/collections');
+        break;
+      case 3:
+        context.go('/settings');
+        break;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final isDesktop = Responsive.isDesktop(context);
-    final screens = _buildScreens();
-
-    // Ensure selectedIndex is within valid range
-    if (selectedIndex >= screens.length) {
-      selectedIndex = 0;
-    }
+    selectedIndex = _calculateSelectedIndex(context);
 
     return Scaffold(
       body: Row(
@@ -130,11 +146,8 @@ class _MainPageState extends State<MainPage> {
                 elevation: 5,
                 backgroundColor: Theme.of(context).colorScheme.surface,
                 selectedIndex: selectedIndex,
-                onDestinationSelected: (int index) {
-                  setState(() {
-                    selectedIndex = index.clamp(0, screens.length - 1);
-                  });
-                },
+                onDestinationSelected:
+                    (int index) => _onItemTapped(index, context),
                 labelType: NavigationRailLabelType.selected,
                 leading: Padding(
                   padding: const EdgeInsets.only(
@@ -148,10 +161,7 @@ class _MainPageState extends State<MainPage> {
                 destinations: railItems,
               ),
             ),
-          Expanded(
-            flex: 13,
-            child: IndexedStack(index: selectedIndex, children: screens),
-          ),
+          Expanded(flex: 13, child: widget.child),
         ],
       ),
       bottomNavigationBar:
@@ -166,11 +176,7 @@ class _MainPageState extends State<MainPage> {
                 type: BottomNavigationBarType.fixed, // Add this line
                 showUnselectedLabels: true,
                 currentIndex: selectedIndex,
-                onTap: (int index) {
-                  setState(() {
-                    selectedIndex = index.clamp(0, screens.length - 1);
-                  });
-                },
+                onTap: (int index) => _onItemTapped(index, context),
                 items: items,
               )
               : null,

@@ -61,11 +61,17 @@ class ResultDialogWidget extends StatelessWidget {
             ),
           ],
         ),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+        content: Container(
+          width: double.maxFinite,
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.6,
+            maxWidth: isTablet ? 600 : double.infinity,
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
               if (imageCaptureState.imageFile != null) ...[
                 Container(
                   height: isTablet ? 300 : 150,
@@ -117,6 +123,7 @@ class ResultDialogWidget extends StatelessWidget {
               ),
             ],
           ),
+        ),
         ),
         actions: [
           Column(

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../l10n/app_localizations.dart';
@@ -28,6 +30,11 @@ class ActionButtonsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    log(' imageCaptureState.isGallery: ${imageCaptureState.isGallery}');
+    // log(' imageCaptureState.isCamera: ${imageCaptureState.isCamera}');
+    // log(' imageCaptureState.imageFile: ${imageCaptureState.imageFile}');
+    // log(' solveMathState.result.isEmpty: ${solveMathState.result.isEmpty}');
+
     return Column(
       children: [
         // Primary Actions Row
@@ -36,24 +43,27 @@ class ActionButtonsWidget extends StatelessWidget {
             Expanded(
               child: _ActionButton(
                 icon: Icons.camera_alt,
-                label: imageCaptureState.isCamera &&
-                        imageCaptureState.imageFile != null &&
-                        solveMathState.result.isEmpty
-                    ? AppLocalizations.of(context)!.solveProblem
-                    : AppLocalizations.of(context)!.takePhoto,
-                onPressed: imageCaptureState.isLoading
-                    ? null
-                    : () async {
-                        if (imageCaptureState.isCamera &&
+                label:
+                    imageCaptureState.isCamera &&
                             imageCaptureState.imageFile != null &&
-                            solveMathState.result.isEmpty) {
-                          await onSolvePressed();
-                        } else {
-                          context.read<SolveMathCubit>().emptyResult();
-                          onCameraPressed();
-                        }
-                      },
-                isPrimary: imageCaptureState.isCamera &&
+                            solveMathState.result.isEmpty
+                        ? AppLocalizations.of(context)!.solveProblem
+                        : AppLocalizations.of(context)!.takePhoto,
+                onPressed:
+                    imageCaptureState.isLoading
+                        ? null
+                        : () async {
+                          if (imageCaptureState.isCamera &&
+                              imageCaptureState.imageFile != null &&
+                              solveMathState.result.isEmpty) {
+                            await onSolvePressed();
+                          } else {
+                            context.read<SolveMathCubit>().emptyResult();
+                            onCameraPressed();
+                          }
+                        },
+                isPrimary:
+                    imageCaptureState.isCamera &&
                     imageCaptureState.imageFile != null &&
                     solveMathState.result.isEmpty,
                 isLoading:
@@ -64,25 +74,27 @@ class ActionButtonsWidget extends StatelessWidget {
             Expanded(
               child: _ActionButton(
                 icon: Icons.photo_library,
-                label: imageCaptureState.isGallery &&
-                        imageCaptureState.imageFile != null &&
-                        solveMathState.result.isEmpty
-                    ? AppLocalizations.of(context)!.solveProblem
-                    : AppLocalizations.of(context)!.uploadPhoto,
-                onPressed: imageCaptureState.isLoading
-                    ? null
-                    : () async {
-                        if (imageCaptureState.isGallery &&
+                label:
+                    imageCaptureState.isGallery &&
                             imageCaptureState.imageFile != null &&
-                            solveMathState.result.isEmpty) {
-                          await onSolvePressed();
-                        } else {
-                          context.read<SolveMathCubit>().emptyResult();
-                          context.read<ImageCaptureCubit>().clearImage();
-                          onGalleryPressed();
-                        }
-                      },
-                isPrimary: imageCaptureState.isGallery &&
+                            solveMathState.result.isEmpty
+                        ? AppLocalizations.of(context)!.solveProblem
+                        : AppLocalizations.of(context)!.uploadPhoto,
+                onPressed:
+                    imageCaptureState.isLoading
+                        ? null
+                        : () async {
+                          if (imageCaptureState.isGallery &&
+                              imageCaptureState.imageFile != null &&
+                              solveMathState.result.isEmpty) {
+                            await onSolvePressed();
+                          } else {
+                            context.read<SolveMathCubit>().emptyResult();
+                            onGalleryPressed();
+                          }
+                        },
+                isPrimary:
+                    imageCaptureState.isGallery &&
                     imageCaptureState.imageFile != null &&
                     solveMathState.result.isEmpty,
                 isLoading:
@@ -134,16 +146,17 @@ class _ActionButton extends StatelessWidget {
     if (isPrimary) {
       return ElevatedButton.icon(
         onPressed: onPressed,
-        icon: isLoading
-            ? SizedBox(
-                width: 16,
-                height: 16,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: Theme.of(context).colorScheme.onSecondary,
-                ),
-              )
-            : Icon(icon, size: 20),
+        icon:
+            isLoading
+                ? SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Theme.of(context).colorScheme.onSecondary,
+                  ),
+                )
+                : Icon(icon, size: 20),
         label: LabelLargeText(
           label,
           color: Theme.of(context).colorScheme.onSecondary,
@@ -179,16 +192,17 @@ class _ActionButton extends StatelessWidget {
     } else {
       return FilledButton.icon(
         onPressed: onPressed,
-        icon: isLoading
-            ? SizedBox(
-                width: 16,
-                height: 16,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: Theme.of(context).colorScheme.onSecondary,
-                ),
-              )
-            : Icon(icon, size: 20),
+        icon:
+            isLoading
+                ? SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Theme.of(context).colorScheme.onSecondary,
+                  ),
+                )
+                : Icon(icon, size: 20),
         label: LabelLargeText(
           label,
           color: Theme.of(context).colorScheme.onSecondary,

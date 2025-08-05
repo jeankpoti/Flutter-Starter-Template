@@ -10,7 +10,10 @@ import 'package:math_ai/features/solve_math/data/repository/gemini_solve_math_re
 import 'package:math_ai/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'main_page_wrapper.dart';
+import 'features/solve_math/presentation/home_page.dart';
+import 'features/study/presentation/study_page.dart';
+import 'features/settings/data/preferences_service.dart';
+import 'common_widgets/math_level_onboarding_dialog.dart';
 
 import 'features/account/data/repository/account_repo.dart';
 import 'features/account/presentation/account_cubit.dart';
@@ -79,11 +82,12 @@ void main() async {
         ),
 
         BlocProvider<PermissionCubit>(create: (context) => PermissionCubit()),
-        
+
         BlocProvider<ImageCaptureCubit>(
-          create: (context) => ImageCaptureCubit(
-            permissionCubit: context.read<PermissionCubit>(),
-          ),
+          create:
+              (context) => ImageCaptureCubit(
+                permissionCubit: context.read<PermissionCubit>(),
+              ),
         ),
       ],
       child: const MyApp(),
@@ -130,6 +134,8 @@ class MyApp extends StatelessWidget {
 enum AppRoute {
   // splashPage,
   mainPage,
+  homePage,
+  studyPage,
 
   signInPage,
   signUpPage,
@@ -145,72 +151,159 @@ enum AppRoute {
   settingsPage,
 }
 
+// Create a navigatorKey for the ShellRoute
+final _rootNavigatorKey = GlobalKey<NavigatorState>();
+final _shellNavigatorKey = GlobalKey<NavigatorState>();
+
 // Define the routes
 final GoRouter _router = GoRouter(
+  navigatorKey: _rootNavigatorKey,
   initialLocation: '/',
 
   routes: [
+    // Authentication routes (outside of shell)
     GoRoute(
       path: '/sign-in',
       name: AppRoute.signInPage.name,
+      parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const SignInPage(),
     ),
     GoRoute(
       path: '/sign-up',
       name: AppRoute.signUpPage.name,
+      parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const SignUpPage(),
     ),
     GoRoute(
       path: '/reset-password',
       name: AppRoute.resetPasswordPage.name,
+      parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const ResetPasswordPage(),
-    ),
-
-    // GoRoute(
-    //   path: '/solve-math',
-    //   name: AppRoute.identifyAnimalPage.name,
-    //   builder: (context, state) => const IdentifyAnimalPage(),
-    // ),
-    // GoRoute(
-    //   path: '/collection',
-    //   name: AppRoute.identifiedPage.name,
-    //   builder: (context, state) => const IdentifyAnimalPage(),
-    //   routes: [
-    //     GoRoute(
-    //       path: 'identifiedAnimalsDetails',
-    //       name: AppRoute.identifiedAnimalsDetailsPage.name,
-    //       builder: (context, state) {
-    //         Animal animal = state.extra as Animal; // -> casting is important
-    //         return IdentifiedAnimalsDetailsPage(animal: animal);
-    //       },
-    //     ),
-    //   ],
-    // ),
-    GoRoute(
-      path: '/settings',
-      name: AppRoute.settingsPage.name,
-      builder: (context, state) => const SettingsPage(),
-    ),
-    GoRoute(
-      path: '/subscription',
-      name: AppRoute.subscriptionPage.name,
-      builder: (context, state) => const SubscriptionPage(),
     ),
     GoRoute(
       path: '/onboarding',
       name: AppRoute.onboardingPage.name,
+      parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const OnboardingPage(),
     ),
 
-    GoRoute(
-      path: '/collections',
-      name: AppRoute.collectionsPage.name,
-      builder: (context, state) => const CollectionsPage(),
+    // ShellRoute for main app with persistent navigation
+    ShellRoute(
+      navigatorKey: _shellNavigatorKey,
+      builder: (context, state, child) {
+        return MainPage(child: child);
+      },
+      routes: [
+        GoRoute(
+          path: '/',
+          name: AppRoute.mainPage.name,
+          pageBuilder: (context, state) {
+            return NoTransitionPage(
+              child: FutureBuilder<SharedPreferences>(
+                future: SharedPreferences.getInstance(),
+                builder: (context, prefsSnapshot) {
+                  if (prefsSnapshot.connectionState ==
+                      ConnectionState.waiting) {
+                    return const Scaffold(
+                      body: Center(child: CircularProgressIndicator()),
+                    );
+                  }
+
+                  final hasSeenOnboarding =
+                      prefsSnapshot.data?.getBool('hasSeenOnboarding') ?? false;
+
+                  if (!hasSeenOnboarding) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      context.goNamed(AppRoute.onboardingPage.name);
+                    });
+                    return const Scaffold(
+                      body: Center(child: CircularProgressIndicator()),
+                    );
+                  }
+
+                  // After onboarding is seen, check auth state
+                  return StreamBuilder<User?>(
+                    stream: FirebaseAuth.instance.authStateChanges(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Scaffold(
+                          body: Center(child: CircularProgressIndicator()),
+                        );
+                      }
+
+                      if (snapshot.hasData) {
+                        // Check if it's first time to show math level dialog
+                        return FutureBuilder<bool>(
+                          future: PreferencesService.getInstance().then(
+                            (prefs) => prefs.isFirstTime(),
+                          ),
+                          builder: (context, firstTimeSnapshot) {
+                            if (firstTimeSnapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Scaffold(
+                                body: Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                              );
+                            }
+
+                            if (firstTimeSnapshot.data == true) {
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                showDialog(
+                                  context: context,
+                                  barrierDismissible: false,
+                                  builder:
+                                      (context) =>
+                                          const MathLevelOnboardingDialog(),
+                                );
+                              });
+                            }
+
+                            return const HomePage();
+                          },
+                        );
+                      } else {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          context.goNamed(AppRoute.signInPage.name);
+                        });
+                        return const Scaffold(
+                          body: Center(child: CircularProgressIndicator()),
+                        );
+                      }
+                    },
+                  );
+                },
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          path: '/study',
+          name: AppRoute.studyPage.name,
+          pageBuilder:
+              (context, state) => const NoTransitionPage(child: StudyPage()),
+        ),
+        GoRoute(
+          path: '/collections',
+          name: AppRoute.collectionsPage.name,
+          pageBuilder:
+              (context, state) =>
+                  const NoTransitionPage(child: CollectionsPage()),
+        ),
+        GoRoute(
+          path: '/settings',
+          name: AppRoute.settingsPage.name,
+          pageBuilder:
+              (context, state) => const NoTransitionPage(child: SettingsPage()),
+        ),
+      ],
     ),
 
+    // Routes that break out of the shell (no bottom navigation)
     GoRoute(
       path: '/collectionsDetails',
       name: AppRoute.collectionsDetailsPage.name,
+      parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) {
         Collection collection =
             state.extra as Collection; // -> casting is important
@@ -218,58 +311,10 @@ final GoRouter _router = GoRouter(
       },
     ),
     GoRoute(
-      path: '/',
-      builder: (context, state) {
-        return FutureBuilder<SharedPreferences>(
-          future: SharedPreferences.getInstance(),
-          builder: (context, prefsSnapshot) {
-            if (prefsSnapshot.connectionState == ConnectionState.waiting) {
-              return const Scaffold(
-                body: Center(child: CircularProgressIndicator()),
-              );
-            }
-
-            final hasSeenOnboarding =
-                prefsSnapshot.data?.getBool('hasSeenOnboarding') ?? false;
-
-            if (!hasSeenOnboarding) {
-              // Set the flag to true and show onboarding
-              // prefsSnapshot.data?.setBool('hasSeenOnboarding', true);
-              return const OnboardingPage();
-            }
-
-            // After onboarding is seen, check auth state
-            return StreamBuilder<User?>(
-              stream: FirebaseAuth.instance.authStateChanges(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Scaffold(
-                    body: Center(child: CircularProgressIndicator()),
-                  );
-                }
-
-                if (snapshot.hasData) {
-                  // Get animals on first load
-                  // context.read<FirebaseMathCubit>().getAnimals();
-
-                  return const MainPageWrapper();
-                } else {
-                  return const SignInPage();
-                }
-              },
-            );
-          },
-        );
-      },
-      routes: [
-        GoRoute(
-          path: 'mainView',
-          name: AppRoute.mainPage.name,
-          builder: (context, state) {
-            return const MainPage();
-          },
-        ),
-      ],
+      path: '/subscription',
+      name: AppRoute.subscriptionPage.name,
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const SubscriptionPage(),
     ),
   ],
 );

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'common_widgets/math_level_onboarding_dialog.dart';
 import 'features/settings/data/preferences_service.dart';
-import 'main_page.dart';
+import 'features/solve_math/presentation/home_page.dart';
 
 class MainPageWrapper extends StatefulWidget {
   const MainPageWrapper({super.key});
@@ -51,6 +51,6 @@ class _MainPageWrapperState extends State<MainPageWrapper> {
       );
     }
 
-    return const MainPage();
+    return const HomePage();
   }
 }

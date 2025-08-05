@@ -41,7 +41,7 @@ class MathMarkdownWidget extends StatelessWidget {
       // Check for LaTeX math expressions
       if (line.contains(r'$') && line.contains(r'\boxed')) {
         // Handle boxed math expressions
-        final regex = RegExp(r'\$([^$]+)\$');
+        final regex = RegExp(r'\$([^$]+)\$', multiLine: true);
         if (regex.hasMatch(line)) {
           try {
             final match = regex.firstMatch(line)!;
@@ -51,26 +51,39 @@ class MathMarkdownWidget extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 12.0),
                 child: Center(
-                  child: Math.tex(
-                    mathExpression,
-                    textStyle: Theme.of(
-                      context,
-                    ).textTheme.headlineSmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface,
-                      fontWeight: FontWeight.w600,
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      minHeight: 30.0,
+                      minWidth: 20.0,
+                    ),
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Math.tex(
+                        mathExpression,
+                        textStyle: Theme.of(
+                          context,
+                        ).textTheme.headlineSmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurface,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
             );
           } catch (e) {
-            // If LaTeX parsing fails, show as regular text
+            // If LaTeX parsing fails, show the expression without dollar signs
+            final cleanLine = line.replaceAll(r'$', '');
             widgets.add(
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4.0),
                 child: Text(
-                  line,
-                  style: Theme.of(context).textTheme.bodyMedium,
+                  cleanLine,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontFamily: 'monospace',
+                    color: Theme.of(context).colorScheme.error,
+                  ),
                 ),
               ),
             );
@@ -79,7 +92,7 @@ class MathMarkdownWidget extends StatelessWidget {
       } else if (line.contains(r'$')) {
         // Handle inline math expressions
         try {
-          final regex = RegExp(r'\$([^$]+)\$');
+          final regex = RegExp(r'\$([^$]+)\$', multiLine: true);
           final matches = regex.allMatches(line).toList();
 
           if (matches.isNotEmpty) {
@@ -106,10 +119,18 @@ class MathMarkdownWidget extends StatelessWidget {
             );
           }
         } catch (e) {
+          // If parsing fails, show line without dollar signs
+          final cleanLine = line.replaceAll(r'$', '');
           widgets.add(
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 4.0),
-              child: Text(line, style: Theme.of(context).textTheme.bodyMedium),
+              child: Text(
+                cleanLine,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontFamily: 'monospace',
+                  color: Theme.of(context).colorScheme.error,
+                ),
+              ),
             ),
           );
         }
@@ -380,22 +401,37 @@ class MathMarkdownWidget extends StatelessWidget {
                 ).colorScheme.secondaryContainer.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(4.0),
               ),
-              child: Math.tex(
-                mathExpression,
-                textStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface,
-                  fontWeight: FontWeight.w600,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  minHeight: 20.0,
+                  minWidth: 10.0,
+                ),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Math.tex(
+                    mathExpression,
+                    textStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                    ),
+                  ),
                 ),
               ),
             ),
           ),
         );
       } catch (e) {
-        // If math parsing fails, add as regular text
+        // If math parsing fails, add the expression without dollar signs
         spans.add(
           TextSpan(
-            text: match.group(0)!,
-            style: const TextStyle(fontFamily: 'monospace'),
+            text: match.group(1)!,
+            style: TextStyle(
+              fontFamily: 'monospace',
+              color: Theme.of(context).colorScheme.error,
+              backgroundColor: Theme.of(context).colorScheme.errorContainer.withValues(alpha: 0.2),
+            ),
           ),
         );
       }

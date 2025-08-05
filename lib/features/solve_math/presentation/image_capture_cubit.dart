@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -48,7 +49,13 @@ class ImageCaptureState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [imageFile, isLoading, isCamera, isGallery, errorMessage];
+  List<Object?> get props => [
+    imageFile,
+    isLoading,
+    isCamera,
+    isGallery,
+    errorMessage,
+  ];
 }
 
 // Cubit
@@ -59,28 +66,32 @@ class ImageCaptureCubit extends Cubit<ImageCaptureState> {
   ImageCaptureCubit({
     required PermissionCubit permissionCubit,
     ImageCaptureService? imageCaptureService,
-  })  : _permissionCubit = permissionCubit,
-        _imageCaptureService = imageCaptureService ?? ImageCaptureService(),
-        super(const ImageCaptureState());
+  }) : _permissionCubit = permissionCubit,
+       _imageCaptureService = imageCaptureService ?? ImageCaptureService(),
+       super(const ImageCaptureState());
 
   /// Captures image from camera with permission handling
   Future<bool> captureFromCamera() async {
-    emit(state.copyWith(
-      isLoading: true,
-      isCamera: true,
-      isGallery: false,
-      errorMessage: null,
-    ));
+    emit(
+      state.copyWith(
+        isLoading: true,
+        isCamera: true,
+        isGallery: false,
+        errorMessage: null,
+      ),
+    );
 
     try {
       // Check if we should show dialog BEFORE making the request
-      final shouldShowDialogBeforeRequest = _permissionCubit.state.hasCameraBeenDenied;
-      
+      final shouldShowDialogBeforeRequest =
+          _permissionCubit.state.hasCameraBeenDenied;
+
       // Request camera permission
       final cameraStatus = await _permissionCubit.requestCameraPermission();
 
       // Check if should show dialog based on the state before the request
-      if (shouldShowDialogBeforeRequest && (cameraStatus.isDenied || cameraStatus.isPermanentlyDenied)) {
+      if (shouldShowDialogBeforeRequest &&
+          (cameraStatus.isDenied || cameraStatus.isPermanentlyDenied)) {
         _permissionCubit.setPendingCameraPermission(true);
         emit(state.copyWith(isLoading: false));
         return false; // Caller should show permission dialog
@@ -94,45 +105,48 @@ class ImageCaptureCubit extends Cubit<ImageCaptureState> {
 
       // Capture image
       final imageFile = await _imageCaptureService.captureFromCamera();
-      
+
       if (imageFile != null) {
-        emit(state.copyWith(
-          imageFile: imageFile,
-          isLoading: false,
-        ));
+        emit(state.copyWith(imageFile: imageFile, isLoading: false));
       } else {
         // User cancelled
         emit(state.copyWith(isLoading: false));
       }
-      
+
       return true; // Permission was handled successfully
     } catch (e) {
-      emit(state.copyWith(
-        isLoading: false,
-        errorMessage: 'Failed to capture image',
-      ));
+      emit(
+        state.copyWith(
+          isLoading: false,
+          errorMessage: 'Failed to capture image',
+        ),
+      );
       return true;
     }
   }
 
   /// Selects image from gallery with permission handling
   Future<bool> selectFromGallery() async {
-    emit(state.copyWith(
-      isLoading: true,
-      isCamera: false,
-      isGallery: true,
-      errorMessage: null,
-    ));
+    emit(
+      state.copyWith(
+        isLoading: true,
+        isCamera: false,
+        isGallery: true,
+        errorMessage: null,
+      ),
+    );
 
     try {
       // Check if we should show dialog BEFORE making the request
-      final shouldShowDialogBeforeRequest = _permissionCubit.state.hasGalleryBeenDenied;
-      
+      final shouldShowDialogBeforeRequest =
+          _permissionCubit.state.hasGalleryBeenDenied;
+
       // Request gallery permission
       final photoStatus = await _permissionCubit.requestGalleryPermission();
 
       // Check if should show dialog based on the state before the request
-      if (shouldShowDialogBeforeRequest && (photoStatus.isDenied || photoStatus.isPermanentlyDenied)) {
+      if (shouldShowDialogBeforeRequest &&
+          (photoStatus.isDenied || photoStatus.isPermanentlyDenied)) {
         _permissionCubit.setPendingGalleryPermission(true);
         emit(state.copyWith(isLoading: false));
         return false; // Caller should show permission dialog
@@ -146,23 +160,22 @@ class ImageCaptureCubit extends Cubit<ImageCaptureState> {
 
       // Select image
       final imageFile = await _imageCaptureService.selectFromGallery();
-      
+
       if (imageFile != null) {
-        emit(state.copyWith(
-          imageFile: imageFile,
-          isLoading: false,
-        ));
+        emit(state.copyWith(imageFile: imageFile, isLoading: false));
       } else {
         // User cancelled
         emit(state.copyWith(isLoading: false));
       }
-      
+
       return true; // Permission was handled successfully
     } catch (e) {
-      emit(state.copyWith(
-        isLoading: false,
-        errorMessage: 'Failed to select image',
-      ));
+      emit(
+        state.copyWith(
+          isLoading: false,
+          errorMessage: 'Failed to select image',
+        ),
+      );
       return true;
     }
   }
@@ -177,11 +190,7 @@ class ImageCaptureCubit extends Cubit<ImageCaptureState> {
 
   /// Resets the state but keeps the image
   void resetLoadingState() {
-    emit(state.copyWith(
-      isLoading: false,
-      isCamera: false,
-      isGallery: false,
-    ));
+    emit(state.copyWith(isLoading: false, isCamera: false, isGallery: false));
   }
 
   @override

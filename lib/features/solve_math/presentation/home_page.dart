@@ -78,6 +78,8 @@ class _HomePageState extends State<HomePage>
     // Capture context-dependent values before async operation
     final imageCaptureCubit = context.read<ImageCaptureCubit>();
 
+    // imageCaptureCubit.clearImage();
+
     final handled = await imageCaptureCubit.captureFromCamera();
 
     if (!mounted) return;
@@ -121,51 +123,6 @@ class _HomePageState extends State<HomePage>
       );
     }
   }
-
-  // void _showPermissionDeniedDialog(String permissionType) {
-  //   if (!mounted) return;
-  //   showDialog(
-  //     context: context,
-  //     builder:
-  //         (ctx) => AlertDialog(
-  //           title: Text('$permissionType Permission Denied'),
-  //           content: Text(
-  //             'Please enable $permissionType access in your device settings to use this feature.',
-  //           ),
-  //           actions: [
-  //             TextButton(
-  //               onPressed: () {
-  //                 Navigator.of(ctx).pop();
-  //                 if (mounted) {
-  //                   context.read<ImageCaptureCubit>().resetLoadingState();
-  //                 }
-  //               },
-  //               child: const Text('Close'),
-  //             ),
-  //             TextButton(
-  //               onPressed: () {
-  //                 context.read<PermissionCubit>().openSettings();
-  //                 Navigator.of(ctx).pop();
-  //               },
-  //               child: ElevatedButton(
-  //                 onPressed: () {
-  //                   Navigator.of(ctx).pop();
-  //                   openAppSettings();
-  //                 },
-  //                 style: ElevatedButton.styleFrom(
-  //                   backgroundColor: Theme.of(context).colorScheme.secondary,
-  //                   foregroundColor: Theme.of(context).colorScheme.onSecondary,
-  //                 ),
-  //                 child: LabelLargeText(
-  //                   AppLocalizations.of(context)!.openSettings,
-  //                   color: Theme.of(context).colorScheme.onSecondary,
-  //                 ),
-  //               ),
-  //             ),
-  //           ],
-  //         ),
-  //   );
-  // }
 
   Future<void> _handleSubscriptionAndSolve({String? textInput}) async {
     final imageFile = context.read<ImageCaptureCubit>().state.imageFile;
