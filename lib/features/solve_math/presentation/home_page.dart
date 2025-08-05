@@ -252,93 +252,180 @@ class _HomePageState extends State<HomePage>
         child: SafeArea(
           child: BlocBuilder<SolveMathCubit, SolveMathState>(
             builder: (context, state) {
-              return CustomScrollView(
-                slivers: [
-                  // Header Section
-                  SliverToBoxAdapter(
-                    child: Container(
-                      margin: const EdgeInsets.all(_spacing4),
-                      padding: const EdgeInsets.all(_spacing6),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            Theme.of(context).colorScheme.primaryContainer
-                                .withValues(alpha: 0.3),
-                            Theme.of(context).colorScheme.secondaryContainer
-                                .withValues(alpha: 0.2),
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(16.0),
-                      ),
-                      child: Column(
-                        children: [
-                          Icon(
-                            Icons.calculate_outlined,
-                            size: 48,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                          const SizedBox(height: 12),
-                          HeadlineMediumText(
-                            AppLocalizations.of(context)!.aiMathSolver,
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.onSurface,
-                          ),
-                          const SizedBox(height: 8),
-                          BodyLargeText(
-                            AppLocalizations.of(context)!.mathSolverDescription,
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onSurface.withValues(alpha: 0.8),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
-                      ),
+              return Column(
+                children: [
+                  // Tab Bar at the top
+                  Container(
+                    padding: const EdgeInsets.only(
+                      left: _spacing4,
+                      right: _spacing4,
+                      top: _spacing4,
                     ),
+                    child: ModernTabBarWidget(tabController: _tabController),
                   ),
 
-                  // Tab Section
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: _spacing4,
-                      ),
-                      child: ModernTabBarWidget(tabController: _tabController),
-                    ),
-                  ),
-
-                  // Content Section
-                  SliverToBoxAdapter(
-                    child: SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.6,
-                      child: Padding(
-                        padding: const EdgeInsets.all(_spacing4),
-                        child: TabBarView(
-                          controller: _tabController,
-                          children: [
-                            PhotoTabWidget(
-                              isTablet: isTablet,
-                              onCameraPressed: _takePicture,
-                              onGalleryPressed: _uploadPicture,
-                              onResetPressed: () {
-                                context.read<ImageCaptureCubit>().clearImage();
-                                context.read<SolveMathCubit>().emptyResult();
-                              },
-                              onSolvePressed: _handleSubscriptionAndSolve,
-                            ),
-                            TextTabWidget(
-                              textController: _textController,
-                              isTablet: isTablet,
-                              onSolvePressed:
-                                  () => _handleSubscriptionAndSolve(
-                                    textInput: _textController.text.trim(),
+                  // Tab Content
+                  Expanded(
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: [
+                        // Photo Tab with its own scroll
+                        SingleChildScrollView(
+                          padding: const EdgeInsets.all(_spacing4),
+                          child: Column(
+                            children: [
+                              // Header Section for Photo Tab
+                              Container(
+                                padding: const EdgeInsets.all(_spacing6),
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Theme.of(context)
+                                          .colorScheme
+                                          .secondaryContainer
+                                          .withValues(alpha: 0.3),
+                                      Theme.of(context).colorScheme.tertiary
+                                          .withValues(alpha: 0.2),
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
                                   ),
-                              showSnackBarMessage: _showSnackBarMessage,
-                            ),
-                          ],
+                                  borderRadius: BorderRadius.circular(16.0),
+                                ),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.auto_awesome,
+                                          size: 28,
+                                          color:
+                                              Theme.of(
+                                                context,
+                                              ).colorScheme.secondary,
+                                        ),
+                                        const SizedBox(width: 12),
+                                        HeadlineSmallText(
+                                          AppLocalizations.of(
+                                            context,
+                                          )!.aiMathSolver,
+                                          fontWeight: FontWeight.bold,
+                                          color:
+                                              Theme.of(
+                                                context,
+                                              ).colorScheme.onSurface,
+                                        ),
+                                      ],
+                                    ),
+
+                                    const SizedBox(height: 8),
+                                    BodyMediumText(
+                                      AppLocalizations.of(
+                                        context,
+                                      )!.mathSolverDescription,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface
+                                          .withValues(alpha: 0.8),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: _spacing6),
+                              PhotoTabWidget(
+                                isTablet: isTablet,
+                                onCameraPressed: _takePicture,
+                                onGalleryPressed: _uploadPicture,
+                                onResetPressed: () {
+                                  context
+                                      .read<ImageCaptureCubit>()
+                                      .clearImage();
+                                  context.read<SolveMathCubit>().emptyResult();
+                                },
+                                onSolvePressed: _handleSubscriptionAndSolve,
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
+
+                        // Text Tab with its own scroll
+                        SingleChildScrollView(
+                          padding: const EdgeInsets.all(_spacing4),
+                          child: Column(
+                            children: [
+                              // Header Section for Text Tab
+                              Container(
+                                padding: const EdgeInsets.all(_spacing6),
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      Theme.of(context)
+                                          .colorScheme
+                                          .secondaryContainer
+                                          .withValues(alpha: 0.3),
+                                      Theme.of(context).colorScheme.tertiary
+                                          .withValues(alpha: 0.2),
+                                    ],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                  borderRadius: BorderRadius.circular(16.0),
+                                ),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.auto_awesome,
+                                          size: 28,
+                                          color:
+                                              Theme.of(
+                                                context,
+                                              ).colorScheme.secondary,
+                                        ),
+                                        const SizedBox(width: 12),
+                                        HeadlineSmallText(
+                                          AppLocalizations.of(
+                                            context,
+                                          )!.aiMathSolver,
+                                          fontWeight: FontWeight.bold,
+                                          color:
+                                              Theme.of(
+                                                context,
+                                              ).colorScheme.onSurface,
+                                        ),
+                                      ],
+                                    ),
+
+                                    const SizedBox(height: 8),
+                                    BodyMediumText(
+                                      AppLocalizations.of(
+                                        context,
+                                      )!.mathSolverDescription,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface
+                                          .withValues(alpha: 0.8),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: _spacing6),
+                              TextTabWidget(
+                                textController: _textController,
+                                isTablet: isTablet,
+                                onSolvePressed:
+                                    () => _handleSubscriptionAndSolve(
+                                      textInput: _textController.text.trim(),
+                                    ),
+                                showSnackBarMessage: _showSnackBarMessage,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
