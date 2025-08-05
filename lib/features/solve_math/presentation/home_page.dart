@@ -355,64 +355,64 @@ class _HomePageState extends State<HomePage>
                           child: Column(
                             children: [
                               // Header Section for Text Tab
-                              Container(
-                                padding: const EdgeInsets.all(_spacing6),
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      Theme.of(context)
-                                          .colorScheme
-                                          .secondaryContainer
-                                          .withValues(alpha: 0.3),
-                                      Theme.of(context).colorScheme.tertiary
-                                          .withValues(alpha: 0.2),
-                                    ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                  ),
-                                  borderRadius: BorderRadius.circular(16.0),
-                                ),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          Icons.auto_awesome,
-                                          size: 28,
-                                          color:
-                                              Theme.of(
-                                                context,
-                                              ).colorScheme.secondary,
-                                        ),
-                                        const SizedBox(width: 12),
-                                        HeadlineSmallText(
-                                          AppLocalizations.of(
-                                            context,
-                                          )!.aiMathSolver,
-                                          fontWeight: FontWeight.bold,
-                                          color:
-                                              Theme.of(
-                                                context,
-                                              ).colorScheme.onSurface,
-                                        ),
-                                      ],
-                                    ),
+                              // Container(
+                              //   padding: const EdgeInsets.all(_spacing6),
+                              //   decoration: BoxDecoration(
+                              //     gradient: LinearGradient(
+                              //       colors: [
+                              //         Theme.of(context)
+                              //             .colorScheme
+                              //             .secondaryContainer
+                              //             .withValues(alpha: 0.3),
+                              //         Theme.of(context).colorScheme.tertiary
+                              //             .withValues(alpha: 0.2),
+                              //       ],
+                              //       begin: Alignment.topLeft,
+                              //       end: Alignment.bottomRight,
+                              //     ),
+                              //     borderRadius: BorderRadius.circular(16.0),
+                              //   ),
+                              //   child: Column(
+                              //     children: [
+                              //       Row(
+                              //         children: [
+                              //           Icon(
+                              //             Icons.auto_awesome,
+                              //             size: 28,
+                              //             color:
+                              //                 Theme.of(
+                              //                   context,
+                              //                 ).colorScheme.secondary,
+                              //           ),
+                              //           const SizedBox(width: 12),
+                              //           HeadlineSmallText(
+                              //             AppLocalizations.of(
+                              //               context,
+                              //             )!.aiMathSolver,
+                              //             fontWeight: FontWeight.bold,
+                              //             color:
+                              //                 Theme.of(
+                              //                   context,
+                              //                 ).colorScheme.onSurface,
+                              //           ),
+                              //         ],
+                              //       ),
 
-                                    const SizedBox(height: 8),
-                                    BodyMediumText(
-                                      AppLocalizations.of(
-                                        context,
-                                      )!.mathSolverDescription,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurface
-                                          .withValues(alpha: 0.8),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(height: _spacing6),
+                              //       const SizedBox(height: 8),
+                              //       BodyMediumText(
+                              //         AppLocalizations.of(
+                              //           context,
+                              //         )!.mathSolverDescription,
+                              //         color: Theme.of(context)
+                              //             .colorScheme
+                              //             .onSurface
+                              //             .withValues(alpha: 0.8),
+                              //         textAlign: TextAlign.center,
+                              //       ),
+                              //     ],
+                              //   ),
+                              // ),
+                              // const SizedBox(height: _spacing6),
                               TextTabWidget(
                                 textController: _textController,
                                 isTablet: isTablet,
