@@ -31,7 +31,7 @@ class PhotoTabWidget extends StatelessWidget {
     return BlocBuilder<ImageCaptureCubit, ImageCaptureState>(
       builder: (context, imageCaptureState) {
         final state = context.watch<SolveMathCubit>().state;
-        
+
         return SingleChildScrollView(
           child: Column(
             children: [
@@ -44,10 +44,9 @@ class PhotoTabWidget extends StatelessWidget {
                   color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(16.0),
                   border: Border.all(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .outline
-                        .withValues(alpha: 0.2),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.outline.withValues(alpha: 0.2),
                     width: 1,
                   ),
                 ),
@@ -71,26 +70,23 @@ class PhotoTabWidget extends StatelessWidget {
                           Icon(
                             Icons.add_a_photo_outlined,
                             size: isTablet ? 80 : 60,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .withValues(alpha: 0.4),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withValues(alpha: 0.4),
                           ),
                           const SizedBox(height: 16),
                           BodyLargeText(
                             AppLocalizations.of(context)!.noImageSelected,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .withValues(alpha: 0.6),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withValues(alpha: 0.6),
                           ),
                           const SizedBox(height: 8),
                           BodyMediumText(
                             AppLocalizations.of(context)!.captureOrUpload,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .withValues(alpha: 0.5),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurface.withValues(alpha: 0.5),
                           ),
                         ],
                       ),
@@ -99,10 +95,9 @@ class PhotoTabWidget extends StatelessWidget {
                     if (imageCaptureState.isLoading || state.isIdentifying)
                       Container(
                         decoration: BoxDecoration(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .surface
-                              .withValues(alpha: 0.9),
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.surface.withValues(alpha: 0.9),
                           borderRadius: BorderRadius.circular(16.0),
                         ),
                         child: Center(
@@ -116,10 +111,12 @@ class PhotoTabWidget extends StatelessWidget {
                               const SizedBox(height: _spacing4),
                               BodyMediumText(
                                 state.isIdentifying
-                                    ? AppLocalizations.of(context)!
-                                        .analyzingProblem
-                                    : AppLocalizations.of(context)!
-                                        .processingImage,
+                                    ? AppLocalizations.of(
+                                      context,
+                                    )!.analyzingProblem
+                                    : AppLocalizations.of(
+                                      context,
+                                    )!.processingImage,
                                 color: Theme.of(context).colorScheme.primary,
                                 fontWeight: FontWeight.w500,
                               ),

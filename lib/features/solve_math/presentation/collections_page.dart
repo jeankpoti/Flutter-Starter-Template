@@ -178,9 +178,13 @@ class _CollectionsPageState extends State<CollectionsPage> {
                         constraints: BoxConstraints(
                           minHeight: constraints.maxHeight,
                         ),
-                        child: Center(
-                          child: BodyMediumText(
-                            AppLocalizations.of(context)!.noSolvedProblemsYet,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Center(
+                            child: BodyMediumText(
+                              AppLocalizations.of(context)!.noSolvedProblemsYet,
+                              textAlign: TextAlign.center,
+                            ),
                           ),
                         ),
                       ),

@@ -1,6 +1,10 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:http/http.dart' as http;
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import '../../../../common_widgets/app_snackbar_widget.dart';
@@ -75,6 +79,7 @@ class FirebaseRepo implements AccountRepo {
 
   @override
   Future<bool> signInWithApple(context) async {
+    log('signInWithApple called');
     try {
       // Request an Apple ID Credential
       final appleCredential = await SignInWithApple.getAppleIDCredential(
@@ -89,6 +94,56 @@ class FirebaseRepo implements AccountRepo {
         //   ),
         // ),
       );
+
+      // Check if user exists using Cloud Function BEFORE authenticating
+      final appleId = appleCredential.userIdentifier;
+      log('Apple ID received: $appleId');
+
+      if (appleId != null) {
+        try {
+          // Call the Cloud Function via HTTP to check if user exists
+          const functionUrl = 'https://us-central1-math-homework-ai.cloudfunctions.net/checkAppleUserExists';
+          
+          log('Calling Cloud Function with data: {appleId: $appleId}');
+          
+          final response = await http.post(
+            Uri.parse(functionUrl),
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: json.encode({
+              'appleId': appleId,
+            }),
+          );
+          
+          log('Response status: ${response.statusCode}');
+          log('Response body: ${response.body}');
+          
+          if (response.statusCode == 200) {
+            final data = json.decode(response.body);
+            final bool userExists = data['exists'] ?? false;
+            log('User exists check result: $userExists');
+
+            if (!userExists) {
+              log('Account not found for Apple ID: $appleId');
+              // User doesn't exist in our database - don't create Firebase Auth account
+              AppSnackBar.showError(
+                context,
+                "Account not found. Please sign up first!",
+              );
+              return false;
+            }
+          } else {
+            log('Cloud Function returned error: ${response.body}');
+            throw Exception('Failed to check user existence');
+          }
+        } catch (error) {
+          log('Error calling Cloud Function: $error');
+          rethrow;
+        }
+      } else {
+        log('Apple ID is null - this might be a privacy setting');
+      }
 
       // Create an OAuth credential for Firebase
       final oauthCredential = OAuthProvider("apple.com").credential(
@@ -105,33 +160,18 @@ class FirebaseRepo implements AccountRepo {
       final user = authResult.user;
 
       if (user != null) {
-        // Check if this is a new user
-        if (authResult.additionalUserInfo?.isNewUser ?? false) {
-          AppSnackBar.showError(
-            context,
-            "Account not found. Please sign up first!",
-          );
-          // Optional: Sign out the newly created user if you don't want them partially logged in
-          // await FirebaseAuth.instance.signOut();
-          // await SignInWithApple.signOut(); // If applicable for the package
-          return false; // MODIFIED: Return false for new user in sign-in flow
-        } else {
-          // Existing user signed in successfully
-          // if (context.mounted) {
-          //   //Navigate to the home screen
-          //   // GoRouter.of(context).pushReplacementNamed(AppRoute.mainView.name);
-          // }
-          return true; // MODIFIED: Return true for existing user
-        }
+        // User exists and signed in successfully
+        return true;
       } else {
         // User is null after successful credential exchange, which is unexpected.
         AppSnackBar.showError(
           context,
           "Failed to retrieve user information after Apple Sign-In.",
         );
-        return false; // ADDED: Return false if user is null
+        return false;
       }
     } on SignInWithAppleAuthorizationException catch (e) {
+      log('SignInWithAppleAuthorizationException: ${e.code} - ${e.message}');
       // ADDED: Specific catch for Apple Sign In Authorization exceptions
       // This is the error you were originally seeing. Handle it gracefully.
 
@@ -160,6 +200,8 @@ class FirebaseRepo implements AccountRepo {
       );
       return false; // ADDED: Return false
     } catch (e) {
+      log('Unexpected error in signInWithApple: $e');
+      log('Error type: ${e.runtimeType}');
       AppSnackBar.showError(
         context,
         "An unexpected error occurred during Apple Sign-In!",
@@ -188,18 +230,16 @@ class FirebaseRepo implements AccountRepo {
         idToken: googleSignInAuthentication.idToken,
       );
 
-      // Check if user exists in Firestore before signing in
-      final String email = googleSignInAccount.email;
-      final userQuery =
-          await _firestore
-              .collection('users')
-              .where('email', isEqualTo: email)
-              .get();
+      // Sign in with Firebase
+      final UserCredential userCredential = await _auth.signInWithCredential(
+        credential,
+      );
 
-      if (userQuery.docs.isEmpty) {
-        // User doesn't exist in our database
-        await _googleSignIn.signOut(); // Sign out from Google
-
+      // Check if this is a new user (not in our database)
+      if (userCredential.additionalUserInfo?.isNewUser == true) {
+        // This is a new user trying to sign in - they should sign up first
+        await _auth.signOut();
+        await _googleSignIn.signOut();
         if (context.mounted) {
           AppSnackBar.showError(
             context,
@@ -208,11 +248,6 @@ class FirebaseRepo implements AccountRepo {
         }
         return false;
       }
-
-      // Proceed with Firebase sign in if user exists
-      final UserCredential userCredential = await _auth.signInWithCredential(
-        credential,
-      );
       final User? user = userCredential.user;
 
       if (user != null) {
@@ -256,30 +291,26 @@ class FirebaseRepo implements AccountRepo {
           idToken: googleAuth.idToken,
         );
 
-        // Check if user exists in Firestore before proceeding
-        final userQuery =
-            await _firestore
-                .collection('users')
-                .where('email', isEqualTo: googleUser.email)
-                .get();
+        // Sign in with credential first
+        UserCredential userCredential = await _auth.signInWithCredential(
+          credential,
+        );
 
-        if (userQuery.docs.isNotEmpty) {
+        // Check if this is a new user
+        if (userCredential.additionalUserInfo?.isNewUser == false) {
+          // User already exists - they should use sign in instead
+          await _auth.signOut();
+          await _googleSignIn.signOut();
           if (context.mounted) {
             AppSnackBar.showError(
               context,
-              "You have already sign up. Please sign in!",
+              "You have already signed up. Please sign in!",
             );
           }
           return Future.error(
             'Account already exists. Please sign in instead.',
           );
         }
-
-        // Once signed in, return the UserCredential
-
-        UserCredential userCredential = await _auth.signInWithCredential(
-          credential,
-        );
 
         // Save the user's information to Firestore
         try {
@@ -356,6 +387,9 @@ class FirebaseRepo implements AccountRepo {
         'fullName':
             '${appleCredential.familyName} ${appleCredential.givenName}',
         'email': appleCredential.email,
+        'appleId':
+            appleCredential
+                .userIdentifier, // Store Apple ID for future sign-in checks
         'isSubscribed': false, // Free subscription
         'createdAt': DateTime.now(),
       });

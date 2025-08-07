@@ -13,8 +13,6 @@ class FirebaseMathRepo implements FirebaseCollectionRepo {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   final FirebaseStorage storage = FirebaseStorage.instance;
 
-  final user = FirebaseAuth.instance.currentUser;
-
   CollectionReference get _collection => firestore.collection('homework');
 
   @override
@@ -24,8 +22,11 @@ class FirebaseMathRepo implements FirebaseCollectionRepo {
     int limit = 10, // Number of problems to fetch per page
   }) async {
     try {
-      if (user != null) {
-        final userId = user!.uid;
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        throw Exception('User not authenticated');
+      }
+      final userId = user.uid;
         Query query = _collection
             .where('userId', isEqualTo: userId)
             // IMPORTANT: You NEED an orderBy clause for consistent pagination.
@@ -57,19 +58,19 @@ class FirebaseMathRepo implements FirebaseCollectionRepo {
           collections: collections,
           lastDocument: newLastDocument,
         );
-      } else {}
     } catch (e) {
       rethrow;
     }
-    // Return an empty result if user is null or other unhandled cases
-    return CollectionFetchResult(collections: []);
   }
 
   @override
   Future<void> saveCollection(Collection collection) async {
     try {
-      if (user != null) {
-        final userId = user!.uid;
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        throw Exception('User not authenticated');
+      }
+      final userId = user.uid;
 
         final docRef = _collection.doc();
 
@@ -97,7 +98,6 @@ class FirebaseMathRepo implements FirebaseCollectionRepo {
 
         // Save to Firestore (single set operation)
         await docRef.set(collectionData);
-      }
     } catch (e) {
       rethrow; // Rethrow to handle in the UI
     }
@@ -110,8 +110,8 @@ class FirebaseMathRepo implements FirebaseCollectionRepo {
       final fileName =
           '${userId}_${DateTime.now().millisecondsSinceEpoch}_${path.basename(imageFile.path)}';
 
-      // Create storage reference
-      final storageRef = storage.ref().child('homework_images/$fileName');
+      // Create storage reference with userId in the path for security
+      final storageRef = storage.ref().child('homework_images/$userId/$fileName');
 
       // Upload the file
       final uploadTask = storageRef.putFile(imageFile);
@@ -131,9 +131,11 @@ class FirebaseMathRepo implements FirebaseCollectionRepo {
   Future<void> deleteCollection(Collection collection) async {
     try {
       final user = FirebaseAuth.instance.currentUser;
-
-      if (user != null) {
-        if (collection.id != null) {
+      if (user == null) {
+        throw Exception('User not authenticated');
+      }
+      
+      if (collection.id != null) {
           // First delete the image if it exists
           if (collection.imageUrl != null && collection.imageUrl!.isNotEmpty) {
             // Extract the file path from the URL
@@ -155,9 +157,8 @@ class FirebaseMathRepo implements FirebaseCollectionRepo {
             // }
           }
 
-          // Delete the Firestore document
-          await _collection.doc(collection.id).delete();
-        }
+        // Delete the Firestore document
+        await _collection.doc(collection.id).delete();
       }
     } catch (e) {
       rethrow;

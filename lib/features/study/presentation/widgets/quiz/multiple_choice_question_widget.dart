@@ -113,7 +113,7 @@ class MultipleChoiceQuestionWidget extends StatelessWidget {
               ),
             ),
           );
-        }).toList(),
+        }),
       ],
     );
   }

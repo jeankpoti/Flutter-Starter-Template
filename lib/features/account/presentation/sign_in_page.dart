@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../../l10n/app_localizations.dart';
 
 import '../../../common_widgets/apple_signin_button_widget.dart';
+import '../../../common_widgets/app_snackbar_widget.dart';
 import '../../../common_widgets/google_signin_button_widget.dart';
 import '../../../common_widgets/loader_widget.dart';
 import '../../../common_widgets/text_form_field_widget.dart';
@@ -70,13 +71,9 @@ class _SignInPageState extends State<SignInPage> {
         // 1. Use a BlocListener for errors (optional)
         child: BlocListener<AccountCubit, AccountState>(
           listener: (context, accountState) {
-            if (accountState.errorMsg != null) {
-              // ErrorMessageWidget.showError(context, accountState.errorMsg!);
+            if (accountState.errorMsg != null && accountState.errorMsg!.isNotEmpty) {
+              AppSnackBar.showError(context, accountState.errorMsg!);
             } else if (accountState.isSuccess) {
-              // print(
-              //   'accountState.isSignInSuccess: ${accountState.isSignInSuccess}',
-              // );
-              // context.go('/');
               context.goNamed(AppRoute.mainPage.name);
             }
           },

@@ -108,7 +108,7 @@ class ActionButtonsWidget extends StatelessWidget {
         if ((imageCaptureState.isGallery || imageCaptureState.isCamera) &&
             imageCaptureState.imageFile != null &&
             solveMathState.result.isEmpty) ...[
-          const SizedBox(height: 16),
+          const SizedBox(height: 45),
           SizedBox(
             width: double.infinity,
             child: _ActionButton(

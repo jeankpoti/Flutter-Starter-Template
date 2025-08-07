@@ -209,12 +209,17 @@ class _HomePageState extends State<HomePage>
   Widget build(BuildContext context) {
     final isTablet = Responsive.isTablet(context);
 
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
-      appBar: AppBarWidget(
-        title: AppLocalizations.of(context)!.solveMathProblem,
-      ),
-      body: MultiBlocListener(
+    return GestureDetector(
+      onTap: () {
+        // Unfocus any text field when tapping outside
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
+        appBar: AppBarWidget(
+          title: AppLocalizations.of(context)!.solveMathProblem,
+        ),
+        body: MultiBlocListener(
         listeners: [
           BlocListener<SolveMathCubit, SolveMathState>(
             listenWhen:
@@ -433,6 +438,7 @@ class _HomePageState extends State<HomePage>
             },
           ),
         ),
+      ),
       ),
     );
   }

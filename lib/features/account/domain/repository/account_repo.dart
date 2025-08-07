@@ -6,6 +6,8 @@ Here we define what the app can do
 
 // import '../../data/models/isar_todo.dart';
 
+import 'package:firebase_auth/firebase_auth.dart';
+
 abstract class AccountRepo {
   Future<bool> signInWithEmailAndPassword(
     String email,
@@ -20,8 +22,8 @@ abstract class AccountRepo {
     String password,
     context,
   );
-  Future<void> signUpWithGoogle(context);
-  Future<void> signUpWithApple(context);
+  Future<UserCredential> signUpWithGoogle(context);
+  Future<UserCredential> signUpWithApple(context);
   Future<void> signOut();
   Future<void> resetPassword(context, String email);
   Future<void> deleteUserWithHisData(context);

@@ -4,6 +4,9 @@
  Each cubit is a list of todos
 */
 
+import 'dart:developer';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../domain/repository/account_repo.dart';
@@ -31,23 +34,24 @@ class AccountCubit extends Cubit<AccountState> {
         //  On success -> isLoading: false, no error message
         emit(state.copyWith(isLoading: false, isSuccess: true, errorMsg: null));
       } else {
-        // On failure (as indicated by repo) -> isLoading: false, isSuccess: false.
-        // Error message should have been shown by the repository method.
+        //   // On failure (as indicated by repo) -> isLoading: false, isSuccess: false.
+        //   // Error message should have been shown by the repository method.
         emit(
           state.copyWith(
             isLoading: false,
             isSuccess: false,
-            errorMsg: 'Something went wrong',
+            errorMsg: null, // Don't override repository's error message
           ),
         );
       }
     } catch (e) {
+      log('Apple sign in error: ${e.toString()}');
       // On unexpected error in cubit -> isLoading: false, error message, isSuccess: false
       emit(
         state.copyWith(
           isLoading: false,
           isSuccess: false,
-          errorMsg: e.toString(),
+          errorMsg: 'Something went wrong',
         ),
       );
     }
@@ -60,6 +64,8 @@ class AccountCubit extends Cubit<AccountState> {
       emit(state.copyWith(isLoading: true));
 
       final bool signInSuccess = await accountRepo.signInWithGooogle(context);
+
+      log('signInSuccess: ${signInSuccess.toString()}');
 
       if (signInSuccess) {
         //  On success -> isLoading: false, no error message
@@ -131,17 +137,14 @@ class AccountCubit extends Cubit<AccountState> {
       if (signInSuccess) {
         emit(state.copyWith(isLoading: false, isSuccess: true, errorMsg: null));
       } else {
+        // Don't override error messages - they're already shown in the repository
         emit(
-          state.copyWith(
-            isLoading: false,
-            isSuccess: false,
-            errorMsg: "Something went wrong.",
-          ),
+          state.copyWith(isLoading: false, isSuccess: false, errorMsg: null),
         );
       }
     } catch (e) {
       // On error -> isLoading: false, error message
-      emit(state.copyWith(isLoading: false, errorMsg: 'Something went wrong.'));
+      emit(state.copyWith(isLoading: false, errorMsg: e.toString()));
     }
   }
 
@@ -183,17 +186,11 @@ class AccountCubit extends Cubit<AccountState> {
       await accountRepo.signUpWithGoogle(context);
 
       //  On success -> isLoading: false, no error message
-      emit(
-        state.copyWith(
-          isLoading: false,
-          isSuccess: true,
-          // isSignIn: true,
-          errorMsg: null,
-        ),
-      );
+      emit(state.copyWith(isLoading: false, isSuccess: true, errorMsg: null));
     } catch (e) {
+      log(e.toString());
       // On error -> isLoading: false, error message
-      emit(state.copyWith(isLoading: false, errorMsg: e.toString()));
+      emit(state.copyWith(isLoading: false, errorMsg: 'Something went wrong'));
     }
   }
 
@@ -203,20 +200,25 @@ class AccountCubit extends Cubit<AccountState> {
       //Show loading
       emit(state.copyWith(isLoading: true));
 
-      await accountRepo.signUpWithApple(context);
-
-      //  On success -> isLoading: false, no error message
-      emit(
-        state.copyWith(
-          isLoading: false,
-          isSuccess: true,
-          // isSignIn: true,
-          errorMsg: null,
-        ),
+      final UserCredential userCredential = await accountRepo.signUpWithApple(
+        context,
       );
+
+      if (userCredential.user != null) {
+        emit(state.copyWith(isLoading: false, isSuccess: true, errorMsg: null));
+      } else {
+        emit(
+          state.copyWith(
+            isLoading: false,
+            isSuccess: false,
+            errorMsg: 'Something went wrong',
+          ),
+        );
+      }
     } catch (e) {
+      log('Apple sign up error: ${e.toString()}');
       // On error -> isLoading: false, error message
-      emit(state.copyWith(isLoading: false, errorMsg: e.toString()));
+      emit(state.copyWith(isLoading: false, errorMsg: 'Something went wrong'));
     }
   }
 
@@ -231,8 +233,9 @@ class AccountCubit extends Cubit<AccountState> {
       //  On success -> isLoading: false, no error message
       emit(state.copyWith(isLoading: false, isSuccess: true, errorMsg: null));
     } catch (e) {
+      log(e.toString());
       // On error -> isLoading: false, error message
-      emit(state.copyWith(isLoading: false, errorMsg: e.toString()));
+      emit(state.copyWith(isLoading: false, errorMsg: 'Something went wrong'));
     }
   }
 
@@ -246,8 +249,9 @@ class AccountCubit extends Cubit<AccountState> {
       //  On success -> isLoading: false, no error message
       emit(state.copyWith(isLoading: false, isSuccess: true, errorMsg: null));
     } catch (e) {
+      log(e.toString());
       // On error -> isLoading: false, error message
-      emit(state.copyWith(isLoading: false, errorMsg: e.toString()));
+      emit(state.copyWith(isLoading: false, errorMsg: 'Something went wrong'));
     }
   }
 
