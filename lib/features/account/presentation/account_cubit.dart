@@ -47,13 +47,7 @@ class AccountCubit extends Cubit<AccountState> {
     } catch (e) {
       log('Apple sign in error: ${e.toString()}');
       // On unexpected error in cubit -> isLoading: false, error message, isSuccess: false
-      emit(
-        state.copyWith(
-          isLoading: false,
-          isSuccess: false,
-          errorMsg: 'Something went wrong',
-        ),
-      );
+      emit(state.copyWith(isLoading: false, isSuccess: false, errorMsg: null));
     }
   }
 
@@ -65,30 +59,18 @@ class AccountCubit extends Cubit<AccountState> {
 
       final bool signInSuccess = await accountRepo.signInWithGooogle(context);
 
-      log('signInSuccess: ${signInSuccess.toString()}');
-
       if (signInSuccess) {
         //  On success -> isLoading: false, no error message
         emit(state.copyWith(isLoading: false, isSuccess: true, errorMsg: null));
       } else {
         // On failure (as indicated by repo) -> isLoading: false, isSuccess: false. Error message might have been shown by repo.
         emit(
-          state.copyWith(
-            isLoading: false,
-            isSuccess: false,
-            errorMsg: 'Something went wrong',
-          ),
+          state.copyWith(isLoading: false, isSuccess: false, errorMsg: null),
         );
       }
     } catch (e) {
       // On error -> isLoading: false, error message, isSuccess: false
-      emit(
-        state.copyWith(
-          isLoading: false,
-          isSuccess: false,
-          errorMsg: 'Something went wrong',
-        ),
-      );
+      emit(state.copyWith(isLoading: false, isSuccess: false, errorMsg: null));
     }
   }
 
@@ -103,15 +85,21 @@ class AccountCubit extends Cubit<AccountState> {
       //Show loading
       emit(state.copyWith(isLoading: true));
 
-      await accountRepo.signUpWithEmailAndPassword(
+      final bool signUpSuccess = await accountRepo.signUpWithEmailAndPassword(
         fullName,
         email,
         password,
         context,
       );
 
-      //  On success -> isLoading: false, no error message
-      emit(state.copyWith(isLoading: false, isSuccess: true, errorMsg: null));
+      if (signUpSuccess) {
+        //  On success -> isLoading: false, no error message
+        // Note: isSuccess should be false because user needs to verify email first
+        emit(state.copyWith(isLoading: false, isSuccess: false, errorMsg: null));
+      } else {
+        // On failure -> isLoading: false, isSuccess: false
+        emit(state.copyWith(isLoading: false, isSuccess: false, errorMsg: null));
+      }
     } catch (e) {
       // On error -> isLoading: false, error message
       emit(state.copyWith(isLoading: false, errorMsg: e.toString()));
@@ -143,8 +131,9 @@ class AccountCubit extends Cubit<AccountState> {
         );
       }
     } catch (e) {
+      log('Email sign in error: ${e.toString()}');
       // On error -> isLoading: false, error message
-      emit(state.copyWith(isLoading: false, errorMsg: e.toString()));
+      emit(state.copyWith(isLoading: false, errorMsg: null));
     }
   }
 
@@ -211,14 +200,13 @@ class AccountCubit extends Cubit<AccountState> {
           state.copyWith(
             isLoading: false,
             isSuccess: false,
-            errorMsg: 'Something went wrong',
+            errorMsg: null, // Don't override repository's error message
           ),
         );
       }
     } catch (e) {
-      log('Apple sign up error: ${e.toString()}');
       // On error -> isLoading: false, error message
-      emit(state.copyWith(isLoading: false, errorMsg: 'Something went wrong'));
+      emit(state.copyWith(isLoading: false, errorMsg: null));
     }
   }
 

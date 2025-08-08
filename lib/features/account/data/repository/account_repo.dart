@@ -280,6 +280,45 @@ class FirebaseRepo implements AccountRepo {
         throw Exception('Google Sign In was cancelled');
       }
 
+      // Check if user already exists BEFORE creating Firebase Auth account
+      final email = googleUser.email;
+      try {
+        // Call the Cloud Function via HTTP to check if user exists
+        const functionUrl = 'https://us-central1-math-homework-ai.cloudfunctions.net/checkGoogleUserExists';
+        
+        final response = await http.post(
+          Uri.parse(functionUrl),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: json.encode({
+            'email': email,
+          }),
+        );
+        
+        if (response.statusCode == 200) {
+          final data = json.decode(response.body);
+          final bool userExists = data['exists'] ?? false;
+          
+          if (userExists) {
+            // User already exists - show the message
+            await _googleSignIn.signOut();
+            if (context.mounted) {
+              AppSnackBar.showError(
+                context,
+                "You have already signed up. Please sign in!",
+              );
+            }
+            return Future.error(
+              'Account already exists. Please sign in instead.',
+            );
+          }
+        }
+      } catch (error) {
+        log('Error checking if user exists: $error');
+        // Continue with sign up if check fails
+      }
+
       // Obtain the auth details from the request
       try {
         final GoogleSignInAuthentication googleAuth =
@@ -295,22 +334,6 @@ class FirebaseRepo implements AccountRepo {
         UserCredential userCredential = await _auth.signInWithCredential(
           credential,
         );
-
-        // Check if this is a new user
-        if (userCredential.additionalUserInfo?.isNewUser == false) {
-          // User already exists - they should use sign in instead
-          await _auth.signOut();
-          await _googleSignIn.signOut();
-          if (context.mounted) {
-            AppSnackBar.showError(
-              context,
-              "You have already signed up. Please sign in!",
-            );
-          }
-          return Future.error(
-            'Account already exists. Please sign in instead.',
-          );
-        }
 
         // Save the user's information to Firestore
         try {
@@ -351,6 +374,46 @@ class FirebaseRepo implements AccountRepo {
         ],
       );
 
+      // Check if user already exists BEFORE creating Firebase Auth account
+      final appleId = appleCredential.userIdentifier;
+      if (appleId != null) {
+        try {
+          // Call the Cloud Function via HTTP to check if user exists
+          const functionUrl = 'https://us-central1-math-homework-ai.cloudfunctions.net/checkAppleUserExists';
+          
+          final response = await http.post(
+            Uri.parse(functionUrl),
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: json.encode({
+              'appleId': appleId,
+            }),
+          );
+          
+          if (response.statusCode == 200) {
+            final data = json.decode(response.body);
+            final bool userExists = data['exists'] ?? false;
+            
+            if (userExists) {
+              // User already exists - show the message
+              if (context.mounted) {
+                AppSnackBar.showError(
+                  context,
+                  "You have already signed up. Please sign in!",
+                );
+              }
+              return Future.error(
+                'Account already exists. Please sign in instead.',
+              );
+            }
+          }
+        } catch (error) {
+          log('Error checking if user exists: $error');
+          // Continue with sign up if check fails
+        }
+      }
+
       final oAuthProvider = OAuthProvider('apple.com');
       final credential = oAuthProvider.credential(
         idToken: appleCredential.identityToken,
@@ -361,26 +424,6 @@ class FirebaseRepo implements AccountRepo {
       UserCredential userCredential = await _auth.signInWithCredential(
         credential,
       );
-
-      // Get the current user
-      final user = userCredential.user;
-
-      if (user != null) {
-        // Check if this is a new user
-        if (userCredential.additionalUserInfo?.isNewUser != null) {
-          if (!userCredential.additionalUserInfo!.isNewUser) {
-            if (context.mounted) {
-              AppSnackBar.showError(
-                context,
-                "You have already signed up. Please sign in!",
-              );
-            }
-            return Future.error(
-              'Account already exists. Please sign in instead.',
-            );
-          } else {}
-        }
-      }
 
       // Save the user's information to Firestore
       await _firestore.collection('users').doc(userCredential.user?.uid).set({
@@ -445,7 +488,7 @@ class FirebaseRepo implements AccountRepo {
   }
 
   @override
-  Future<void> signUpWithEmailAndPassword(
+  Future<bool> signUpWithEmailAndPassword(
     String fullName,
     String email,
     String password,
@@ -470,32 +513,46 @@ class FirebaseRepo implements AccountRepo {
       User? user = userCredential.user;
       if (user != null && !user.emailVerified) {
         // Send an email verification if the user is created successfully and email is not verified
+        // Note: This uses standard email verification, not email link authentication
+        // Firebase Dynamic Links deprecation (Aug 2025) doesn't affect this implementation
         await user.sendEmailVerification();
-        // Show a message or navigate the user to the next screen
+        
+        // Sign out the user so they can't access the app until email is verified
+        await _auth.signOut();
+        
+        // Show a message to inform the user
         AppSnackBar.showSuccess(
           context,
-          "Verification email has been sent. Please check your inbox.",
+          "Verification email has been sent. Please check your inbox and verify your email before signing in.",
         );
       }
 
       // _success = true;
+      return true; // Return true for successful sign-up
 
       // return userCredential;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         // Show error message
         AppSnackBar.showError(context, "The password provided is too weak.");
-        throw Exception('The password provided is too weak.');
       } else if (e.code == 'email-already-in-use') {
         // Show error message
         AppSnackBar.showError(
           context,
           "The account already exists for that email.",
         );
+      } else {
+        // Show generic error message for other Firebase errors
+        AppSnackBar.showError(
+          context,
+          "An authentication error occurred. Please try again.",
+        );
       }
+      return false; // Return false for any FirebaseAuthException
     } catch (e) {
       // Show error message
       AppSnackBar.showError(context, "An error occurred while signing up.");
+      return false; // Return false for any other error
     }
   }
 

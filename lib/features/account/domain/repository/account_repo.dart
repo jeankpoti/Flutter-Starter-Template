@@ -16,7 +16,7 @@ abstract class AccountRepo {
   );
   Future<bool> signInWithGooogle(context);
   Future<bool> signInWithApple(context);
-  Future<void> signUpWithEmailAndPassword(
+  Future<bool> signUpWithEmailAndPassword(
     String fullName,
     String email,
     String password,
