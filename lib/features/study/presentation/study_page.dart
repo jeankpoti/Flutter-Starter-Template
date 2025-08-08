@@ -264,9 +264,9 @@ class _StudyPageViewState extends State<_StudyPageView>
     }
   }
 
-  void _handleTextInput() {
+  void _handleTextInput() async {
     final studyCubit = context.read<StudyCubit>();
-    showDialog(
+    final result = await showDialog<String>(
       context: context,
       builder:
           (context) => BlocProvider.value(
@@ -274,6 +274,10 @@ class _StudyPageViewState extends State<_StudyPageView>
             child: const TextInputDialog(),
           ),
     );
+    
+    if (result != null && result.isNotEmpty) {
+      studyCubit.processTextMaterial(result);
+    }
   }
 
   Future<void> _generateAndStartQuiz({
