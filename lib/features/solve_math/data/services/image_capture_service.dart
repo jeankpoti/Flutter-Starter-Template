@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
+import '../../../../common/utils/file_size_validator.dart';
 
 /// Service responsible for handling image capture and upload operations
 class ImageCaptureService {
@@ -26,8 +27,23 @@ class ImageCaptureService {
         return null; // User cancelled
       }
 
-      return await _saveImageSecurely(photo);
+      final file = await _saveImageSecurely(photo);
+      
+      // Validate file size for homework images (10MB max)
+      if (!FileSizeValidator.isValidHomeworkImage(file)) {
+        await deleteImage(file); // Clean up the file
+        throw ImageCaptureException(
+          FileSizeValidator.getFileSizeErrorMessage(
+            file, 
+            FileSizeValidator.homeworkImageMaxSizeMB
+          )
+        );
+      }
+      
+      return file;
     } catch (e) {
+      // Re-throw if it's already an ImageCaptureException
+      if (e is ImageCaptureException) rethrow;
       // Log error or handle as needed
       throw ImageCaptureException('Failed to capture image from camera: $e');
     }
@@ -48,8 +64,23 @@ class ImageCaptureService {
         return null; // User cancelled
       }
 
-      return await _saveImageSecurely(image);
+      final file = await _saveImageSecurely(image);
+      
+      // Validate file size for homework images (10MB max)
+      if (!FileSizeValidator.isValidHomeworkImage(file)) {
+        await deleteImage(file); // Clean up the file
+        throw ImageCaptureException(
+          FileSizeValidator.getFileSizeErrorMessage(
+            file, 
+            FileSizeValidator.homeworkImageMaxSizeMB
+          )
+        );
+      }
+      
+      return file;
     } catch (e) {
+      // Re-throw if it's already an ImageCaptureException
+      if (e is ImageCaptureException) rethrow;
       // Log error or handle as needed
       throw ImageCaptureException('Failed to select image from gallery: $e');
     }

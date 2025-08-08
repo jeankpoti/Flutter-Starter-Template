@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart' as path;
+import '../../../../common/utils/file_size_validator.dart';
 
 import '../../domain/models/collection.dart';
 import '../../domain/respository/firebase_collection_repo.dart';
@@ -106,6 +107,16 @@ class FirebaseMathRepo implements FirebaseCollectionRepo {
   /// Uploads an image to Firebase Storage and returns the download URL
   Future<String?> _uploadImage(File imageFile, String userId) async {
     try {
+      // Validate file size before upload (10MB max for homework images)
+      if (!FileSizeValidator.isValidHomeworkImage(imageFile)) {
+        throw Exception(
+          FileSizeValidator.getFileSizeErrorMessage(
+            imageFile,
+            FileSizeValidator.homeworkImageMaxSizeMB,
+          ),
+        );
+      }
+
       // Create a unique filename
       final fileName =
           '${userId}_${DateTime.now().millisecondsSinceEpoch}_${path.basename(imageFile.path)}';

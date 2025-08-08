@@ -4,6 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:io';
 import '../../domain/models/study_material.dart';
+import '../../../../common/utils/file_size_validator.dart';
 
 class StudyMaterialRepository {
   static final StudyMaterialRepository _instance =
@@ -49,6 +50,16 @@ class StudyMaterialRepository {
       final userId = FirebaseAuth.instance.currentUser?.uid;
       if (userId == null) {
         throw Exception('User not authenticated');
+      }
+
+      // Validate file size before upload (50MB max for study materials)
+      if (!FileSizeValidator.isValidStudyMaterial(imageFile)) {
+        throw Exception(
+          FileSizeValidator.getFileSizeErrorMessage(
+            imageFile,
+            FileSizeValidator.studyMaterialMaxSizeMB,
+          ),
+        );
       }
 
       final fileName =

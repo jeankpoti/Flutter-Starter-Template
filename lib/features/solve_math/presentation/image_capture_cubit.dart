@@ -114,10 +114,17 @@ class ImageCaptureCubit extends Cubit<ImageCaptureState> {
 
       return true; // Permission was handled successfully
     } catch (e) {
+      String errorMessage = 'Failed to capture image';
+      
+      // If it's an ImageCaptureException, use its message directly
+      if (e is ImageCaptureException) {
+        errorMessage = e.message;
+      }
+      
       emit(
         state.copyWith(
           isLoading: false,
-          errorMessage: 'Failed to capture image',
+          errorMessage: errorMessage,
         ),
       );
       return true;
@@ -169,10 +176,17 @@ class ImageCaptureCubit extends Cubit<ImageCaptureState> {
 
       return true; // Permission was handled successfully
     } catch (e) {
+      String errorMessage = 'Failed to select image';
+      
+      // If it's an ImageCaptureException, use its message directly
+      if (e is ImageCaptureException) {
+        errorMessage = e.message;
+      }
+      
       emit(
         state.copyWith(
           isLoading: false,
-          errorMessage: 'Failed to select image',
+          errorMessage: errorMessage,
         ),
       );
       return true;
