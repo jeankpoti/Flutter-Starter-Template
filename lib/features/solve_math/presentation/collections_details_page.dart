@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
+import '../../../common_widgets/app_snackbar_widget.dart';
 import '../../../common_widgets/math_markdown_widget.dart';
 import '../../../common_widgets/report_content_dialog_widget.dart';
 import '../../common/domain/models/content_report.dart';
@@ -102,28 +103,20 @@ class CollectionsDetailsPage extends StatelessWidget {
                                 ClipboardData(text: collection.solution ?? ''),
                               );
                               if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: BodyMediumText(
-                                      AppLocalizations.of(
-                                        context,
-                                      )!.solutionCopiedToClipboard,
-                                    ),
-                                    duration: Duration(seconds: 2),
-                                  ),
+                                AppSnackBar.showSuccess(
+                                  context,
+                                  AppLocalizations.of(
+                                    context,
+                                  )!.solutionCopiedToClipboard,
                                 );
                               }
                             } catch (e) {
                               if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: BodyMediumText(
-                                      AppLocalizations.of(
-                                        context,
-                                      )!.unableToCopySolution,
-                                    ),
-                                    duration: Duration(seconds: 2),
-                                  ),
+                                AppSnackBar.showError(
+                                  context,
+                                  AppLocalizations.of(
+                                    context,
+                                  )!.unableToCopySolution,
                                 );
                               }
                             }
@@ -162,15 +155,11 @@ class CollectionsDetailsPage extends StatelessWidget {
                               }
                             } catch (e) {
                               if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: BodyMediumText(
-                                      AppLocalizations.of(
-                                        context,
-                                      )!.unableToShareSolution,
-                                    ),
-                                    duration: Duration(seconds: 2),
-                                  ),
+                                AppSnackBar.showError(
+                                  context,
+                                  AppLocalizations.of(
+                                    context,
+                                  )!.unableToShareSolution,
                                 );
                               }
                             }
@@ -188,10 +177,13 @@ class CollectionsDetailsPage extends StatelessWidget {
                       onPressed: () {
                         ReportContentDialogWidget.show(
                           context: context,
-                          contentId: collection.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+                          contentId:
+                              collection.id ??
+                              DateTime.now().millisecondsSinceEpoch.toString(),
                           contentType: ContentType.mathSolution,
                           contentSnapshot: collection.solution ?? '',
-                          contentTitle: AppLocalizations.of(context)!.mathSolution,
+                          contentTitle:
+                              AppLocalizations.of(context)!.mathSolution,
                         );
                       },
                       icon: const Icon(Icons.flag_outlined, size: 20),

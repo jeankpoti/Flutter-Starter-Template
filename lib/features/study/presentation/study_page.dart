@@ -118,12 +118,14 @@ class _StudyPageViewState extends State<_StudyPageView>
         BlocListener<StudyCubit, StudyState>(
           listenWhen:
               (previous, current) =>
-                  previous.studyPlans.length < current.studyPlans.length,
+                  !previous.studyPlanGenerated && current.studyPlanGenerated,
           listener: (context, state) {
             AppSnackBar.showSuccess(
               context,
               AppLocalizations.of(context)!.studyPlanGeneratedSuccessfully,
             );
+            // Clear the flag after showing the message
+            context.read<StudyCubit>().clearStudyPlanGenerated();
           },
         ),
         BlocListener<PermissionCubit, PermissionState>(

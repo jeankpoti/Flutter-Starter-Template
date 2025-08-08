@@ -235,6 +235,10 @@ class _HomePageState extends State<HomePage>
                   isRefresh: true,
                 );
                 _showResultDialog(isTablet, state.result);
+                // Clear the selected image after successful solving
+                context.read<ImageCaptureCubit>().clearImage();
+                // Clear the text input as well
+                _textController.clear();
               }
               if (state.isError) {
                 _showSnackBarMessage(

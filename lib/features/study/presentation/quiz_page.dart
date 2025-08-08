@@ -137,15 +137,21 @@ class _QuizPageState extends State<QuizPage> {
             ),
           ],
         ),
-        body: Column(
-          children: [
-            _buildQuizHeader(),
-            Expanded(
-              child:
-                  _isQuizCompleted ? _buildQuizResults() : _buildQuizContent(),
-            ),
-            if (!_isQuizCompleted) _buildQuizNavigation(),
-          ],
+        body: GestureDetector(
+          onTap: () {
+            // Unfocus any active text field when tapping outside
+            FocusScope.of(context).unfocus();
+          },
+          child: Column(
+            children: [
+              _buildQuizHeader(),
+              Expanded(
+                child:
+                    _isQuizCompleted ? _buildQuizResults() : _buildQuizContent(),
+              ),
+              if (!_isQuizCompleted) _buildQuizNavigation(),
+            ],
+          ),
         ),
       ),
     );

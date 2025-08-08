@@ -33,8 +33,8 @@ service cloud.firestore {
       
       allow create: if isAuthenticated()
         && willOwnDocument()
-        && hasRequiredFields(['userId', 'createdAt', 'problem', 'solution'])
-        && request.resource.data.createdAt == request.time;
+        && hasRequiredFields(['userId', 'createdAt', 'solution'])
+        && request.resource.data.createdAt is timestamp;
       
       allow update: if ownsDocument()
         && willOwnDocument()
@@ -51,7 +51,7 @@ service cloud.firestore {
       allow create: if isAuthenticated()
         && willOwnDocument()
         && hasRequiredFields(['userId', 'createdAt', 'title'])
-        && request.resource.data.createdAt == request.time;
+        && request.resource.data.createdAt is timestamp;
       
       allow update: if ownsDocument()
         && willOwnDocument()
@@ -67,8 +67,8 @@ service cloud.firestore {
       
       allow create: if isAuthenticated()
         && willOwnDocument()
-        && hasRequiredFields(['userId', 'createdAt', 'studyMaterialId'])
-        && request.resource.data.createdAt == request.time;
+        && hasRequiredFields(['userId', 'createdAt', 'title'])
+        && request.resource.data.createdAt is timestamp;
       
       allow update: if ownsDocument()
         && willOwnDocument()
@@ -84,8 +84,8 @@ service cloud.firestore {
       
       allow create: if isAuthenticated()
         && willOwnDocument()
-        && hasRequiredFields(['userId', 'createdAt', 'studyMaterialId'])
-        && request.resource.data.createdAt == request.time;
+        && hasRequiredFields(['userId', 'createdAt', 'title'])
+        && request.resource.data.createdAt is timestamp;
       
       allow update: if ownsDocument()
         && willOwnDocument()
