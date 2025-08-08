@@ -7,6 +7,7 @@ import '../../settings/data/preferences_service.dart';
 class LocaleCubit extends Cubit<Locale> {
   static const String _localeKey = 'selected_locale';
   static const Locale _defaultLocale = Locale('en');
+  static const List<String> _supportedLanguages = ['en', 'fr', 'es'];
 
   LocaleCubit() : super(_defaultLocale) {
     _loadSavedLocale();
@@ -20,6 +21,24 @@ class LocaleCubit extends Cubit<Locale> {
       
       if (savedLanguageCode != null) {
         emit(Locale(savedLanguageCode));
+      } else {
+        // No saved preference, use device language if supported
+        final deviceLocale = PlatformDispatcher.instance.locale;
+        final deviceLanguageCode = deviceLocale.languageCode;
+        
+        if (_supportedLanguages.contains(deviceLanguageCode)) {
+          // Device language is supported, use it
+          emit(Locale(deviceLanguageCode));
+          // Save it for future use
+          await prefs.setString(_localeKey, deviceLanguageCode);
+          
+          // Also update the preferences service for AI prompts
+          final preferencesService = await PreferencesService.getInstance();
+          await preferencesService.setLocale(deviceLanguageCode);
+        } else {
+          // Device language not supported, use English
+          emit(_defaultLocale);
+        }
       }
     } catch (e) {
       // If loading fails, keep the default locale
@@ -49,7 +68,7 @@ class LocaleCubit extends Cubit<Locale> {
       await preferencesService.setLocale(languageCode);
     } catch (e) {
       // Even if saving fails, the locale change is already applied
-      print('Failed to save locale preference: $e');
+      // Logging error silently
     }
   }
 
@@ -66,11 +85,16 @@ class LocaleCubit extends Cubit<Locale> {
   /// Check if current locale is French
   bool get isFrench => state.languageCode == 'fr';
 
+  /// Check if current locale is Spanish
+  bool get isSpanish => state.languageCode == 'es';
+
   /// Get the current language name for display
   String get currentLanguageName {
     switch (state.languageCode) {
       case 'fr':
         return 'Français';
+      case 'es':
+        return 'Español';
       case 'en':
       default:
         return 'English';

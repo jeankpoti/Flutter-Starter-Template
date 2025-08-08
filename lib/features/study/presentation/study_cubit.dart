@@ -264,8 +264,8 @@ class StudyCubit extends Cubit<StudyState> {
       // Save material to database
       await _materialRepository.saveMaterial(finalMaterial);
 
-      // Update state with new material
-      final updatedMaterials = [...state.studyMaterials, finalMaterial];
+      // Update state with new material (add to beginning for newest first)
+      final updatedMaterials = [finalMaterial, ...state.studyMaterials];
       if (!isClosed) {
         emit(
           state.copyWith(
@@ -305,8 +305,8 @@ class StudyCubit extends Cubit<StudyState> {
       // Save study plan to database
       await _planRepository.savePlan(studyPlan);
 
-      // Update state with new plan
-      final updatedPlans = [...state.studyPlans, studyPlan];
+      // Update state with new plan (add to beginning for newest first)
+      final updatedPlans = [studyPlan, ...state.studyPlans];
       if (!isClosed) {
         emit(
           state.copyWith(
