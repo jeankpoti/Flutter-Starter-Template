@@ -1532,4 +1532,141 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get uploadPicture => 'Upload Picture';
+
+  @override
+  String get yourPersonalAIMathTutor => 'Your Personal AI Math Tutor';
+
+  @override
+  String get solveMathInstantly => 'Solve any math problem instantly';
+
+  @override
+  String get takePhotoDescription =>
+      'Take a photo of math problems and get step-by-step solutions powered by Google Gemini AI. From basic arithmetic to advanced calculus.';
+
+  @override
+  String get photoRecognition => 'Photo Recognition';
+
+  @override
+  String get snapAnyMathProblem => 'Snap any math problem';
+
+  @override
+  String get aiPowered => 'AI-Powered';
+
+  @override
+  String get googleGeminiFlash => 'Advanced AI Technology';
+
+  @override
+  String get stepByStep => 'Step-by-Step';
+
+  @override
+  String get detailedExplanations => 'Detailed explanations';
+
+  @override
+  String get organizeAnalyzeContent => 'Organize & analyze your content';
+
+  @override
+  String get uploadStudyDescription =>
+      'Upload study materials and let AI extract key topics, assess difficulty, and create personalized learning paths just for you.';
+
+  @override
+  String get easyUpload => 'Easy Upload';
+
+  @override
+  String get imagesNotesUpload => 'Images, PDFs, notes';
+
+  @override
+  String get aiAnalysis => 'AI Analysis';
+
+  @override
+  String get autoTopicExtraction => 'Auto topic extraction';
+
+  @override
+  String get progressTracking => 'Progress Tracking';
+
+  @override
+  String get monitorImprovement => 'Monitor improvement';
+
+  @override
+  String get testKnowledgeEffectively => 'Test your knowledge effectively';
+
+  @override
+  String get generatePersonalizedQuizzes =>
+      'Generate personalized quizzes from your study materials. Track performance, identify weak spots, and improve faster.';
+
+  @override
+  String get smartQuestions => 'Smart Questions';
+
+  @override
+  String get aiCreatesTests => 'AI creates relevant tests';
+
+  @override
+  String get performanceAnalytics => 'Performance Analytics';
+
+  @override
+  String get detailedProgressInsights => 'Detailed progress insights';
+
+  @override
+  String get adaptiveLearning => 'Adaptive Learning';
+
+  @override
+  String get questionsMatchLevel => 'Questions match your level';
+
+  @override
+  String get unlockMathPotential => 'Unlock Your Math Potential';
+
+  @override
+  String get joinThousandsStudents =>
+      'Get early access to unlimited AI tutoring, advanced features, and personalized learning designed to transform your math skills.';
+
+  @override
+  String get solveAsMany => 'Solve as many as you need';
+
+  @override
+  String get accessAnywhere => 'Access anywhere, anytime';
+
+  @override
+  String get detailedLearningInsights => 'Detailed learning insights';
+
+  @override
+  String get premiumBenefits => 'Premium Benefits';
+
+  @override
+  String get unlimitedMathProblemSolving => 'Unlimited math problem solving';
+
+  @override
+  String get aiGeneratedQuizzesFromMaterials =>
+      'AI-generated quizzes from your materials';
+
+  @override
+  String get advancedStudyOrganization =>
+      'Advanced study material organization';
+
+  @override
+  String get detailedPerformanceAnalytics =>
+      'Detailed performance analytics and insights';
+
+  @override
+  String get crossDeviceSynchronization => 'Cross-device synchronization';
+
+  @override
+  String get priorityCustomerSupport => 'Priority customer support';
+
+  @override
+  String get adFreeExperience => 'Ad-free experience';
+
+  @override
+  String get studentsImprovedGrades => 'Join the Math AI Community';
+
+  @override
+  String get testimonialCalculus =>
+      'Be among the first to experience AI-powered math learning';
+
+  @override
+  String get skip => 'Skip';
+
+  @override
+  String get startFreeTrial => 'Start Free Trial';
+
+  @override
+  String get continueWithFreeVersion => 'Continue with Free Version';
 }

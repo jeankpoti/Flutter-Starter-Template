@@ -681,6 +681,145 @@ lib/common_widgets/
 - Use const constructors where possible for performance
 - Avoid deep widget nesting - break complex widgets into smaller components
 
+## Firebase Security Rules
+
+The app implements comprehensive security rules to protect user data and ensure proper access control.
+
+### Security Rules Architecture
+
+#### Firestore Rules (`firestore.rules`)
+The Firestore security rules follow these principles:
+- **Authentication Required**: All operations require authenticated users
+- **User Isolation**: Users can only access their own data
+- **Field Validation**: Required fields are enforced at the database level
+- **Type Safety**: Data types are validated (e.g., timestamps)
+
+#### Key Security Patterns
+
+1. **Authentication Check**
+```javascript
+function isAuthenticated() {
+  return request.auth != null;
+}
+```
+
+2. **Ownership Verification**
+```javascript
+function isOwner(resource) {
+  return request.auth.uid == resource.data.userId;
+}
+
+function willOwnDocument() {
+  return request.auth.uid == request.resource.data.userId;
+}
+```
+
+3. **Required Fields Validation**
+```javascript
+allow create: if isAuthenticated()
+  && willOwnDocument()
+  && hasRequiredFields(['userId', 'createdAt', 'title'])
+  && request.resource.data.createdAt is timestamp;
+```
+
+#### Collections and Their Rules
+
+**Collections** (`/collections/{document}`)
+- Required fields: `userId`, `createdAt`, `title`
+- Users can only CRUD their own collections
+- Timestamp validation on `createdAt`
+
+**Quiz Results** (`/quizResults/{document}`)  
+- Required fields: `userId`, `studyPlanId`, `questions`, `score`, `completedAt`
+- Score must be between 0-100
+- Questions must be a list
+- Users can only access their own results
+
+**Study Materials** (`/studyMaterials/{document}`)
+- Required fields: `userId`, `createdAt`, `title`, `topics`
+- Topics must be a list
+- Users can only CRUD their own materials
+
+**Study Plans** (`/studyPlans/{document}`)
+- Required fields: `userId`, `createdAt`, `title`, `topics`, `totalTopics`
+- Topics must be a list
+- totalTopics must be a number
+- Users can only CRUD their own plans
+
+#### Storage Rules (`storage.rules`)
+```javascript
+// Images are stored under user-specific paths
+match /images/{userId}/{allPaths=**} {
+  allow read, write: if request.auth != null && request.auth.uid == userId
+    && request.resource.size < 10 * 1024 * 1024; // 10MB limit
+}
+```
+
+### Cloud Functions Security
+
+The app uses Cloud Functions for sensitive operations:
+
+1. **User Existence Check** (`checkAppleUserExists`, `checkGoogleUserExists`)
+   - Prevents creating duplicate accounts
+   - Uses HTTPS onRequest pattern with CORS headers
+   - Returns user existence status without exposing user data
+
+Example implementation:
+```javascript
+exports.checkAppleUserExists = functions.https.onRequest(async (req, res) => {
+  // CORS headers for web compatibility
+  res.set('Access-Control-Allow-Origin', '*');
+  res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  
+  // Validate request
+  const { appleId } = req.body;
+  if (!appleId) {
+    return res.status(400).json({ error: 'Apple ID is required' });
+  }
+  
+  // Check user existence
+  const users = await admin.auth().getUsers([{ providerUid: appleId, providerId: 'apple.com' }]);
+  res.json({ exists: users.users.length > 0 });
+});
+```
+
+### Frontend File Size Validation
+
+The frontend enforces the same file size limits as Firebase Storage:
+
+```dart
+// In ImageCaptureCubit
+static const maxFileSizeBytes = 10 * 1024 * 1024; // 10MB
+
+Future<void> _validateFileSize(File file) async {
+  final fileSize = await file.length();
+  if (fileSize > maxFileSizeBytes) {
+    final fileSizeMB = fileSize / (1024 * 1024);
+    throw FileSizeException(
+      'File size (${fileSizeMB.toStringAsFixed(1)}MB) exceeds the maximum allowed size of ${maxFileSizeBytes ~/ (1024 * 1024)}MB'
+    );
+  }
+}
+```
+
+### Security Best Practices Implemented
+
+1. **Email Verification**: Users must verify email before accessing the app
+2. **Secure Authentication Flow**: Check user existence before creating new accounts
+3. **Data Isolation**: Strict user-based data segregation
+4. **Input Validation**: Both client and server-side validation
+5. **File Size Limits**: Prevent abuse through large file uploads
+6. **Type Safety**: Enforce correct data types in Firestore
+7. **CORS Configuration**: Proper headers for web compatibility
+
+### Important Security Considerations
+
+- Never trust client-side validation alone - always validate on the server
+- The security rules are the last line of defense - implement checks in the app code too
+- Regularly review and test security rules with the Firebase Rules Simulator
+- Monitor Firebase Authentication and Firestore usage for anomalies
+- Keep Firebase Admin SDK usage minimal and secure
+
 ## Essential Resources
 - **[Flutter Documentation](https://docs.flutter.dev/)** - Official Flutter documentation
 - **[Material Design 3](https://m3.material.io/)** - Design system guidelines

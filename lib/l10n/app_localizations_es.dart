@@ -274,20 +274,20 @@ class AppLocalizationsEs extends AppLocalizations {
   String get subscribe => 'Suscribirse';
 
   @override
-  String get unlimitedProblems => 'Problemas ilimitados';
+  String get unlimitedProblems => 'Problemas Ilimitados';
 
   @override
   String get unlimitedProblemsDesc => 'Resuelve tantos como necesites';
 
   @override
-  String get cloudSync => 'Sincronización en la nube';
+  String get cloudSync => 'Sincronización en la Nube';
 
   @override
   String get cloudSyncDesc =>
       'Accede desde cualquier lugar, en cualquier momento';
 
   @override
-  String get advancedAnalytics => 'Análisis avanzados';
+  String get advancedAnalytics => 'Análisis Avanzado';
 
   @override
   String get advancedAnalyticsDesc => 'Perspectivas de aprendizaje detalladas';
@@ -405,13 +405,13 @@ class AppLocalizationsEs extends AppLocalizations {
       'Resuelve cualquier problema de matemáticas instantáneamente';
 
   @override
-  String get smartStudyMaterials => 'Material de estudio inteligente';
+  String get smartStudyMaterials => 'Materiales de Estudio Inteligentes';
 
   @override
   String get organizeContent => 'Organiza y analiza tu contenido';
 
   @override
-  String get aiGeneratedQuizzes => 'Cuestionarios generados por IA';
+  String get aiGeneratedQuizzes => 'Exámenes Generados por IA';
 
   @override
   String get testKnowledge => 'Prueba tu conocimiento efectivamente';
@@ -420,7 +420,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get unlockPotential => 'Desbloquea tu potencial matemático';
 
   @override
-  String get premiumFeaturesAwait => 'Las características premium te esperan';
+  String get premiumFeaturesAwait => 'Las funciones premium te esperan';
 
   @override
   String get welcomeToMathAi => '¡Bienvenido a Math AI!';
@@ -1557,4 +1557,146 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get uploadPicture => 'Subir foto';
+
+  @override
+  String get yourPersonalAIMathTutor =>
+      'Tu Tutor Personal de Matemáticas con IA';
+
+  @override
+  String get solveMathInstantly =>
+      'Resuelve cualquier problema de matemáticas al instante';
+
+  @override
+  String get takePhotoDescription =>
+      'Toma una foto de problemas matemáticos y obtén soluciones paso a paso impulsadas por Google Gemini AI. Desde aritmética básica hasta cálculo avanzado.';
+
+  @override
+  String get photoRecognition => 'Reconocimiento de Fotos';
+
+  @override
+  String get snapAnyMathProblem => 'Captura cualquier problema matemático';
+
+  @override
+  String get aiPowered => 'Impulsado por IA';
+
+  @override
+  String get googleGeminiFlash => 'Tecnología IA Avanzada';
+
+  @override
+  String get stepByStep => 'Paso a Paso';
+
+  @override
+  String get detailedExplanations => 'Explicaciones detalladas';
+
+  @override
+  String get organizeAnalyzeContent => 'Organiza y analiza tu contenido';
+
+  @override
+  String get uploadStudyDescription =>
+      'Sube materiales de estudio y deja que la IA extraiga temas clave, evalúe la dificultad y cree rutas de aprendizaje personalizadas solo para ti.';
+
+  @override
+  String get easyUpload => 'Carga Fácil';
+
+  @override
+  String get imagesNotesUpload => 'Imágenes, PDFs, notas';
+
+  @override
+  String get aiAnalysis => 'Análisis de IA';
+
+  @override
+  String get autoTopicExtraction => 'Extracción automática de temas';
+
+  @override
+  String get progressTracking => 'Seguimiento del Progreso';
+
+  @override
+  String get monitorImprovement => 'Monitorea la mejora';
+
+  @override
+  String get testKnowledgeEffectively => 'Prueba tu conocimiento efectivamente';
+
+  @override
+  String get generatePersonalizedQuizzes =>
+      'Genera exámenes personalizados de tus materiales de estudio. Rastrea el rendimiento, identifica puntos débiles y mejora más rápido.';
+
+  @override
+  String get smartQuestions => 'Preguntas Inteligentes';
+
+  @override
+  String get aiCreatesTests => 'La IA crea pruebas relevantes';
+
+  @override
+  String get performanceAnalytics => 'Análisis de Rendimiento';
+
+  @override
+  String get detailedProgressInsights => 'Perspectivas detalladas del progreso';
+
+  @override
+  String get adaptiveLearning => 'Aprendizaje Adaptativo';
+
+  @override
+  String get questionsMatchLevel => 'Preguntas que coinciden con tu nivel';
+
+  @override
+  String get unlockMathPotential => 'Desbloquea Tu Potencial Matemático';
+
+  @override
+  String get joinThousandsStudents =>
+      'Obtén acceso anticipado a tutoría ilimitada con IA, funciones avanzadas y aprendizaje personalizado diseñados para transformar tus habilidades matemáticas.';
+
+  @override
+  String get solveAsMany => 'Resuelve tantos como necesites';
+
+  @override
+  String get accessAnywhere =>
+      'Accede en cualquier lugar, en cualquier momento';
+
+  @override
+  String get detailedLearningInsights =>
+      'Perspectivas detalladas del aprendizaje';
+
+  @override
+  String get premiumBenefits => 'Beneficios Premium';
+
+  @override
+  String get unlimitedMathProblemSolving =>
+      'Resolución ilimitada de problemas matemáticos';
+
+  @override
+  String get aiGeneratedQuizzesFromMaterials =>
+      'Exámenes generados por IA de tus materiales';
+
+  @override
+  String get advancedStudyOrganization =>
+      'Organización avanzada de materiales de estudio';
+
+  @override
+  String get detailedPerformanceAnalytics =>
+      'Análisis detallado del rendimiento y perspectivas';
+
+  @override
+  String get crossDeviceSynchronization => 'Sincronización entre dispositivos';
+
+  @override
+  String get priorityCustomerSupport => 'Soporte al cliente prioritario';
+
+  @override
+  String get adFreeExperience => 'Experiencia sin anuncios';
+
+  @override
+  String get studentsImprovedGrades => 'Únete a la comunidad Math AI';
+
+  @override
+  String get testimonialCalculus =>
+      'Sé de los primeros en experimentar el aprendizaje de matemáticas con IA';
+
+  @override
+  String get skip => 'Omitir';
+
+  @override
+  String get startFreeTrial => 'Comenzar Prueba Gratuita';
+
+  @override
+  String get continueWithFreeVersion => 'Continuar con la Versión Gratuita';
 }

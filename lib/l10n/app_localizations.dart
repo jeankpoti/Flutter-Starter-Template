@@ -2811,6 +2811,264 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Upload Picture'**
   String get uploadPicture;
+
+  /// No description provided for @yourPersonalAIMathTutor.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Personal AI Math Tutor'**
+  String get yourPersonalAIMathTutor;
+
+  /// No description provided for @solveMathInstantly.
+  ///
+  /// In en, this message translates to:
+  /// **'Solve any math problem instantly'**
+  String get solveMathInstantly;
+
+  /// No description provided for @takePhotoDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a photo of math problems and get step-by-step solutions powered by Google Gemini AI. From basic arithmetic to advanced calculus.'**
+  String get takePhotoDescription;
+
+  /// No description provided for @photoRecognition.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo Recognition'**
+  String get photoRecognition;
+
+  /// No description provided for @snapAnyMathProblem.
+  ///
+  /// In en, this message translates to:
+  /// **'Snap any math problem'**
+  String get snapAnyMathProblem;
+
+  /// No description provided for @aiPowered.
+  ///
+  /// In en, this message translates to:
+  /// **'AI-Powered'**
+  String get aiPowered;
+
+  /// No description provided for @googleGeminiFlash.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced AI Technology'**
+  String get googleGeminiFlash;
+
+  /// No description provided for @stepByStep.
+  ///
+  /// In en, this message translates to:
+  /// **'Step-by-Step'**
+  String get stepByStep;
+
+  /// No description provided for @detailedExplanations.
+  ///
+  /// In en, this message translates to:
+  /// **'Detailed explanations'**
+  String get detailedExplanations;
+
+  /// No description provided for @organizeAnalyzeContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Organize & analyze your content'**
+  String get organizeAnalyzeContent;
+
+  /// No description provided for @uploadStudyDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload study materials and let AI extract key topics, assess difficulty, and create personalized learning paths just for you.'**
+  String get uploadStudyDescription;
+
+  /// No description provided for @easyUpload.
+  ///
+  /// In en, this message translates to:
+  /// **'Easy Upload'**
+  String get easyUpload;
+
+  /// No description provided for @imagesNotesUpload.
+  ///
+  /// In en, this message translates to:
+  /// **'Images, PDFs, notes'**
+  String get imagesNotesUpload;
+
+  /// No description provided for @aiAnalysis.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Analysis'**
+  String get aiAnalysis;
+
+  /// No description provided for @autoTopicExtraction.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto topic extraction'**
+  String get autoTopicExtraction;
+
+  /// No description provided for @progressTracking.
+  ///
+  /// In en, this message translates to:
+  /// **'Progress Tracking'**
+  String get progressTracking;
+
+  /// No description provided for @monitorImprovement.
+  ///
+  /// In en, this message translates to:
+  /// **'Monitor improvement'**
+  String get monitorImprovement;
+
+  /// No description provided for @testKnowledgeEffectively.
+  ///
+  /// In en, this message translates to:
+  /// **'Test your knowledge effectively'**
+  String get testKnowledgeEffectively;
+
+  /// No description provided for @generatePersonalizedQuizzes.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate personalized quizzes from your study materials. Track performance, identify weak spots, and improve faster.'**
+  String get generatePersonalizedQuizzes;
+
+  /// No description provided for @smartQuestions.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Questions'**
+  String get smartQuestions;
+
+  /// No description provided for @aiCreatesTests.
+  ///
+  /// In en, this message translates to:
+  /// **'AI creates relevant tests'**
+  String get aiCreatesTests;
+
+  /// No description provided for @performanceAnalytics.
+  ///
+  /// In en, this message translates to:
+  /// **'Performance Analytics'**
+  String get performanceAnalytics;
+
+  /// No description provided for @detailedProgressInsights.
+  ///
+  /// In en, this message translates to:
+  /// **'Detailed progress insights'**
+  String get detailedProgressInsights;
+
+  /// No description provided for @adaptiveLearning.
+  ///
+  /// In en, this message translates to:
+  /// **'Adaptive Learning'**
+  String get adaptiveLearning;
+
+  /// No description provided for @questionsMatchLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Questions match your level'**
+  String get questionsMatchLevel;
+
+  /// No description provided for @unlockMathPotential.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock Your Math Potential'**
+  String get unlockMathPotential;
+
+  /// No description provided for @joinThousandsStudents.
+  ///
+  /// In en, this message translates to:
+  /// **'Get early access to unlimited AI tutoring, advanced features, and personalized learning designed to transform your math skills.'**
+  String get joinThousandsStudents;
+
+  /// No description provided for @solveAsMany.
+  ///
+  /// In en, this message translates to:
+  /// **'Solve as many as you need'**
+  String get solveAsMany;
+
+  /// No description provided for @accessAnywhere.
+  ///
+  /// In en, this message translates to:
+  /// **'Access anywhere, anytime'**
+  String get accessAnywhere;
+
+  /// No description provided for @detailedLearningInsights.
+  ///
+  /// In en, this message translates to:
+  /// **'Detailed learning insights'**
+  String get detailedLearningInsights;
+
+  /// No description provided for @premiumBenefits.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium Benefits'**
+  String get premiumBenefits;
+
+  /// No description provided for @unlimitedMathProblemSolving.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited math problem solving'**
+  String get unlimitedMathProblemSolving;
+
+  /// No description provided for @aiGeneratedQuizzesFromMaterials.
+  ///
+  /// In en, this message translates to:
+  /// **'AI-generated quizzes from your materials'**
+  String get aiGeneratedQuizzesFromMaterials;
+
+  /// No description provided for @advancedStudyOrganization.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced study material organization'**
+  String get advancedStudyOrganization;
+
+  /// No description provided for @detailedPerformanceAnalytics.
+  ///
+  /// In en, this message translates to:
+  /// **'Detailed performance analytics and insights'**
+  String get detailedPerformanceAnalytics;
+
+  /// No description provided for @crossDeviceSynchronization.
+  ///
+  /// In en, this message translates to:
+  /// **'Cross-device synchronization'**
+  String get crossDeviceSynchronization;
+
+  /// No description provided for @priorityCustomerSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Priority customer support'**
+  String get priorityCustomerSupport;
+
+  /// No description provided for @adFreeExperience.
+  ///
+  /// In en, this message translates to:
+  /// **'Ad-free experience'**
+  String get adFreeExperience;
+
+  /// No description provided for @studentsImprovedGrades.
+  ///
+  /// In en, this message translates to:
+  /// **'Join the Math AI Community'**
+  String get studentsImprovedGrades;
+
+  /// No description provided for @testimonialCalculus.
+  ///
+  /// In en, this message translates to:
+  /// **'Be among the first to experience AI-powered math learning'**
+  String get testimonialCalculus;
+
+  /// No description provided for @skip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get skip;
+
+  /// No description provided for @startFreeTrial.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Free Trial'**
+  String get startFreeTrial;
+
+  /// No description provided for @continueWithFreeVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with Free Version'**
+  String get continueWithFreeVersion;
 }
 
 class _AppLocalizationsDelegate

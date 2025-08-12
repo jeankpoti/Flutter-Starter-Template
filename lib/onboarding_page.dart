@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:math_ai/common_widgets/app_snackbar_widget.dart';
+import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'main.dart';
 import 'common_widgets/text_widgets.dart';
+import 'l10n/app_localizations.dart';
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
@@ -18,118 +21,117 @@ class _OnboardingPageState extends State<OnboardingPage> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
-  final List<OnboardingItem> _onboardingItems = [
-    OnboardingItem(
-      title: 'Your Personal AI Math Tutor',
-      subtitle: 'Solve any math problem instantly',
-      description:
-          'Take a photo of math problems and get step-by-step solutions powered by Google Gemini AI. From basic arithmetic to advanced calculus.',
-      animationAsset: 'assets/images/fox2.png',
-      icon: FontAwesomeIcons.camera,
-      features: [
-        FeatureItem(
-          icon: FontAwesomeIcons.camera,
-          title: 'Photo Recognition',
-          description: 'Snap any math problem',
-        ),
-        FeatureItem(
-          icon: FontAwesomeIcons.robot,
-          title: 'AI-Powered',
-          description: 'Google Gemini 2.5 Flash',
-        ),
-        FeatureItem(
-          icon: FontAwesomeIcons.listOl,
-          title: 'Step-by-Step',
-          description: 'Detailed explanations',
-        ),
-      ],
-    ),
-    OnboardingItem(
-      title: 'Smart Study Materials',
-      subtitle: 'Organize & analyze your content',
-      description:
-          'Upload study materials and let AI extract key topics, assess difficulty, and create personalized learning paths just for you.',
-      animationAsset: 'assets/images/facts.png',
-      icon: FontAwesomeIcons.bookOpen,
-      features: [
-        FeatureItem(
-          icon: FontAwesomeIcons.upload,
-          title: 'Easy Upload',
-          description: 'Images, PDFs, notes',
-        ),
-        FeatureItem(
-          icon: FontAwesomeIcons.brain,
-          title: 'AI Analysis',
-          description: 'Auto topic extraction',
-        ),
-        FeatureItem(
-          icon: FontAwesomeIcons.chartLine,
-          title: 'Progress Tracking',
-          description: 'Monitor improvement',
-        ),
-      ],
-    ),
-    OnboardingItem(
-      title: 'AI-Generated Quizzes',
-      subtitle: 'Test your knowledge effectively',
-      description:
-          'Generate personalized quizzes from your study materials. Track performance, identify weak spots, and improve faster.',
-      animationAsset: 'assets/images/quiz.png',
-      icon: FontAwesomeIcons.graduationCap,
-      features: [
-        FeatureItem(
-          icon: FontAwesomeIcons.circleQuestion,
-          title: 'Smart Questions',
-          description: 'AI creates relevant tests',
-        ),
-        FeatureItem(
-          icon: FontAwesomeIcons.chartBar,
-          title: 'Performance Analytics',
-          description: 'Detailed progress insights',
-        ),
-        FeatureItem(
-          icon: FontAwesomeIcons.bullseye,
-          title: 'Adaptive Learning',
-          description: 'Questions match your level',
-        ),
-      ],
-    ),
-    OnboardingItem(
-      title: 'Unlock Your Math Potential',
-      subtitle: 'Premium features await',
-      description:
-          'Join thousands of students who improved their math skills with unlimited AI tutoring, advanced features, and personalized learning.',
-      animationAsset: 'assets/images/fox.png',
-      icon: FontAwesomeIcons.crown,
-      isPremium: true,
-      features: [
-        FeatureItem(
-          icon: FontAwesomeIcons.infinity,
-          title: 'Unlimited Problems',
-          description: 'Solve as many as you need',
-        ),
-        FeatureItem(
-          icon: FontAwesomeIcons.cloud,
-          title: 'Cloud Sync',
-          description: 'Access anywhere, anytime',
-        ),
-        FeatureItem(
-          icon: FontAwesomeIcons.chartLine,
-          title: 'Advanced Analytics',
-          description: 'Detailed learning insights',
-        ),
-      ],
-      premiumBenefits: [
-        'Unlimited math problem solving',
-        'AI-generated quizzes from your materials',
-        'Advanced study material organization',
-        'Detailed performance analytics and insights',
-        'Cross-device synchronization',
-        'Priority customer support',
-        'Ad-free experience',
-      ],
-    ),
-  ];
+  List<OnboardingItem> _getOnboardingItems(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return [
+      OnboardingItem(
+        title: l10n.yourPersonalAIMathTutor,
+        subtitle: l10n.solveMathInstantly,
+        description: l10n.takePhotoDescription,
+        animationAsset: 'assets/images/fox2.png',
+        icon: FontAwesomeIcons.camera,
+        features: [
+          FeatureItem(
+            icon: FontAwesomeIcons.camera,
+            title: l10n.photoRecognition,
+            description: l10n.snapAnyMathProblem,
+          ),
+          FeatureItem(
+            icon: FontAwesomeIcons.robot,
+            title: l10n.aiPowered,
+            description: l10n.googleGeminiFlash,
+          ),
+          FeatureItem(
+            icon: FontAwesomeIcons.listOl,
+            title: l10n.stepByStep,
+            description: l10n.detailedExplanations,
+          ),
+        ],
+      ),
+      OnboardingItem(
+        title: l10n.smartStudyMaterials,
+        subtitle: l10n.organizeAnalyzeContent,
+        description: l10n.uploadStudyDescription,
+        animationAsset: 'assets/images/facts.png',
+        icon: FontAwesomeIcons.bookOpen,
+        features: [
+          FeatureItem(
+            icon: FontAwesomeIcons.upload,
+            title: l10n.easyUpload,
+            description: l10n.imagesNotesUpload,
+          ),
+          FeatureItem(
+            icon: FontAwesomeIcons.brain,
+            title: l10n.aiAnalysis,
+            description: l10n.autoTopicExtraction,
+          ),
+          FeatureItem(
+            icon: FontAwesomeIcons.chartLine,
+            title: l10n.progressTracking,
+            description: l10n.monitorImprovement,
+          ),
+        ],
+      ),
+      OnboardingItem(
+        title: l10n.aiGeneratedQuizzes,
+        subtitle: l10n.testKnowledgeEffectively,
+        description: l10n.generatePersonalizedQuizzes,
+        animationAsset: 'assets/images/quiz.png',
+        icon: FontAwesomeIcons.graduationCap,
+        features: [
+          FeatureItem(
+            icon: FontAwesomeIcons.circleQuestion,
+            title: l10n.smartQuestions,
+            description: l10n.aiCreatesTests,
+          ),
+          FeatureItem(
+            icon: FontAwesomeIcons.chartBar,
+            title: l10n.performanceAnalytics,
+            description: l10n.detailedProgressInsights,
+          ),
+          FeatureItem(
+            icon: FontAwesomeIcons.bullseye,
+            title: l10n.adaptiveLearning,
+            description: l10n.questionsMatchLevel,
+          ),
+        ],
+      ),
+      OnboardingItem(
+        title: l10n.unlockMathPotential,
+        subtitle: l10n.premiumFeaturesAwait,
+        description: l10n.joinThousandsStudents,
+        animationAsset: 'assets/images/fox.png',
+        icon: FontAwesomeIcons.crown,
+        isPremium: true,
+        features: [
+          FeatureItem(
+            icon: FontAwesomeIcons.infinity,
+            title: l10n.unlimitedProblems,
+            description: l10n.solveAsMany,
+          ),
+          FeatureItem(
+            icon: FontAwesomeIcons.cloud,
+            title: l10n.cloudSync,
+            description: l10n.accessAnywhere,
+          ),
+          FeatureItem(
+            icon: FontAwesomeIcons.chartLine,
+            title: l10n.advancedAnalytics,
+            description: l10n.detailedLearningInsights,
+          ),
+        ],
+        premiumBenefits: [
+          l10n.unlimitedMathProblemSolving,
+          l10n.aiGeneratedQuizzesFromMaterials,
+          l10n.advancedStudyOrganization,
+          l10n.detailedPerformanceAnalytics,
+          l10n.crossDeviceSynchronization,
+          l10n.priorityCustomerSupport,
+          l10n.adFreeExperience,
+        ],
+      ),
+    ];
+  }
 
   @override
   void dispose() {
@@ -144,7 +146,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
   }
 
   void _navigateToNextPage() {
-    if (_currentPage < _onboardingItems.length - 1) {
+    final items = _getOnboardingItems(context);
+    if (_currentPage < items.length - 1) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
@@ -160,7 +163,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool('hasSeenOnboarding', true);
       // Show the RevenueCat paywall
-      // await RevenueCatUI.presentPaywall();
+      await RevenueCatUI.presentPaywall();
 
       // After the paywall is dismissed, navigate to the main app page
       if (mounted) {
@@ -169,13 +172,11 @@ class _OnboardingPageState extends State<OnboardingPage> {
     } catch (e) {
       // If there's an error, show a message and still proceed
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: BodyMediumText(
-              'Error showing subscription options: ${e.toString()}',
-            ),
-          ),
+        AppSnackBar.showError(
+          context,
+          'Something went wrong. Please try again later.',
         );
+
         context.goNamed(AppRoute.signUpPage.name);
       }
     }
@@ -199,28 +200,34 @@ class _OnboardingPageState extends State<OnboardingPage> {
           PageView.builder(
             controller: _pageController,
             onPageChanged: _onPageChanged,
-            itemCount: _onboardingItems.length,
+            itemCount: _getOnboardingItems(context).length,
             itemBuilder: (context, index) {
-              return _buildOnboardingPage(_onboardingItems[index]);
+              final items = _getOnboardingItems(context);
+              return _buildOnboardingPage(items[index]);
             },
           ),
           // Skip button at the top right
-          if (_currentPage < _onboardingItems.length - 1)
+          if (_currentPage < _getOnboardingItems(context).length - 1)
             Positioned(
               top: 60,
               right: 20,
               child: Container(
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.surface.withValues(alpha: 0.8),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: TextButton(
                   onPressed: _navigateToSubscriptionPage,
                   style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                   ),
                   child: LabelMediumText(
-                    'Skip',
+                    AppLocalizations.of(context)!.skip,
                     color: Theme.of(context).colorScheme.onSurface,
                     fontWeight: FontWeight.w600,
                   ),
@@ -235,25 +242,32 @@ class _OnboardingPageState extends State<OnboardingPage> {
             child: Column(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.surface.withValues(alpha: 0.8),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: SmoothPageIndicator(
                     controller: _pageController,
-                    count: _onboardingItems.length,
+                    count: _getOnboardingItems(context).length,
                     effect: ExpandingDotsEffect(
                       dotHeight: 8,
                       dotWidth: 8,
                       spacing: 8,
                       activeDotColor: Theme.of(context).colorScheme.secondary,
-                      dotColor: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
+                      dotColor: Theme.of(
+                        context,
+                      ).colorScheme.outline.withValues(alpha: 0.3),
                     ),
                   ),
                 ),
                 const SizedBox(height: 24),
-                
+
                 // Primary Action Button
                 SizedBox(
                   width: double.infinity,
@@ -261,12 +275,21 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   child: ElevatedButton(
                     onPressed: _navigateToNextPage,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: _currentPage == _onboardingItems.length - 1
-                          ? Theme.of(context).colorScheme.secondary
-                          : Theme.of(context).colorScheme.primary,
-                      foregroundColor: Theme.of(context).colorScheme.onSecondary,
-                      elevation: _currentPage == _onboardingItems.length - 1 ? 8 : 2,
-                      shadowColor: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.3),
+                      backgroundColor:
+                          _currentPage ==
+                                  _getOnboardingItems(context).length - 1
+                              ? Theme.of(context).colorScheme.secondary
+                              : Theme.of(context).colorScheme.primary,
+                      foregroundColor:
+                          Theme.of(context).colorScheme.onSecondary,
+                      elevation:
+                          _currentPage ==
+                                  _getOnboardingItems(context).length - 1
+                              ? 8
+                              : 2,
+                      shadowColor: Theme.of(
+                        context,
+                      ).colorScheme.secondary.withValues(alpha: 0.3),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
@@ -274,7 +297,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        if (_currentPage == _onboardingItems.length - 1) ...[
+                        if (_currentPage ==
+                            _getOnboardingItems(context).length - 1) ...[
                           Icon(
                             FontAwesomeIcons.crown,
                             size: 20,
@@ -283,13 +307,14 @@ class _OnboardingPageState extends State<OnboardingPage> {
                           const SizedBox(width: 8),
                         ],
                         TitleMediumText(
-                          _currentPage < _onboardingItems.length - 1
-                              ? 'Continue'
-                              : 'Start Free Trial',
+                          _currentPage < _getOnboardingItems(context).length - 1
+                              ? AppLocalizations.of(context)!.continueText
+                              : AppLocalizations.of(context)!.startFreeTrial,
                           color: Theme.of(context).colorScheme.onSecondary,
                           fontWeight: FontWeight.bold,
                         ),
-                        if (_currentPage < _onboardingItems.length - 1) ...[
+                        if (_currentPage <
+                            _getOnboardingItems(context).length - 1) ...[
                           const SizedBox(width: 8),
                           Icon(
                             Icons.arrow_forward,
@@ -301,38 +326,38 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     ),
                   ),
                 ),
-                
+
                 // Secondary Button for Premium Page
-                if (_currentPage == _onboardingItems.length - 1) ...[
-                  const SizedBox(height: 12),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 48,
-                    child: TextButton(
-                      onPressed: () async {
-                        if (!mounted) return;
-                        final currentContext = context;
-                        final prefs = await SharedPreferences.getInstance();
-                        await prefs.setBool('hasSeenOnboarding', true);
-                        if (mounted) {
-                          currentContext.goNamed(AppRoute.signUpPage.name);
-                        }
-                      },
-                      style: TextButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          side: BorderSide(
-                            color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
-                          ),
-                        ),
-                      ),
-                      child: BodyLargeText(
-                        'Continue with Free Version',
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
-                      ),
-                    ),
-                  ),
-                ],
+                // if (_currentPage == _getOnboardingItems(context).length - 1) ...[
+                //   const SizedBox(height: 12),
+                //   SizedBox(
+                //     width: double.infinity,
+                //     height: 48,
+                //     child: TextButton(
+                //       onPressed: () async {
+                //         if (!mounted) return;
+                //         final currentContext = context;
+                //         final prefs = await SharedPreferences.getInstance();
+                //         await prefs.setBool('hasSeenOnboarding', true);
+                //         if (mounted) {
+                //           currentContext.goNamed(AppRoute.signUpPage.name);
+                //         }
+                //       },
+                //       style: TextButton.styleFrom(
+                //         shape: RoundedRectangleBorder(
+                //           borderRadius: BorderRadius.circular(12),
+                //           side: BorderSide(
+                //             color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
+                //           ),
+                //         ),
+                //       ),
+                //       child: BodyLargeText(
+                //         AppLocalizations.of(context)!.continueWithFreeVersion,
+                //         color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                //       ),
+                //     ),
+                //   ),
+                // ],
               ],
             ),
           ),
@@ -342,20 +367,24 @@ class _OnboardingPageState extends State<OnboardingPage> {
   }
 
   Widget _buildOnboardingPage(OnboardingItem item) {
-
     return Container(
       decoration: BoxDecoration(
-        gradient: item.isPremium
-            ? LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.3),
-                  Theme.of(context).colorScheme.surface,
-                  Theme.of(context).colorScheme.tertiaryContainer.withValues(alpha: 0.2),
-                ],
-              )
-            : null,
+        gradient:
+            item.isPremium
+                ? LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Theme.of(
+                      context,
+                    ).colorScheme.secondaryContainer.withValues(alpha: 0.3),
+                    Theme.of(context).colorScheme.surface,
+                    Theme.of(
+                      context,
+                    ).colorScheme.tertiaryContainer.withValues(alpha: 0.2),
+                  ],
+                )
+                : null,
         color: item.isPremium ? null : Theme.of(context).colorScheme.surface,
       ),
       child: SafeArea(
@@ -366,27 +395,27 @@ class _OnboardingPageState extends State<OnboardingPage> {
             children: [
               // Hero Section
               _buildHeroSection(item),
-              
+
               const SizedBox(height: 32),
-              
+
               // Features Grid
               if (item.features.isNotEmpty) ...[
                 _buildFeaturesGrid(item.features),
                 const SizedBox(height: 32),
               ],
-              
+
               // Premium Benefits List
               if (item.isPremium && item.premiumBenefits != null) ...[
                 _buildPremiumBenefitsList(item.premiumBenefits!),
                 const SizedBox(height: 24),
               ],
-              
+
               // Social Proof for Premium
               if (item.isPremium) ...[
                 _buildSocialProof(),
                 const SizedBox(height: 32),
               ],
-              
+
               // Bottom spacing for navigation
               const SizedBox(height: 120),
             ],
@@ -395,7 +424,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
       ),
     );
   }
-  
+
   Widget _buildHeroSection(OnboardingItem item) {
     return Column(
       children: [
@@ -404,13 +433,16 @@ class _OnboardingPageState extends State<OnboardingPage> {
           width: 120,
           height: 120,
           decoration: BoxDecoration(
-            color: item.isPremium 
-                ? Theme.of(context).colorScheme.secondary
-                : Theme.of(context).colorScheme.secondaryContainer,
+            color:
+                item.isPremium
+                    ? Theme.of(context).colorScheme.secondary
+                    : Theme.of(context).colorScheme.secondaryContainer,
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.1),
+                color: Theme.of(
+                  context,
+                ).colorScheme.shadow.withValues(alpha: 0.1),
                 offset: const Offset(0, 4),
                 blurRadius: 12,
               ),
@@ -419,14 +451,15 @@ class _OnboardingPageState extends State<OnboardingPage> {
           child: Icon(
             item.icon,
             size: 48,
-            color: item.isPremium 
-                ? Theme.of(context).colorScheme.onSecondary
-                : Theme.of(context).colorScheme.secondary,
+            color:
+                item.isPremium
+                    ? Theme.of(context).colorScheme.onSecondary
+                    : Theme.of(context).colorScheme.onSecondaryContainer,
           ),
         ),
-        
+
         const SizedBox(height: 24),
-        
+
         // Title
         HeadlineMediumText(
           item.title,
@@ -434,9 +467,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
           fontWeight: FontWeight.bold,
           textAlign: TextAlign.center,
         ),
-        
+
         const SizedBox(height: 8),
-        
+
         // Subtitle
         TitleMediumText(
           item.subtitle,
@@ -444,9 +477,9 @@ class _OnboardingPageState extends State<OnboardingPage> {
           fontWeight: FontWeight.w600,
           textAlign: TextAlign.center,
         ),
-        
+
         const SizedBox(height: 16),
-        
+
         // Description
         BodyLargeText(
           item.description,
@@ -456,66 +489,80 @@ class _OnboardingPageState extends State<OnboardingPage> {
       ],
     );
   }
-  
+
   Widget _buildFeaturesGrid(List<FeatureItem> features) {
     return Column(
-      children: features.map((feature) => Container(
-        margin: const EdgeInsets.only(bottom: 16),
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.1),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.05),
-              offset: const Offset(0, 2),
-              blurRadius: 8,
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                feature.icon,
-                color: Theme.of(context).colorScheme.secondary,
-                size: 24,
-              ),
-            ),
-            
-            const SizedBox(width: 16),
-            
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TitleSmallText(
-                    feature.title,
-                    color: Theme.of(context).colorScheme.onSurface,
-                    fontWeight: FontWeight.w600,
+      children:
+          features
+              .map(
+                (feature) => Container(
+                  margin: const EdgeInsets.only(bottom: 16),
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.outline.withValues(alpha: 0.1),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.shadow.withValues(alpha: 0.05),
+                        offset: const Offset(0, 2),
+                        blurRadius: 8,
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 4),
-                  BodyMediumText(
-                    feature.description,
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .secondaryContainer
+                              .withValues(alpha: 0.3),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(
+                          feature.icon,
+                          color: Theme.of(context).colorScheme.secondary,
+                          size: 24,
+                        ),
+                      ),
+
+                      const SizedBox(width: 16),
+
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TitleSmallText(
+                              feature.title,
+                              color: Theme.of(context).colorScheme.onSurface,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            const SizedBox(height: 4),
+                            BodyMediumText(
+                              feature.description,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurface.withValues(alpha: 0.6),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      )).toList(),
+                ),
+              )
+              .toList(),
     );
   }
-  
+
   Widget _buildPremiumBenefitsList(List<String> benefits) {
     return Container(
       padding: const EdgeInsets.all(24),
@@ -539,87 +586,93 @@ class _OnboardingPageState extends State<OnboardingPage> {
               ),
               const SizedBox(width: 8),
               TitleMediumText(
-                'Premium Benefits',
+                AppLocalizations.of(context)!.premiumBenefits,
                 color: Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.bold,
               ),
             ],
           ),
-          
+
           const SizedBox(height: 16),
-          
-          ...benefits.map((benefit) => Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  margin: const EdgeInsets.only(top: 2),
-                  padding: const EdgeInsets.all(3),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.secondary,
-                    shape: BoxShape.circle,
+
+          ...benefits.map(
+            (benefit) => Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.only(top: 2),
+                    padding: const EdgeInsets.all(3),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.secondary,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.check,
+                      color: Theme.of(context).colorScheme.onSecondary,
+                      size: 12,
+                    ),
                   ),
-                  child: Icon(
-                    Icons.check,
-                    color: Theme.of(context).colorScheme.onSecondary,
-                    size: 12,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: BodyMediumText(
+                      benefit,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withValues(alpha: 0.8),
+                    ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: BodyMediumText(
-                    benefit,
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
-          )),
-        ],
-      ),
-    );
-  }
-  
-  Widget _buildSocialProof() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(5, (index) => Icon(
-              Icons.star,
-              color: Colors.amber,
-              size: 20,
-            )),
-          ),
-          
-          const SizedBox(height: 8),
-          
-          TitleSmallText(
-            '10,000+ students improved their math grades',
-            color: Theme.of(context).colorScheme.onSurface,
-            fontWeight: FontWeight.w600,
-            textAlign: TextAlign.center,
-          ),
-          
-          const SizedBox(height: 4),
-          
-          BodyMediumText(
-            '"This app helped me understand calculus for the first time!"',
-            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-            textAlign: TextAlign.center,
           ),
         ],
       ),
     );
   }
 
+  Widget _buildSocialProof() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Theme.of(
+          context,
+        ).colorScheme.secondaryContainer.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(
+              5,
+              (index) => Icon(Icons.star, color: Colors.amber, size: 20),
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          TitleSmallText(
+            AppLocalizations.of(context)!.studentsImprovedGrades,
+            color: Theme.of(context).colorScheme.onSurface,
+            fontWeight: FontWeight.w600,
+            textAlign: TextAlign.center,
+          ),
+
+          const SizedBox(height: 4),
+
+          BodyMediumText(
+            AppLocalizations.of(context)!.testimonialCalculus,
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurface.withValues(alpha: 0.6),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class OnboardingItem {

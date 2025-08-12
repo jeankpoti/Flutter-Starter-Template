@@ -30,11 +30,6 @@ class ActionButtonsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    log(' imageCaptureState.isGallery: ${imageCaptureState.isGallery}');
-    // log(' imageCaptureState.isCamera: ${imageCaptureState.isCamera}');
-    // log(' imageCaptureState.imageFile: ${imageCaptureState.imageFile}');
-    // log(' solveMathState.result.isEmpty: ${solveMathState.result.isEmpty}');
-
     return Column(
       children: [
         // Primary Actions Row

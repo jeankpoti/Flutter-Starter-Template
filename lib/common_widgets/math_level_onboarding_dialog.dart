@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../features/settings/data/preferences_service.dart';
 import '../features/settings/domain/models/math_level.dart';
+import '../l10n/app_localizations.dart';
 
 class MathLevelOnboardingDialog extends StatefulWidget {
   final VoidCallback? onComplete;
@@ -16,6 +17,39 @@ class MathLevelOnboardingDialog extends StatefulWidget {
 
 class _MathLevelOnboardingDialogState extends State<MathLevelOnboardingDialog> {
   MathLevel _selectedLevel = MathLevel.highSchool;
+  
+  String _getLevelDisplayName(MathLevel level) {
+    switch (level) {
+      case MathLevel.elementary:
+        return AppLocalizations.of(context)!.elementary;
+      case MathLevel.highSchool:
+        return AppLocalizations.of(context)!.highSchool;
+      case MathLevel.college:
+        return AppLocalizations.of(context)!.college;
+    }
+  }
+  
+  String _getLevelAgeRange(MathLevel level) {
+    switch (level) {
+      case MathLevel.elementary:
+        return AppLocalizations.of(context)!.elementaryAgeRange;
+      case MathLevel.highSchool:
+        return AppLocalizations.of(context)!.highSchoolAgeRange;
+      case MathLevel.college:
+        return AppLocalizations.of(context)!.collegeAgeRange;
+    }
+  }
+  
+  String _getLevelDescription(MathLevel level) {
+    switch (level) {
+      case MathLevel.elementary:
+        return AppLocalizations.of(context)!.elementaryDescription;
+      case MathLevel.highSchool:
+        return AppLocalizations.of(context)!.highSchoolDescription;
+      case MathLevel.college:
+        return AppLocalizations.of(context)!.collegeDescription;
+    }
+  }
 
   Future<void> _saveLevelAndClose() async {
     final prefs = await PreferencesService.getInstance();
@@ -59,7 +93,7 @@ class _MathLevelOnboardingDialogState extends State<MathLevelOnboardingDialog> {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'Welcome to Math AI!',
+                      AppLocalizations.of(context)!.welcomeToMathAi,
                       style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).colorScheme.onSurface,
@@ -68,7 +102,7 @@ class _MathLevelOnboardingDialogState extends State<MathLevelOnboardingDialog> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Please select your education level for personalized explanations',
+                      AppLocalizations.of(context)!.selectEducationLevel,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
                       ),
@@ -102,7 +136,7 @@ class _MathLevelOnboardingDialogState extends State<MathLevelOnboardingDialog> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'You can change this anytime in Settings',
+                        AppLocalizations.of(context)!.changeAnytime,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
@@ -128,7 +162,7 @@ class _MathLevelOnboardingDialogState extends State<MathLevelOnboardingDialog> {
                     ),
                   ),
                   child: Text(
-                    'Continue',
+                    AppLocalizations.of(context)!.continueText,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: Theme.of(context).colorScheme.onPrimary,
                       fontWeight: FontWeight.w600,
@@ -180,7 +214,7 @@ class _MathLevelOnboardingDialogState extends State<MathLevelOnboardingDialog> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      level.displayName,
+                      _getLevelDisplayName(level),
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w600,
                         color: isSelected 
@@ -190,7 +224,7 @@ class _MathLevelOnboardingDialogState extends State<MathLevelOnboardingDialog> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      level.ageRange,
+                      _getLevelAgeRange(level),
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: isSelected 
                             ? Theme.of(context).colorScheme.onSecondaryContainer.withValues(alpha: 0.8)
@@ -199,7 +233,7 @@ class _MathLevelOnboardingDialogState extends State<MathLevelOnboardingDialog> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      level.description,
+                      _getLevelDescription(level),
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: isSelected 
                             ? Theme.of(context).colorScheme.onSecondaryContainer.withValues(alpha: 0.9)
