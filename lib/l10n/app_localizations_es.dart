@@ -249,7 +249,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get enjoyPremiumFeatures =>
-      'Disfruta de todas las funciones premium de Math AI';
+      'Disfruta de todas las funciones premium de MathGenie AI';
 
   @override
   String get restore => 'Restaurar';
@@ -1684,7 +1684,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get adFreeExperience => 'Experiencia sin anuncios';
 
   @override
-  String get studentsImprovedGrades => 'Únete a la comunidad Math AI';
+  String get studentsImprovedGrades => 'Únete a la comunidad MathGenie AI';
 
   @override
   String get testimonialCalculus =>

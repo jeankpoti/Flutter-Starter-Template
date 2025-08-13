@@ -1,35 +1,35 @@
 class TermsConditions {
   String termsConditions = '''
-### Math AI Terms of Service
+### MathGenie AI Terms of Service
 
 
 _Last updated: 8/13/25_
 
-Welcome to Math AI! By using the Math AI app, you agree to these Terms of Service ("Terms"). Please read them carefully before accessing or using the app.
+Welcome to MathGenie AI! By using the MathGenie AI app, you agree to these Terms of Service ("Terms"). Please read them carefully before accessing or using the app.
 
 1. **Acceptance of Terms**
    
-   By downloading, installing, or using Math AI, you agree to be bound by these Terms. If you do not agree to these Terms, please do not use the app.
+   By downloading, installing, or using MathGenie AI, you agree to be bound by these Terms. If you do not agree to these Terms, please do not use the app.
 
 2. **Eligibility**
 
-   Math AI is designed for students of all educational levels. However, if you are under the age of 13, you must have parental or legal guardian consent to use the app. By using the app, you confirm that you have such consent if required.
+   MathGenie AI is designed for students of all educational levels. However, if you are under the age of 13, you must have parental or legal guardian consent to use the app. By using the app, you confirm that you have such consent if required.
 
 3. **User Responsibilities**
 
-   When using Math AI, you agree to:
+   When using MathGenie AI, you agree to:
 
    - Provide accurate information when registering or using the app.
    - Keep your account secure by safeguarding your login credentials.
-   - Use Math AI only for lawful purposes and refrain from sharing offensive, harmful, or inappropriate content.
+   - Use MathGenie AI only for lawful purposes and refrain from sharing offensive, harmful, or inappropriate content.
 
 4. **AI Services and Limitations**
 
-   Math AI integrates Google Gemini AI, an advanced AI tool designed to solve mathematical problems and assist with math learning. While the AI strives to provide accurate mathematical solutions and explanations, it is a tool meant to aid learning, not replace professional advice or educational instruction. Math AI is not responsible for any decisions or actions made based on AI-generated content.
+   MathGenie AI integrates Google Gemini AI, an advanced AI tool designed to solve mathematical problems and assist with math learning. While the AI strives to provide accurate mathematical solutions and explanations, it is a tool meant to aid learning, not replace professional advice or educational instruction. MathGenie AI is not responsible for any decisions or actions made based on AI-generated content.
 
 5. **User-Generated Content**
 
-   You retain ownership of the content you create on Math AI. However, by posting or sharing content through the app (including messages, to-do lists, etc.), you grant Math AI a non-exclusive, royalty-free, and worldwide license to use, distribute, and display that content in connection with the app’s functionality.
+   You retain ownership of the content you create on MathGenie AI. However, by posting or sharing content through the app (including messages, to-do lists, etc.), you grant MathGenie AI a non-exclusive, royalty-free, and worldwide license to use, distribute, and display that content in connection with the app’s functionality.
 
 6. **Prohibited Conduct**
 
@@ -41,7 +41,7 @@ Welcome to Math AI! By using the Math AI app, you agree to these Terms of Servic
 
 7. **Subscriptions and Billing**
     
-    Math AI offers optional premium features through auto-renewing in-app subscriptions, managed securely via RevenueCat.
+    MathGenie AI offers optional premium features through auto-renewing in-app subscriptions, managed securely via RevenueCat.
 
     Subscription plans and pricing are clearly displayed in the app.
 
@@ -59,16 +59,16 @@ Welcome to Math AI! By using the Math AI app, you agree to these Terms of Servic
 
 8. **Account Termination**
 
-   - **By Math AI**: Math AI reserves the right to suspend or terminate your account if you violate these Terms.
+   - **By MathGenie AI**: MathGenie AI reserves the right to suspend or terminate your account if you violate these Terms.
    - **By You**: You may terminate your account at any time. If you delete your account, all associated data will be permanently removed from our systems, except where retention is required by law.
 
 9. **Disclaimer of Warranties**
 
-   Math AI is provided on an "as-is" basis, without warranties of any kind, either express or implied. We do not guarantee the app will be error-free, uninterrupted, or that it will meet your expectations.
+   MathGenie AI is provided on an "as-is" basis, without warranties of any kind, either express or implied. We do not guarantee the app will be error-free, uninterrupted, or that it will meet your expectations.
 
 10. **Limitation of Liability**
 
-   To the fullest extent allowed by law, Math AI will not be liable for any indirect, incidental, or consequential damages arising from your use of the app. This includes but is not limited to, lost profits, data loss, or damages resulting from inaccuracies in AI-generated content.
+   To the fullest extent allowed by law, MathGenie AI will not be liable for any indirect, incidental, or consequential damages arising from your use of the app. This includes but is not limited to, lost profits, data loss, or damages resulting from inaccuracies in AI-generated content.
 
 11. **Modifications**
 
@@ -81,25 +81,25 @@ Welcome to Math AI! By using the Math AI app, you agree to these Terms of Servic
 
 ---
 
-### Math AI Privacy Policy
+### MathGenie AI Privacy Policy
 
 _Last updated: 8/13/25_
 
-Your privacy is important to us. This Privacy Policy outlines how Math AI collects, uses, and protects your information when you use the app.
+Your privacy is important to us. This Privacy Policy outlines how MathGenie AI collects, uses, and protects your information when you use the app.
 
 1. **Information We Collect**
 
-   When you use Math AI, we may collect the following information:
+   When you use MathGenie AI, we may collect the following information:
 
    - **Personal Information**: Such as your name, email address, and any other information you provide during registration or when setting up your profile.
    - **Usage Data**: This includes information about how you use the app, such as math problems you solve, quizzes you take, study materials you upload, and AI-generated solutions.
-   - **Device Information**: We may collect information about the device you use to access Math AI, including the hardware model, operating system, and unique device identifiers.
+   - **Device Information**: We may collect information about the device you use to access MathGenie AI, including the hardware model, operating system, and unique device identifiers.
 
 2. **How We Use Your Information**
 
    We use the information we collect to:
 
-   - Provide and improve the functionality of the Math AI app.
+   - Provide and improve the functionality of the MathGenie AI app.
    - Personalize your experience, such as providing math problem solutions, generating practice quizzes, and tracking your learning progress.
    - Help you organize and manage your math study materials and problem collections.
    - Analyze usage patterns to enhance app performance and user satisfaction.
@@ -116,7 +116,7 @@ Your privacy is important to us. This Privacy Policy outlines how Math AI collec
 
    - With your consent, such as when you choose to share your progress or achievements.
    - To comply with legal obligations, such as responding to lawful requests from public authorities.
-   - To protect the rights, safety, or security of Math AI, its users, or others.
+   - To protect the rights, safety, or security of MathGenie AI, its users, or others.
 
 5. **Data Security**
 
@@ -136,7 +136,7 @@ Your privacy is important to us. This Privacy Policy outlines how Math AI collec
 
 8. **Children's Privacy**
 
-   Math AI is intended for students of all educational levels. For users under the age of 18, parental or legal guardian consent is required. We do not knowingly collect personal information from children under 13 without parental consent. Parents or guardians may contact us at jkstudio385@gmail.com to review or request deletion of their child’s information.
+   MathGenie AI is intended for students of all educational levels. For users under the age of 18, parental or legal guardian consent is required. We do not knowingly collect personal information from children under 13 without parental consent. Parents or guardians may contact us at jkstudio385@gmail.com to review or request deletion of their child’s information.
 
 9. **Changes to This Privacy Policy**
 
@@ -148,43 +148,43 @@ Your privacy is important to us. This Privacy Policy outlines how Math AI collec
 
 ---
 
-By using Math AI, you agree to both the Terms of Service and Privacy Policy outlined above.
+By using MathGenie AI, you agree to both the Terms of Service and Privacy Policy outlined above.
 
 
 
 ''';
 
   String termsConditionsFr = '''
-### Conditions d'utilisation de Math AI
+### Conditions d'utilisation de MathGenie AI
 
 
 _Dernière mise à jour : 13/08/25_
 
-Bienvenue sur Math AI ! En utilisant l'application Math AI, vous acceptez ces Conditions d'utilisation ("Conditions"). Veuillez les lire attentivement avant d'accéder ou d'utiliser l'application.
+Bienvenue sur MathGenie AI ! En utilisant l'application MathGenie AI, vous acceptez ces Conditions d'utilisation ("Conditions"). Veuillez les lire attentivement avant d'accéder ou d'utiliser l'application.
 
 1. **Acceptation des Conditions**
    
-   En téléchargeant, installant ou utilisant Math AI, vous acceptez d'être lié par ces Conditions. Si vous n'acceptez pas ces Conditions, veuillez ne pas utiliser l'application.
+   En téléchargeant, installant ou utilisant MathGenie AI, vous acceptez d'être lié par ces Conditions. Si vous n'acceptez pas ces Conditions, veuillez ne pas utiliser l'application.
 
 2. **Éligibilité**
 
-   Math AI est conçu pour les étudiants de tous les niveaux d'éducation. Cependant, si vous avez moins de 13 ans, vous devez avoir le consentement parental ou d'un tuteur légal pour utiliser l'application. En utilisant l'application, vous confirmez que vous avez un tel consentement si nécessaire.
+   MathGenie AI est conçu pour les étudiants de tous les niveaux d'éducation. Cependant, si vous avez moins de 13 ans, vous devez avoir le consentement parental ou d'un tuteur légal pour utiliser l'application. En utilisant l'application, vous confirmez que vous avez un tel consentement si nécessaire.
 
 3. **Responsabilités de l'utilisateur**
 
-   En utilisant Math AI, vous acceptez de :
+   En utilisant MathGenie AI, vous acceptez de :
 
    - Fournir des informations exactes lors de l'enregistrement ou de l'utilisation de l'application.
    - Garder votre compte sécurisé en protégeant vos identifiants de connexion.
-   - Utiliser Math AI uniquement à des fins légales et vous abstenir de partager du contenu offensant, nuisible ou inapproprié.
+   - Utiliser MathGenie AI uniquement à des fins légales et vous abstenir de partager du contenu offensant, nuisible ou inapproprié.
 
 4. **Services IA et Limitations**
 
-   Math AI intègre Google Gemini AI, un outil d'IA avancé conçu pour résoudre des problèmes mathématiques et aider à l'apprentissage des mathématiques. Bien que l'IA s'efforce de fournir des solutions mathématiques précises et des explications, c'est un outil destiné à aider l'apprentissage, pas à remplacer les conseils professionnels ou l'instruction éducative. Math AI n'est pas responsable des décisions ou actions prises sur la base du contenu généré par l'IA.
+   MathGenie AI intègre Google Gemini AI, un outil d'IA avancé conçu pour résoudre des problèmes mathématiques et aider à l'apprentissage des mathématiques. Bien que l'IA s'efforce de fournir des solutions mathématiques précises et des explications, c'est un outil destiné à aider l'apprentissage, pas à remplacer les conseils professionnels ou l'instruction éducative. MathGenie AI n'est pas responsable des décisions ou actions prises sur la base du contenu généré par l'IA.
 
 5. **Contenu généré par l'utilisateur**
 
-   Vous conservez la propriété du contenu que vous créez sur Math AI. Cependant, en publiant ou partageant du contenu via l'application (y compris les messages, listes de tâches, etc.), vous accordez à Math AI une licence non exclusive, libre de redevances et mondiale pour utiliser, distribuer et afficher ce contenu en relation avec la fonctionnalité de l'application.
+   Vous conservez la propriété du contenu que vous créez sur MathGenie AI. Cependant, en publiant ou partageant du contenu via l'application (y compris les messages, listes de tâches, etc.), vous accordez à MathGenie AI une licence non exclusive, libre de redevances et mondiale pour utiliser, distribuer et afficher ce contenu en relation avec la fonctionnalité de l'application.
 
 6. **Conduite interdite**
 
@@ -196,7 +196,7 @@ Bienvenue sur Math AI ! En utilisant l'application Math AI, vous acceptez ces Co
 
 7. **Abonnements et Facturation**
     
-    Math AI propose des fonctionnalités premium optionnelles via des abonnements intégrés à renouvellement automatique, gérés de manière sécurisée via RevenueCat.
+    MathGenie AI propose des fonctionnalités premium optionnelles via des abonnements intégrés à renouvellement automatique, gérés de manière sécurisée via RevenueCat.
 
     Les plans d'abonnement et les prix sont clairement affichés dans l'application.
 
@@ -214,16 +214,16 @@ Bienvenue sur Math AI ! En utilisant l'application Math AI, vous acceptez ces Co
 
 8. **Résiliation du compte**
 
-   - **Par Math AI** : Math AI se réserve le droit de suspendre ou de résilier votre compte si vous violez ces Conditions.
+   - **Par MathGenie AI** : MathGenie AI se réserve le droit de suspendre ou de résilier votre compte si vous violez ces Conditions.
    - **Par vous** : Vous pouvez résilier votre compte à tout moment. Si vous supprimez votre compte, toutes les données associées seront définitivement supprimées de nos systèmes, sauf là où la rétention est requise par la loi.
 
 9. **Déni de garanties**
 
-   Math AI est fourni "tel quel", sans garanties d'aucune sorte, expresses ou implicites. Nous ne garantissons pas que l'application sera sans erreur, ininterrompue, ou qu'elle répondra à vos attentes.
+   MathGenie AI est fourni "tel quel", sans garanties d'aucune sorte, expresses ou implicites. Nous ne garantissons pas que l'application sera sans erreur, ininterrompue, ou qu'elle répondra à vos attentes.
 
 10. **Limitation de responsabilité**
 
-   Dans toute la mesure permise par la loi, Math AI ne sera pas responsable des dommages indirects, accessoires ou consécutifs découlant de votre utilisation de l'application. Cela inclut, mais n'est pas limité à, la perte de profits, la perte de données, ou les dommages résultant d'inexactitudes dans le contenu généré par l'IA.
+   Dans toute la mesure permise par la loi, MathGenie AI ne sera pas responsable des dommages indirects, accessoires ou consécutifs découlant de votre utilisation de l'application. Cela inclut, mais n'est pas limité à, la perte de profits, la perte de données, ou les dommages résultant d'inexactitudes dans le contenu généré par l'IA.
 
 11. **Modifications**
 
@@ -235,25 +235,25 @@ Bienvenue sur Math AI ! En utilisant l'application Math AI, vous acceptez ces Co
 
 ---
 
-### Politique de confidentialité de Math AI
+### Politique de confidentialité de MathGenie AI
 
 _Dernière mise à jour : 16/05/25_
 
-Votre confidentialité est importante pour nous. Cette Politique de confidentialité décrit comment Math AI collecte, utilise et protège vos informations lorsque vous utilisez l'application.
+Votre confidentialité est importante pour nous. Cette Politique de confidentialité décrit comment MathGenie AI collecte, utilise et protège vos informations lorsque vous utilisez l'application.
 
 1. **Informations que nous collectons**
 
-   Lorsque vous utilisez Math AI, nous pouvons collecter les informations suivantes :
+   Lorsque vous utilisez MathGenie AI, nous pouvons collecter les informations suivantes :
 
    - **Informations personnelles** : Telles que votre nom, adresse e-mail, et toute autre information que vous fournissez lors de l'inscription ou lors de la configuration de votre profil.
    - **Données d'utilisation** : Cela inclut des informations sur la façon dont vous utilisez l'application, telles que vos interactions avec les fonctionnalités, horaires d'étude, devoirs, et contenu généré par l'IA.
-   - **Informations sur l'appareil** : Nous pouvons collecter des informations sur l'appareil que vous utilisez pour accéder à Math AI, y compris le modèle matériel, le système d'exploitation, et les identifiants uniques de l'appareil.
+   - **Informations sur l'appareil** : Nous pouvons collecter des informations sur l'appareil que vous utilisez pour accéder à MathGenie AI, y compris le modèle matériel, le système d'exploitation, et les identifiants uniques de l'appareil.
 
 2. **Comment nous utilisons vos informations**
 
    Nous utilisons les informations que nous collectons pour :
 
-   - Fournir et améliorer la fonctionnalité de l'application Math AI.
+   - Fournir et améliorer la fonctionnalité de l'application MathGenie AI.
    - Personnaliser votre expérience, comme fournir des solutions mathématiques, générer des quiz d'entraînement, et suivre votre progression.
    - Vous aider à organiser et gérer vos matériaux d'étude mathématiques et collections de problèmes.
    - Analyser les modèles d'utilisation pour améliorer les performances de l'application et la satisfaction des utilisateurs.
@@ -268,9 +268,9 @@ Votre confidentialité est importante pour nous. Cette Politique de confidential
 
    Nous pouvons partager vos données dans les circonstances suivantes :
 
-   - Avec votre consentement, comme lorsque vous choisissez de vous connecter avec un Math AI.
+   - Avec votre consentement, comme lorsque vous choisissez de vous connecter avec un MathGenie AI.
    - Pour se conformer aux obligations légales, comme répondre aux demandes légitimes des autorités publiques.
-   - Pour protéger les droits, la sécurité ou la sûreté de Math AI, ses utilisateurs, ou d'autres.
+   - Pour protéger les droits, la sécurité ou la sûreté de MathGenie AI, ses utilisateurs, ou d'autres.
 
 5. **Sécurité des données**
 
@@ -290,7 +290,7 @@ Votre confidentialité est importante pour nous. Cette Politique de confidential
 
 8. **Confidentialité des enfants**
 
-   Math AI est destiné aux utilisateurs de tous âges. Pour les utilisateurs de moins de 18 ans, le consentement parental ou d'un tuteur légal est requis. Nous ne collectons pas sciemment d'informations personnelles d'enfants de moins de 13 ans sans consentement parental. Les parents ou tuteurs peuvent nous contacter à jkstudio385@gmail.com pour examiner ou demander la suppression des informations de leur enfant.
+   MathGenie AI est destiné aux utilisateurs de tous âges. Pour les utilisateurs de moins de 18 ans, le consentement parental ou d'un tuteur légal est requis. Nous ne collectons pas sciemment d'informations personnelles d'enfants de moins de 13 ans sans consentement parental. Les parents ou tuteurs peuvent nous contacter à jkstudio385@gmail.com pour examiner ou demander la suppression des informations de leur enfant.
 
 9. **Modifications de cette Politique de confidentialité**
 
@@ -302,43 +302,43 @@ Votre confidentialité est importante pour nous. Cette Politique de confidential
 
 ---
 
-En utilisant Math AI, vous acceptez à la fois les Conditions d'utilisation et la Politique de confidentialité décrites ci-dessus.
+En utilisant MathGenie AI, vous acceptez à la fois les Conditions d'utilisation et la Politique de confidentialité décrites ci-dessus.
 
 
 
 ''';
 
   String termsConditionsEs = '''
-### Términos de Servicio de Math AI
+### Términos de Servicio de MathGenie AI
 
 
 _Última actualización: 13/08/25_
 
-¡Bienvenido a Math AI! Al usar la aplicación Math AI, aceptas estos Términos de Servicio ("Términos"). Por favor, léelos cuidadosamente antes de acceder o usar la aplicación.
+¡Bienvenido a MathGenie AI! Al usar la aplicación MathGenie AI, aceptas estos Términos de Servicio ("Términos"). Por favor, léelos cuidadosamente antes de acceder o usar la aplicación.
 
 1. **Aceptación de los Términos**
    
-   Al descargar, instalar o usar Math AI, aceptas estar sujeto a estos Términos. Si no aceptas estos Términos, por favor no uses la aplicación.
+   Al descargar, instalar o usar MathGenie AI, aceptas estar sujeto a estos Términos. Si no aceptas estos Términos, por favor no uses la aplicación.
 
 2. **Elegibilidad**
 
-   Math AI está diseñado para estudiantes de todos los niveles educativos. Sin embargo, si tienes menos de 13 años, debes tener el consentimiento de tus padres o tutor legal para usar la aplicación. Al usar la aplicación, confirmas que tienes dicho consentimiento si es necesario.
+   MathGenie AI está diseñado para estudiantes de todos los niveles educativos. Sin embargo, si tienes menos de 13 años, debes tener el consentimiento de tus padres o tutor legal para usar la aplicación. Al usar la aplicación, confirmas que tienes dicho consentimiento si es necesario.
 
 3. **Responsabilidades del Usuario**
 
-   Al usar Math AI, aceptas:
+   Al usar MathGenie AI, aceptas:
 
    - Proporcionar información precisa al registrarte o usar la aplicación.
    - Mantener tu cuenta segura protegiendo tus credenciales de acceso.
-   - Usar Math AI solo para fines legales y abstenerte de compartir contenido ofensivo, dañino o inapropiado.
+   - Usar MathGenie AI solo para fines legales y abstenerte de compartir contenido ofensivo, dañino o inapropiado.
 
 4. **Servicios de IA y Limitaciones**
 
-   Math AI integra Google Gemini AI, una herramienta avanzada de IA diseñada para resolver problemas matemáticos y ayudar con el aprendizaje de las matemáticas. Aunque la IA se esfuerza por proporcionar soluciones matemáticas precisas y explicaciones, es una herramienta destinada a ayudar al aprendizaje, no a reemplazar el asesoramiento profesional o la instrucción educativa. Math AI no es responsable de las decisiones o acciones tomadas en base al contenido generado por IA.
+   MathGenie AI integra Google Gemini AI, una herramienta avanzada de IA diseñada para resolver problemas matemáticos y ayudar con el aprendizaje de las matemáticas. Aunque la IA se esfuerza por proporcionar soluciones matemáticas precisas y explicaciones, es una herramienta destinada a ayudar al aprendizaje, no a reemplazar el asesoramiento profesional o la instrucción educativa. MathGenie AI no es responsable de las decisiones o acciones tomadas en base al contenido generado por IA.
 
 5. **Contenido Generado por el Usuario**
 
-   Conservas la propiedad del contenido que creas en Math AI. Sin embargo, al publicar o compartir contenido a través de la aplicación (incluyendo mensajes, listas de tareas, etc.), otorgas a Math AI una licencia no exclusiva, libre de regalías y mundial para usar, distribuir y mostrar ese contenido en relación con la funcionalidad de la aplicación.
+   Conservas la propiedad del contenido que creas en MathGenie AI. Sin embargo, al publicar o compartir contenido a través de la aplicación (incluyendo mensajes, listas de tareas, etc.), otorgas a MathGenie AI una licencia no exclusiva, libre de regalías y mundial para usar, distribuir y mostrar ese contenido en relación con la funcionalidad de la aplicación.
 
 6. **Conducta Prohibida**
 
@@ -350,7 +350,7 @@ _Última actualización: 13/08/25_
 
 7. **Suscripciones y Facturación**
     
-    Math AI ofrece funciones premium opcionales a través de suscripciones integradas con renovación automática, gestionadas de forma segura a través de RevenueCat.
+    MathGenie AI ofrece funciones premium opcionales a través de suscripciones integradas con renovación automática, gestionadas de forma segura a través de RevenueCat.
 
     Los planes de suscripción y los precios se muestran claramente en la aplicación.
 
@@ -368,16 +368,16 @@ _Última actualización: 13/08/25_
 
 8. **Terminación de la Cuenta**
 
-   - **Por Math AI**: Math AI se reserva el derecho de suspender o terminar tu cuenta si violas estos Términos.
+   - **Por MathGenie AI**: MathGenie AI se reserva el derecho de suspender o terminar tu cuenta si violas estos Términos.
    - **Por Ti**: Puedes terminar tu cuenta en cualquier momento. Si eliminas tu cuenta, todos los datos asociados se eliminarán permanentemente de nuestros sistemas, excepto cuando la retención sea requerida por ley.
 
 9. **Descargo de Garantías**
 
-   Math AI se proporciona "tal cual", sin garantías de ningún tipo, ya sean expresas o implícitas. No garantizamos que la aplicación esté libre de errores, sea ininterrumpida o que cumpla con tus expectativas.
+   MathGenie AI se proporciona "tal cual", sin garantías de ningún tipo, ya sean expresas o implícitas. No garantizamos que la aplicación esté libre de errores, sea ininterrumpida o que cumpla con tus expectativas.
 
 10. **Limitación de Responsabilidad**
 
-   En la máxima medida permitida por la ley, Math AI no será responsable de ningún daño indirecto, incidental o consecuente que surja de tu uso de la aplicación. Esto incluye, entre otros, pérdida de ganancias, pérdida de datos o daños resultantes de inexactitudes en el contenido generado por IA.
+   En la máxima medida permitida por la ley, MathGenie AI no será responsable de ningún daño indirecto, incidental o consecuente que surja de tu uso de la aplicación. Esto incluye, entre otros, pérdida de ganancias, pérdida de datos o daños resultantes de inexactitudes en el contenido generado por IA.
 
 11. **Modificaciones**
 
@@ -389,25 +389,25 @@ _Última actualización: 13/08/25_
 
 ---
 
-### Política de Privacidad de Math AI
+### Política de Privacidad de MathGenie AI
 
 _Última actualización: 13/08/25_
 
-Tu privacidad es importante para nosotros. Esta Política de Privacidad describe cómo Math AI recopila, usa y protege tu información cuando usas la aplicación.
+Tu privacidad es importante para nosotros. Esta Política de Privacidad describe cómo MathGenie AI recopila, usa y protege tu información cuando usas la aplicación.
 
 1. **Información que Recopilamos**
 
-   Cuando usas Math AI, podemos recopilar la siguiente información:
+   Cuando usas MathGenie AI, podemos recopilar la siguiente información:
 
    - **Información Personal**: Como tu nombre, dirección de correo electrónico y cualquier otra información que proporciones durante el registro o al configurar tu perfil.
    - **Datos de Uso**: Esto incluye información sobre cómo usas la aplicación, como los problemas matemáticos que resuelves, los quiz que tomas, los materiales de estudio que subes y las soluciones generadas por IA.
-   - **Información del Dispositivo**: Podemos recopilar información sobre el dispositivo que usas para acceder a Math AI, incluyendo el modelo de hardware, el sistema operativo y los identificadores únicos del dispositivo.
+   - **Información del Dispositivo**: Podemos recopilar información sobre el dispositivo que usas para acceder a MathGenie AI, incluyendo el modelo de hardware, el sistema operativo y los identificadores únicos del dispositivo.
 
 2. **Cómo Usamos Tu Información**
 
    Usamos la información que recopilamos para:
 
-   - Proporcionar y mejorar la funcionalidad de la aplicación Math AI.
+   - Proporcionar y mejorar la funcionalidad de la aplicación MathGenie AI.
    - Personalizar tu experiencia, como proporcionar soluciones a problemas matemáticos, generar quiz de práctica y seguir tu progreso de aprendizaje.
    - Ayudarte a organizar y gestionar tus materiales de estudio matemático y colecciones de problemas.
    - Analizar patrones de uso para mejorar el rendimiento de la aplicación y la satisfacción del usuario.
@@ -422,9 +422,9 @@ Tu privacidad es importante para nosotros. Esta Política de Privacidad describe
 
    Podemos compartir tus datos en las siguientes circunstancias:
 
-   - Con tu consentimiento, como cuando optas por conectarte con un Math AI.
+   - Con tu consentimiento, como cuando optas por conectarte con un MathGenie AI.
    - Para cumplir con obligaciones legales, como responder a solicitudes legítimas de las autoridades públicas.
-   - Para proteger los derechos, la seguridad o la protección de Math AI, sus usuarios u otros.
+   - Para proteger los derechos, la seguridad o la protección de MathGenie AI, sus usuarios u otros.
 
 5. **Seguridad de Datos**
 
@@ -444,7 +444,7 @@ Tu privacidad es importante para nosotros. Esta Política de Privacidad describe
 
 8. **Privacidad de los Niños**
 
-   Math AI está destinado a estudiantes de todos los niveles educativos. Para usuarios menores de 18 años, se requiere el consentimiento de los padres o tutor legal. No recopilamos conscientemente información personal de niños menores de 13 años sin el consentimiento de los padres. Los padres o tutores pueden contactarnos en jkstudio385@gmail.com para revisar o solicitar la eliminación de la información de su hijo.
+   MathGenie AI está destinado a estudiantes de todos los niveles educativos. Para usuarios menores de 18 años, se requiere el consentimiento de los padres o tutor legal. No recopilamos conscientemente información personal de niños menores de 13 años sin el consentimiento de los padres. Los padres o tutores pueden contactarnos en jkstudio385@gmail.com para revisar o solicitar la eliminación de la información de su hijo.
 
 9. **Cambios a esta Política de Privacidad**
 
@@ -456,7 +456,7 @@ Tu privacidad es importante para nosotros. Esta Política de Privacidad describe
 
 ---
 
-Al usar Math AI, aceptas tanto los Términos de Servicio como la Política de Privacidad descritos anteriormente.
+Al usar MathGenie AI, aceptas tanto los Términos de Servicio como la Política de Privacidad descritos anteriormente.
 
 
 

@@ -1,11 +1,11 @@
 {
-    "name": "math_ai",
-    "short_name": "math_ai",
+    "name": "MathGenie AI",
+    "short_name": "MathGenie AI",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "AI-powered math problem solver and learning assistant.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

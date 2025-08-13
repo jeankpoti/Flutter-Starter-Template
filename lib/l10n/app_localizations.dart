@@ -565,7 +565,7 @@ abstract class AppLocalizations {
   /// No description provided for @enjoyPremiumFeatures.
   ///
   /// In en, this message translates to:
-  /// **'Enjoy all premium features of Math AI'**
+  /// **'Enjoy all premium features of MathGenie AI'**
   String get enjoyPremiumFeatures;
 
   /// No description provided for @restore.
@@ -3043,7 +3043,7 @@ abstract class AppLocalizations {
   /// No description provided for @studentsImprovedGrades.
   ///
   /// In en, this message translates to:
-  /// **'Join the Math AI Community'**
+  /// **'Join the MathGenie AI Community'**
   String get studentsImprovedGrades;
 
   /// No description provided for @testimonialCalculus.
