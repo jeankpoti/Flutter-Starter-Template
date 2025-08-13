@@ -537,5 +537,22 @@
   
   "skip": "Omitir",
   "startFreeTrial": "Comenzar Prueba Gratuita",
-  "continueWithFreeVersion": "Continuar con la Versión Gratuita"
+  "continueWithFreeVersion": "Continuar con la Versión Gratuita",
+  
+  "premiumSubscription": "Suscripción Premium",
+  "premiumFeature": "Función Premium",
+  "premiumFeatureDescription": "Esta función solo está disponible para suscriptores premium. ¿Te gustaría actualizar a premium?",
+  "notNow": "Ahora no",
+  "upgrade": "Actualizar",
+  "upgradeToPremium": "Actualizar a Premium",
+  "unlockAllFeatures": "Desbloquea todas las funciones y elimina los anuncios",
+  "startWithFreeTrial": "Comienza con una prueba gratuita de 3 días",
+  "subscribe": "Suscribirse",
+  "activeSubscription": "¡Tienes una suscripción activa!",
+  "enjoyPremiumFeatures": "Disfruta de todas las funciones premium de Math AI",
+  "expiresOn": "Expira el {date}",
+  "restore": "Restaurar",
+  "manageSubscription": "Administrar suscripción",
+  "cancelTrial": "Cancelar prueba",
+  "subscriptionError": "Error de suscripción"
 }

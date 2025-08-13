@@ -6,6 +6,7 @@ import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
 import '../../../common_widgets/app_bar_widget.dart';
 import '../../../common_widgets/elevated_button_widget.dart';
 import '../../../common_widgets/text_widgets.dart';
+import '../../../l10n/app_localizations.dart';
 import 'subscription_cubit.dart';
 import 'subscription_state.dart';
 
@@ -32,7 +33,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppBarWidget(title: 'Premium Subscription'),
+      appBar: AppBarWidget(title: AppLocalizations.of(context)!.premiumSubscription),
       body: BlocConsumer<SubscriptionCubit, SubscriptionState>(
         listener: (context, state) {
           if (state.status == SubscriptionStatus.error &&
@@ -66,8 +67,8 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
 
     if (subscription.expirationDate != null) {
       final expirationDate = subscription.expirationDate!;
-      expirationText =
-          'Expires on ${expirationDate.month}/${expirationDate.day}/${expirationDate.year}';
+      expirationText = AppLocalizations.of(context)!.expiresOn(
+          '${expirationDate.month}/${expirationDate.day}/${expirationDate.year}');
     }
 
     return Center(
@@ -78,12 +79,12 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
           children: [
             const Icon(Icons.check_circle, color: Colors.green, size: 80),
             const SizedBox(height: 24),
-            const TitleLargeText(
-              'You have an active subscription!',
+            TitleLargeText(
+              AppLocalizations.of(context)!.activeSubscription,
             ),
             const SizedBox(height: 16),
             BodyMediumText(
-              'Enjoy all premium features of Snap Animal AI',
+              AppLocalizations.of(context)!.enjoyPremiumFeatures,
             ),
             if (expirationText.isNotEmpty) ...[
               const SizedBox(height: 8),
@@ -99,7 +100,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                       () =>
                           context.read<SubscriptionCubit>().restorePurchases(),
 
-                  text: 'Restore',
+                  text: AppLocalizations.of(context)!.restore,
                 ),
                 const SizedBox(width: 16),
                 ElevatedButtonWidget(
@@ -110,8 +111,8 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                               .openManageSubscriptions(),
                   text:
                       subscription.isInTrialPeriod
-                          ? 'Cancel Trial'
-                          : 'Manage Subscription',
+                          ? AppLocalizations.of(context)!.cancelTrial
+                          : AppLocalizations.of(context)!.manageSubscription,
                 ),
               ],
             ),
@@ -131,18 +132,18 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const TitleLargeText(
-              'Upgrade to Premium',
+            TitleLargeText(
+              AppLocalizations.of(context)!.upgradeToPremium,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
-            const BodyMediumText(
-              'Unlock all features and remove ads',
+            BodyMediumText(
+              AppLocalizations.of(context)!.unlockAllFeatures,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
-            const BodyMediumText(
-              'Start with a 3-day free trial',
+            BodyMediumText(
+              AppLocalizations.of(context)!.startWithFreeTrial,
               color: Colors.green,
               fontWeight: FontWeight.bold,
               textAlign: TextAlign.center,
@@ -164,7 +165,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                   // );
                 }
               },
-              text: 'Subscribe',
+              text: AppLocalizations.of(context)!.subscribe,
             ),
           ],
         ),

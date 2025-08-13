@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../l10n/app_localizations.dart';
 import '../../../main.dart';
 import 'subscription_cubit.dart';
 
@@ -61,22 +62,21 @@ class SubscriptionHelper {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text('Premium Feature'),
-            content: const Text(
-              'This feature is only available to premium subscribers. '
-              'Would you like to upgrade to premium?',
+            title: Text(AppLocalizations.of(context)!.premiumFeature),
+            content: Text(
+              AppLocalizations.of(context)!.premiumFeatureDescription,
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Not Now'),
+                child: Text(AppLocalizations.of(context)!.notNow),
               ),
               ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                   navigateToSubscription(context);
                 },
-                child: const Text('Upgrade'),
+                child: Text(AppLocalizations.of(context)!.upgrade),
               ),
             ],
           ),

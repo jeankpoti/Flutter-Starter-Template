@@ -245,8 +245,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get activeSubscription => 'You have an active subscription!';
 
   @override
-  String get enjoyPremiumFeatures =>
-      'Enjoy all premium features of Snap Animal AI';
+  String get enjoyPremiumFeatures => 'Enjoy all premium features of Math AI';
 
   @override
   String get restore => 'Restore';
@@ -331,8 +330,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get enterMathProblemError => 'Please enter a math problem to solve.';
 
   @override
-  String get subscriptionError =>
-      'Error showing subscription options. Please try again.';
+  String get subscriptionError => 'Subscription Error';
 
   @override
   String get takePictureError => 'Failed to take picture. Please try again.';
@@ -1669,4 +1667,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get continueWithFreeVersion => 'Continue with Free Version';
+
+  @override
+  String get premiumFeature => 'Premium Feature';
+
+  @override
+  String get premiumFeatureDescription =>
+      'This feature is only available to premium subscribers. Would you like to upgrade to premium?';
+
+  @override
+  String get notNow => 'Not Now';
+
+  @override
+  String get upgrade => 'Upgrade';
+
+  @override
+  String get unlockAllFeatures => 'Unlock all features and remove ads';
+
+  @override
+  String get startWithFreeTrial => 'Start with a 3-day free trial';
+
+  @override
+  String expiresOn(Object date) {
+    return 'Expires on $date';
+  }
 }

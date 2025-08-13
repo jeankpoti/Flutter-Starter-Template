@@ -9,10 +9,14 @@ import '../l10n/app_localizations.dart';
 class TermsConditionsWidget {
   static String _getLocalizedTerms(BuildContext context) {
     final locale = AppLocalizations.of(context)!.localeName;
-    if (locale == 'fr') {
-      return TermsConditions().termsConditionsFr;
+    switch (locale) {
+      case 'fr':
+        return TermsConditions().termsConditionsFr;
+      case 'es':
+        return TermsConditions().termsConditionsEs;
+      default:
+        return TermsConditions().termsConditions;
     }
-    return TermsConditions().termsConditions;
   }
 
   static void termsConditionsWidget({required BuildContext context}) {

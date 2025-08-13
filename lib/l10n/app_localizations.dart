@@ -565,7 +565,7 @@ abstract class AppLocalizations {
   /// No description provided for @enjoyPremiumFeatures.
   ///
   /// In en, this message translates to:
-  /// **'Enjoy all premium features of Snap Animal AI'**
+  /// **'Enjoy all premium features of Math AI'**
   String get enjoyPremiumFeatures;
 
   /// No description provided for @restore.
@@ -733,7 +733,7 @@ abstract class AppLocalizations {
   /// No description provided for @subscriptionError.
   ///
   /// In en, this message translates to:
-  /// **'Error showing subscription options. Please try again.'**
+  /// **'Subscription Error'**
   String get subscriptionError;
 
   /// No description provided for @takePictureError.
@@ -3069,6 +3069,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Continue with Free Version'**
   String get continueWithFreeVersion;
+
+  /// No description provided for @premiumFeature.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium Feature'**
+  String get premiumFeature;
+
+  /// No description provided for @premiumFeatureDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'This feature is only available to premium subscribers. Would you like to upgrade to premium?'**
+  String get premiumFeatureDescription;
+
+  /// No description provided for @notNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Not Now'**
+  String get notNow;
+
+  /// No description provided for @upgrade.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade'**
+  String get upgrade;
+
+  /// No description provided for @unlockAllFeatures.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock all features and remove ads'**
+  String get unlockAllFeatures;
+
+  /// No description provided for @startWithFreeTrial.
+  ///
+  /// In en, this message translates to:
+  /// **'Start with a 3-day free trial'**
+  String get startWithFreeTrial;
+
+  /// No description provided for @expiresOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires on {date}'**
+  String expiresOn(Object date);
 }
 
 class _AppLocalizationsDelegate
