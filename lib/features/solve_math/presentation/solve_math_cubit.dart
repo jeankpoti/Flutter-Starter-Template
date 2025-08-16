@@ -16,7 +16,7 @@ class SolveMathCubit extends Cubit<SolveMathState> {
     : super(const SolveMathState());
 
   Future<void> solveMath(dynamic input) async {
-    emit(state.copyWith(isIdentifying: true));
+    emit(state.copyWith(isIdentifying: true, resultShown: false));
     try {
       String result;
 
@@ -39,7 +39,13 @@ class SolveMathCubit extends Cubit<SolveMathState> {
       print('SolveMathCubit: Collection saved successfully');
 
       emit(
-        state.copyWith(result: result, isIdentifying: false, isSuccess: true),
+        state.copyWith(
+          result: result, 
+          isIdentifying: false, 
+          isSuccess: true, 
+          resultShown: false,
+          resultTimestamp: DateTime.now(),
+        ),
       );
     } catch (e) {
       emit(
@@ -65,6 +71,15 @@ class SolveMathCubit extends Cubit<SolveMathState> {
   }
 
   Future<void> emptyResult() async {
-    emit(state.copyWith(result: '', isIdentifying: false));
+    emit(state.copyWith(
+      result: '', 
+      isIdentifying: false, 
+      resultShown: false,
+      resultTimestamp: null,
+    ));
+  }
+  
+  void markResultAsShown() {
+    emit(state.copyWith(resultShown: true));
   }
 }

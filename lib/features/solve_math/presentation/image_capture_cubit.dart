@@ -70,7 +70,7 @@ class ImageCaptureCubit extends Cubit<ImageCaptureState> {
        super(const ImageCaptureState());
 
   /// Captures image from camera with permission handling
-  Future<bool> captureFromCamera() async {
+  Future<bool> captureFromCamera({Future<File?> Function(File)? onImageCaptured}) async {
     emit(
       state.copyWith(
         isLoading: true,
@@ -103,7 +103,15 @@ class ImageCaptureCubit extends Cubit<ImageCaptureState> {
       }
 
       // Capture image
-      final imageFile = await _imageCaptureService.captureFromCamera();
+      File? imageFile = await _imageCaptureService.captureFromCamera();
+
+      if (imageFile != null && onImageCaptured != null) {
+        // Allow the caller to provide cropping functionality
+        final processedFile = await onImageCaptured(imageFile);
+        if (processedFile != null) {
+          imageFile = processedFile;
+        }
+      }
 
       if (imageFile != null) {
         emit(state.copyWith(imageFile: imageFile, isLoading: false));
@@ -132,7 +140,7 @@ class ImageCaptureCubit extends Cubit<ImageCaptureState> {
   }
 
   /// Selects image from gallery with permission handling
-  Future<bool> selectFromGallery() async {
+  Future<bool> selectFromGallery({Future<File?> Function(File)? onImageSelected}) async {
     emit(
       state.copyWith(
         isLoading: true,
@@ -165,7 +173,15 @@ class ImageCaptureCubit extends Cubit<ImageCaptureState> {
       }
 
       // Select image
-      final imageFile = await _imageCaptureService.selectFromGallery();
+      File? imageFile = await _imageCaptureService.selectFromGallery();
+
+      if (imageFile != null && onImageSelected != null) {
+        // Allow the caller to provide cropping functionality
+        final processedFile = await onImageSelected(imageFile);
+        if (processedFile != null) {
+          imageFile = processedFile;
+        }
+      }
 
       if (imageFile != null) {
         emit(state.copyWith(imageFile: imageFile, isLoading: false));

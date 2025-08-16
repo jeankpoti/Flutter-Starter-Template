@@ -481,6 +481,7 @@
   "errorSelectingPicture": "Échec de la sélection de photo",
   "takePicture": "Prendre une photo",
   "uploadPicture": "Télécharger une photo",
+  "cropImage": "Recadrer l'image",
   
   "yourPersonalAIMathTutor": "Votre Tuteur de Maths IA Personnel",
   "solveMathInstantly": "Résolvez n'importe quel problème de maths instantanément",

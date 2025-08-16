@@ -33,14 +33,16 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBarWidget(title: AppLocalizations.of(context)!.premiumSubscription),
+      appBar: AppBarWidget(
+        title: AppLocalizations.of(context)!.premiumSubscription,
+      ),
       body: BlocConsumer<SubscriptionCubit, SubscriptionState>(
         listener: (context, state) {
           if (state.status == SubscriptionStatus.error &&
               state.errorMessage != null) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: BodyMediumText(state.errorMessage!)));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: BodyMediumText(state.errorMessage!)),
+            );
           }
         },
         builder: (context, state) {
@@ -68,7 +70,8 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
     if (subscription.expirationDate != null) {
       final expirationDate = subscription.expirationDate!;
       expirationText = AppLocalizations.of(context)!.expiresOn(
-          '${expirationDate.month}/${expirationDate.day}/${expirationDate.year}');
+        '${expirationDate.month}/${expirationDate.day}/${expirationDate.year}',
+      );
     }
 
     return Center(
@@ -79,15 +82,14 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
           children: [
             const Icon(Icons.check_circle, color: Colors.green, size: 80),
             const SizedBox(height: 24),
-            TitleLargeText(
-              AppLocalizations.of(context)!.activeSubscription,
-            ),
+            TitleLargeText(AppLocalizations.of(context)!.activeSubscription),
             const SizedBox(height: 16),
             BodyMediumText(
               AppLocalizations.of(context)!.enjoyPremiumFeatures,
+              textAlign: TextAlign.center,
             ),
             if (expirationText.isNotEmpty) ...[
-              const SizedBox(height: 8),
+              const SizedBox(height: 25),
               BodyMediumText(expirationText),
             ],
             const SizedBox(height: 32),

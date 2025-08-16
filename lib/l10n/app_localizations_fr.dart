@@ -1570,6 +1570,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get uploadPicture => 'Télécharger une photo';
 
   @override
+  String get cropImage => 'Recadrer l\'image';
+
+  @override
   String get yourPersonalAIMathTutor => 'Votre Tuteur de Maths IA Personnel';
 
   @override

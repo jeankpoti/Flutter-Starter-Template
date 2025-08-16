@@ -66,17 +66,24 @@ class GeminiSolveMathRepo implements SolveMathRepo {
       final mathLevel = prefs.getMathLevel();
       final locale = prefs.getLocale();
 
-      final prompt = _buildAgeAppropriatePrompt(textInput.trim(), mathLevel, locale);
+      final prompt = _buildAgeAppropriatePrompt(
+        textInput.trim(),
+        mathLevel,
+        locale,
+      );
 
       final response = await generateTextContent(prompt);
       return response.text ?? 'Unable to solve the math problem';
     } catch (e) {
-      print('Error solving math problem: $e');
       return 'Error: Failed to solve the math problem. Please try again.';
     }
   }
 
-  String _buildAgeAppropriatePrompt(String mathProblem, MathLevel level, String locale) {
+  String _buildAgeAppropriatePrompt(
+    String mathProblem,
+    MathLevel level,
+    String locale,
+  ) {
     return PromptLocalizer.getMathSolvingPrompt(
       locale,
       mathProblem,

@@ -2812,6 +2812,12 @@ abstract class AppLocalizations {
   /// **'Upload Picture'**
   String get uploadPicture;
 
+  /// No description provided for @cropImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Crop Image'**
+  String get cropImage;
+
   /// No description provided for @yourPersonalAIMathTutor.
   ///
   /// In en, this message translates to:

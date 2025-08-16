@@ -1,13 +1,15 @@
 import 'dart:async';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:math_ai/common_widgets/permission_denied_dialog_widget.dart';
+import '../../../common_widgets/permission_denied_dialog_widget.dart';
 import '../../../l10n/app_localizations.dart';
 import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
 
 import '../../../common_widgets/app_bar_widget.dart';
+import '../data/services/image_cropper_service.dart';
 import '../../../common_widgets/text_widgets.dart';
 import '../../common/presentation/permission_cubit.dart';
 import '../../common/presentation/mixins/permission_lifecycle_mixin.dart';
@@ -36,6 +38,7 @@ class _HomePageState extends State<HomePage>
         PermissionLifecycleMixin {
   final TextEditingController _textController = TextEditingController();
   late TabController _tabController;
+  DateTime? _lastResultShownTimestamp;
 
   // Design system spacing constants
   static const double _spacing4 = 16.0;
@@ -77,10 +80,23 @@ class _HomePageState extends State<HomePage>
   Future<void> _takePicture() async {
     // Capture context-dependent values before async operation
     final imageCaptureCubit = context.read<ImageCaptureCubit>();
+    final cropperService = ImageCropperService();
+
+    // Clear any previous result to prevent double dialog
+    await context.read<SolveMathCubit>().emptyResult();
 
     // imageCaptureCubit.clearImage();
 
-    final handled = await imageCaptureCubit.captureFromCamera();
+    final handled = await imageCaptureCubit.captureFromCamera(
+      onImageCaptured: (capturedFile) async {
+        // Use the captured context for cropping
+        if (!mounted) return null;
+        return await cropperService.cropImage(
+          imageFile: capturedFile,
+          context: context,
+        );
+      },
+    );
 
     if (!mounted) return;
 
@@ -103,8 +119,21 @@ class _HomePageState extends State<HomePage>
   Future<void> _uploadPicture() async {
     // Capture context-dependent values before async operation
     final imageCaptureCubit = context.read<ImageCaptureCubit>();
+    final cropperService = ImageCropperService();
 
-    final handled = await imageCaptureCubit.selectFromGallery();
+    // Clear any previous result to prevent double dialog
+    await context.read<SolveMathCubit>().emptyResult();
+
+    final handled = await imageCaptureCubit.selectFromGallery(
+      onImageSelected: (selectedFile) async {
+        // Use the captured context for cropping
+        if (!mounted) return null;
+        return await cropperService.cropImage(
+          imageFile: selectedFile,
+          context: context,
+        );
+      },
+    );
 
     if (!mounted) return;
 
@@ -220,229 +249,252 @@ class _HomePageState extends State<HomePage>
           title: AppLocalizations.of(context)!.solveMathProblem,
         ),
         body: MultiBlocListener(
-        listeners: [
-          BlocListener<SolveMathCubit, SolveMathState>(
-            listenWhen:
-                (previous, current) =>
-                    current.result.isNotEmpty &&
-                    current.result != '' &&
-                    !current.isIdentifying,
-            listener: (context, state) {
-              if (state.result.isNotEmpty &&
-                  state.result != '' &&
-                  !state.isIdentifying) {
-                context.read<FirebaseCollectionCubit>().getCollections(
-                  isRefresh: true,
-                );
-                _showResultDialog(isTablet, state.result);
-                // Clear the selected image after successful solving
-                context.read<ImageCaptureCubit>().clearImage();
-                // Clear the text input as well
-                _textController.clear();
-              }
-              if (state.isError) {
-                _showSnackBarMessage(
-                  AppLocalizations.of(context)!.mathSolvingError,
-                  isError: true,
-                );
-              }
-            },
-          ),
-          BlocListener<PermissionCubit, PermissionState>(
-            listenWhen: (previous, current) => current.message != null,
-            listener: (context, state) {
-              if (state.message != null) {
-                _showSnackBarMessage(state.message!);
-                context.read<PermissionCubit>().clearMessage();
-              }
-            },
-          ),
-        ],
-        child: SafeArea(
-          child: BlocBuilder<SolveMathCubit, SolveMathState>(
-            builder: (context, state) {
-              return Column(
-                children: [
-                  // Tab Bar at the top
-                  Container(
-                    padding: const EdgeInsets.only(
-                      left: _spacing4,
-                      right: _spacing4,
-                      top: _spacing4,
-                    ),
-                    child: ModernTabBarWidget(tabController: _tabController),
-                  ),
+          listeners: [
+            BlocListener<SolveMathCubit, SolveMathState>(
+              listenWhen:
+                  (previous, current) =>
+                      // previous.result != current.result &&
+                      // current.result.isNotEmpty &&
+                      // current.result != '' &&
+                      // !current.isIdentifying &&
+                      // !current.resultShown,
+                      (previous.isIdentifying &&
+                          !current.isIdentifying &&
+                          current.isSuccess) ||
+                      // Also detect errors
+                      (previous.isIdentifying &&
+                          !current.isIdentifying &&
+                          current.isError),
+              listener: (context, state) {
+                if (state.result.isNotEmpty &&
+                    state.result != '' &&
+                    !state.isIdentifying
+                //  &&
+                // !state.resultShown &&
+                // state.resultTimestamp != null &&
+                // state.resultTimestamp != _lastResultShownTimestamp
+                ) {
+                  log('Result shown');
+                  // Track the timestamp to prevent showing the same result twice
+                  _lastResultShownTimestamp = state.resultTimestamp;
 
-                  // Tab Content
-                  Expanded(
-                    child: TabBarView(
-                      controller: _tabController,
-                      children: [
-                        // Photo Tab with its own scroll
-                        SingleChildScrollView(
-                          padding: const EdgeInsets.all(_spacing4),
-                          child: Column(
-                            children: [
-                              // Header Section for Photo Tab
-                              Container(
-                                padding: const EdgeInsets.all(_spacing6),
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      Theme.of(context)
-                                          .colorScheme
-                                          .secondaryContainer
-                                          .withValues(alpha: 0.3),
-                                      Theme.of(context).colorScheme.tertiary
-                                          .withValues(alpha: 0.2),
-                                    ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                  ),
-                                  borderRadius: BorderRadius.circular(16.0),
-                                ),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          Icons.auto_awesome,
-                                          size: 28,
-                                          color:
-                                              Theme.of(
-                                                context,
-                                              ).colorScheme.secondary,
-                                        ),
-                                        const SizedBox(width: 12),
-                                        HeadlineSmallText(
-                                          AppLocalizations.of(
-                                            context,
-                                          )!.aiMathSolver,
-                                          fontWeight: FontWeight.bold,
-                                          color:
-                                              Theme.of(
-                                                context,
-                                              ).colorScheme.onSurface,
-                                        ),
+                  // Mark result as shown immediately to prevent duplicate dialogs
+                  context.read<SolveMathCubit>().markResultAsShown();
+
+                  context.read<FirebaseCollectionCubit>().getCollections(
+                    isRefresh: true,
+                  );
+                  _showResultDialog(isTablet, state.result);
+                  // Clear the selected image after successful solving
+                  context.read<ImageCaptureCubit>().clearImage();
+                  // Clear the text input as well
+                  _textController.clear();
+                }
+                if (state.isError) {
+                  _showSnackBarMessage(
+                    AppLocalizations.of(context)!.mathSolvingError,
+                    isError: true,
+                  );
+                }
+              },
+            ),
+            BlocListener<PermissionCubit, PermissionState>(
+              listenWhen: (previous, current) => current.message != null,
+              listener: (context, state) {
+                if (state.message != null) {
+                  _showSnackBarMessage(state.message!);
+                  context.read<PermissionCubit>().clearMessage();
+                }
+              },
+            ),
+          ],
+          child: SafeArea(
+            child: BlocBuilder<SolveMathCubit, SolveMathState>(
+              builder: (context, state) {
+                return Column(
+                  children: [
+                    // Tab Bar at the top
+                    Container(
+                      padding: const EdgeInsets.only(
+                        left: _spacing4,
+                        right: _spacing4,
+                        top: _spacing4,
+                      ),
+                      child: ModernTabBarWidget(tabController: _tabController),
+                    ),
+
+                    // Tab Content
+                    Expanded(
+                      child: TabBarView(
+                        controller: _tabController,
+                        children: [
+                          // Photo Tab with its own scroll
+                          SingleChildScrollView(
+                            padding: const EdgeInsets.all(_spacing4),
+                            child: Column(
+                              children: [
+                                // Header Section for Photo Tab
+                                Container(
+                                  padding: const EdgeInsets.all(_spacing6),
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Theme.of(context)
+                                            .colorScheme
+                                            .secondaryContainer
+                                            .withValues(alpha: 0.3),
+                                        Theme.of(context).colorScheme.tertiary
+                                            .withValues(alpha: 0.2),
                                       ],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
                                     ),
+                                    borderRadius: BorderRadius.circular(16.0),
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Icon(
+                                            Icons.auto_awesome,
+                                            size: 28,
+                                            color:
+                                                Theme.of(
+                                                  context,
+                                                ).colorScheme.secondary,
+                                          ),
+                                          const SizedBox(width: 12),
+                                          HeadlineSmallText(
+                                            AppLocalizations.of(
+                                              context,
+                                            )!.aiMathSolver,
+                                            fontWeight: FontWeight.bold,
+                                            color:
+                                                Theme.of(
+                                                  context,
+                                                ).colorScheme.onSurface,
+                                          ),
+                                        ],
+                                      ),
 
-                                    const SizedBox(height: 8),
-                                    BodyMediumText(
-                                      AppLocalizations.of(
-                                        context,
-                                      )!.mathSolverDescription,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurface
-                                          .withValues(alpha: 0.8),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ],
+                                      const SizedBox(height: 8),
+                                      BodyMediumText(
+                                        AppLocalizations.of(
+                                          context,
+                                        )!.mathSolverDescription,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onSurface
+                                            .withValues(alpha: 0.8),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: _spacing6),
-                              PhotoTabWidget(
-                                isTablet: isTablet,
-                                onCameraPressed: _takePicture,
-                                onGalleryPressed: _uploadPicture,
-                                onResetPressed: () {
-                                  context
-                                      .read<ImageCaptureCubit>()
-                                      .clearImage();
-                                  context.read<SolveMathCubit>().emptyResult();
-                                },
-                                onSolvePressed: _handleSubscriptionAndSolve,
-                              ),
-                            ],
+                                const SizedBox(height: _spacing6),
+                                PhotoTabWidget(
+                                  isTablet: isTablet,
+                                  onCameraPressed: _takePicture,
+                                  onGalleryPressed: _uploadPicture,
+                                  onResetPressed: () {
+                                    context
+                                        .read<ImageCaptureCubit>()
+                                        .clearImage();
+                                    context
+                                        .read<SolveMathCubit>()
+                                        .emptyResult();
+                                  },
+                                  onSolvePressed: _handleSubscriptionAndSolve,
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
 
-                        // Text Tab with its own scroll
-                        SingleChildScrollView(
-                          padding: const EdgeInsets.all(_spacing4),
-                          child: Column(
-                            children: [
-                              // Header Section for Text Tab
-                              // Container(
-                              //   padding: const EdgeInsets.all(_spacing6),
-                              //   decoration: BoxDecoration(
-                              //     gradient: LinearGradient(
-                              //       colors: [
-                              //         Theme.of(context)
-                              //             .colorScheme
-                              //             .secondaryContainer
-                              //             .withValues(alpha: 0.3),
-                              //         Theme.of(context).colorScheme.tertiary
-                              //             .withValues(alpha: 0.2),
-                              //       ],
-                              //       begin: Alignment.topLeft,
-                              //       end: Alignment.bottomRight,
-                              //     ),
-                              //     borderRadius: BorderRadius.circular(16.0),
-                              //   ),
-                              //   child: Column(
-                              //     children: [
-                              //       Row(
-                              //         children: [
-                              //           Icon(
-                              //             Icons.auto_awesome,
-                              //             size: 28,
-                              //             color:
-                              //                 Theme.of(
-                              //                   context,
-                              //                 ).colorScheme.secondary,
-                              //           ),
-                              //           const SizedBox(width: 12),
-                              //           HeadlineSmallText(
-                              //             AppLocalizations.of(
-                              //               context,
-                              //             )!.aiMathSolver,
-                              //             fontWeight: FontWeight.bold,
-                              //             color:
-                              //                 Theme.of(
-                              //                   context,
-                              //                 ).colorScheme.onSurface,
-                              //           ),
-                              //         ],
-                              //       ),
+                          // Text Tab with its own scroll
+                          SingleChildScrollView(
+                            padding: const EdgeInsets.all(_spacing4),
+                            child: Column(
+                              children: [
+                                // Header Section for Text Tab
+                                // Container(
+                                //   padding: const EdgeInsets.all(_spacing6),
+                                //   decoration: BoxDecoration(
+                                //     gradient: LinearGradient(
+                                //       colors: [
+                                //         Theme.of(context)
+                                //             .colorScheme
+                                //             .secondaryContainer
+                                //             .withValues(alpha: 0.3),
+                                //         Theme.of(context).colorScheme.tertiary
+                                //             .withValues(alpha: 0.2),
+                                //       ],
+                                //       begin: Alignment.topLeft,
+                                //       end: Alignment.bottomRight,
+                                //     ),
+                                //     borderRadius: BorderRadius.circular(16.0),
+                                //   ),
+                                //   child: Column(
+                                //     children: [
+                                //       Row(
+                                //         children: [
+                                //           Icon(
+                                //             Icons.auto_awesome,
+                                //             size: 28,
+                                //             color:
+                                //                 Theme.of(
+                                //                   context,
+                                //                 ).colorScheme.secondary,
+                                //           ),
+                                //           const SizedBox(width: 12),
+                                //           HeadlineSmallText(
+                                //             AppLocalizations.of(
+                                //               context,
+                                //             )!.aiMathSolver,
+                                //             fontWeight: FontWeight.bold,
+                                //             color:
+                                //                 Theme.of(
+                                //                   context,
+                                //                 ).colorScheme.onSurface,
+                                //           ),
+                                //         ],
+                                //       ),
 
-                              //       const SizedBox(height: 8),
-                              //       BodyMediumText(
-                              //         AppLocalizations.of(
-                              //           context,
-                              //         )!.mathSolverDescription,
-                              //         color: Theme.of(context)
-                              //             .colorScheme
-                              //             .onSurface
-                              //             .withValues(alpha: 0.8),
-                              //         textAlign: TextAlign.center,
-                              //       ),
-                              //     ],
-                              //   ),
-                              // ),
-                              // const SizedBox(height: _spacing6),
-                              TextTabWidget(
-                                textController: _textController,
-                                isTablet: isTablet,
-                                onSolvePressed:
-                                    () => _handleSubscriptionAndSolve(
-                                      textInput: _textController.text.trim(),
-                                    ),
-                                showSnackBarMessage: _showSnackBarMessage,
-                              ),
-                            ],
+                                //       const SizedBox(height: 8),
+                                //       BodyMediumText(
+                                //         AppLocalizations.of(
+                                //           context,
+                                //         )!.mathSolverDescription,
+                                //         color: Theme.of(context)
+                                //             .colorScheme
+                                //             .onSurface
+                                //             .withValues(alpha: 0.8),
+                                //         textAlign: TextAlign.center,
+                                //       ),
+                                //     ],
+                                //   ),
+                                // ),
+                                // const SizedBox(height: _spacing6),
+                                TextTabWidget(
+                                  textController: _textController,
+                                  isTablet: isTablet,
+                                  onSolvePressed:
+                                      () => _handleSubscriptionAndSolve(
+                                        textInput: _textController.text.trim(),
+                                      ),
+                                  showSnackBarMessage: _showSnackBarMessage,
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              );
-            },
+                  ],
+                );
+              },
+            ),
           ),
         ),
-      ),
       ),
     );
   }

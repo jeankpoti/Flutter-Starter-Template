@@ -1558,6 +1558,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get uploadPicture => 'Subir foto';
 
   @override
+  String get cropImage => 'Recortar imagen';
+
+  @override
   String get yourPersonalAIMathTutor =>
       'Tu Tutor Personal de Matemáticas con IA';
 

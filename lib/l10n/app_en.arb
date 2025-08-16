@@ -482,6 +482,7 @@
   "errorSelectingPicture": "Failed to select picture",
   "takePicture": "Take Picture",
   "uploadPicture": "Upload Picture",
+  "cropImage": "Crop Image",
   
   "yourPersonalAIMathTutor": "Your Personal AI Math Tutor",
   "solveMathInstantly": "Solve any math problem instantly",
