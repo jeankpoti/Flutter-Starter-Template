@@ -105,6 +105,8 @@
   "failedToLoadProblems": "Failed to load more problems",
   "mathSolvingError": "Error solving math problem. Please try again.",
   "enterMathProblemError": "Please enter a math problem to solve.",
+  "nonMathContentError": "This image does not contain mathematical material. Please upload an image with math problems, equations, or mathematical concepts.",
+  "nonMathTextError": "This text does not contain mathematical material. Please submit text with math problems, equations, or mathematical concepts.",
   "subscriptionError": "Error showing subscription options. Please try again.",
   "takePictureError": "Failed to take picture. Please try again.",
   "uploadPictureError": "Failed to upload picture. Please try again.",

@@ -128,6 +128,30 @@ class _StudyPageViewState extends State<_StudyPageView>
             context.read<StudyCubit>().clearStudyPlanGenerated();
           },
         ),
+        BlocListener<StudyCubit, StudyState>(
+          listenWhen:
+              (previous, current) =>
+                  previous.errorMsg != current.errorMsg && current.errorMsg != null,
+          listener: (context, state) {
+            if (state.errorMsg != null) {
+              String errorMessage = state.errorMsg!;
+              
+              // Check if it's a non-math content error and localize it
+              if (errorMessage == 'NON_MATH_CONTENT_ERROR') {
+                errorMessage = AppLocalizations.of(context)!.nonMathContentError;
+              } else if (errorMessage == 'NON_MATH_TEXT_ERROR') {
+                errorMessage = AppLocalizations.of(context)!.nonMathTextError;
+              }
+              
+              AppSnackBar.showError(
+                context,
+                errorMessage,
+              );
+              // Clear the error message
+              context.read<StudyCubit>().clearError();
+            }
+          },
+        ),
         BlocListener<PermissionCubit, PermissionState>(
           listenWhen: (previous, current) => current.message != null,
           listener: (context, state) {

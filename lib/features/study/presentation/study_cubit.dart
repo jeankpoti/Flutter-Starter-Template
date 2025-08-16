@@ -281,12 +281,29 @@ class StudyCubit extends Cubit<StudyState> {
       await _generateIndividualStudyPlan(finalMaterial);
     } catch (e) {
       if (!isClosed) {
+        String errorMessage = 'Error processing material: $e';
+        
+        // Check if it's a non-math content error and localize it
+        if (e.toString().contains('does not contain mathematical material') ||
+            e.toString().contains('ne contient pas de matériel mathématique') ||
+            e.toString().contains('no contiene material matemático')) {
+          // We need BuildContext to get localized strings
+          // For now, we'll use the error message as is
+          // The UI layer should handle localization when displaying this error
+          // Differentiate between image and text errors
+          if (type == MaterialType.text) {
+            errorMessage = 'NON_MATH_TEXT_ERROR';
+          } else {
+            errorMessage = 'NON_MATH_CONTENT_ERROR';
+          }
+        }
+        
         emit(
           state.copyWith(
             isProcessing: false,
             isUploadingPhoto: false,
             isUploadingText: false,
-            errorMsg: 'Error processing material: $e',
+            errorMsg: errorMessage,
           ),
         );
       }

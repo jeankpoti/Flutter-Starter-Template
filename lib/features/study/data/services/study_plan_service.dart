@@ -54,6 +54,15 @@ class StudyPlanService {
     } catch (e) {
       // Log error (in production, use proper logging framework)
       debugPrint('Error analyzing material: $e');
+      
+      // Check if it's a non-math content error and re-throw it
+      if (e.toString().contains('does not contain mathematical material') ||
+          e.toString().contains('ne contient pas de matériel mathématique') ||
+          e.toString().contains('no contiene material matemático')) {
+        rethrow;  // Re-throw to let the calling code handle it
+      }
+      
+      // For other errors, set error message but continue
       if (locale == 'fr') {
         aiAnalysis = 'Erreur lors de l\'analyse du contenu. Veuillez réessayer.';
       } else if (locale == 'es') {
@@ -132,19 +141,44 @@ class StudyPlanService {
     MathLevel mathLevel,
     String locale,
   ) async {
-    final prompt = PromptLocalizer.getStudyAnalysisPrompt(
-      locale,
-      content,
-      mathLevel.displayName,
-    );
+    try {
+      // Use a specific prompt for study material analysis that validates math content
+      final prompt = PromptLocalizer.getStudyMaterialTextAnalysisPrompt(
+        locale,
+        content,
+        mathLevel.displayName,
+      );
 
-    final response = await _geminiService.generateTextContent(prompt);
-    if (locale == 'fr') {
-      return response.text ?? 'Impossible d\'analyser le contenu';
-    } else if (locale == 'es') {
-      return response.text ?? 'No se puede analizar el contenido';
-    } else {
-      return response.text ?? 'Unable to analyze content';
+      final response = await _geminiService.generateTextContent(prompt);
+      final analysisText = response.text ?? '';
+      
+      // Debug: Log the response
+      debugPrint('AI Text Analysis Response: ${analysisText.substring(0, analysisText.length.clamp(0, 200))}...');
+      
+      // Check if the response indicates no math content
+      if (analysisText.contains('NO_MATH_CONTENT:')) {
+        // Extract the error message after NO_MATH_CONTENT:
+        final errorMessage = analysisText.split('NO_MATH_CONTENT:')[1].trim();
+        throw Exception(errorMessage);
+      }
+      
+      return analysisText;
+    } catch (e) {
+      // Re-throw if it's already a no-math-content error
+      if (e.toString().contains('does not contain mathematical material') ||
+          e.toString().contains('ne contient pas de matériel mathématique') ||
+          e.toString().contains('no contiene material matemático')) {
+        rethrow;
+      }
+      
+      // Other errors
+      if (locale == 'fr') {
+        return 'Impossible d\'analyser le contenu : $e';
+      } else if (locale == 'es') {
+        return 'No se puede analizar el contenido: $e';
+      } else {
+        return 'Unable to analyze content: $e';
+      }
     }
   }
 
@@ -155,11 +189,44 @@ class StudyPlanService {
     String locale,
   ) async {
     try {
-      // Use the existing solveMath method which handles image analysis
-      // The prompts are already configured in GeminiSolveMathRepo for image analysis
-      final response = await _geminiService.solveMath(imageFile);
-      return response;
+      // Use a specific prompt for study material analysis that validates math content
+      final prompt = PromptLocalizer.getStudyMaterialImageAnalysisPrompt(
+        locale,
+        mathLevel.toPromptContext(),
+        mathLevel.displayName,
+      );
+      
+      // Read image bytes
+      final imageBytes = await imageFile.readAsBytes();
+      
+      // Create the content with the prompt and image
+      final response = await _geminiService.generateContentWithImage(
+        prompt,
+        imageBytes,
+      );
+      
+      final analysisText = response.text ?? '';
+      
+      // Debug: Log the response
+      debugPrint('AI Analysis Response: ${analysisText.substring(0, analysisText.length.clamp(0, 200))}...');
+      
+      // Check if the response indicates no math content
+      if (analysisText.contains('NO_MATH_CONTENT:')) {
+        // Extract the error message after NO_MATH_CONTENT:
+        final errorMessage = analysisText.split('NO_MATH_CONTENT:')[1].trim();
+        throw Exception(errorMessage);
+      }
+      
+      return analysisText;
     } catch (e) {
+      // Re-throw if it's already a no-math-content error
+      if (e.toString().contains('does not contain mathematical material') ||
+          e.toString().contains('ne contient pas de matériel mathématique') ||
+          e.toString().contains('no contiene material matemático')) {
+        rethrow;
+      }
+      
+      // Other errors
       if (locale == 'fr') {
         return 'Impossible d\'analyser le contenu de l\'image : $e';
       } else if (locale == 'es') {

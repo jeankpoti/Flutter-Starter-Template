@@ -730,6 +730,18 @@ abstract class AppLocalizations {
   /// **'Please enter a math problem to solve.'**
   String get enterMathProblemError;
 
+  /// No description provided for @nonMathContentError.
+  ///
+  /// In en, this message translates to:
+  /// **'This image does not contain mathematical material. Please upload an image with math problems, equations, or mathematical concepts.'**
+  String get nonMathContentError;
+
+  /// No description provided for @nonMathTextError.
+  ///
+  /// In en, this message translates to:
+  /// **'This text does not contain mathematical material. Please submit text with math problems, equations, or mathematical concepts.'**
+  String get nonMathTextError;
+
   /// No description provided for @subscriptionError.
   ///
   /// In en, this message translates to:

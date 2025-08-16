@@ -331,6 +331,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get enterMathProblemError => 'Please enter a math problem to solve.';
 
   @override
+  String get nonMathContentError =>
+      'This image does not contain mathematical material. Please upload an image with math problems, equations, or mathematical concepts.';
+
+  @override
+  String get nonMathTextError =>
+      'This text does not contain mathematical material. Please submit text with math problems, equations, or mathematical concepts.';
+
+  @override
   String get subscriptionError => 'Subscription Error';
 
   @override

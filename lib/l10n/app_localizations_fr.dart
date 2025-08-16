@@ -341,6 +341,14 @@ class AppLocalizationsFr extends AppLocalizations {
       'Veuillez entrer un problème de maths à résoudre.';
 
   @override
+  String get nonMathContentError =>
+      'Cette image ne contient pas de matériel mathématique. Veuillez télécharger une image avec des problèmes de maths, des équations ou des concepts mathématiques.';
+
+  @override
+  String get nonMathTextError =>
+      'Ce texte ne contient pas de matériel mathématique. Veuillez soumettre un texte avec des problèmes de maths, des équations ou des concepts mathématiques.';
+
+  @override
   String get subscriptionError => 'Erreur d\'abonnement';
 
   @override

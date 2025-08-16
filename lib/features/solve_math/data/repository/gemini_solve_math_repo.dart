@@ -51,6 +51,26 @@ class GeminiSolveMathRepo implements SolveMathRepo {
     return await _model!.generateContent(contentItems);
   }
 
+  // Generate content with image and custom prompt
+  Future<GenerateContentResponse> generateContentWithImage(String prompt, Uint8List imageBytes) async {
+    if (!_isInitialized || _model == null) {
+      throw Exception(
+        'GeminiService not initialized. Call initialize() first.',
+      );
+    }
+
+    // Create the image part with the bytes
+    final imagePart = InlineDataPart('image/jpeg', imageBytes);
+    final promptPart = TextPart(prompt);
+
+    // Create content with both text and image
+    final content = [
+      Content.multi([promptPart, imagePart]),
+    ];
+
+    return await _model!.generateContent(content);
+  }
+
   // Method to solve math problems from text input
   @override
   Future<String> solveMathWithText(String textInput) async {

@@ -356,4 +356,300 @@ Haz recomendaciones apropiadas para estudiantes de nivel $levelDisplayName.''',
 
     return prompts[languageCode] ?? prompts['en']!;
   }
+
+  /// Get localized prompt for study material image analysis with strict validation
+  static String getStudyMaterialImageAnalysisPrompt(String languageCode, String levelContext, String levelDisplayName) {
+    final Map<String, String> prompts = {
+      'en': '''You are a math education expert analyzing images for study material. Your task is to STRICTLY analyze ONLY mathematical content.
+
+CRITICAL INSTRUCTIONS - FOLLOW EXACTLY:
+1. FIRST AND MOST IMPORTANT: Examine the image carefully. Does it contain ANY mathematical content such as:
+   - Numbers, equations, or formulas
+   - Mathematical symbols (=, +, -, ×, ÷, ∫, ∑, etc.)
+   - Graphs, charts with numerical data
+   - Geometric shapes or figures
+   - Math homework or worksheets
+   - Mathematical word problems
+   
+2. If the image contains NONE of the above (e.g., it shows a dog, cat, landscape, person, food, car, building, or any non-mathematical object), you MUST respond EXACTLY with:
+   NO_MATH_CONTENT: This image does not contain mathematical material. Please upload an image with math problems, equations, or mathematical concepts.
+   
+3. DO NOT GENERATE MATH CONTENT if none exists in the image. DO NOT be creative or helpful by making up math problems.
+
+4. ONLY if you can clearly see mathematical content in the image, proceed with the analysis below.
+
+IF AND ONLY IF MATH CONTENT IS FOUND, analyze it and provide:
+
+**CONTENT IDENTIFICATION:**
+- Describe the mathematical content you see
+- List all problems, equations, or concepts visible
+
+**TOPICS COVERED:**
+- Main mathematical topics (e.g., algebra, geometry, calculus)
+- Specific subtopics and concepts
+
+**DIFFICULTY ASSESSMENT:**
+- Is this appropriate for $levelDisplayName level?
+- What prerequisites are needed?
+
+**LEARNING OBJECTIVES:**
+- What concepts can be learned from this material?
+- What skills will students develop?
+
+**STUDY RECOMMENDATIONS:**
+- How should students approach this material?
+- Estimated study time needed
+- Practice suggestions
+
+$levelContext
+
+FINAL REMINDER: If there is NO mathematical content visible in the image, your ENTIRE response must be:
+NO_MATH_CONTENT: This image does not contain mathematical material. Please upload an image with math problems, equations, or mathematical concepts.''',
+
+      'fr': '''Vous êtes un expert en éducation mathématique analysant des images pour du matériel d'étude. Votre tâche est d'analyser STRICTEMENT UNIQUEMENT le contenu mathématique.
+
+INSTRUCTIONS CRITIQUES - SUIVEZ EXACTEMENT :
+1. EN PREMIER ET LE PLUS IMPORTANT : Examinez l'image attentivement. Contient-elle UN contenu mathématique tel que :
+   - Nombres, équations ou formules
+   - Symboles mathématiques (=, +, -, ×, ÷, ∫, ∑, etc.)
+   - Graphiques, diagrammes avec données numériques
+   - Formes ou figures géométriques
+   - Devoirs ou feuilles d'exercices de maths
+   - Problèmes de maths écrits
+   
+2. Si l'image ne contient RIEN de ce qui précède (par exemple, elle montre un chien, chat, paysage, personne, nourriture, voiture, bâtiment ou tout objet non mathématique), vous DEVEZ répondre EXACTEMENT :
+   NO_MATH_CONTENT: Cette image ne contient pas de matériel mathématique. Veuillez télécharger une image avec des problèmes de maths, des équations ou des concepts mathématiques.
+   
+3. NE GÉNÉREZ PAS de contenu mathématique s'il n'en existe pas dans l'image. NE soyez PAS créatif ou utile en inventant des problèmes de maths.
+
+4. SEULEMENT si vous pouvez clairement voir du contenu mathématique dans l'image, procédez à l'analyse ci-dessous.
+
+SI ET SEULEMENT SI DU CONTENU MATHÉMATIQUE EST TROUVÉ, analysez-le et fournissez :
+
+**IDENTIFICATION DU CONTENU :**
+- Décrivez le contenu mathématique que vous voyez
+- Listez tous les problèmes, équations ou concepts visibles
+
+**SUJETS COUVERTS :**
+- Sujets mathématiques principaux (ex : algèbre, géométrie, calcul)
+- Sous-sujets et concepts spécifiques
+
+**ÉVALUATION DE LA DIFFICULTÉ :**
+- Est-ce approprié pour le niveau $levelDisplayName ?
+- Quels prérequis sont nécessaires ?
+
+**OBJECTIFS D'APPRENTISSAGE :**
+- Quels concepts peuvent être appris de ce matériel ?
+- Quelles compétences les étudiants développeront-ils ?
+
+**RECOMMANDATIONS D'ÉTUDE :**
+- Comment les étudiants devraient-ils aborder ce matériel ?
+- Temps d'étude estimé nécessaire
+- Suggestions de pratique
+
+$levelContext
+
+RAPPEL FINAL : S'il n'y a AUCUN contenu mathématique visible dans l'image, votre réponse ENTIÈRE doit être :
+NO_MATH_CONTENT: Cette image ne contient pas de matériel mathématique. Veuillez télécharger une image avec des problèmes de maths, des équations ou des concepts mathématiques.''',
+
+      'es': '''Eres un experto en educación matemática analizando imágenes para material de estudio. Tu tarea es analizar ESTRICTAMENTE SOLO contenido matemático.
+
+INSTRUCCIONES CRÍTICAS - SIGUE EXACTAMENTE:
+1. PRIMERO Y MÁS IMPORTANTE: Examina la imagen cuidadosamente. ¿Contiene ALGUN contenido matemático como:
+   - Números, ecuaciones o fórmulas
+   - Símbolos matemáticos (=, +, -, ×, ÷, ∫, ∑, etc.)
+   - Gráficos, diagramas con datos numéricos
+   - Formas o figuras geométricas
+   - Tareas u hojas de ejercicios de matemáticas
+   - Problemas matemáticos escritos
+   
+2. Si la imagen NO contiene NADA de lo anterior (por ejemplo, muestra un perro, gato, paisaje, persona, comida, coche, edificio o cualquier objeto no matemático), DEBES responder EXACTAMENTE:
+   NO_MATH_CONTENT: Esta imagen no contiene material matemático. Por favor sube una imagen con problemas de matemáticas, ecuaciones o conceptos matemáticos.
+   
+3. NO GENERES contenido matemático si no existe en la imagen. NO seas creativo o útil inventando problemas de matemáticas.
+
+4. SOLO si puedes ver claramente contenido matemático en la imagen, procede con el análisis a continuación.
+
+SI Y SOLO SI SE ENCUENTRA CONTENIDO MATEMÁTICO, analízalo y proporciona:
+
+**IDENTIFICACIÓN DEL CONTENIDO:**
+- Describe el contenido matemático que ves
+- Lista todos los problemas, ecuaciones o conceptos visibles
+
+**TEMAS CUBIERTOS:**
+- Temas matemáticos principales (ej: álgebra, geometría, cálculo)
+- Subtemas y conceptos específicos
+
+**EVALUACIÓN DE DIFICULTAD:**
+- ¿Es esto apropiado para el nivel $levelDisplayName?
+- ¿Qué requisitos previos se necesitan?
+
+**OBJETIVOS DE APRENDIZAJE:**
+- ¿Qué conceptos se pueden aprender de este material?
+- ¿Qué habilidades desarrollarán los estudiantes?
+
+**RECOMENDACIONES DE ESTUDIO:**
+- ¿Cómo deberían los estudiantes abordar este material?
+- Tiempo de estudio estimado necesario
+- Sugerencias de práctica
+
+$levelContext
+
+RECORDATORIO FINAL: Si NO hay contenido matemático visible en la imagen, tu respuesta COMPLETA debe ser:
+NO_MATH_CONTENT: Esta imagen no contiene material matemático. Por favor sube una imagen con problemas de matemáticas, ecuaciones o conceptos matemáticos.''',
+    };
+
+    return prompts[languageCode] ?? prompts['en']!;
+  }
+
+  /// Get localized prompt for study material text analysis with strict validation
+  static String getStudyMaterialTextAnalysisPrompt(String languageCode, String content, String levelDisplayName) {
+    final Map<String, String> prompts = {
+      'en': '''You are a math education expert analyzing text for study material. Your task is to STRICTLY analyze ONLY mathematical content.
+
+CRITICAL INSTRUCTIONS - FOLLOW EXACTLY:
+1. FIRST AND MOST IMPORTANT: Examine the text carefully. Does it contain ANY mathematical content such as:
+   - Mathematical problems or questions
+   - Equations, formulas, or expressions
+   - Mathematical concepts or theorems
+   - Numerical calculations or word problems
+   - Geometry descriptions or proofs
+   - Statistical or algebraic content
+   - Any discussion of mathematical topics
+   
+2. If the text contains NONE of the above (e.g., it's about cooking, sports, history, literature, personal stories, or any non-mathematical topic), you MUST respond EXACTLY with:
+   NO_MATH_CONTENT: This text does not contain mathematical material. Please submit text with math problems, equations, or mathematical concepts.
+   
+3. DO NOT GENERATE MATH CONTENT if none exists in the text. DO NOT be creative or helpful by making up math problems.
+
+4. ONLY if the text clearly contains mathematical content, proceed with the analysis below.
+
+TEXT TO ANALYZE:
+$content
+
+IF AND ONLY IF MATH CONTENT IS FOUND, analyze it and provide:
+
+**MAIN TOPICS:**
+- List the key mathematical topics covered
+- Include subtopics and specific concepts
+
+**DIFFICULTY LEVEL:**
+- Assess if this is appropriate for $levelDisplayName level
+- Note any prerequisites needed
+
+**KEY CONCEPTS:**
+- Essential concepts students must understand
+- Important formulas or theorems mentioned
+
+**LEARNING OBJECTIVES:**
+- What students should be able to do after studying this
+- Specific skills they'll develop
+
+**STUDY RECOMMENDATIONS:**
+- How to approach learning this material
+- Suggested practice strategies
+- Estimated study time needed
+
+FINAL REMINDER: If there is NO mathematical content in the text, your ENTIRE response must be:
+NO_MATH_CONTENT: This text does not contain mathematical material. Please submit text with math problems, equations, or mathematical concepts.''',
+
+      'fr': '''Vous êtes un expert en éducation mathématique analysant du texte pour du matériel d'étude. Votre tâche est d'analyser STRICTEMENT UNIQUEMENT le contenu mathématique.
+
+INSTRUCTIONS CRITIQUES - SUIVEZ EXACTEMENT :
+1. EN PREMIER ET LE PLUS IMPORTANT : Examinez le texte attentivement. Contient-il UN contenu mathématique tel que :
+   - Problèmes ou questions mathématiques
+   - Équations, formules ou expressions
+   - Concepts ou théorèmes mathématiques
+   - Calculs numériques ou problèmes écrits
+   - Descriptions ou preuves de géométrie
+   - Contenu statistique ou algébrique
+   - Toute discussion sur des sujets mathématiques
+   
+2. Si le texte ne contient RIEN de ce qui précède (par exemple, il parle de cuisine, sport, histoire, littérature, histoires personnelles ou tout sujet non mathématique), vous DEVEZ répondre EXACTEMENT :
+   NO_MATH_CONTENT: Ce texte ne contient pas de matériel mathématique. Veuillez soumettre un texte avec des problèmes de maths, des équations ou des concepts mathématiques.
+   
+3. NE GÉNÉREZ PAS de contenu mathématique s'il n'en existe pas dans le texte. NE soyez PAS créatif ou utile en inventant des problèmes de maths.
+
+4. SEULEMENT si le texte contient clairement du contenu mathématique, procédez à l'analyse ci-dessous.
+
+TEXTE À ANALYSER :
+$content
+
+SI ET SEULEMENT SI DU CONTENU MATHÉMATIQUE EST TROUVÉ, analysez-le et fournissez :
+
+**SUJETS PRINCIPAUX :**
+- Listez les sujets mathématiques clés couverts
+- Incluez les sous-sujets et concepts spécifiques
+
+**NIVEAU DE DIFFICULTÉ :**
+- Évaluez si c'est approprié pour le niveau $levelDisplayName
+- Notez les prérequis nécessaires
+
+**CONCEPTS CLÉS :**
+- Concepts essentiels que les étudiants doivent comprendre
+- Formules ou théorèmes importants mentionnés
+
+**OBJECTIFS D'APPRENTISSAGE :**
+- Ce que les étudiants devraient pouvoir faire après avoir étudié ceci
+- Compétences spécifiques qu'ils développeront
+
+**RECOMMANDATIONS D'ÉTUDE :**
+- Comment aborder l'apprentissage de ce matériel
+- Stratégies de pratique suggérées
+- Temps d'étude estimé nécessaire
+
+RAPPEL FINAL : S'il n'y a AUCUN contenu mathématique dans le texte, votre réponse ENTIÈRE doit être :
+NO_MATH_CONTENT: Ce texte ne contient pas de matériel mathématique. Veuillez soumettre un texte avec des problèmes de maths, des équations ou des concepts mathématiques.''',
+
+      'es': '''Eres un experto en educación matemática analizando texto para material de estudio. Tu tarea es analizar ESTRICTAMENTE SOLO contenido matemático.
+
+INSTRUCCIONES CRÍTICAS - SIGUE EXACTAMENTE:
+1. PRIMERO Y MÁS IMPORTANTE: Examina el texto cuidadosamente. ¿Contiene ALGÚN contenido matemático como:
+   - Problemas o preguntas matemáticas
+   - Ecuaciones, fórmulas o expresiones
+   - Conceptos o teoremas matemáticos
+   - Cálculos numéricos o problemas escritos
+   - Descripciones o pruebas de geometría
+   - Contenido estadístico o algebraico
+   - Cualquier discusión sobre temas matemáticos
+   
+2. Si el texto NO contiene NADA de lo anterior (por ejemplo, trata sobre cocina, deportes, historia, literatura, historias personales o cualquier tema no matemático), DEBES responder EXACTAMENTE:
+   NO_MATH_CONTENT: Este texto no contiene material matemático. Por favor envía texto con problemas de matemáticas, ecuaciones o conceptos matemáticos.
+   
+3. NO GENERES contenido matemático si no existe en el texto. NO seas creativo o útil inventando problemas de matemáticas.
+
+4. SOLO si el texto contiene claramente contenido matemático, procede con el análisis a continuación.
+
+TEXTO A ANALIZAR:
+$content
+
+SI Y SOLO SI SE ENCUENTRA CONTENIDO MATEMÁTICO, analízalo y proporciona:
+
+**TEMAS PRINCIPALES:**
+- Lista los temas matemáticos clave cubiertos
+- Incluye subtemas y conceptos específicos
+
+**NIVEL DE DIFICULTAD:**
+- Evalúa si esto es apropiado para el nivel $levelDisplayName
+- Nota cualquier requisito previo necesario
+
+**CONCEPTOS CLAVE:**
+- Conceptos esenciales que los estudiantes deben entender
+- Fórmulas o teoremas importantes mencionados
+
+**OBJETIVOS DE APRENDIZAJE:**
+- Lo que los estudiantes deberían poder hacer después de estudiar esto
+- Habilidades específicas que desarrollarán
+
+**RECOMENDACIONES DE ESTUDIO:**
+- Cómo abordar el aprendizaje de este material
+- Estrategias de práctica sugeridas
+- Tiempo de estudio estimado necesario
+
+RECORDATORIO FINAL: Si NO hay contenido matemático en el texto, tu respuesta COMPLETA debe ser:
+NO_MATH_CONTENT: Este texto no contiene material matemático. Por favor envía texto con problemas de matemáticas, ecuaciones o conceptos matemáticos.''',
+    };
+
+    return prompts[languageCode] ?? prompts['en']!;
+  }
 }

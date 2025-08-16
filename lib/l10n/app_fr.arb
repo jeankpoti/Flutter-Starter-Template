@@ -105,6 +105,8 @@
   "failedToLoadProblems": "Échec du chargement de plus de problèmes",
   "mathSolvingError": "Erreur lors de la résolution du problème de maths. Veuillez réessayer.",
   "enterMathProblemError": "Veuillez entrer un problème de maths à résoudre.",
+  "nonMathContentError": "Cette image ne contient pas de matériel mathématique. Veuillez télécharger une image avec des problèmes de maths, des équations ou des concepts mathématiques.",
+  "nonMathTextError": "Ce texte ne contient pas de matériel mathématique. Veuillez soumettre un texte avec des problèmes de maths, des équations ou des concepts mathématiques.",
   "subscriptionError": "Erreur lors de l'affichage des options d'abonnement. Veuillez réessayer.",
   "takePictureError": "Échec de la prise de photo. Veuillez réessayer.",
   "uploadPictureError": "Échec du téléchargement de la photo. Veuillez réessayer.",
