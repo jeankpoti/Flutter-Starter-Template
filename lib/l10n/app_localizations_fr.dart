@@ -1623,6 +1623,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get imagesNotesUpload => 'Images, PDF, notes';
 
   @override
+  String get uploadPdf => 'Télécharger PDF';
+
+  @override
+  String get uploadPdfSubtitle => 'Télécharger des PDF ou documents de maths';
+
+  @override
+  String get nonMathDocumentError =>
+      'Ce document ne contient pas de matériel mathématique. Veuillez télécharger un PDF avec des problèmes de maths, des équations ou des concepts mathématiques.';
+
+  @override
   String get aiAnalysis => 'Analyse IA';
 
   @override

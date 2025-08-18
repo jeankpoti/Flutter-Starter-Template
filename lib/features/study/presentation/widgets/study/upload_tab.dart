@@ -10,6 +10,7 @@ class UploadTab extends StatelessWidget {
   final VoidCallback onPhotoUpload;
   final VoidCallback onGalleryUpload;
   final VoidCallback onTextInput;
+  final VoidCallback onDocumentUpload;
 
   const UploadTab({
     super.key,
@@ -18,6 +19,7 @@ class UploadTab extends StatelessWidget {
     required this.onPhotoUpload,
     required this.onGalleryUpload,
     required this.onTextInput,
+    required this.onDocumentUpload,
   });
 
   @override
@@ -38,6 +40,7 @@ class UploadTab extends StatelessWidget {
             onPhotoUpload: onPhotoUpload,
             onGalleryUpload: onGalleryUpload,
             onTextInput: onTextInput,
+            onDocumentUpload: onDocumentUpload,
           ),
           const SizedBox(height: 32.0),
           _RecentUploadsSection(studyMaterials: studyMaterials),
@@ -260,12 +263,14 @@ class _UploadOptions extends StatelessWidget {
   final VoidCallback onPhotoUpload;
   final VoidCallback onGalleryUpload;
   final VoidCallback onTextInput;
+  final VoidCallback onDocumentUpload;
 
   const _UploadOptions({
     required this.isProcessing,
     required this.onPhotoUpload,
     required this.onGalleryUpload,
     required this.onTextInput,
+    required this.onDocumentUpload,
   });
 
   @override
@@ -290,12 +295,20 @@ class _UploadOptions extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         _UploadOption(
+          icon: Icons.picture_as_pdf,
+          title: AppLocalizations.of(context)!.uploadPdf,
+          subtitle: AppLocalizations.of(context)!.uploadPdfSubtitle,
+          onTap: onDocumentUpload,
+          isDisabled: isProcessing,
+        ),
+        _UploadOption(
           icon: Icons.edit_note,
           title: AppLocalizations.of(context)!.typeMaterial,
           subtitle: AppLocalizations.of(context)!.typeMaterialSubtitle,
           onTap: onTextInput,
           isDisabled: isProcessing,
         ),
+        const SizedBox(height: 16),
       ],
     );
   }
@@ -515,6 +528,8 @@ class _RecentUploadCard extends StatelessWidget {
                 Icon(
                   material.type == study.MaterialType.image
                       ? Icons.image
+                      : material.type == study.MaterialType.document
+                      ? Icons.picture_as_pdf
                       : Icons.text_snippet,
                   color: Theme.of(context).colorScheme.secondary,
                   size: 20,

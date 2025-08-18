@@ -652,4 +652,200 @@ NO_MATH_CONTENT: Este texto no contiene material matemático. Por favor envía t
 
     return prompts[languageCode] ?? prompts['en']!;
   }
+
+  /// Get localized prompt for study material PDF/document analysis with strict validation
+  static String getStudyMaterialDocumentAnalysisPrompt(String languageCode, String levelContext, String levelDisplayName) {
+    final Map<String, String> prompts = {
+      'en': '''IMPORTANT: IF THIS DOCUMENT IS ABOUT HTML, CSS, JAVASCRIPT, PROGRAMMING, OR ANY NON-MATHEMATICAL TOPIC, YOU MUST IMMEDIATELY RESPOND WITH:
+NO_MATH_CONTENT: This document does not contain mathematical material. Please upload a PDF with math problems, equations, or mathematical concepts.
+
+You are a math education expert analyzing a PDF document for study material. Your task is to STRICTLY analyze ONLY mathematical content.
+
+CRITICAL INSTRUCTIONS - FOLLOW EXACTLY:
+1. FIRST AND MOST IMPORTANT: Examine the document carefully. Does it contain ANY mathematical content such as:
+   - Mathematical problems, exercises, or homework
+   - Equations, formulas, or mathematical expressions
+   - Mathematical theorems, proofs, or derivations
+   - Graphs, charts, or diagrams with mathematical data
+   - Geometry problems or figures
+   - Statistical analyses or data
+   - Mathematical textbook pages or worksheets
+   
+2. The following are NOT mathematical content and MUST be rejected:
+   - Programming courses (HTML, CSS, JavaScript, Python, etc.)
+   - Computer science materials without mathematical focus
+   - Business documents without mathematical calculations
+   - Literature, history, or language materials
+   - Recipes, travel guides, or general instructions
+   - Any non-mathematical educational content
+   
+3. If the document contains NONE of the mathematical content from point 1 (including if it's about HTML, programming, or any non-math subject), you MUST respond EXACTLY with:
+   NO_MATH_CONTENT: This document does not contain mathematical material. Please upload a PDF with math problems, equations, or mathematical concepts.
+   
+4. DO NOT GENERATE MATH CONTENT if none exists in the document. DO NOT be creative or helpful by making up math problems.
+
+5. ONLY if you can clearly identify mathematical content in the document, proceed with the analysis below.
+
+IF AND ONLY IF MATH CONTENT IS FOUND, analyze it and provide:
+
+**DOCUMENT OVERVIEW:**
+- Type of mathematical document (textbook, worksheet, notes, etc.)
+- Overall mathematical focus
+
+**TOPICS COVERED:**
+- Main mathematical topics (e.g., algebra, geometry, calculus)
+- Specific subtopics and concepts
+- Chapter or section references if visible
+
+**DIFFICULTY ASSESSMENT:**
+- Is this appropriate for $levelDisplayName level?
+- What prerequisites are needed?
+
+**CONTENT STRUCTURE:**
+- How is the material organized?
+- Are there practice problems, examples, or theory sections?
+
+**LEARNING OBJECTIVES:**
+- What concepts can be learned from this document?
+- What skills will students develop?
+
+**STUDY RECOMMENDATIONS:**
+- How should students approach this material?
+- Estimated study time needed
+- Which sections to focus on
+
+$levelContext
+
+FINAL REMINDER: If there is NO mathematical content visible in the document, your ENTIRE response must be:
+NO_MATH_CONTENT: This document does not contain mathematical material. Please upload a PDF with math problems, equations, or mathematical concepts.''',
+
+      'fr': '''IMPORTANT : SI CE DOCUMENT CONCERNE HTML, CSS, JAVASCRIPT, PROGRAMMATION OU TOUT SUJET NON MATHÉMATIQUE, VOUS DEVEZ IMMÉDIATEMENT RÉPONDRE :
+NO_MATH_CONTENT: Ce document ne contient pas de matériel mathématique. Veuillez télécharger un PDF avec des problèmes de maths, des équations ou des concepts mathématiques.
+
+Vous êtes un expert en éducation mathématique analysant un document PDF pour du matériel d'étude. Votre tâche est d'analyser STRICTEMENT UNIQUEMENT le contenu mathématique.
+
+INSTRUCTIONS CRITIQUES - SUIVEZ EXACTEMENT :
+1. EN PREMIER ET LE PLUS IMPORTANT : Examinez le document attentivement. Contient-il UN contenu mathématique tel que :
+   - Problèmes mathématiques, exercices ou devoirs
+   - Équations, formules ou expressions mathématiques
+   - Théorèmes mathématiques, preuves ou dérivations
+   - Graphiques, diagrammes ou schémas avec données mathématiques
+   - Problèmes ou figures de géométrie
+   - Analyses statistiques ou données
+   - Pages de manuel ou feuilles d'exercices mathématiques
+   
+2. Les éléments suivants NE SONT PAS du contenu mathématique et DOIVENT être rejetés :
+   - Cours de programmation (HTML, CSS, JavaScript, Python, etc.)
+   - Matériel informatique sans focus mathématique
+   - Documents d'affaires sans calculs mathématiques
+   - Matériel de littérature, histoire ou langue
+   - Recettes, guides de voyage ou instructions générales
+   - Tout contenu éducatif non mathématique
+   
+3. Si le document ne contient AUCUN du contenu mathématique du point 1 (y compris s'il s'agit de HTML, programmation ou tout sujet non mathématique), vous DEVEZ répondre EXACTEMENT :
+   NO_MATH_CONTENT: Ce document ne contient pas de matériel mathématique. Veuillez télécharger un PDF avec des problèmes de maths, des équations ou des concepts mathématiques.
+   
+4. NE GÉNÉREZ PAS de contenu mathématique s'il n'en existe pas dans le document. NE soyez PAS créatif ou utile en inventant des problèmes de maths.
+
+5. SEULEMENT si vous pouvez clairement identifier du contenu mathématique dans le document, procédez à l'analyse ci-dessous.
+
+SI ET SEULEMENT SI DU CONTENU MATHÉMATIQUE EST TROUVÉ, analysez-le et fournissez :
+
+**APERÇU DU DOCUMENT :**
+- Type de document mathématique (manuel, feuille d'exercices, notes, etc.)
+- Focus mathématique général
+
+**SUJETS COUVERTS :**
+- Sujets mathématiques principaux (ex : algèbre, géométrie, calcul)
+- Sous-sujets et concepts spécifiques
+- Références de chapitre ou section si visibles
+
+**ÉVALUATION DE LA DIFFICULTÉ :**
+- Est-ce approprié pour le niveau $levelDisplayName ?
+- Quels prérequis sont nécessaires ?
+
+**STRUCTURE DU CONTENU :**
+- Comment le matériel est-il organisé ?
+- Y a-t-il des problèmes pratiques, exemples ou sections théoriques ?
+
+**OBJECTIFS D'APPRENTISSAGE :**
+- Quels concepts peuvent être appris de ce document ?
+- Quelles compétences les étudiants développeront-ils ?
+
+**RECOMMANDATIONS D'ÉTUDE :**
+- Comment les étudiants devraient-ils aborder ce matériel ?
+- Temps d'étude estimé nécessaire
+- Sur quelles sections se concentrer
+
+$levelContext
+
+RAPPEL FINAL : S'il n'y a AUCUN contenu mathématique visible dans le document, votre réponse ENTIÈRE doit être :
+NO_MATH_CONTENT: Ce document ne contient pas de matériel mathématique. Veuillez télécharger un PDF avec des problèmes de maths, des équations ou des concepts mathématiques.''',
+
+      'es': '''IMPORTANTE: SI ESTE DOCUMENTO ES SOBRE HTML, CSS, JAVASCRIPT, PROGRAMACIÓN O CUALQUIER TEMA NO MATEMÁTICO, DEBES RESPONDER INMEDIATAMENTE:
+NO_MATH_CONTENT: Este documento no contiene material matemático. Por favor sube un PDF con problemas de matemáticas, ecuaciones o conceptos matemáticos.
+
+Eres un experto en educación matemática analizando un documento PDF para material de estudio. Tu tarea es analizar ESTRICTAMENTE SOLO contenido matemático.
+
+INSTRUCCIONES CRÍTICAS - SIGUE EXACTAMENTE:
+1. PRIMERO Y MÁS IMPORTANTE: Examina el documento cuidadosamente. ¿Contiene ALGÚN contenido matemático como:
+   - Problemas matemáticos, ejercicios o tareas
+   - Ecuaciones, fórmulas o expresiones matemáticas
+   - Teoremas matemáticos, pruebas o derivaciones
+   - Gráficos, diagramas o esquemas con datos matemáticos
+   - Problemas o figuras de geometría
+   - Análisis estadísticos o datos
+   - Páginas de libro de texto o hojas de ejercicios matemáticos
+   
+2. Los siguientes NO son contenido matemático y DEBEN ser rechazados:
+   - Cursos de programación (HTML, CSS, JavaScript, Python, etc.)
+   - Material de informática sin enfoque matemático
+   - Documentos empresariales sin cálculos matemáticos
+   - Material de literatura, historia o idiomas
+   - Recetas, guías de viaje o instrucciones generales
+   - Cualquier contenido educativo no matemático
+   
+3. Si el documento NO contiene NADA del contenido matemático del punto 1 (incluyendo si es sobre HTML, programación o cualquier tema no matemático), DEBES responder EXACTAMENTE:
+   NO_MATH_CONTENT: Este documento no contiene material matemático. Por favor sube un PDF con problemas de matemáticas, ecuaciones o conceptos matemáticos.
+   
+4. NO GENERES contenido matemático si no existe en el documento. NO seas creativo o útil inventando problemas de matemáticas.
+
+5. SOLO si puedes identificar claramente contenido matemático en el documento, procede con el análisis a continuación.
+
+SI Y SOLO SI SE ENCUENTRA CONTENIDO MATEMÁTICO, analízalo y proporciona:
+
+**RESUMEN DEL DOCUMENTO:**
+- Tipo de documento matemático (libro de texto, hoja de ejercicios, notas, etc.)
+- Enfoque matemático general
+
+**TEMAS CUBIERTOS:**
+- Temas matemáticos principales (ej: álgebra, geometría, cálculo)
+- Subtemas y conceptos específicos
+- Referencias de capítulo o sección si son visibles
+
+**EVALUACIÓN DE DIFICULTAD:**
+- ¿Es esto apropiado para el nivel $levelDisplayName?
+- ¿Qué requisitos previos se necesitan?
+
+**ESTRUCTURA DEL CONTENIDO:**
+- ¿Cómo está organizado el material?
+- ¿Hay problemas de práctica, ejemplos o secciones teóricas?
+
+**OBJETIVOS DE APRENDIZAJE:**
+- ¿Qué conceptos se pueden aprender de este documento?
+- ¿Qué habilidades desarrollarán los estudiantes?
+
+**RECOMENDACIONES DE ESTUDIO:**
+- ¿Cómo deberían los estudiantes abordar este material?
+- Tiempo de estudio estimado necesario
+- En qué secciones enfocarse
+
+$levelContext
+
+RECORDATORIO FINAL: Si NO hay contenido matemático visible en el documento, tu respuesta COMPLETA debe ser:
+NO_MATH_CONTENT: Este documento no contiene material matemático. Por favor sube un PDF con problemas de matemáticas, ecuaciones o conceptos matemáticos.''',
+    };
+
+    return prompts[languageCode] ?? prompts['en']!;
+  }
 }

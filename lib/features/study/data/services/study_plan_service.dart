@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart' hide MaterialType;
 import '../../../solve_math/data/repository/gemini_solve_math_repo.dart';
 import '../../../settings/data/preferences_service.dart';
 import '../../../settings/domain/models/math_level.dart';
@@ -32,6 +31,7 @@ class StudyPlanService {
     required MaterialType type,
     String? content,
     File? imageFile,
+    Uint8List? documentBytes,
     required String title,
   }) async {
     final userId = FirebaseAuth.instance.currentUser?.uid ?? '';
@@ -47,6 +47,8 @@ class StudyPlanService {
         aiAnalysis = await _analyzeTextContent(content, mathLevel, locale);
       } else if (type == MaterialType.image && imageFile != null) {
         aiAnalysis = await _analyzeImageContent(imageFile, mathLevel, locale);
+      } else if (type == MaterialType.document && documentBytes != null) {
+        aiAnalysis = await _analyzeDocumentContent(documentBytes, mathLevel, locale);
       }
 
       // Extract topics from AI analysis
@@ -233,6 +235,131 @@ class StudyPlanService {
         return 'No se puede analizar el contenido de la imagen: $e';
       } else {
         return 'Unable to analyze image content: $e';
+      }
+    }
+  }
+
+  /// Analyze PDF document content using Gemini AI
+  Future<String> _analyzeDocumentContent(
+    Uint8List documentBytes,
+    MathLevel mathLevel,
+    String locale,
+  ) async {
+    try {
+      // Use a specific prompt for PDF document analysis that validates math content
+      final prompt = PromptLocalizer.getStudyMaterialDocumentAnalysisPrompt(
+        locale,
+        mathLevel.toPromptContext(),
+        mathLevel.displayName,
+      );
+      
+      debugPrint('PDF Validation: Starting document analysis...');
+      debugPrint('PDF Validation: Document size: ${documentBytes.length} bytes');
+      debugPrint('PDF Validation: Using locale: $locale');
+      
+      // Send PDF with proper MIME type
+      final response = await _geminiService.generateContentWithImage(
+        prompt,
+        documentBytes,
+        mimeType: 'application/pdf',
+      );
+      
+      final analysisText = response.text ?? '';
+      
+      // Debug: Log the response
+      debugPrint('PDF Validation: AI Response length: ${analysisText.length}');
+      debugPrint('PDF Validation: AI Response (first 500 chars): ${analysisText.substring(0, analysisText.length.clamp(0, 500))}');
+      
+      // Check if the response starts with NO_MATH_CONTENT (more strict check)
+      if (analysisText.trim().startsWith('NO_MATH_CONTENT:')) {
+        debugPrint('PDF Validation: NO_MATH_CONTENT detected at start of response');
+        // Extract the error message after NO_MATH_CONTENT:
+        final errorMessage = analysisText.split('NO_MATH_CONTENT:')[1].trim();
+        debugPrint('PDF Validation: Throwing exception with message: $errorMessage');
+        throw Exception(errorMessage);
+      }
+      
+      // Check if the response indicates no math content anywhere
+      if (analysisText.contains('NO_MATH_CONTENT:')) {
+        debugPrint('PDF Validation: NO_MATH_CONTENT detected in response');
+        // Extract the error message after NO_MATH_CONTENT:
+        final errorMessage = analysisText.split('NO_MATH_CONTENT:')[1].trim();
+        debugPrint('PDF Validation: Throwing exception with message: $errorMessage');
+        throw Exception(errorMessage);
+      }
+      
+      // Additional check: If the response mentions HTML, programming, or doesn't start with expected format
+      final lowerAnalysis = analysisText.toLowerCase();
+      
+      // Check for programming/web development content
+      final programmingKeywords = [
+        'html', 'css', 'javascript', 'programming', 'coding',
+        'web development', 'website', 'frontend', 'backend',
+        'python', 'java', 'c++', 'react', 'angular', 'vue',
+        'database', 'sql', 'api', 'framework', 'software development'
+      ];
+      
+      // Count how many programming keywords are found
+      int programmingKeywordCount = 0;
+      for (final keyword in programmingKeywords) {
+        if (lowerAnalysis.contains(keyword)) {
+          programmingKeywordCount++;
+        }
+      }
+      
+      // If we find multiple programming keywords and no math keywords, it's likely not math content
+      final mathKeywords = [
+        'equation', 'theorem', 'proof', 'derivative', 'integral',
+        'algebra', 'geometry', 'calculus', 'trigonometry', 'statistics',
+        'mathematical', 'formula', 'function', 'graph', 'polynomial'
+      ];
+      
+      int mathKeywordCount = 0;
+      for (final keyword in mathKeywords) {
+        if (lowerAnalysis.contains(keyword)) {
+          mathKeywordCount++;
+        }
+      }
+      
+      debugPrint('PDF Validation: Found $programmingKeywordCount programming keywords and $mathKeywordCount math keywords');
+      
+      if (programmingKeywordCount >= 3 && mathKeywordCount < 2) {
+        debugPrint('PDF Validation: Detected programming/non-math content based on keyword analysis');
+        throw Exception('This document does not contain mathematical material. Please upload a PDF with math problems, equations, or mathematical concepts.');
+      }
+      
+      // Check if response doesn't contain expected math analysis sections
+      if (!analysisText.contains('DOCUMENT OVERVIEW:') && 
+          !analysisText.contains('TOPICS COVERED:') &&
+          !analysisText.contains('APERÇU DU DOCUMENT:') &&
+          !analysisText.contains('SUJETS COUVERTS:') &&
+          !analysisText.contains('RESUMEN DEL DOCUMENTO:') &&
+          !analysisText.contains('TEMAS CUBIERTOS:')) {
+        debugPrint('PDF Validation: Response does not contain expected math analysis format');
+        throw Exception('This document does not contain mathematical material. Please upload a PDF with math problems, equations, or mathematical concepts.');
+      }
+      
+      debugPrint('PDF Validation: Math content found, proceeding with analysis');
+      return analysisText;
+    } catch (e) {
+      debugPrint('PDF Validation: Error occurred: $e');
+      debugPrint('PDF Validation: Error type: ${e.runtimeType}');
+      
+      // Re-throw if it's already a no-math-content error
+      if (e.toString().contains('does not contain mathematical material') ||
+          e.toString().contains('ne contient pas de matériel mathématique') ||
+          e.toString().contains('no contiene material matemático')) {
+        debugPrint('PDF Validation: Re-throwing no-math-content error');
+        rethrow;
+      }
+      
+      // Other errors
+      if (locale == 'fr') {
+        return 'Impossible d\'analyser le contenu du document : $e';
+      } else if (locale == 'es') {
+        return 'No se puede analizar el contenido del documento: $e';
+      } else {
+        return 'Unable to analyze document content: $e';
       }
     }
   }

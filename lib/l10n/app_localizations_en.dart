@@ -1585,6 +1585,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get imagesNotesUpload => 'Images, PDFs, notes';
 
   @override
+  String get uploadPdf => 'Upload PDF';
+
+  @override
+  String get uploadPdfSubtitle => 'Upload math PDFs or documents';
+
+  @override
+  String get nonMathDocumentError =>
+      'This document does not contain mathematical material. Please upload a PDF with math problems, equations, or mathematical concepts.';
+
+  @override
   String get aiAnalysis => 'AI Analysis';
 
   @override

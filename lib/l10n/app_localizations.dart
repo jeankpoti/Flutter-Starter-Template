@@ -2908,6 +2908,24 @@ abstract class AppLocalizations {
   /// **'Images, PDFs, notes'**
   String get imagesNotesUpload;
 
+  /// No description provided for @uploadPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload PDF'**
+  String get uploadPdf;
+
+  /// No description provided for @uploadPdfSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload math PDFs or documents'**
+  String get uploadPdfSubtitle;
+
+  /// No description provided for @nonMathDocumentError.
+  ///
+  /// In en, this message translates to:
+  /// **'This document does not contain mathematical material. Please upload a PDF with math problems, equations, or mathematical concepts.'**
+  String get nonMathDocumentError;
+
   /// No description provided for @aiAnalysis.
   ///
   /// In en, this message translates to:

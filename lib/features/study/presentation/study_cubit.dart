@@ -1,12 +1,16 @@
 import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:file_picker/file_picker.dart';
 
 import '../data/repository/study_material_repository.dart';
 import '../data/repository/study_plan_repository.dart';
 import '../data/services/study_plan_service.dart';
 import '../data/services/quiz_service.dart';
+import '../data/services/document_processing_service.dart';
 import '../domain/models/study_material.dart';
 import '../domain/models/study_plan.dart';
 import '../domain/models/quiz.dart';
@@ -18,6 +22,7 @@ class StudyCubit extends Cubit<StudyState> {
   final StudyPlanRepository _planRepository;
   final StudyPlanService _studyPlanService;
   final QuizService _quizService;
+  final DocumentProcessingService _documentService;
   final ImagePicker _picker;
   final PermissionCubit _permissionCubit;
 
@@ -30,10 +35,12 @@ class StudyCubit extends Cubit<StudyState> {
     required QuizService quizService,
     required ImagePicker picker,
     required PermissionCubit permissionCubit,
+    DocumentProcessingService? documentService,
   }) : _materialRepository = materialRepository,
        _planRepository = planRepository,
        _studyPlanService = studyPlanService,
        _quizService = quizService,
+       _documentService = documentService ?? DocumentProcessingService(),
        _picker = picker,
        _permissionCubit = permissionCubit,
        super(const StudyState());
@@ -218,8 +225,54 @@ class StudyCubit extends Cubit<StudyState> {
     }
   }
 
+  Future<bool> handleDocumentUpload() async {
+    try {
+      emit(state.copyWith(isUploadingPhoto: true));
+      
+      // Open file picker for PDF files
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf'],
+        allowMultiple: false,
+      );
+
+      if (result != null && result.files.single.path != null) {
+        final file = File(result.files.single.path!);
+        
+        // Validate file
+        if (!_documentService.isValidPdfFile(file.path)) {
+          throw Exception('Please select a valid PDF file');
+        }
+        
+        // Check file size
+        final sizeMB = await _documentService.getFileSizeInMB(file);
+        if (sizeMB > 10) {
+          throw Exception('PDF file size (${sizeMB.toStringAsFixed(1)}MB) exceeds the maximum allowed size of 10MB');
+        }
+        
+        // Process the PDF as a document
+        emit(state.copyWith(isUploadingPhoto: true));
+        await _processUploadedMaterial(file, MaterialType.document);
+      } else {
+        emit(state.copyWith(isUploadingPhoto: false));
+      }
+
+      return true; // File picker was handled successfully
+    } catch (e) {
+      if (!isClosed) {
+        emit(
+          state.copyWith(
+            isUploadingPhoto: false,
+            errorMsg: 'Error uploading PDF: $e',
+          ),
+        );
+      }
+      return true;
+    }
+  }
+
   Future<void> _processUploadedMaterial(
-    File? imageFile,
+    File? file,
     MaterialType type, {
     String? textContent,
   }) async {
@@ -231,26 +284,31 @@ class StudyCubit extends Cubit<StudyState> {
 
     try {
       final materialId = DateTime.now().millisecondsSinceEpoch.toString();
-      final title =
-          type == MaterialType.image
-              ? 'Study Material ${state.studyMaterials.length + 1}'
-              : 'Text Material ${state.studyMaterials.length + 1}';
+      final title = _getMaterialTitle(type, state.studyMaterials.length + 1);
 
+      // Prepare document bytes if it's a PDF
+      Uint8List? documentBytes;
+      if (type == MaterialType.document && file != null) {
+        documentBytes = await _documentService.processPdfFile(file);
+      }
+
+      debugPrint('StudyCubit: About to analyze material with type: $type');
       // Analyze the material
       final studyMaterial = await _studyPlanService.analyzeMaterial(
         materialId: materialId,
         type: type,
         content: textContent,
-        imageFile: imageFile,
+        imageFile: type == MaterialType.image ? file : null,
+        documentBytes: documentBytes,
         title: title,
       );
 
-      // Handle image upload to Firebase Storage if needed
+      // Handle file upload to Firebase Storage if needed
       StudyMaterial finalMaterial = studyMaterial;
-      if (imageFile != null && type == MaterialType.image) {
+      if (file != null && (type == MaterialType.image || type == MaterialType.document)) {
         try {
           final downloadUrl = await _materialRepository.uploadImage(
-            imageFile,
+            file,
             materialId,
           );
           finalMaterial = studyMaterial.copyWith(
@@ -283,19 +341,27 @@ class StudyCubit extends Cubit<StudyState> {
       if (!isClosed) {
         String errorMessage = 'Error processing material: $e';
         
+        debugPrint('StudyCubit: Error processing material: $e');
+        debugPrint('StudyCubit: Error type: ${e.runtimeType}');
+        debugPrint('StudyCubit: Material type: $type');
+        
         // Check if it's a non-math content error and localize it
         if (e.toString().contains('does not contain mathematical material') ||
             e.toString().contains('ne contient pas de matériel mathématique') ||
             e.toString().contains('no contiene material matemático')) {
+          debugPrint('StudyCubit: Non-math content error detected');
           // We need BuildContext to get localized strings
           // For now, we'll use the error message as is
           // The UI layer should handle localization when displaying this error
-          // Differentiate between image and text errors
+          // Differentiate between different material type errors
           if (type == MaterialType.text) {
             errorMessage = 'NON_MATH_TEXT_ERROR';
+          } else if (type == MaterialType.document) {
+            errorMessage = 'NON_MATH_DOCUMENT_ERROR';
           } else {
             errorMessage = 'NON_MATH_CONTENT_ERROR';
           }
+          debugPrint('StudyCubit: Setting error message to: $errorMessage');
         }
         
         emit(
@@ -307,6 +373,17 @@ class StudyCubit extends Cubit<StudyState> {
           ),
         );
       }
+    }
+  }
+
+  String _getMaterialTitle(MaterialType type, int count) {
+    switch (type) {
+      case MaterialType.image:
+        return 'Study Material $count';
+      case MaterialType.text:
+        return 'Text Material $count';
+      case MaterialType.document:
+        return 'Document Material $count';
     }
   }
 

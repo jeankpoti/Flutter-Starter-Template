@@ -141,6 +141,8 @@ class _StudyPageViewState extends State<_StudyPageView>
                 errorMessage = AppLocalizations.of(context)!.nonMathContentError;
               } else if (errorMessage == 'NON_MATH_TEXT_ERROR') {
                 errorMessage = AppLocalizations.of(context)!.nonMathTextError;
+              } else if (errorMessage == 'NON_MATH_DOCUMENT_ERROR') {
+                errorMessage = AppLocalizations.of(context)!.nonMathDocumentError;
               }
               
               AppSnackBar.showError(
@@ -210,6 +212,7 @@ class _StudyPageViewState extends State<_StudyPageView>
                               onPhotoUpload: _handlePhotoUpload,
                               onGalleryUpload: _handleGalleryUpload,
                               onTextInput: _handleTextInput,
+                              onDocumentUpload: _handleDocumentUpload,
                             ),
                             MaterialsTab(
                               studyPlans: state.studyPlans,
@@ -301,6 +304,20 @@ class _StudyPageViewState extends State<_StudyPageView>
     
     if (result != null && result.isNotEmpty) {
       studyCubit.processTextMaterial(result);
+    }
+  }
+
+  Future<void> _handleDocumentUpload() async {
+    final handled = await context.read<StudyCubit>().handleDocumentUpload();
+    
+    if (!mounted) return;
+    
+    if (!handled) {
+      // Show permission dialog if needed
+      if (mounted) {
+        // File picker usually doesn't need special permissions on most platforms
+        // but we'll handle any errors in the cubit
+      }
     }
   }
 
