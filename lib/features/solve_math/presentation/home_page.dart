@@ -155,7 +155,7 @@ class _HomePageState extends State<HomePage>
 
   Future<void> _handleSubscriptionAndSolve({String? textInput}) async {
     final imageFile = context.read<ImageCaptureCubit>().state.imageFile;
-    _solveMath(imageFile: imageFile, textInput: textInput);
+    // _solveMath(imageFile: imageFile, textInput: textInput);
 
     final subscriptionCubit = context.read<SubscriptionCubit>();
     await subscriptionCubit.loadSubscriptionStatus();
@@ -274,7 +274,6 @@ class _HomePageState extends State<HomePage>
                 // state.resultTimestamp != null &&
                 // state.resultTimestamp != _lastResultShownTimestamp
                 ) {
-                  log('Result shown');
                   // Track the timestamp to prevent showing the same result twice
                   _lastResultShownTimestamp = state.resultTimestamp;
 
@@ -415,65 +414,6 @@ class _HomePageState extends State<HomePage>
                             padding: const EdgeInsets.all(_spacing4),
                             child: Column(
                               children: [
-                                // Header Section for Text Tab
-                                // Container(
-                                //   padding: const EdgeInsets.all(_spacing6),
-                                //   decoration: BoxDecoration(
-                                //     gradient: LinearGradient(
-                                //       colors: [
-                                //         Theme.of(context)
-                                //             .colorScheme
-                                //             .secondaryContainer
-                                //             .withValues(alpha: 0.3),
-                                //         Theme.of(context).colorScheme.tertiary
-                                //             .withValues(alpha: 0.2),
-                                //       ],
-                                //       begin: Alignment.topLeft,
-                                //       end: Alignment.bottomRight,
-                                //     ),
-                                //     borderRadius: BorderRadius.circular(16.0),
-                                //   ),
-                                //   child: Column(
-                                //     children: [
-                                //       Row(
-                                //         children: [
-                                //           Icon(
-                                //             Icons.auto_awesome,
-                                //             size: 28,
-                                //             color:
-                                //                 Theme.of(
-                                //                   context,
-                                //                 ).colorScheme.secondary,
-                                //           ),
-                                //           const SizedBox(width: 12),
-                                //           HeadlineSmallText(
-                                //             AppLocalizations.of(
-                                //               context,
-                                //             )!.aiMathSolver,
-                                //             fontWeight: FontWeight.bold,
-                                //             color:
-                                //                 Theme.of(
-                                //                   context,
-                                //                 ).colorScheme.onSurface,
-                                //           ),
-                                //         ],
-                                //       ),
-
-                                //       const SizedBox(height: 8),
-                                //       BodyMediumText(
-                                //         AppLocalizations.of(
-                                //           context,
-                                //         )!.mathSolverDescription,
-                                //         color: Theme.of(context)
-                                //             .colorScheme
-                                //             .onSurface
-                                //             .withValues(alpha: 0.8),
-                                //         textAlign: TextAlign.center,
-                                //       ),
-                                //     ],
-                                //   ),
-                                // ),
-                                // const SizedBox(height: _spacing6),
                                 TextTabWidget(
                                   textController: _textController,
                                   isTablet: isTablet,

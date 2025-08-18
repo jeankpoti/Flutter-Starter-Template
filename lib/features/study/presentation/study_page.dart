@@ -7,6 +7,7 @@ import '../../../common_widgets/text_widgets.dart';
 import '../../../common_widgets/permission_denied_dialog_widget.dart';
 import '../../common/presentation/permission_cubit.dart';
 import '../../common/presentation/mixins/permission_lifecycle_mixin.dart';
+import '../../subscription/presentation/subscription_cubit.dart';
 import '../data/services/study_plan_service.dart';
 import '../data/services/quiz_service.dart';
 import '../data/repository/study_material_repository.dart';
@@ -38,6 +39,7 @@ class StudyPage extends StatelessWidget {
             quizService: QuizService(),
             picker: ImagePicker(),
             permissionCubit: context.read<PermissionCubit>(),
+            subscriptionCubit: context.read<SubscriptionCubit>(),
           )..initializeServices(),
       child: const _StudyPageView(),
     );

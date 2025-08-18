@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
 
 import '../data/repository/study_material_repository.dart';
 import '../data/repository/study_plan_repository.dart';
@@ -15,6 +16,7 @@ import '../domain/models/study_material.dart';
 import '../domain/models/study_plan.dart';
 import '../domain/models/quiz.dart';
 import '../../common/presentation/permission_cubit.dart';
+import '../../subscription/presentation/subscription_cubit.dart';
 import 'study_state.dart';
 
 class StudyCubit extends Cubit<StudyState> {
@@ -25,6 +27,7 @@ class StudyCubit extends Cubit<StudyState> {
   final DocumentProcessingService _documentService;
   final ImagePicker _picker;
   final PermissionCubit _permissionCubit;
+  final SubscriptionCubit _subscriptionCubit;
 
   static const int _maxImagesPerSelection = 5;
 
@@ -35,6 +38,7 @@ class StudyCubit extends Cubit<StudyState> {
     required QuizService quizService,
     required ImagePicker picker,
     required PermissionCubit permissionCubit,
+    required SubscriptionCubit subscriptionCubit,
     DocumentProcessingService? documentService,
   }) : _materialRepository = materialRepository,
        _planRepository = planRepository,
@@ -43,6 +47,7 @@ class StudyCubit extends Cubit<StudyState> {
        _documentService = documentService ?? DocumentProcessingService(),
        _picker = picker,
        _permissionCubit = permissionCubit,
+       _subscriptionCubit = subscriptionCubit,
        super(const StudyState());
 
   Future<void> initializeServices() async {
@@ -96,6 +101,35 @@ class StudyCubit extends Cubit<StudyState> {
   // Upload Methods
   Future<bool> handlePhotoUpload() async {
     try {
+      // Check subscription first
+      await _subscriptionCubit.loadSubscriptionStatus();
+      final isSubscribed = _subscriptionCubit.state.isSubscribed;
+      
+      if (!isSubscribed) {
+        try {
+          // Show paywall
+          await RevenueCatUI.presentPaywall();
+          
+          // Reload subscription status to check if user subscribed
+          await _subscriptionCubit.loadSubscriptionStatus();
+          final newStatus = _subscriptionCubit.state.isSubscribed;
+          
+          if (!newStatus) {
+            // User didn't subscribe, don't proceed
+            return true;
+          }
+          // User subscribed, continue with photo capture
+        } catch (e) {
+          // Error showing paywall
+          if (!isClosed) {
+            emit(state.copyWith(
+              errorMsg: 'Subscription required to generate study materials',
+            ));
+          }
+          return true;
+        }
+      }
+
       // Check if we should show dialog BEFORE making the request
       final shouldShowDialogBeforeRequest =
           _permissionCubit.state.hasCameraBeenDenied;
@@ -145,6 +179,35 @@ class StudyCubit extends Cubit<StudyState> {
 
   Future<bool> handleGalleryUpload() async {
     try {
+      // Check subscription first
+      await _subscriptionCubit.loadSubscriptionStatus();
+      final isSubscribed = _subscriptionCubit.state.isSubscribed;
+      
+      if (!isSubscribed) {
+        try {
+          // Show paywall
+          await RevenueCatUI.presentPaywall();
+          
+          // Reload subscription status to check if user subscribed
+          await _subscriptionCubit.loadSubscriptionStatus();
+          final newStatus = _subscriptionCubit.state.isSubscribed;
+          
+          if (!newStatus) {
+            // User didn't subscribe, don't proceed
+            return true;
+          }
+          // User subscribed, continue with gallery selection
+        } catch (e) {
+          // Error showing paywall
+          if (!isClosed) {
+            emit(state.copyWith(
+              errorMsg: 'Subscription required to generate study materials',
+            ));
+          }
+          return true;
+        }
+      }
+
       // Check if we should show dialog BEFORE making the request
       final shouldShowDialogBeforeRequest =
           _permissionCubit.state.hasGalleryBeenDenied;
@@ -208,6 +271,36 @@ class StudyCubit extends Cubit<StudyState> {
   Future<void> processTextMaterial(String text) async {
     emit(state.copyWith(isUploadingText: true));
     try {
+      // Check subscription first
+      await _subscriptionCubit.loadSubscriptionStatus();
+      final isSubscribed = _subscriptionCubit.state.isSubscribed;
+      
+      if (!isSubscribed) {
+        emit(state.copyWith(isUploadingText: false));
+        try {
+          // Show paywall
+          await RevenueCatUI.presentPaywall();
+          
+          // Reload subscription status to check if user subscribed
+          await _subscriptionCubit.loadSubscriptionStatus();
+          final newStatus = _subscriptionCubit.state.isSubscribed;
+          
+          if (!newStatus) {
+            // User didn't subscribe, don't proceed
+            return;
+          }
+          // User subscribed, continue with text processing
+        } catch (e) {
+          // Error showing paywall
+          if (!isClosed) {
+            emit(state.copyWith(
+              errorMsg: 'Subscription required to generate study materials',
+            ));
+          }
+          return;
+        }
+      }
+
       await _processUploadedMaterial(
         null,
         MaterialType.text,
@@ -227,6 +320,35 @@ class StudyCubit extends Cubit<StudyState> {
 
   Future<bool> handleDocumentUpload() async {
     try {
+      // Check subscription first
+      await _subscriptionCubit.loadSubscriptionStatus();
+      final isSubscribed = _subscriptionCubit.state.isSubscribed;
+      
+      if (!isSubscribed) {
+        try {
+          // Show paywall
+          await RevenueCatUI.presentPaywall();
+          
+          // Reload subscription status to check if user subscribed
+          await _subscriptionCubit.loadSubscriptionStatus();
+          final newStatus = _subscriptionCubit.state.isSubscribed;
+          
+          if (!newStatus) {
+            // User didn't subscribe, don't proceed
+            return true;
+          }
+          // User subscribed, continue with document selection
+        } catch (e) {
+          // Error showing paywall
+          if (!isClosed) {
+            emit(state.copyWith(
+              errorMsg: 'Subscription required to generate study materials',
+            ));
+          }
+          return true;
+        }
+      }
+
       // For iOS/macOS, file picker might need photo library permission for accessing files from Photos
       // This is because users might select PDFs saved in their Photos app
       if (Platform.isIOS || Platform.isMacOS) {
@@ -293,6 +415,7 @@ class StudyCubit extends Cubit<StudyState> {
       return true;
     }
   }
+
 
   Future<void> _processUploadedMaterial(
     File? file,
