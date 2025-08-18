@@ -313,10 +313,12 @@ class _StudyPageViewState extends State<_StudyPageView>
     if (!mounted) return;
     
     if (!handled) {
-      // Show permission dialog if needed
+      // Show permission dialog for iOS/macOS
       if (mounted) {
-        // File picker usually doesn't need special permissions on most platforms
-        // but we'll handle any errors in the cubit
+        PermissionDeniedDialogWidget.show(
+          context: context,
+          permissionType: 'Photo Library',
+        );
       }
     }
   }

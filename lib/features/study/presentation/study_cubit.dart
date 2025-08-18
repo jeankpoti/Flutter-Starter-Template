@@ -227,6 +227,29 @@ class StudyCubit extends Cubit<StudyState> {
 
   Future<bool> handleDocumentUpload() async {
     try {
+      // For iOS/macOS, file picker might need photo library permission for accessing files from Photos
+      // This is because users might select PDFs saved in their Photos app
+      if (Platform.isIOS || Platform.isMacOS) {
+        // Check if we should show dialog BEFORE making the request
+        final shouldShowDialogBeforeRequest =
+            _permissionCubit.state.hasGalleryBeenDenied;
+
+        // Request gallery permission (needed for accessing files from Photos on iOS)
+        final photoStatus = await _permissionCubit.requestGalleryPermission();
+
+        // Check if should show dialog based on the state before the request
+        if (shouldShowDialogBeforeRequest &&
+            (photoStatus.isDenied || photoStatus.isPermanentlyDenied)) {
+          _permissionCubit.setPendingGalleryPermission(true);
+          return false; // Caller should show permission dialog
+        }
+
+        // If permission is denied, don't proceed
+        if (photoStatus.isDenied || photoStatus.isPermanentlyDenied) {
+          return true; // Permission was handled, but denied
+        }
+      }
+      
       emit(state.copyWith(isUploadingPhoto: true));
       
       // Open file picker for PDF files
@@ -251,7 +274,6 @@ class StudyCubit extends Cubit<StudyState> {
         }
         
         // Process the PDF as a document
-        emit(state.copyWith(isUploadingPhoto: true));
         await _processUploadedMaterial(file, MaterialType.document);
       } else {
         emit(state.copyWith(isUploadingPhoto: false));
