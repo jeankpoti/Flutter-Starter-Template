@@ -11,7 +11,7 @@ import '../../domain/models/study_plan.dart';
 
 class StudyPlanService {
   static final StudyPlanService _instance = StudyPlanService._internal();
-  late final GeminiSolveMathRepo _geminiService;
+  GeminiSolveMathRepo? _geminiService;
   final Random _random = Random();
 
   factory StudyPlanService() {
@@ -21,8 +21,13 @@ class StudyPlanService {
   StudyPlanService._internal();
 
   Future<void> initialize() async {
-    _geminiService = GeminiSolveMathRepo();
-    await _geminiService.initialize();
+    // Only assign if not already assigned
+    _geminiService ??= GeminiSolveMathRepo();
+    
+    // Only initialize if not already initialized
+    if (!_geminiService!.isInitialized) {
+      await _geminiService!.initialize();
+    }
   }
 
   /// Analyze uploaded material and extract topics, concepts, and difficulty
@@ -151,7 +156,7 @@ class StudyPlanService {
         mathLevel.displayName,
       );
 
-      final response = await _geminiService.generateTextContent(prompt);
+      final response = await _geminiService!.generateTextContent(prompt);
       final analysisText = response.text ?? '';
       
       // Debug: Log the response
@@ -202,7 +207,7 @@ class StudyPlanService {
       final imageBytes = await imageFile.readAsBytes();
       
       // Create the content with the prompt and image
-      final response = await _geminiService.generateContentWithImage(
+      final response = await _geminiService!.generateContentWithImage(
         prompt,
         imageBytes,
       );
@@ -258,7 +263,7 @@ class StudyPlanService {
       debugPrint('PDF Validation: Using locale: $locale');
       
       // Send PDF with proper MIME type
-      final response = await _geminiService.generateContentWithImage(
+      final response = await _geminiService!.generateContentWithImage(
         prompt,
         documentBytes,
         mimeType: 'application/pdf',
@@ -501,7 +506,7 @@ Haz esto apropiado para estudiantes de nivel ${mathLevel.displayName} con progre
 ''';
     }
 
-    final response = await _geminiService.generateTextContent(prompt);
+    final response = await _geminiService!.generateTextContent(prompt);
     if (locale == 'fr') {
       return response.text ?? 'Impossible de générer le plan d\'étude';
     } else if (locale == 'es') {

@@ -250,8 +250,6 @@ class StudyCubit extends Cubit<StudyState> {
         }
       }
       
-      emit(state.copyWith(isUploadingPhoto: true));
-      
       // Open file picker for PDF files
       final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
@@ -260,23 +258,26 @@ class StudyCubit extends Cubit<StudyState> {
       );
 
       if (result != null && result.files.single.path != null) {
+        // Set loading state only after file is selected
+        emit(state.copyWith(isUploadingPhoto: true));
+        
         final file = File(result.files.single.path!);
         
         // Validate file
         if (!_documentService.isValidPdfFile(file.path)) {
+          emit(state.copyWith(isUploadingPhoto: false));
           throw Exception('Please select a valid PDF file');
         }
         
         // Check file size
         final sizeMB = await _documentService.getFileSizeInMB(file);
         if (sizeMB > 10) {
+          emit(state.copyWith(isUploadingPhoto: false));
           throw Exception('PDF file size (${sizeMB.toStringAsFixed(1)}MB) exceeds the maximum allowed size of 10MB');
         }
         
         // Process the PDF as a document
         await _processUploadedMaterial(file, MaterialType.document);
-      } else {
-        emit(state.copyWith(isUploadingPhoto: false));
       }
 
       return true; // File picker was handled successfully

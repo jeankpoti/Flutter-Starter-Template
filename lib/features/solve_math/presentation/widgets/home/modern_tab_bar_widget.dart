@@ -3,17 +3,15 @@ import '../../../../../l10n/app_localizations.dart';
 
 class ModernTabBarWidget extends StatelessWidget {
   final TabController tabController;
-  
+
   static const double _spacing6 = 24.0;
 
-  const ModernTabBarWidget({
-    super.key,
-    required this.tabController,
-  });
+  const ModernTabBarWidget({super.key, required this.tabController});
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: 50,
       margin: const EdgeInsets.only(bottom: _spacing6),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
@@ -34,16 +32,14 @@ class ModernTabBarWidget extends StatelessWidget {
           color: Theme.of(context).colorScheme.secondaryContainer,
         ),
         labelColor: Theme.of(context).colorScheme.onSecondaryContainer,
-        unselectedLabelColor: Theme.of(context)
-            .colorScheme
-            .onSurface
-            .withValues(alpha: 0.6),
+        unselectedLabelColor: Theme.of(
+          context,
+        ).colorScheme.onSurface.withValues(alpha: 0.6),
         indicatorSize: TabBarIndicatorSize.tab,
         dividerColor: Colors.transparent,
-        labelStyle: Theme.of(context)
-            .textTheme
-            .labelLarge
-            ?.copyWith(fontWeight: FontWeight.w600),
+        labelStyle: Theme.of(
+          context,
+        ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600),
         tabs: [
           Tab(
             icon: const Icon(Icons.camera_alt_outlined),
