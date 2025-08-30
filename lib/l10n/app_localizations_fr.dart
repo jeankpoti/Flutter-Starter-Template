@@ -1581,6 +1581,20 @@ class AppLocalizationsFr extends AppLocalizations {
   String get cropImage => 'Recadrer l\'image';
 
   @override
+  String get trackingPermissionTitle =>
+      'Aidez-nous à améliorer votre expérience';
+
+  @override
+  String get trackingPermissionDescription =>
+      'Autorisez-nous à collecter des données d\'utilisation pour comprendre comment vous utilisez l\'application et l\'améliorer pour vous.';
+
+  @override
+  String get allow => 'Autoriser';
+
+  @override
+  String get notNow => 'Pas maintenant';
+
+  @override
   String get yourPersonalAIMathTutor => 'Votre Tuteur de Maths IA Personnel';
 
   @override
@@ -1736,9 +1750,6 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get premiumFeatureDescription =>
       'Cette fonctionnalité est réservée aux abonnés premium. Souhaitez-vous passer à la version premium ?';
-
-  @override
-  String get notNow => 'Pas maintenant';
 
   @override
   String get upgrade => 'Mettre à niveau';

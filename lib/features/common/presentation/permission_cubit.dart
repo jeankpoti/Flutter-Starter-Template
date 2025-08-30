@@ -1,8 +1,10 @@
 import 'dart:io';
+import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:math_ai/core/services/analytics_service.dart';
 
 // State
 class PermissionState extends Equatable {
@@ -15,6 +17,8 @@ class PermissionState extends Equatable {
   final bool pendingGalleryPermission;
   final PermissionStatus? cameraStatus;
   final PermissionStatus? galleryStatus;
+  final TrackingStatus? trackingStatus;
+  final bool hasRequestedTracking;
   final String? message;
 
   const PermissionState({
@@ -27,6 +31,8 @@ class PermissionState extends Equatable {
     this.pendingGalleryPermission = false,
     this.cameraStatus,
     this.galleryStatus,
+    this.trackingStatus,
+    this.hasRequestedTracking = false,
     this.message,
   });
 
@@ -40,6 +46,8 @@ class PermissionState extends Equatable {
     bool? pendingGalleryPermission,
     PermissionStatus? cameraStatus,
     PermissionStatus? galleryStatus,
+    TrackingStatus? trackingStatus,
+    bool? hasRequestedTracking,
     String? message,
   }) {
     return PermissionState(
@@ -52,6 +60,8 @@ class PermissionState extends Equatable {
       pendingGalleryPermission: pendingGalleryPermission ?? this.pendingGalleryPermission,
       cameraStatus: cameraStatus ?? this.cameraStatus,
       galleryStatus: galleryStatus ?? this.galleryStatus,
+      trackingStatus: trackingStatus ?? this.trackingStatus,
+      hasRequestedTracking: hasRequestedTracking ?? this.hasRequestedTracking,
       message: message,
     );
   }
@@ -67,6 +77,8 @@ class PermissionState extends Equatable {
     pendingGalleryPermission,
     cameraStatus,
     galleryStatus,
+    trackingStatus,
+    hasRequestedTracking,
     message,
   ];
 }
@@ -82,6 +94,10 @@ class PermissionCubit extends Cubit<PermissionState> {
     final isFirstTimeGallery = prefs.getBool('isFirstTimeGallery') ?? true;
     final hasCameraBeenDenied = prefs.getBool('hasCameraBeenDenied') ?? false;
     final hasGalleryBeenDenied = prefs.getBool('hasGalleryBeenDenied') ?? false;
+    final hasRequestedTracking = prefs.getBool('hasRequestedTracking') ?? false;
+
+    // Check current tracking status
+    final trackingStatus = await AppTrackingTransparency.trackingAuthorizationStatus;
 
     emit(
       state.copyWith(
@@ -89,6 +105,8 @@ class PermissionCubit extends Cubit<PermissionState> {
         isFirstTimeGallery: isFirstTimeGallery,
         hasCameraBeenDenied: hasCameraBeenDenied,
         hasGalleryBeenDenied: hasGalleryBeenDenied,
+        hasRequestedTracking: hasRequestedTracking,
+        trackingStatus: trackingStatus,
       ),
     );
   }
@@ -269,5 +287,71 @@ class PermissionCubit extends Cubit<PermissionState> {
   // Open app settings
   Future<void> openSettings() async {
     await openAppSettings();
+  }
+
+  // Request tracking permission
+  Future<TrackingStatus> requestTrackingPermission() async {
+    emit(state.copyWith(isLoading: true));
+
+    try {
+      // Check if already authorized
+      final currentStatus = await AppTrackingTransparency.trackingAuthorizationStatus;
+      if (currentStatus == TrackingStatus.authorized) {
+        emit(state.copyWith(
+          isLoading: false,
+          trackingStatus: currentStatus,
+        ));
+        return currentStatus;
+      }
+
+      // Only request if not determined
+      if (currentStatus == TrackingStatus.notDetermined) {
+        final status = await AppTrackingTransparency.requestTrackingAuthorization();
+        
+        // Save tracking permission status
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('hasRequestedTracking', true);
+        
+        // Update analytics service based on permission
+        await AnalyticsService.setTrackingPermission(
+          status == TrackingStatus.authorized,
+        );
+
+        emit(state.copyWith(
+          isLoading: false,
+          trackingStatus: status,
+          hasRequestedTracking: true,
+        ));
+
+        return status;
+      }
+
+      emit(state.copyWith(
+        isLoading: false,
+        trackingStatus: currentStatus,
+      ));
+
+      return currentStatus;
+    } catch (e) {
+      emit(state.copyWith(
+        isLoading: false,
+        message: 'Error requesting tracking permission',
+      ));
+      rethrow;
+    }
+  }
+
+  // Check if should request tracking on app launch
+  bool shouldRequestTracking() {
+    return !state.hasRequestedTracking && 
+           (state.trackingStatus == TrackingStatus.notDetermined ||
+            state.trackingStatus == null);
+  }
+
+  // Get current tracking status
+  Future<TrackingStatus> getTrackingStatus() async {
+    final status = await AppTrackingTransparency.trackingAuthorizationStatus;
+    emit(state.copyWith(trackingStatus: status));
+    return status;
   }
 }

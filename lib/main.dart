@@ -8,12 +8,13 @@ import 'package:go_router/go_router.dart';
 import 'package:math_ai/features/account/presentation/sign_up_page.dart';
 import 'package:math_ai/features/solve_math/data/repository/gemini_solve_math_repo.dart';
 import 'package:math_ai/l10n/app_localizations.dart';
+import 'package:math_ai/core/services/analytics_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'features/solve_math/presentation/home_page.dart';
 import 'features/study/presentation/study_page.dart';
 import 'features/settings/data/preferences_service.dart';
 import 'common_widgets/math_level_onboarding_dialog.dart';
+import 'startup_widget.dart';
 
 import 'features/account/data/repository/account_repo.dart';
 import 'features/account/presentation/account_cubit.dart';
@@ -42,6 +43,9 @@ void main() async {
 
   // Initialize Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // Initialize Analytics Service (will check for permission internally)
+  await AnalyticsService.initialize();
 
   // Initialize Gemini Service
   final geminiService = GeminiSolveMathRepo();
@@ -106,7 +110,7 @@ class MyApp extends StatelessWidget {
           builder: (context, currentLocale) {
             return MaterialApp.router(
               debugShowCheckedModeBanner: false,
-              title: 'Math AI',
+              title: 'MathGenie AI',
               theme: currentTheme,
               locale: currentLocale,
               routerConfig: _router,
@@ -259,7 +263,7 @@ final GoRouter _router = GoRouter(
                               });
                             }
 
-                            return const HomePage();
+                            return const StartupWidget();
                           },
                         );
                       } else {

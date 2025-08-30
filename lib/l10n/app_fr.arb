@@ -484,6 +484,10 @@
   "takePicture": "Prendre une photo",
   "uploadPicture": "Télécharger une photo",
   "cropImage": "Recadrer l'image",
+  "trackingPermissionTitle": "Aidez-nous à améliorer votre expérience",
+  "trackingPermissionDescription": "Autorisez-nous à collecter des données d'utilisation pour comprendre comment vous utilisez l'application et l'améliorer pour vous.",
+  "allow": "Autoriser",
+  "notNow": "Pas maintenant",
   
   "yourPersonalAIMathTutor": "Votre Tuteur de Maths IA Personnel",
   "solveMathInstantly": "Résolvez n'importe quel problème de maths instantanément",

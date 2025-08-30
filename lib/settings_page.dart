@@ -199,7 +199,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                       onTap: () async {
                         const url =
-                            "https://itunes.apple.com/app/idid6739957932?action=write-review";
+                            "https://itunes.apple.com/app/id6746733499?action=write-review";
                         if (await canLaunchUrl(Uri.parse(url))) {
                           await launchUrl(Uri.parse(url));
                         } else {

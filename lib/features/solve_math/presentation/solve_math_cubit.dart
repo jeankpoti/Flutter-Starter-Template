@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:math_ai/core/services/app_review_service.dart';
 
 import '../domain/models/collection.dart';
 import '../domain/respository/firebase_collection_repo.dart';
@@ -46,6 +47,13 @@ class SolveMathCubit extends Cubit<SolveMathState> {
           resultShown: false,
           resultTimestamp: DateTime.now(),
         ),
+      );
+      
+      // Increment problems solved counter and check for review
+      await AppReviewService.incrementProblemsSolved();
+      await AppReviewService.checkAndRequestReview(
+        triggerPoint: 'problem_solved',
+        afterPositiveAction: true,
       );
     } catch (e) {
       emit(

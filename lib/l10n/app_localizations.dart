@@ -2065,7 +2065,7 @@ abstract class AppLocalizations {
   /// No description provided for @shareAppText.
   ///
   /// In en, this message translates to:
-  /// **'Check out this amazing app: https://apps.apple.com/app/id6739957932'**
+  /// **'Check out this amazing app: https://apps.apple.com/app/id6746733499'**
   String get shareAppText;
 
   /// No description provided for @generatePlan.
@@ -2830,6 +2830,30 @@ abstract class AppLocalizations {
   /// **'Crop Image'**
   String get cropImage;
 
+  /// No description provided for @trackingPermissionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Help Us Improve Your Experience'**
+  String get trackingPermissionTitle;
+
+  /// No description provided for @trackingPermissionDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow us to collect app usage data to understand how you use the app and make it better for you.'**
+  String get trackingPermissionDescription;
+
+  /// No description provided for @allow.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow'**
+  String get allow;
+
+  /// No description provided for @notNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Not Now'**
+  String get notNow;
+
   /// No description provided for @yourPersonalAIMathTutor.
   ///
   /// In en, this message translates to:
@@ -3117,12 +3141,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This feature is only available to premium subscribers. Would you like to upgrade to premium?'**
   String get premiumFeatureDescription;
-
-  /// No description provided for @notNow.
-  ///
-  /// In en, this message translates to:
-  /// **'Not Now'**
-  String get notNow;
 
   /// No description provided for @upgrade.
   ///

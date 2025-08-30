@@ -1078,7 +1078,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get shareAppText =>
-      'Check out this amazing app: https://apps.apple.com/app/id6739957932';
+      'Check out this amazing app: https://apps.apple.com/app/id6746733499';
 
   @override
   String get generatePlan => 'Generate Plan';
@@ -1544,6 +1544,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cropImage => 'Crop Image';
 
   @override
+  String get trackingPermissionTitle => 'Help Us Improve Your Experience';
+
+  @override
+  String get trackingPermissionDescription =>
+      'Allow us to collect app usage data to understand how you use the app and make it better for you.';
+
+  @override
+  String get allow => 'Allow';
+
+  @override
+  String get notNow => 'Not Now';
+
+  @override
   String get yourPersonalAIMathTutor => 'Your Personal AI Math Tutor';
 
   @override
@@ -1696,9 +1709,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get premiumFeatureDescription =>
       'This feature is only available to premium subscribers. Would you like to upgrade to premium?';
-
-  @override
-  String get notNow => 'Not Now';
 
   @override
   String get upgrade => 'Upgrade';

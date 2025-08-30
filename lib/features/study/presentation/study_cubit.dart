@@ -104,16 +104,16 @@ class StudyCubit extends Cubit<StudyState> {
       // Check subscription first
       await _subscriptionCubit.loadSubscriptionStatus();
       final isSubscribed = _subscriptionCubit.state.isSubscribed;
-      
+
       if (!isSubscribed) {
         try {
           // Show paywall
           await RevenueCatUI.presentPaywall();
-          
+
           // Reload subscription status to check if user subscribed
           await _subscriptionCubit.loadSubscriptionStatus();
           final newStatus = _subscriptionCubit.state.isSubscribed;
-          
+
           if (!newStatus) {
             // User didn't subscribe, don't proceed
             return true;
@@ -122,9 +122,11 @@ class StudyCubit extends Cubit<StudyState> {
         } catch (e) {
           // Error showing paywall
           if (!isClosed) {
-            emit(state.copyWith(
-              errorMsg: 'Subscription required to generate study materials',
-            ));
+            emit(
+              state.copyWith(
+                errorMsg: 'Subscription required to generate study materials',
+              ),
+            );
           }
           return true;
         }
@@ -182,16 +184,16 @@ class StudyCubit extends Cubit<StudyState> {
       // Check subscription first
       await _subscriptionCubit.loadSubscriptionStatus();
       final isSubscribed = _subscriptionCubit.state.isSubscribed;
-      
+
       if (!isSubscribed) {
         try {
           // Show paywall
           await RevenueCatUI.presentPaywall();
-          
+
           // Reload subscription status to check if user subscribed
           await _subscriptionCubit.loadSubscriptionStatus();
           final newStatus = _subscriptionCubit.state.isSubscribed;
-          
+
           if (!newStatus) {
             // User didn't subscribe, don't proceed
             return true;
@@ -200,9 +202,11 @@ class StudyCubit extends Cubit<StudyState> {
         } catch (e) {
           // Error showing paywall
           if (!isClosed) {
-            emit(state.copyWith(
-              errorMsg: 'Subscription required to generate study materials',
-            ));
+            emit(
+              state.copyWith(
+                errorMsg: 'Subscription required to generate study materials',
+              ),
+            );
           }
           return true;
         }
@@ -274,17 +278,17 @@ class StudyCubit extends Cubit<StudyState> {
       // Check subscription first
       await _subscriptionCubit.loadSubscriptionStatus();
       final isSubscribed = _subscriptionCubit.state.isSubscribed;
-      
+
       if (!isSubscribed) {
         emit(state.copyWith(isUploadingText: false));
         try {
           // Show paywall
           await RevenueCatUI.presentPaywall();
-          
+
           // Reload subscription status to check if user subscribed
           await _subscriptionCubit.loadSubscriptionStatus();
           final newStatus = _subscriptionCubit.state.isSubscribed;
-          
+
           if (!newStatus) {
             // User didn't subscribe, don't proceed
             return;
@@ -293,9 +297,11 @@ class StudyCubit extends Cubit<StudyState> {
         } catch (e) {
           // Error showing paywall
           if (!isClosed) {
-            emit(state.copyWith(
-              errorMsg: 'Subscription required to generate study materials',
-            ));
+            emit(
+              state.copyWith(
+                errorMsg: 'Subscription required to generate study materials',
+              ),
+            );
           }
           return;
         }
@@ -323,16 +329,16 @@ class StudyCubit extends Cubit<StudyState> {
       // Check subscription first
       await _subscriptionCubit.loadSubscriptionStatus();
       final isSubscribed = _subscriptionCubit.state.isSubscribed;
-      
+
       if (!isSubscribed) {
         try {
           // Show paywall
           await RevenueCatUI.presentPaywall();
-          
+
           // Reload subscription status to check if user subscribed
           await _subscriptionCubit.loadSubscriptionStatus();
           final newStatus = _subscriptionCubit.state.isSubscribed;
-          
+
           if (!newStatus) {
             // User didn't subscribe, don't proceed
             return true;
@@ -341,9 +347,11 @@ class StudyCubit extends Cubit<StudyState> {
         } catch (e) {
           // Error showing paywall
           if (!isClosed) {
-            emit(state.copyWith(
-              errorMsg: 'Subscription required to generate study materials',
-            ));
+            emit(
+              state.copyWith(
+                errorMsg: 'Subscription required to generate study materials',
+              ),
+            );
           }
           return true;
         }
@@ -371,7 +379,7 @@ class StudyCubit extends Cubit<StudyState> {
           return true; // Permission was handled, but denied
         }
       }
-      
+
       // Open file picker for PDF files
       final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
@@ -382,22 +390,24 @@ class StudyCubit extends Cubit<StudyState> {
       if (result != null && result.files.single.path != null) {
         // Set loading state only after file is selected
         emit(state.copyWith(isUploadingPhoto: true));
-        
+
         final file = File(result.files.single.path!);
-        
+
         // Validate file
         if (!_documentService.isValidPdfFile(file.path)) {
           emit(state.copyWith(isUploadingPhoto: false));
           throw Exception('Please select a valid PDF file');
         }
-        
+
         // Check file size
         final sizeMB = await _documentService.getFileSizeInMB(file);
         if (sizeMB > 10) {
           emit(state.copyWith(isUploadingPhoto: false));
-          throw Exception('PDF file size (${sizeMB.toStringAsFixed(1)}MB) exceeds the maximum allowed size of 10MB');
+          throw Exception(
+            'PDF file size (${sizeMB.toStringAsFixed(1)}MB) exceeds the maximum allowed size of 10MB',
+          );
         }
-        
+
         // Process the PDF as a document
         await _processUploadedMaterial(file, MaterialType.document);
       }
@@ -415,7 +425,6 @@ class StudyCubit extends Cubit<StudyState> {
       return true;
     }
   }
-
 
   Future<void> _processUploadedMaterial(
     File? file,
@@ -451,7 +460,8 @@ class StudyCubit extends Cubit<StudyState> {
 
       // Handle file upload to Firebase Storage if needed
       StudyMaterial finalMaterial = studyMaterial;
-      if (file != null && (type == MaterialType.image || type == MaterialType.document)) {
+      if (file != null &&
+          (type == MaterialType.image || type == MaterialType.document)) {
         try {
           final downloadUrl = await _materialRepository.uploadImage(
             file,
@@ -486,11 +496,11 @@ class StudyCubit extends Cubit<StudyState> {
     } catch (e) {
       if (!isClosed) {
         String errorMessage = 'Error processing material: $e';
-        
+
         debugPrint('StudyCubit: Error processing material: $e');
         debugPrint('StudyCubit: Error type: ${e.runtimeType}');
         debugPrint('StudyCubit: Material type: $type');
-        
+
         // Check if it's a non-math content error and localize it
         if (e.toString().contains('does not contain mathematical material') ||
             e.toString().contains('ne contient pas de matériel mathématique') ||
@@ -509,7 +519,7 @@ class StudyCubit extends Cubit<StudyState> {
           }
           debugPrint('StudyCubit: Setting error message to: $errorMessage');
         }
-        
+
         emit(
           state.copyWith(
             isProcessing: false,
