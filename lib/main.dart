@@ -9,6 +9,7 @@ import 'package:math_ai/features/account/presentation/sign_up_page.dart';
 import 'package:math_ai/features/solve_math/data/repository/gemini_solve_math_repo.dart';
 import 'package:math_ai/l10n/app_localizations.dart';
 import 'package:math_ai/core/services/analytics_service.dart';
+import 'package:math_ai/core/services/app_review_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'features/study/presentation/study_page.dart';
@@ -46,6 +47,9 @@ void main() async {
 
   // Initialize Analytics Service (will check for permission internally)
   await AnalyticsService.initialize();
+  
+  // Initialize App Review Service (increments launch count)
+  await AppReviewService.initialize();
 
   // Initialize Gemini Service
   final geminiService = GeminiSolveMathRepo();

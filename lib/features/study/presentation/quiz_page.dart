@@ -809,6 +809,17 @@ class _QuizPageState extends State<QuizPage> {
           duration: const Duration(seconds: 2),
         );
       }
+      
+      // Increment quiz completion counter and check for app review
+      await AppReviewService.incrementQuizzesCompleted();
+      
+      // Only request review for good scores (70% or higher)
+      if (quiz.lastScore != null && quiz.lastScore! >= 70) {
+        await AppReviewService.checkAndRequestReview(
+          triggerPoint: 'quiz_completion',
+          afterPositiveAction: true,
+        );
+      }
     } catch (e) {
       debugPrint('Error saving quiz to history: $e');
       if (mounted) {
