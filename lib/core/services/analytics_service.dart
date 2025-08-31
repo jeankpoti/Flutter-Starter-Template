@@ -1,49 +1,19 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AnalyticsService {
-  static const String _trackingPermissionKey = 'tracking_permission_granted';
-  
   static FirebaseAnalytics? _analytics;
   static FirebaseAnalyticsObserver? _observer;
   
   static FirebaseAnalytics? get analytics => _analytics;
   static FirebaseAnalyticsObserver? get observer => _observer;
   
-  /// Initialize analytics only if user has granted tracking permission
+  /// Initialize analytics without tracking permission
   static Future<void> initialize() async {
-    final prefs = await SharedPreferences.getInstance();
-    final hasPermission = prefs.getBool(_trackingPermissionKey) ?? false;
+    _analytics = FirebaseAnalytics.instance;
+    _observer = FirebaseAnalyticsObserver(analytics: _analytics!);
     
-    if (hasPermission) {
-      _analytics = FirebaseAnalytics.instance;
-      _observer = FirebaseAnalyticsObserver(analytics: _analytics!);
-      
-      // Enable analytics collection
-      await _analytics!.setAnalyticsCollectionEnabled(true);
-    }
-  }
-  
-  /// Save tracking permission status
-  static Future<void> setTrackingPermission(bool granted) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_trackingPermissionKey, granted);
-    
-    if (granted && _analytics == null) {
-      // Initialize analytics if permission granted
-      await initialize();
-    } else if (!granted && _analytics != null) {
-      // Disable analytics if permission revoked
-      await _analytics!.setAnalyticsCollectionEnabled(false);
-      _analytics = null;
-      _observer = null;
-    }
-  }
-  
-  /// Check if tracking permission has been granted
-  static Future<bool> hasTrackingPermission() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_trackingPermissionKey) ?? false;
+    // Enable analytics collection
+    await _analytics!.setAnalyticsCollectionEnabled(true);
   }
   
   /// Log an event (only if analytics is enabled)

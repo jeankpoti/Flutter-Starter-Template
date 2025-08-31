@@ -30,7 +30,6 @@ class GeminiSolveMathRepo implements SolveMathRepo {
         );
         _isInitialized = true;
       } catch (e) {
-        print('Failed to initialize Gemini service: $e');
         rethrow;
       }
     }
@@ -171,7 +170,6 @@ class GeminiSolveMathRepo implements SolveMathRepo {
       final response = await _model!.generateContent(content);
       return response.text ?? 'Unable to solve the math problem';
     } catch (e) {
-      print('Error solving math problem: $e');
       return 'Error: Failed to solve the math problem. Please try again with a clearer image.';
     }
   }

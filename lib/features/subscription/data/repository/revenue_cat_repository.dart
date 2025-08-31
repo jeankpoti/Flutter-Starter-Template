@@ -23,15 +23,12 @@ class RevenueCatRepository implements SubscriptionRepository {
       } else if (Platform.isAndroid) {
         configuration = PurchasesConfiguration(Subscription.googleApiKey);
       } else {
-        debugPrint('RevenueCat is not supported on this platform');
         return;
       }
 
       await Purchases.configure(configuration);
       _isInitialized = true;
-      debugPrint('RevenueCat initialized successfully');
     } catch (e) {
-      debugPrint('Failed to initialize RevenueCat: $e');
       rethrow;
     }
   }

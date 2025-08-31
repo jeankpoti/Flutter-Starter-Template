@@ -28,8 +28,6 @@ class SolveMathCubit extends Cubit<SolveMathState> {
         result = await solveMathRepo.solveMath(input);
       }
 
-      print('SolveMathCubit: Got result, saving collection...');
-
       final collection = Collection(
         imagePath: input is File ? input.path : '',
         imageUrl: '',
@@ -37,7 +35,6 @@ class SolveMathCubit extends Cubit<SolveMathState> {
       );
 
       await firebaseCollectionRepo.saveCollection(collection);
-      print('SolveMathCubit: Collection saved successfully');
 
       emit(
         state.copyWith(
