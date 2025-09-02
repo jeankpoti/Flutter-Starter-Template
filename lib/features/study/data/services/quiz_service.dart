@@ -237,7 +237,20 @@ class QuizService {
         break;
       case QuestionType.shortAnswer:
       case QuestionType.fillInTheBlank:
-        correctAnswerId = correctAnswer;
+        // For text-based questions, ensure we don't use letter-based answers
+        if (correctAnswer != null && correctAnswer.length == 1 && RegExp(r'^[A-D]$').hasMatch(correctAnswer) && options.isNotEmpty) {
+          // This looks like a multiple choice answer that was incorrectly labeled as short answer
+          // Try to extract the actual answer from the options
+          final letterIndex = correctAnswer.codeUnitAt(0) - 65; // A=0, B=1, C=2, D=3
+          if (letterIndex >= 0 && letterIndex < options.length) {
+            correctAnswerId = options[letterIndex];
+            debugPrint('Warning: Converting multiple choice answer "$correctAnswer" to actual answer: "${correctAnswerId}"');
+          } else {
+            correctAnswerId = correctAnswer;
+          }
+        } else {
+          correctAnswerId = correctAnswer;
+        }
         break;
       case QuestionType.trueFalse:
         bool isTrue = _isTrueAnswer(correctAnswer, locale);
@@ -357,7 +370,7 @@ class QuizService {
         break;
       case QuestionType.shortAnswer:
       case QuestionType.fillInTheBlank:
-        if (textAnswer != null && question.correctAnswerId != null) {
+        if (textAnswer != null && textAnswer.trim().isNotEmpty && question.correctAnswerId != null) {
           isCorrect = _compareTextAnswers(textAnswer, question.correctAnswerId!);
         }
         break;
@@ -552,16 +565,114 @@ class QuizService {
     // Exact match
     if (userNormalized == correctNormalized) return true;
     
-    // Check if user answer contains the correct answer
+    // For math expressions, remove spaces and check
+    final userMath = userAnswer.replaceAll(RegExp(r'\s+'), '');
+    final correctMath = correctAnswer.replaceAll(RegExp(r'\s+'), '');
+    if (userMath.toLowerCase() == correctMath.toLowerCase()) return true;
+    
+    // Handle common mathematical equivalents
+    final userMathNormalized = _normalizeMathExpression(userMath.toLowerCase());
+    final correctMathNormalized = _normalizeMathExpression(correctMath.toLowerCase());
+    if (userMathNormalized == correctMathNormalized) return true;
+    
+    // Check if user answer contains the correct answer or vice versa
     if (userNormalized.contains(correctNormalized) || correctNormalized.contains(userNormalized)) {
       return true;
     }
     
-    // For math expressions, remove spaces and check
-    final userMath = userAnswer.replaceAll(RegExp(r'\s+'), '');
-    final correctMath = correctAnswer.replaceAll(RegExp(r'\s+'), '');
+    // Handle equations with variables (like "x=5" vs "5" vs "x = 5")
+    if (_compareEquationAnswers(userAnswer, correctAnswer)) return true;
     
-    return userMath.toLowerCase() == correctMath.toLowerCase();
+    return false;
+  }
+
+  /// Normalize mathematical expressions for comparison
+  String _normalizeMathExpression(String expression) {
+    String normalized = expression
+        .replaceAll('×', '*')  // Normalize multiplication signs
+        .replaceAll('÷', '/')  // Normalize division
+        .replaceAll('−', '-')  // Normalize minus sign
+        .replaceAll(' ', '');  // Remove all spaces
+        
+    // Handle algebraic expressions like "5x" vs "x*5" or "5*x"
+    // Match patterns like "5x" and convert to standard form
+    normalized = normalized.replaceAllMapped(
+      RegExp(r'(\d+)([a-zA-Z])'),
+      (match) => '${match.group(1)}*${match.group(2)}'
+    );
+    
+    // Handle patterns like "x5" and convert to "x*5"  
+    normalized = normalized.replaceAllMapped(
+      RegExp(r'([a-zA-Z])(\d+)'),
+      (match) => '${match.group(1)}*${match.group(2)}'
+    );
+    
+    // Sort multiplication terms alphabetically (e.g., "x*5" becomes "5*x")
+    final parts = normalized.split('*');
+    if (parts.length == 2) {
+      final numbers = parts.where((p) => RegExp(r'^\d+$').hasMatch(p)).toList();
+      final variables = parts.where((p) => RegExp(r'^[a-zA-Z]+$').hasMatch(p)).toList();
+      if (numbers.isNotEmpty && variables.isNotEmpty) {
+        normalized = '${numbers.join('*')}*${variables.join('*')}';
+      }
+    }
+    
+    return normalized;
+  }
+
+  /// Compare equation answers with flexibility
+  bool _compareEquationAnswers(String userAnswer, String correctAnswer) {
+    // Extract variable and value from equations like "y=5", "x=2", etc.
+    final userParts = _extractEquationParts(userAnswer);
+    final correctParts = _extractEquationParts(correctAnswer);
+    
+    if (userParts != null && correctParts != null) {
+      // Both have variable and value - check if they match exactly
+      return userParts['variable']?.toLowerCase() == correctParts['variable']?.toLowerCase() &&
+             userParts['value']?.toLowerCase() == correctParts['value']?.toLowerCase();
+    }
+    
+    // If one is just a value and the other is an equation, check the values
+    final userValue = _extractAnswerValue(userAnswer);
+    final correctValue = _extractAnswerValue(correctAnswer);
+    
+    if (userValue != null && correctValue != null) {
+      return userValue.toLowerCase() == correctValue.toLowerCase();
+    }
+    
+    return false;
+  }
+
+  /// Extract variable and value from equation
+  Map<String, String>? _extractEquationParts(String answer) {
+    final match = RegExp(r'^([a-zA-Z])\s*=\s*(.+)$').firstMatch(answer.trim());
+    if (match != null && match.group(1) != null && match.group(2) != null) {
+      return {
+        'variable': match.group(1)!.trim(),
+        'value': match.group(2)!.trim(),
+      };
+    }
+    return null;
+  }
+
+  /// Extract the answer value from equations
+  String? _extractAnswerValue(String answer) {
+    // Handle patterns like "x=5", "y = 5", "answer is 5", etc.
+    final patterns = [
+      RegExp(r'[a-zA-Z]\s*=\s*([^,\s]+)'),  // x=5, y = 5
+      RegExp(r'is\s+([^,\s]+)'),            // answer is 5
+      RegExp(r'equals?\s+([^,\s]+)'),       // equals 5
+      RegExp(r'^([^=]+)$'),                 // just the value: 5
+    ];
+    
+    for (final pattern in patterns) {
+      final match = pattern.firstMatch(answer.trim());
+      if (match != null && match.group(1) != null) {
+        return match.group(1)!.trim();
+      }
+    }
+    
+    return null;
   }
 
   /// Helper methods

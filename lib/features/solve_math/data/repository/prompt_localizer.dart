@@ -181,6 +181,7 @@ REQUIREMENTS:
 
 Format each question EXACTLY like this:
 
+FOR MULTIPLE CHOICE:
 QUESTION 1:
 Type: multiple_choice
 Text: [Question text here]
@@ -193,6 +194,35 @@ Correct: A
 Explanation: [Why this answer is correct]
 Topics: [Topic1, Topic2]
 Points: 1
+
+FOR SHORT ANSWER (math equations, calculations):
+QUESTION 2:
+Type: short_answer
+Text: Solve for x: 2x + 5 = 13
+Correct: x = 4
+Explanation: [Step-by-step solution]
+Topics: [Topic1, Topic2]
+Points: 1
+
+FOR FILL IN THE BLANK:
+QUESTION 3:
+Type: fill_in_blank
+Text: The derivative of x² is _____.
+Correct: 2x
+Explanation: [Why this answer is correct]
+Topics: [Topic1, Topic2]
+Points: 1
+
+FOR TRUE/FALSE:
+QUESTION 4:
+Type: true_false
+Text: The square root of 16 is 4.
+Correct: True
+Explanation: [Why this answer is correct]
+Topics: [Topic1, Topic2]
+Points: 1
+
+CRITICAL: For short_answer and fill_in_blank questions, the "Correct:" field must contain the actual mathematical answer (like "x = 5", "2x", "16", etc.), NOT a letter like A, B, C, or D.
 
 Continue this pattern for all $questionCount questions. Ensure variety in question types and topics covered.''',
 
@@ -211,6 +241,7 @@ EXIGENCES :
 
 Formatez chaque question EXACTEMENT comme ceci :
 
+POUR CHOIX MULTIPLE :
 QUESTION 1 :
 Type: multiple_choice
 Text: [Texte de la question ici]
@@ -223,6 +254,35 @@ Correct: A
 Explanation: [Pourquoi cette réponse est correcte]
 Topics: [Sujet1, Sujet2]
 Points: 1
+
+POUR RÉPONSE COURTE (équations mathématiques, calculs) :
+QUESTION 2 :
+Type: short_answer
+Text: Résolvez pour x : 2x + 5 = 13
+Correct: x = 4
+Explanation: [Solution étape par étape]
+Topics: [Sujet1, Sujet2]
+Points: 1
+
+POUR REMPLIR LES BLANCS :
+QUESTION 3 :
+Type: fill_in_blank
+Text: La dérivée de x² est _____.
+Correct: 2x
+Explanation: [Pourquoi cette réponse est correcte]
+Topics: [Sujet1, Sujet2]
+Points: 1
+
+POUR VRAI/FAUX :
+QUESTION 4 :
+Type: true_false
+Text: La racine carrée de 16 est 4.
+Correct: Vrai
+Explanation: [Pourquoi cette réponse est correcte]
+Topics: [Sujet1, Sujet2]
+Points: 1
+
+CRITIQUE : Pour les questions short_answer et fill_in_blank, le champ "Correct:" doit contenir la réponse mathématique réelle (comme "x = 5", "2x", "16", etc.), PAS une lettre comme A, B, C, ou D.
 
 Continuez ce modèle pour toutes les $questionCount questions. Assurez une variété dans les types de questions et les sujets couverts.''',
 
@@ -241,6 +301,7 @@ REQUISITOS:
 
 Formatea cada pregunta EXACTAMENTE así:
 
+PARA OPCIÓN MÚLTIPLE:
 PREGUNTA 1:
 Type: multiple_choice
 Text: [Texto de la pregunta aquí]
@@ -253,6 +314,35 @@ Correct: A
 Explanation: [Por qué esta respuesta es correcta]
 Topics: [Tema1, Tema2]
 Points: 1
+
+PARA RESPUESTA CORTA (ecuaciones matemáticas, cálculos):
+PREGUNTA 2:
+Type: short_answer
+Text: Resuelve para x: 2x + 5 = 13
+Correct: x = 4
+Explanation: [Solución paso a paso]
+Topics: [Tema1, Tema2]
+Points: 1
+
+PARA COMPLETAR ESPACIOS:
+PREGUNTA 3:
+Type: fill_in_blank
+Text: La derivada de x² es _____.
+Correct: 2x
+Explanation: [Por qué esta respuesta es correcta]
+Topics: [Tema1, Tema2]
+Points: 1
+
+PARA VERDADERO/FALSO:
+PREGUNTA 4:
+Type: true_false
+Text: La raíz cuadrada de 16 es 4.
+Correct: Verdadero
+Explanation: [Por qué esta respuesta es correcta]
+Topics: [Tema1, Tema2]
+Points: 1
+
+CRÍTICO: Para preguntas short_answer y fill_in_blank, el campo "Correct:" debe contener la respuesta matemática real (como "x = 5", "2x", "16", etc.), NO una letra como A, B, C, o D.
 
 Continúa este patrón para todas las $questionCount preguntas. Asegura variedad en los tipos de preguntas y temas cubiertos.''',
     };

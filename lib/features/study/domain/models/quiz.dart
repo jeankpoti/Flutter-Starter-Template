@@ -317,13 +317,19 @@ class Quiz {
 
   // Get unanswered questions
   List<QuizQuestion> getUnansweredQuestions() {
-    final answeredQuestionIds = userAnswers.map((ua) => ua.questionId).toSet();
+    final answeredQuestions = userAnswers
+        .where((ua) => ua.selectedAnswerId != null || (ua.textAnswer != null && ua.textAnswer!.trim().isNotEmpty))
+        .toList();
+    final answeredQuestionIds = answeredQuestions.map((ua) => ua.questionId).toSet();
     return questions.where((q) => !answeredQuestionIds.contains(q.id)).toList();
   }
 
   // Check if quiz is completed
   bool get isCompleted {
-    return userAnswers.length == questions.length;
+    final answeredQuestions = userAnswers
+        .where((ua) => ua.selectedAnswerId != null || (ua.textAnswer != null && ua.textAnswer!.trim().isNotEmpty))
+        .toList();
+    return answeredQuestions.length == questions.length;
   }
 
   // Get performance summary
@@ -332,7 +338,7 @@ class Quiz {
     
     // Only count answers that were actually provided (not skipped)
     final answeredQuestions = userAnswers
-        .where((ua) => ua.selectedAnswerId != null || ua.textAnswer != null)
+        .where((ua) => ua.selectedAnswerId != null || (ua.textAnswer != null && ua.textAnswer!.trim().isNotEmpty))
         .toList();
     
     final incorrect = answeredQuestions.where((ua) => !ua.isCorrect).length;
