@@ -49,6 +49,11 @@ class ModernTabBar extends StatelessWidget {
             text: AppLocalizations.of(context)!.myMaterialsTab,
             height: 60,
           ),
+          Tab(
+            icon: const Icon(Icons.style_outlined),
+            text: AppLocalizations.of(context)!.flashcardsTab,
+            height: 60,
+          ),
         ],
       ),
     );

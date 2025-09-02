@@ -13,6 +13,7 @@ import '../data/services/quiz_service.dart';
 import '../data/repository/study_material_repository.dart';
 import '../data/repository/study_plan_repository.dart';
 import '../domain/models/study_plan.dart';
+import '../domain/models/study_material.dart';
 import '../domain/models/quiz.dart';
 import 'study_cubit.dart';
 import 'study_state.dart';
@@ -21,6 +22,8 @@ import 'quiz_history_page.dart';
 import 'widgets/study/material_tab.dart';
 import 'widgets/study/modern_tab_bar.dart';
 import 'widgets/study/upload_tab.dart';
+import 'widgets/study/flashcards_tab.dart';
+import '../data/services/flashcard_service.dart';
 import 'widgets/study/topic_details_dialog_widget.dart';
 import 'widgets/study/study_plan_topics_sheet_widget.dart';
 import 'widgets/study/study_plan_selection_dialog_widget.dart';
@@ -62,7 +65,7 @@ class _StudyPageViewState extends State<_StudyPageView>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
     // Initialize permissions
     context.read<PermissionCubit>().initializePermissions();
   }
@@ -246,6 +249,11 @@ class _StudyPageViewState extends State<_StudyPageView>
                                   ),
                                 );
                               },
+                            ),
+                            FlashcardsTab(
+                              studyMaterials: state.studyMaterials,
+                              onGenerateFromMaterials: _generateFlashcardsFromMaterials,
+                              onGenerateFromQuiz: _generateFlashcardsFromQuiz,
                             ),
                           ],
                         );
@@ -547,5 +555,67 @@ class _StudyPageViewState extends State<_StudyPageView>
             child: TopicDetailsDialogWidget(plan: plan, topic: topic),
           ),
     );
+  }
+
+  Future<void> _generateFlashcardsFromMaterials(
+    List<StudyMaterial> materials, 
+    String deckName, 
+    String? deckDescription
+  ) async {
+    try {
+      final flashcardService = FlashcardService();
+      await flashcardService.initialize();
+      
+      final deck = await flashcardService.generateFlashcardsFromMaterials(
+        materials: materials,
+        deckName: deckName,
+        deckDescription: deckDescription,
+      );
+
+      if (mounted) {
+        AppSnackBar.showSuccess(
+          context,
+          'Flashcard deck "${deck.name}" created with ${deck.cardCount} cards!',
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        AppSnackBar.showError(
+          context,
+          'Failed to generate flashcards: ${e.toString()}',
+        );
+      }
+    }
+  }
+
+  Future<void> _generateFlashcardsFromQuiz(
+    Quiz quiz, 
+    String? deckName, 
+    String? deckDescription
+  ) async {
+    try {
+      final flashcardService = FlashcardService();
+      await flashcardService.initialize();
+      
+      final deck = await flashcardService.generateFlashcardsFromQuiz(
+        quiz: quiz,
+        deckName: deckName,
+        deckDescription: deckDescription,
+      );
+
+      if (mounted) {
+        AppSnackBar.showSuccess(
+          context,
+          'Flashcard deck "${deck.name}" created from quiz!',
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        AppSnackBar.showError(
+          context,
+          'Failed to generate flashcards from quiz: ${e.toString()}',
+        );
+      }
+    }
   }
 }

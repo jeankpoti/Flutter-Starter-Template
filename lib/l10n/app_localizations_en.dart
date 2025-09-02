@@ -482,6 +482,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myMaterialsTab => 'My Materials';
 
   @override
+  String get flashcardsTab => 'Flashcards';
+
+  @override
   String get uploadYourStudyMaterial => 'Upload Your Study Material';
 
   @override

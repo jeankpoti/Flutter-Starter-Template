@@ -1018,6 +1018,12 @@ abstract class AppLocalizations {
   /// **'My Materials'**
   String get myMaterialsTab;
 
+  /// No description provided for @flashcardsTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Flashcards'**
+  String get flashcardsTab;
+
   /// No description provided for @uploadYourStudyMaterial.
   ///
   /// In en, this message translates to:
