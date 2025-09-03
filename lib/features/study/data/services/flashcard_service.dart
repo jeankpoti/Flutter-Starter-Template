@@ -117,6 +117,7 @@ class FlashcardService {
       
       final card = FlashCard(
         id: _generateId(),
+        userId: userId,
         deckId: '', // Will be set when deck is created
         front: front,
         back: back,
@@ -296,8 +297,10 @@ Continúa este patrón para todas las $cardCount tarjetas de memoria.''',
       return null;
     }
     
+    final userId = FirebaseAuth.instance.currentUser?.uid ?? '';
     return FlashCard(
       id: _generateId(),
+      userId: userId,
       deckId: '', // Will be set later
       front: front,
       back: back,
@@ -408,8 +411,10 @@ Continúa este patrón para todas las $cardCount tarjetas de memoria.''',
     String? hint,
     List<String> tags = const [],
   }) async {
+    final userId = FirebaseAuth.instance.currentUser?.uid ?? '';
     final card = FlashCard(
       id: _generateId(),
+      userId: userId,
       deckId: deckId,
       front: front,
       back: back,

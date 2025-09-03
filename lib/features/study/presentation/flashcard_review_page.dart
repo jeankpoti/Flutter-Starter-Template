@@ -654,7 +654,7 @@ class _FlashcardReviewPageState extends State<FlashcardReviewPage>
               _errorMessage == 'No cards due for review'
                   ? Icons.check_circle_outline
                   : Icons.error_outline,
-              size: 80,
+              size: 64,
               color: _errorMessage == 'No cards due for review'
                   ? Theme.of(context).colorScheme.primary
                   : Theme.of(context).colorScheme.error,

@@ -110,6 +110,57 @@ service cloud.firestore {
       allow delete: if false;
     }
     
+    // Flashcard Decks Collection
+    match /flashcardDecks/{documentId} {
+      allow read: if ownsDocument();
+      
+      allow create: if isAuthenticated()
+        && willOwnDocument()
+        && hasRequiredFields(['userId', 'createdAt', 'name'])
+        && request.resource.data.createdAt is timestamp;
+      
+      allow update: if ownsDocument()
+        && willOwnDocument()
+        && request.resource.data.userId == resource.data.userId
+        && request.resource.data.createdAt == resource.data.createdAt;
+      
+      allow delete: if ownsDocument();
+    }
+    
+    // Flashcards Collection
+    match /flashcards/{documentId} {
+      allow read: if ownsDocument();
+      
+      allow create: if isAuthenticated()
+        && willOwnDocument()
+        && hasRequiredFields(['userId', 'deckId', 'createdAt', 'front', 'back'])
+        && request.resource.data.createdAt is timestamp;
+      
+      allow update: if ownsDocument()
+        && willOwnDocument()
+        && request.resource.data.userId == resource.data.userId
+        && request.resource.data.createdAt == resource.data.createdAt;
+      
+      allow delete: if ownsDocument();
+    }
+    
+    // Review Sessions Collection
+    match /reviewSessions/{documentId} {
+      allow read: if ownsDocument();
+      
+      allow create: if isAuthenticated()
+        && willOwnDocument()
+        && hasRequiredFields(['userId', 'deckId', 'startedAt'])
+        && request.resource.data.startedAt is timestamp;
+      
+      allow update: if ownsDocument()
+        && willOwnDocument()
+        && request.resource.data.userId == resource.data.userId
+        && request.resource.data.startedAt == resource.data.startedAt;
+      
+      allow delete: if ownsDocument();
+    }
+
     // User profiles
     match /users/{userId} {
       allow read: if isOwner(userId);

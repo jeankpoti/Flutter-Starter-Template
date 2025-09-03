@@ -16,6 +16,7 @@ enum ReviewResult {
 
 class FlashCard extends Equatable {
   final String id;
+  final String userId;
   final String deckId;
   final String front;
   final String back;
@@ -33,6 +34,7 @@ class FlashCard extends Equatable {
 
   const FlashCard({
     required this.id,
+    required this.userId,
     required this.deckId,
     required this.front,
     required this.back,
@@ -52,6 +54,7 @@ class FlashCard extends Equatable {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
+      'userId': userId,
       'deckId': deckId,
       'front': front,
       'back': back,
@@ -72,6 +75,7 @@ class FlashCard extends Equatable {
   factory FlashCard.fromMap(Map<String, dynamic> map) {
     return FlashCard(
       id: map['id'] ?? '',
+      userId: map['userId'] ?? '',
       deckId: map['deckId'] ?? '',
       front: map['front'] ?? '',
       back: map['back'] ?? '',
@@ -94,6 +98,7 @@ class FlashCard extends Equatable {
 
   FlashCard copyWith({
     String? id,
+    String? userId,
     String? deckId,
     String? front,
     String? back,
@@ -111,6 +116,7 @@ class FlashCard extends Equatable {
   }) {
     return FlashCard(
       id: id ?? this.id,
+      userId: userId ?? this.userId,
       deckId: deckId ?? this.deckId,
       front: front ?? this.front,
       back: back ?? this.back,
@@ -148,6 +154,7 @@ class FlashCard extends Equatable {
   @override
   List<Object?> get props => [
     id,
+    userId,
     deckId,
     front,
     back,

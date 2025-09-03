@@ -43,12 +43,15 @@ class _FlashcardDeckCreationDialogWidgetState extends State<FlashcardDeckCreatio
         'Create New Deck',
         fontWeight: FontWeight.bold,
       ),
-      content: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+      content: SizedBox(
+        width: double.maxFinite,
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
             // Name field
             TextFormField(
               controller: _nameController,
@@ -70,7 +73,7 @@ class _FlashcardDeckCreationDialogWidgetState extends State<FlashcardDeckCreatio
               textCapitalization: TextCapitalization.words,
             ),
             
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             
             // Description field
             TextFormField(
@@ -84,10 +87,11 @@ class _FlashcardDeckCreationDialogWidgetState extends State<FlashcardDeckCreatio
                 prefixIcon: const Icon(Icons.description),
               ),
               maxLines: 2,
+              minLines: 1,
               textCapitalization: TextCapitalization.sentences,
             ),
             
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             
             // Color selection
             LabelMediumText(
@@ -130,10 +134,12 @@ class _FlashcardDeckCreationDialogWidgetState extends State<FlashcardDeckCreatio
                   ),
                 );
               }).toList(),
-            ),
-          ],
+              ),
+            ],
+          ),
         ),
       ),
+    ),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
