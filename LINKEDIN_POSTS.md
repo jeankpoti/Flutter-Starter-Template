@@ -1,10 +1,12 @@
-# 10 LinkedIn Posts for Math AI App
+# 10 LinkedIn Posts for MathGenie AI App
 
 ## Day 1: The Journey Begins 🚀
 
-Excited to share my latest project: Math AI - an intelligent math tutoring app that's changing how students learn mathematics! 
+Excited to share my latest project: MathGenie AI - an intelligent math tutoring app that's changing how students learn mathematics!
 
-After months of development, I'm proud to announce that Math AI combines:
+📱 Available now on the App Store: https://apps.apple.com/us/app/mathgenie-ai-solve-homework/id6746733499 
+
+After months of development, I'm proud to announce that MathGenie AI combines:
 🔹 Advanced AI technology for instant problem-solving
 🔹 Step-by-step explanations for better understanding
 🔹 Multi-language support (English, French, Spanish)
@@ -22,7 +24,7 @@ What math concepts did you struggle with in school? I'd love to hear your experi
 
 Did you know that 75% of students experience math anxiety at some point in their education?
 
-That's why I'm building Math AI. Here's what makes it different:
+That's why I'm building MathGenie AI. Here's what makes it different:
 
 ✅ Snap a photo of any math problem
 ✅ Get instant, detailed solutions
@@ -41,7 +43,7 @@ Building solutions that make education accessible to everyone is what drives me 
 
 For my fellow developers: Let's talk tech stack!
 
-Math AI is built with:
+MathGenie AI is built with:
 🔧 Frontend: Flutter (for beautiful cross-platform UI)
 🔧 Backend: Firebase (Auth, Firestore, Cloud Functions)
 🔧 AI: Advanced AI models for problem recognition & solving
@@ -67,7 +69,7 @@ What's your go-to tech stack for mobile apps?
 
 Great apps aren't just about code - they're about people.
 
-For Math AI, I spent weeks researching how students actually study math. Key insights:
+For MathGenie AI, I spent weeks researching how students actually study math. Key insights:
 
 🎯 Students want instant feedback
 🎯 Visual learners need step-by-step breakdowns
@@ -88,7 +90,7 @@ Remember: We're not just building apps, we're crafting experiences that can chan
 
 ## Day 5: The Power of AI in Education 🤖
 
-Implementing AI in Math AI taught me valuable lessons about the future of education:
+Implementing AI in MathGenie AI taught me valuable lessons about the future of education:
 
 🧠 AI doesn't replace teachers - it empowers them
 🧠 Personalized learning is now scalable
@@ -113,7 +115,7 @@ What are your thoughts on AI in education?
 
 Scaling a mobile app isn't just about handling more users - it's about maintaining quality at scale.
 
-For Math AI, I implemented:
+For MathGenie AI, I implemented:
 
 🔄 Efficient caching strategies
 🔄 Optimized database queries
@@ -136,7 +138,7 @@ What scaling challenges have you faced in your projects?
 
 ## Day 7: The Importance of Localization 🌍
 
-Math AI supports English, French, and Spanish - but localization is more than translation.
+MathGenie AI supports English, French, and Spanish - but localization is more than translation.
 
 It's about:
 🌐 Cultural context in examples
@@ -156,7 +158,7 @@ What's your experience with app localization?
 
 ## Day 8: Monetization Strategy 💰
 
-Let's talk business! Math AI uses a freemium model:
+Let's talk business! MathGenie AI uses a freemium model:
 
 FREE tier includes:
 • 5 problems solved daily
@@ -184,7 +186,7 @@ The goal: Make quality education accessible while building a sustainable busines
 
 ## Day 9: Lessons Learned 📝
 
-After months of development, here are my top lessons from building Math AI:
+After months of development, here are my top lessons from building MathGenie AI:
 
 1️⃣ User feedback is gold - iterate quickly
 2️⃣ Perfect is the enemy of launched
@@ -204,7 +206,7 @@ What's the most important lesson from your latest project?
 
 ## Day 10: What's Next? 🚀
 
-The journey doesn't end at launch! Here's what's coming to Math AI:
+The journey doesn't end at launch! Here's what's coming to MathGenie AI:
 
 🔮 Voice input for problems
 🔮 Collaborative study groups
@@ -217,9 +219,11 @@ But more importantly, I want to hear from YOU!
 
 What features would make math learning easier for students you know? What problems should we solve next?
 
-Building Math AI has been an incredible journey, and I'm grateful for all the support. Here's to making education accessible to everyone, one equation at a time!
+Building MathGenie AI has been an incredible journey, and I'm grateful for all the support. Here's to making education accessible to everyone, one equation at a time!
 
-#FutureVision #ProductRoadmap #CommunityFeedback #EdTechInnovation #MathAI
+📱 Download now: https://apps.apple.com/us/app/mathgenie-ai-solve-homework/id6746733499
+
+#FutureVision #ProductRoadmap #CommunityFeedback #EdTechInnovation #MathGenieAI
 
 ---
 

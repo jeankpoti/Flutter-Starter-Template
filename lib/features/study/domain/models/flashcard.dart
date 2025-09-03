@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 
 enum CardDifficulty {
   easy,
@@ -73,9 +74,16 @@ class FlashCard extends Equatable {
   }
 
   factory FlashCard.fromMap(Map<String, dynamic> map) {
+    // Handle legacy data that might not have userId
+    String userId = map['userId'] ?? '';
+    if (userId.isEmpty) {
+      // For legacy cards without userId, we'll need to handle this gracefully
+      debugPrint('Warning: FlashCard ${map['id']} missing userId field');
+    }
+    
     return FlashCard(
       id: map['id'] ?? '',
-      userId: map['userId'] ?? '',
+      userId: userId,
       deckId: map['deckId'] ?? '',
       front: map['front'] ?? '',
       back: map['back'] ?? '',

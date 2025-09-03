@@ -1,4 +1,6 @@
+import 'dart:developer' as dev;
 import 'dart:math';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import '../../../solve_math/data/repository/gemini_solve_math_repo.dart';
@@ -25,9 +27,21 @@ class FlashcardService {
     _geminiService ??= GeminiSolveMathRepo();
     _flashcardRepository ??= FlashcardRepository();
     
+    // Check authentication
+    final currentUser = FirebaseAuth.instance.currentUser;
+    dev.log('FlashcardService: Current user: ${currentUser?.uid}', name: 'FlashcardService');
+    dev.log('FlashcardService: User email: ${currentUser?.email}', name: 'FlashcardService');
+    
+    if (currentUser == null) {
+      dev.log('FlashcardService: No authenticated user found!', name: 'FlashcardService');
+      throw Exception('User must be authenticated to use flashcard service');
+    }
+    
     if (!_geminiService!.isInitialized) {
       await _geminiService!.initialize();
     }
+    
+    dev.log('FlashcardService: Initialization completed', name: 'FlashcardService');
   }
 
   /// Generate flashcards from study materials using AI
@@ -67,10 +81,18 @@ class FlashcardService {
     );
 
     // Save deck and cards
+    dev.log('FlashcardService: Creating deck: ${deck.name} with ${cards.length} cards', name: 'FlashcardService');
     await _flashcardRepository!.createDeck(deck);
-    for (final card in cards) {
+    dev.log('FlashcardService: Deck created, now saving ${cards.length} cards...', name: 'FlashcardService');
+    
+    for (int i = 0; i < cards.length; i++) {
+      final card = cards[i];
+      dev.log('FlashcardService: Saving card ${i + 1}/${cards.length}: ${card.front.substring(0, min(50, card.front.length))}...', name: 'FlashcardService');
       await _flashcardRepository!.createCard(card.copyWith(deckId: deck.id));
+      dev.log('FlashcardService: Card ${i + 1} saved successfully', name: 'FlashcardService');
     }
+    
+    dev.log('FlashcardService: All cards saved successfully', name: 'FlashcardService');
 
     return deck;
   }
@@ -124,6 +146,8 @@ class FlashcardService {
         hint: question.hint,
         tags: question.relatedTopics,
         createdAt: DateTime.now(),
+        nextReviewAt: null, // Make immediately available for review
+        isActive: true, // Explicitly set as active
       );
       
       cards.add(card);
@@ -168,7 +192,11 @@ class FlashcardService {
     final response = await _geminiService!.generateTextContent(prompt);
     final flashcardText = response.text ?? '';
     
-    return _parseFlashcardsFromAIResponse(flashcardText);
+    final cards = _parseFlashcardsFromAIResponse(flashcardText);
+    
+    // Ensure all AI-generated cards have userId
+    final userId = FirebaseAuth.instance.currentUser?.uid ?? '';
+    return cards.map((card) => card.copyWith(userId: userId)).toList();
   }
 
   /// Get flashcard generation prompt
@@ -298,6 +326,10 @@ Continúa este patrón para todas las $cardCount tarjetas de memoria.''',
     }
     
     final userId = FirebaseAuth.instance.currentUser?.uid ?? '';
+    if (userId.isEmpty) {
+      dev.log('FlashcardService: Warning - No authenticated user when creating flashcard', name: 'FlashcardService');
+    }
+    
     return FlashCard(
       id: _generateId(),
       userId: userId,
@@ -307,6 +339,8 @@ Continúa este patrón para todas las $cardCount tarjetas de memoria.''',
       hint: hint,
       tags: tags,
       createdAt: DateTime.now(),
+      nextReviewAt: null, // Make immediately available for review
+      isActive: true, // Explicitly set as active
     );
   }
 
@@ -360,8 +394,12 @@ Continúa este patrón para todas las $cardCount tarjetas de memoria.''',
   /// Get cards due for review in a deck
   Future<List<FlashCard>> getDueCards(String deckId, {int limit = 20}) async {
     try {
+      dev.log('FlashcardService: Getting due cards for deck $deckId', name: 'FlashcardService');
       final allCards = await _flashcardRepository!.getCardsInDeck(deckId);
+      dev.log('FlashcardService: Found ${allCards.length} total cards in deck', name: 'FlashcardService');
+      
       final dueCards = allCards.where((card) => card.isDue && card.isActive).toList();
+      dev.log('FlashcardService: Found ${dueCards.length} due cards', name: 'FlashcardService');
       
       // Sort by priority: new cards first, then by due date
       dueCards.sort((a, b) {
@@ -375,7 +413,20 @@ Continúa este patrón para todas las $cardCount tarjetas de memoria.''',
       
       return dueCards.take(limit).toList();
     } catch (e) {
-      debugPrint('Error getting due cards: $e');
+      dev.log('FlashcardService: Error getting due cards: $e', name: 'FlashcardService', error: e);
+      return [];
+    }
+  }
+
+  /// Get all cards in a deck (for review when no due cards)
+  Future<List<FlashCard>> getAllCardsInDeck(String deckId) async {
+    try {
+      dev.log('FlashcardService: Getting all cards for deck $deckId', name: 'FlashcardService');
+      final cards = await _flashcardRepository!.getCardsInDeck(deckId);
+      dev.log('FlashcardService: Found ${cards.length} cards in deck', name: 'FlashcardService');
+      return cards;
+    } catch (e) {
+      dev.log('FlashcardService: Error getting all cards: $e', name: 'FlashcardService', error: e);
       return [];
     }
   }
@@ -421,9 +472,13 @@ Continúa este patrón para todas las $cardCount tarjetas de memoria.''',
       hint: hint,
       tags: tags,
       createdAt: DateTime.now(),
+      // Explicitly set nextReviewAt to null for new cards to make them due
+      nextReviewAt: null,
     );
     
+    dev.log('FlashcardService: Creating card - isNew: ${card.isNew}, isDue: ${card.isDue}', name: 'FlashcardService');
     await _flashcardRepository!.createCard(card);
+    dev.log('FlashcardService: Card created successfully: ${card.id}', name: 'FlashcardService');
     
     // Update deck card count
     final deck = await _flashcardRepository!.getDeck(deckId);
@@ -432,6 +487,7 @@ Continúa este patrón para todas las $cardCount tarjetas de memoria.''',
         cardCount: deck.cardCount + 1,
         newCardCount: deck.newCardCount + 1,
       ));
+      dev.log('FlashcardService: Updated deck card counts', name: 'FlashcardService');
     }
     
     return card;
@@ -440,9 +496,12 @@ Continúa este patrón para todas las $cardCount tarjetas de memoria.''',
   /// Get all decks for current user
   Future<List<FlashCardDeck>> getUserDecks() async {
     try {
-      return await _flashcardRepository!.getUserDecks();
+      dev.log('FlashcardService: Getting user decks...', name: 'FlashcardService');
+      final result = await _flashcardRepository!.getUserDecks();
+      dev.log('FlashcardService: Got ${result.length} decks', name: 'FlashcardService');
+      return result;
     } catch (e) {
-      debugPrint('Error getting user decks: $e');
+      dev.log('FlashcardService: Error getting user decks: $e', name: 'FlashcardService', error: e);
       return [];
     }
   }
@@ -589,4 +648,5 @@ Continúa este patrón para todas las $cardCount tarjetas de memoria.''',
       rethrow;
     }
   }
+
 }
