@@ -9,6 +9,7 @@ import '../../../domain/models/flashcard.dart';
 import '../../../domain/models/study_material.dart';
 import '../../../domain/models/quiz.dart';
 import '../../flashcard_review_page.dart';
+import '../../flashcard_deck_page.dart';
 import 'flashcard_deck_creation_dialog_widget.dart';
 
 class FlashcardsTab extends StatefulWidget {
@@ -386,12 +387,36 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
                     itemBuilder:
                         (context) => [
                           const PopupMenuItem(
+                            value: 'manage',
+                            child: ListTile(
+                              leading: Icon(Icons.settings_rounded),
+                              title: Text('Manage Cards'),
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                          ),
+                          const PopupMenuItem(
+                            value: 'study',
+                            child: ListTile(
+                              leading: Icon(Icons.school_rounded),
+                              title: Text('Study'),
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                          ),
+                          const PopupMenuItem(
                             value: 'edit',
-                            child: Text('Edit'),
+                            child: ListTile(
+                              leading: Icon(Icons.edit_rounded),
+                              title: Text('Edit Deck'),
+                              contentPadding: EdgeInsets.zero,
+                            ),
                           ),
                           const PopupMenuItem(
                             value: 'delete',
-                            child: Text('Delete'),
+                            child: ListTile(
+                              leading: Icon(Icons.delete_rounded),
+                              title: Text('Delete'),
+                              contentPadding: EdgeInsets.zero,
+                            ),
                           ),
                         ],
                   ),
@@ -667,14 +692,24 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
   }
 
   void _openDeck(FlashCardDeck deck) {
-    // Navigate to deck view/review
+    // Navigate to deck management page
     Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => FlashcardReviewPage(deck: deck)),
+      MaterialPageRoute(builder: (context) => FlashcardDeckPage(deck: deck)),
     );
   }
 
   void _handleDeckAction(FlashCardDeck deck, String action) async {
     switch (action) {
+      case 'manage':
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => FlashcardDeckPage(deck: deck)),
+        );
+        break;
+      case 'study':
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => FlashcardReviewPage(deck: deck)),
+        );
+        break;
       case 'edit':
         // TODO: Show edit deck dialog
         AppSnackBar.showInfo(context, 'Edit deck coming soon!');
