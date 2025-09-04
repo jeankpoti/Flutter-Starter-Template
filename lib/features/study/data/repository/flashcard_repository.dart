@@ -100,10 +100,16 @@ class FlashcardRepository {
   /// Delete a deck and all its cards
   Future<void> deleteDeck(String deckId) async {
     try {
-      // Delete all cards in the deck first
+      final userId = _userId;
+      dev.log('FlashcardRepository: Deleting deck $deckId for user $userId', name: 'FlashcardRepository');
+      
+      // Delete all cards in the deck first - use userId in query for security rules
       final cardsQuery = await _cardsCollection
+          .where('userId', isEqualTo: userId)
           .where('deckId', isEqualTo: deckId)
           .get();
+
+      dev.log('FlashcardRepository: Found ${cardsQuery.docs.length} cards to delete', name: 'FlashcardRepository');
 
       final batch = _firestore.batch();
 
@@ -116,9 +122,9 @@ class FlashcardRepository {
       batch.delete(_decksCollection.doc(deckId));
 
       await batch.commit();
-      debugPrint('Deck and all its cards deleted successfully: $deckId');
+      dev.log('FlashcardRepository: Deck and all its cards deleted successfully: $deckId', name: 'FlashcardRepository');
     } catch (e) {
-      debugPrint('Error deleting deck: $e');
+      dev.log('FlashcardRepository: Error deleting deck: $e', name: 'FlashcardRepository', error: e);
       rethrow;
     }
   }
@@ -185,18 +191,23 @@ class FlashcardRepository {
   /// Get due cards for a deck
   Future<List<FlashCard>> getDueCardsInDeck(String deckId, {int limit = 20}) async {
     try {
-      // Get cards that are due (nextReviewAt is null or in the past)
+      final userId = _userId;
+      dev.log('FlashcardRepository: Getting due cards for deckId: $deckId, userId: $userId', name: 'FlashcardRepository');
+      
+      // Get cards that are due (nextReviewAt is null or in the past) - include userId for security rules
       final query = await _cardsCollection
+          .where('userId', isEqualTo: userId)
           .where('deckId', isEqualTo: deckId)
-          .where('isActive', isEqualTo: true)
           .limit(limit * 2) // Get more than needed to filter properly
           .get();
 
       final cards = query.docs
           .map((doc) => FlashCard.fromMap(doc.data() as Map<String, dynamic>))
-          .where((card) => card.isDue)
+          .where((card) => card.isActive && card.isDue)
           .take(limit)
           .toList();
+
+      dev.log('FlashcardRepository: Found ${cards.length} due cards after filtering', name: 'FlashcardRepository');
 
       // Sort by priority: new cards first, then by due date
       cards.sort((a, b) {
@@ -418,13 +429,13 @@ class FlashcardRepository {
   /// Stream cards in deck
   Stream<List<FlashCard>> streamCardsInDeck(String deckId) {
     return _cardsCollection
+        .where('userId', isEqualTo: _userId)
         .where('deckId', isEqualTo: deckId)
-        .where('isActive', isEqualTo: true)
-        .orderBy('createdAt', descending: false)
         .snapshots()
         .map((query) {
       return query.docs
           .map((doc) => FlashCard.fromMap(doc.data() as Map<String, dynamic>))
+          .where((card) => card.isActive)
           .toList();
     });
   }

@@ -1,8 +1,6 @@
 import 'dart:developer' as dev;
 import 'package:flutter/material.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '../../../l10n/app_localizations.dart';
 import '../../../common_widgets/text_widgets.dart';
 import '../../../common_widgets/app_snackbar_widget.dart';
 import '../domain/models/flashcard.dart';
