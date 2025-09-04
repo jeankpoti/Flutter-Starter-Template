@@ -39,9 +39,11 @@ class _FlashcardDeckCreationDialogWidgetState extends State<FlashcardDeckCreatio
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      backgroundColor: Theme.of(context).colorScheme.surface,
       title: TitleMediumText(
         'Create New Deck',
         fontWeight: FontWeight.bold,
+        color: Theme.of(context).colorScheme.onSurface,
       ),
       content: SizedBox(
         width: double.maxFinite,
@@ -59,9 +61,22 @@ class _FlashcardDeckCreationDialogWidgetState extends State<FlashcardDeckCreatio
                 labelText: 'Deck Name',
                 hintText: 'Enter deck name',
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                prefixIcon: const Icon(Icons.style),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.secondary,
+                    width: 2,
+                  ),
+                ),
+                prefixIcon: Icon(
+                  Icons.style,
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
+                labelStyle: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                ),
               ),
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
@@ -73,7 +88,7 @@ class _FlashcardDeckCreationDialogWidgetState extends State<FlashcardDeckCreatio
               textCapitalization: TextCapitalization.words,
             ),
             
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             
             // Description field
             TextFormField(
@@ -82,23 +97,36 @@ class _FlashcardDeckCreationDialogWidgetState extends State<FlashcardDeckCreatio
                 labelText: 'Description (Optional)',
                 hintText: 'Brief description of the deck',
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                prefixIcon: const Icon(Icons.description),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(
+                    color: Theme.of(context).colorScheme.secondary,
+                    width: 2,
+                  ),
+                ),
+                prefixIcon: Icon(
+                  Icons.description,
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
+                labelStyle: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                ),
               ),
               maxLines: 2,
               minLines: 1,
               textCapitalization: TextCapitalization.sentences,
             ),
             
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             
             // Color selection
             LabelMediumText(
               'Deck Color (Optional)',
               color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             
             Wrap(
               spacing: 12,
@@ -119,15 +147,15 @@ class _FlashcardDeckCreationDialogWidgetState extends State<FlashcardDeckCreatio
                       shape: BoxShape.circle,
                       border: Border.all(
                         color: isSelected 
-                            ? Theme.of(context).colorScheme.primary
-                            : Colors.transparent,
-                        width: 3,
+                            ? Theme.of(context).colorScheme.secondary
+                            : Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+                        width: isSelected ? 3 : 1,
                       ),
                     ),
                     child: isSelected
                         ? Icon(
                             Icons.check,
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.onSecondary,
                             size: 20,
                           )
                         : null,
@@ -143,11 +171,23 @@ class _FlashcardDeckCreationDialogWidgetState extends State<FlashcardDeckCreatio
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
+          style: TextButton.styleFrom(
+            foregroundColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+          ),
           child: Text(AppLocalizations.of(context)!.cancel),
         ),
         FilledButton(
           onPressed: _createDeck,
-          child: const Text('Create Deck'),
+          style: FilledButton.styleFrom(
+            backgroundColor: Theme.of(context).colorScheme.secondary,
+            foregroundColor: Theme.of(context).colorScheme.onSecondary,
+          ),
+          child: Text(
+            'Create Deck',
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSecondary,
+            ),
+          ),
         ),
       ],
     );

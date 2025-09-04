@@ -1,16 +1,17 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../common_widgets/text_widgets.dart';
 import '../../../../../common_widgets/app_snackbar_widget.dart';
-import '../../../data/services/flashcard_service.dart';
+import '../../cubit/flashcard_cubit.dart';
 import '../../../domain/models/flashcard.dart';
 import '../../../domain/models/study_material.dart';
 import '../../../domain/models/quiz.dart';
 import '../../flashcard_review_page.dart';
 import '../../flashcard_deck_page.dart';
 import 'flashcard_deck_creation_dialog_widget.dart';
+import 'flashcard_deck_edit_dialog_widget.dart';
 
 class FlashcardsTab extends StatefulWidget {
   final List<StudyMaterial> studyMaterials;
@@ -29,122 +30,93 @@ class FlashcardsTab extends StatefulWidget {
 }
 
 class _FlashcardsTabState extends State<FlashcardsTab> {
-  final FlashcardService _flashcardService = FlashcardService();
-  List<FlashCardDeck> _decks = [];
-  bool _isLoading = true;
-  String? _errorMessage;
-
   @override
   void initState() {
     super.initState();
-    _initializeService();
+    _initializeAndLoad();
   }
 
-  Future<void> _initializeService() async {
-    try {
-      log(
-        'FlashcardsTab: Initializing flashcard service...',
-        name: 'FlashcardsTab',
-      );
-      await _flashcardService.initialize();
-      log(
-        'FlashcardsTab: Service initialized, loading decks...',
-        name: 'FlashcardsTab',
-      );
-      await _loadDecks();
-    } catch (e) {
-      log(
-        'FlashcardsTab: Error during initialization: $e',
-        name: 'FlashcardsTab',
-        error: e,
-      );
-      if (mounted) {
-        setState(() {
-          _errorMessage = e.toString();
-          _isLoading = false;
-        });
-      }
-    }
-  }
-
-  Future<void> _loadDecks() async {
-    try {
-      log('FlashcardsTab: Starting to load decks...', name: 'FlashcardsTab');
-      setState(() => _isLoading = true);
-      final decks = await _flashcardService.getUserDecks();
-      log('FlashcardsTab: Loaded ${decks.length} decks', name: 'FlashcardsTab');
-      if (mounted) {
-        setState(() {
-          _decks = decks;
-          _isLoading = false;
-          _errorMessage = null;
-        });
-      }
-    } catch (e) {
-      log(
-        'FlashcardsTab: Error loading decks: $e',
-        name: 'FlashcardsTab',
-        error: e,
-      );
-      if (mounted) {
-        setState(() {
-          _errorMessage = e.toString();
-          _isLoading = false;
-        });
-      }
-    }
+  Future<void> _initializeAndLoad() async {
+    final flashcardCubit = context.read<FlashcardCubit>();
+    await flashcardCubit.initialize();
+    await flashcardCubit.loadUserDecks();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
+    return BlocListener<FlashcardCubit, FlashcardState>(
+      listener: (context, state) {
+        if (state.errorMsg != null) {
+          AppSnackBar.showError(context, state.errorMsg!);
+          // Clear the message after showing it
+          Future.microtask(() {
+            if (context.mounted) {
+              context.read<FlashcardCubit>().clearMessages();
+            }
+          });
+        }
+        if (state.isSuccess) {
+          // Success messages are shown contextually
+          Future.microtask(() {
+            if (context.mounted) {
+              context.read<FlashcardCubit>().clearMessages();
+            }
+          });
+        }
+      },
+      child: BlocBuilder<FlashcardCubit, FlashcardState>(
+        builder: (context, state) {
+          if (state.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-    if (_errorMessage != null) {
-      return _buildErrorState();
-    }
+          if (state.errorMsg != null) {
+            return _buildErrorState(state.errorMsg!);
+          }
 
-    return RefreshIndicator(
-      onRefresh: _loadDecks,
-      child: CustomScrollView(
-        slivers: [
-          // Header with stats
-          SliverToBoxAdapter(child: _buildHeader()),
+          return RefreshIndicator(
+            onRefresh: () => context.read<FlashcardCubit>().loadUserDecks(),
+            child: CustomScrollView(
+              slivers: [
+                // Header with stats
+                SliverToBoxAdapter(child: _buildHeader(state.decks)),
 
-          // Quick actions
-          SliverToBoxAdapter(child: _buildQuickActions()),
+                // Quick actions
+                SliverToBoxAdapter(child: _buildQuickActions()),
 
-          // Decks list or empty state
-          if (_decks.isEmpty)
-            SliverFillRemaining(child: _buildEmptyState())
-          else
-            SliverPadding(
-              padding: const EdgeInsets.all(16.0),
-              sliver: SliverGrid(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 1.2,
-                  crossAxisSpacing: 12.0,
-                  mainAxisSpacing: 12.0,
-                ),
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) => _buildDeckCard(_decks[index]),
-                  childCount: _decks.length,
-                ),
-              ),
+                // Decks list or empty state
+                if (state.decks.isEmpty)
+                  SliverFillRemaining(child: _buildEmptyState())
+                else
+                  SliverPadding(
+                    padding: const EdgeInsets.all(16.0),
+                    sliver: SliverGrid(
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        childAspectRatio: 1.2,
+                        crossAxisSpacing: 12.0,
+                        mainAxisSpacing: 12.0,
+                      ),
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) => _buildDeckCard(state.decks[index]),
+                        childCount: state.decks.length,
+                      ),
+                    ),
+                  ),
+              ],
             ),
-        ],
+          );
+        },
       ),
     );
   }
 
-  Widget _buildHeader() {
-    final totalCards = _decks.fold<int>(
+  Widget _buildHeader(List<FlashCardDeck> decks) {
+    final totalCards = decks.fold<int>(
       0,
       (sum, deck) => sum + (deck.cardCount),
     );
-    final dueCards = _decks.fold<int>(
+    final dueCards = decks.fold<int>(
       0,
       (sum, deck) => sum + (deck.dueCardCount),
     );
@@ -203,7 +175,7 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
             children: [
               _buildStatChip(
                 icon: FontAwesomeIcons.layerGroup,
-                label: '${_decks.length} Decks',
+                label: '${decks.length} Decks',
                 color: Theme.of(context).colorScheme.primary,
               ),
               const SizedBox(width: 12),
@@ -528,7 +500,7 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
     );
   }
 
-  Widget _buildErrorState() {
+  Widget _buildErrorState(String errorMessage) {
     return SingleChildScrollView(
       child: ConstrainedBox(
         constraints: const BoxConstraints(minHeight: 300),
@@ -551,7 +523,7 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
               ),
               const SizedBox(height: 8),
               BodyMediumText(
-                _errorMessage ?? 'Something went wrong',
+                errorMessage,
                 textAlign: TextAlign.center,
                 color: Theme.of(
                   context,
@@ -559,7 +531,7 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
               ),
               const SizedBox(height: 24),
               FilledButton.icon(
-                onPressed: _loadDecks,
+                onPressed: () => context.read<FlashcardCubit>().loadUserDecks(),
                 icon: const Icon(Icons.refresh),
                 label: const Text('Retry'),
               ),
@@ -598,6 +570,22 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
     );
   }
 
+  void _showEditDeckDialog(FlashCardDeck deck) {
+    showDialog(
+      context: context,
+      builder:
+          (context) => FlashcardDeckEditDialogWidget(
+            deck: deck,
+            onUpdateDeck: ({required String name, String? description, String? color}) => _updateDeck(
+              deck: deck,
+              name: name,
+              description: description,
+              color: color,
+            ),
+          ),
+    );
+  }
+
   void _showGenerateDialog() {
     showModalBottomSheet(
       context: context,
@@ -621,7 +609,7 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
                     Icons.library_books,
                     color: Theme.of(context).colorScheme.primary,
                   ),
-                  title: const Text('From Study Materials'),
+                  title: const Text('From Selected Materials'),
                   subtitle: Text(
                     '${widget.studyMaterials.length} materials available',
                   ),
@@ -632,15 +620,14 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
                 ),
                 ListTile(
                   leading: Icon(
-                    Icons.quiz,
+                    Icons.auto_awesome_rounded,
                     color: Theme.of(context).colorScheme.secondary,
                   ),
-                  title: const Text('From Recent Quiz'),
-                  subtitle: const Text('Convert quiz questions to flashcards'),
+                  title: const Text('Generate with All Materials'),
+                  subtitle: const Text('Create comprehensive flashcards from all study materials'),
                   onTap: () {
                     Navigator.pop(context);
-                    // TODO: Show quiz selection dialog
-                    _showQuizSelectionDialog();
+                    _generateFromAllMaterials();
                   },
                 ),
                 const SizedBox(height: 16),
@@ -659,9 +646,13 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
     );
   }
 
-  void _showQuizSelectionDialog() {
-    // TODO: Implement quiz selection dialog
-    AppSnackBar.showInfo(context, 'Quiz selection coming soon!');
+  void _generateFromAllMaterials() {
+    // Generate flashcards from all available study materials
+    widget.onGenerateFromMaterials(
+      widget.studyMaterials,
+      'Comprehensive Flashcards: ${DateTime.now().day}/${DateTime.now().month}',
+      'Generated from all study materials',
+    );
   }
 
   Future<void> _createManualDeck({
@@ -669,25 +660,32 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
     String? description,
     String? color,
   }) async {
-    try {
-      await _flashcardService.createDeck(
-        name: name,
-        description: description,
-        color: color,
-      );
+    await context.read<FlashcardCubit>().createDeck(
+      name: name,
+      description: description,
+      color: color,
+    );
+    
+    if (mounted) {
+      AppSnackBar.showSuccess(context, 'Deck created successfully!');
+    }
+  }
 
-      await _loadDecks();
-
-      if (mounted) {
-        AppSnackBar.showSuccess(context, 'Deck created successfully!');
-      }
-    } catch (e) {
-      if (mounted) {
-        AppSnackBar.showError(
-          context,
-          'Failed to create deck: ${e.toString()}',
-        );
-      }
+  Future<void> _updateDeck({
+    required FlashCardDeck deck,
+    required String name,
+    String? description,
+    String? color,
+  }) async {
+    await context.read<FlashcardCubit>().updateDeck(
+      deck: deck,
+      name: name,
+      description: description,
+      color: color,
+    );
+    
+    if (mounted) {
+      AppSnackBar.showSuccess(context, 'Deck updated successfully!');
     }
   }
 
@@ -711,8 +709,7 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
         );
         break;
       case 'edit':
-        // TODO: Show edit deck dialog
-        AppSnackBar.showInfo(context, 'Edit deck coming soon!');
+        _showEditDeckDialog(deck);
         break;
       case 'delete':
         final confirmed = await showDialog<bool>(
@@ -740,16 +737,9 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
         );
 
         if (confirmed == true) {
-          try {
-            await _flashcardService.deleteDeck(deck.id);
-            await _loadDecks();
-            if (mounted) {
-              AppSnackBar.showSuccess(context, 'Deck deleted successfully');
-            }
-          } catch (e) {
-            if (mounted) {
-              AppSnackBar.showError(context, 'Failed to delete deck');
-            }
+          await context.read<FlashcardCubit>().deleteDeck(deck.id);
+          if (mounted) {
+            AppSnackBar.showSuccess(context, 'Deck deleted successfully');
           }
         }
         break;

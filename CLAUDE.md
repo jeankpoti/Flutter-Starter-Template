@@ -93,6 +93,17 @@ Reusable UI components following consistent naming:
 - `*_widget.dart` - All custom widgets end with "widget"
 - Organized by component type (buttons, text, form fields, etc.)
 
+### lib/features/study/presentation/widgets/
+Feature-specific reusable components organized by functionality:
+- `review/` - Flashcard review components (refactored from large review page)
+  - `flashcard_display_widget.dart` - Card display with flip animations and math rendering
+  - `flashcard_completion_dialog.dart` - Review completion statistics dialog  
+  - `flashcard_review_buttons.dart` - Spaced repetition rating buttons
+- `deck/` - Flashcard deck management components (refactored from large deck page)
+  - `deck_stats_header_widget.dart` - Statistics header with card counts
+  - `flashcard_item_widget.dart` - Individual card display in lists
+  - `card_edit_dialog_widget.dart` - Card creation/editing dialog
+
 ### Platform-specific Files
 - `android/` - Android configuration and native code
 - `ios/` - iOS configuration and native code  
@@ -656,6 +667,13 @@ lib/common_widgets/
 
 ## Development Guidelines
 
+### File Size Limits
+- **CRITICAL**: Every file must be **400 lines or less**
+- **UI files are especially important** - break down large widgets into smaller components
+- If a file exceeds 400 lines, immediately refactor it into multiple smaller files
+- Extract reusable components into separate widget files
+- Use composition over large monolithic widgets
+
 ### Architecture Guidelines
 - Follow the existing Cubit pattern for new features
 - Use the established repository pattern for data access
@@ -680,6 +698,33 @@ lib/common_widgets/
 - Keep functions and widgets focused and single-purpose
 - Use const constructors where possible for performance
 - Avoid deep widget nesting - break complex widgets into smaller components
+
+### Component Refactoring Guidelines
+When a UI file exceeds 400 lines, follow these refactoring patterns:
+1. **Extract Display Components**: Create separate widgets for complex UI sections
+2. **Extract Dialog Components**: Move dialog widgets to separate files with static show methods
+3. **Extract Helper Widgets**: Create reusable components for repeated UI patterns
+4. **Preserve Exact Functionality**: Ensure refactored components maintain identical behavior
+5. **Maintain Design Consistency**: Keep exact styling, animations, and interactions
+6. **Use Composition**: Replace large methods with smaller, composed widgets
+
+**Example Refactoring Pattern**:
+```dart
+// Before: Large page file (800+ lines)
+class LargePage extends StatefulWidget { ... }
+
+// After: Main page (< 400 lines) + components
+class LargePage extends StatefulWidget { 
+  // Uses: HeaderWidget, ItemWidget, DialogWidget
+}
+
+// Separate component files (< 400 lines each)
+class HeaderWidget extends StatelessWidget { ... }
+class ItemWidget extends StatelessWidget { ... }  
+class DialogWidget extends StatefulWidget {
+  static void show(BuildContext context) { ... }
+}
+```
 
 ## Firebase Security Rules
 

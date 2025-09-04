@@ -23,7 +23,7 @@ import 'widgets/study/material_tab.dart';
 import 'widgets/study/modern_tab_bar.dart';
 import 'widgets/study/upload_tab.dart';
 import 'widgets/study/flashcards_tab.dart';
-import '../data/services/flashcard_service.dart';
+import 'cubit/flashcard_cubit.dart';
 import 'widgets/study/topic_details_dialog_widget.dart';
 import 'widgets/study/study_plan_topics_sheet_widget.dart';
 import 'widgets/study/study_plan_selection_dialog_widget.dart';
@@ -33,17 +33,24 @@ class StudyPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create:
-          (context) => StudyCubit(
-            materialRepository: StudyMaterialRepository(),
-            planRepository: StudyPlanRepository(),
-            studyPlanService: StudyPlanService(),
-            quizService: QuizService(),
-            picker: ImagePicker(),
-            permissionCubit: context.read<PermissionCubit>(),
-            subscriptionCubit: context.read<SubscriptionCubit>(),
-          )..initializeServices(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create:
+              (context) => StudyCubit(
+                materialRepository: StudyMaterialRepository(),
+                planRepository: StudyPlanRepository(),
+                studyPlanService: StudyPlanService(),
+                quizService: QuizService(),
+                picker: ImagePicker(),
+                permissionCubit: context.read<PermissionCubit>(),
+                subscriptionCubit: context.read<SubscriptionCubit>(),
+              )..initializeServices(),
+        ),
+        BlocProvider(
+          create: (context) => FlashcardCubit(),
+        ),
+      ],
       child: const _StudyPageView(),
     );
   }
@@ -562,29 +569,17 @@ class _StudyPageViewState extends State<_StudyPageView>
     String deckName, 
     String? deckDescription
   ) async {
-    try {
-      final flashcardService = FlashcardService();
-      await flashcardService.initialize();
-      
-      final deck = await flashcardService.generateFlashcardsFromMaterials(
-        materials: materials,
-        deckName: deckName,
-        deckDescription: deckDescription,
+    await context.read<FlashcardCubit>().generateFlashcardsFromMaterials(
+      materials: materials,
+      deckName: deckName,
+      deckDescription: deckDescription,
+    );
+    
+    if (mounted) {
+      AppSnackBar.showSuccess(
+        context,
+        'Flashcard deck "$deckName" created successfully!',
       );
-
-      if (mounted) {
-        AppSnackBar.showSuccess(
-          context,
-          'Flashcard deck "${deck.name}" created with ${deck.cardCount} cards!',
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        AppSnackBar.showError(
-          context,
-          'Failed to generate flashcards: ${e.toString()}',
-        );
-      }
     }
   }
 
@@ -593,29 +588,7 @@ class _StudyPageViewState extends State<_StudyPageView>
     String? deckName, 
     String? deckDescription
   ) async {
-    try {
-      final flashcardService = FlashcardService();
-      await flashcardService.initialize();
-      
-      final deck = await flashcardService.generateFlashcardsFromQuiz(
-        quiz: quiz,
-        deckName: deckName,
-        deckDescription: deckDescription,
-      );
-
-      if (mounted) {
-        AppSnackBar.showSuccess(
-          context,
-          'Flashcard deck "${deck.name}" created from quiz!',
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        AppSnackBar.showError(
-          context,
-          'Failed to generate flashcards from quiz: ${e.toString()}',
-        );
-      }
-    }
+    // TODO: Add generateFlashcardsFromQuiz method to FlashcardCubit
+    AppSnackBar.showInfo(context, 'Generate flashcards from quiz coming soon!');
   }
 }

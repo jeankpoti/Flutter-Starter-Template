@@ -1,34 +1,44 @@
-import 'dart:developer' as dev;
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../common_widgets/text_widgets.dart';
 import '../../../common_widgets/app_snackbar_widget.dart';
 import '../domain/models/flashcard.dart';
-import '../data/services/flashcard_service.dart';
 import 'widgets/review/flashcard_display_widget.dart';
 import 'widgets/review/flashcard_completion_dialog.dart';
 import 'widgets/review/flashcard_review_buttons.dart';
+import 'cubit/flashcard_review_cubit.dart';
 
-class FlashcardReviewPage extends StatefulWidget {
+class FlashcardReviewPage extends StatelessWidget {
   final FlashCardDeck deck;
 
   const FlashcardReviewPage({super.key, required this.deck});
 
   @override
-  State<FlashcardReviewPage> createState() => _FlashcardReviewPageState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create:
+          (context) =>
+              FlashcardReviewCubit()
+                ..initialize()
+                ..startReviewSession(deck.id),
+      child: _FlashcardReviewPageView(deck: deck),
+    );
+  }
 }
 
-class _FlashcardReviewPageState extends State<FlashcardReviewPage>
-    with SingleTickerProviderStateMixin {
-  final FlashcardService _flashcardService = FlashcardService();
-  List<FlashCard> _cards = [];
-  int _currentCardIndex = 0;
-  bool _isLoading = true;
-  bool _showAnswer = false;
-  String? _errorMessage;
+class _FlashcardReviewPageView extends StatefulWidget {
+  final FlashCardDeck deck;
 
-  ReviewSession? _currentSession;
-  int _sessionCorrectAnswers = 0;
-  Map<String, int> _sessionResults = {};
+  const _FlashcardReviewPageView({required this.deck});
+
+  @override
+  State<_FlashcardReviewPageView> createState() =>
+      _FlashcardReviewPageViewState();
+}
+
+class _FlashcardReviewPageViewState extends State<_FlashcardReviewPageView>
+    with SingleTickerProviderStateMixin {
+  bool _showAnswer = false;
 
   late AnimationController _flipController;
   late Animation<double> _flipAnimation;
@@ -44,87 +54,12 @@ class _FlashcardReviewPageState extends State<FlashcardReviewPage>
     _flipAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _flipController, curve: Curves.easeInOut),
     );
-    _initializeReview();
   }
 
   @override
   void dispose() {
     _flipController.dispose();
     super.dispose();
-  }
-
-  Future<void> _initializeReview() async {
-    try {
-      dev.log(
-        'FlashcardReview: Initializing review for deck ${widget.deck.id}',
-        name: 'FlashcardReview',
-      );
-      await _flashcardService.initialize();
-
-      // First try to get due cards
-      final dueCards = await _flashcardService.getDueCards(
-        widget.deck.id,
-        limit: 20,
-      );
-      dev.log(
-        'FlashcardReview: Found ${dueCards.length} due cards',
-        name: 'FlashcardReview',
-      );
-
-      List<FlashCard> cards = dueCards;
-
-      // If no due cards, get all cards in the deck for review
-      if (cards.isEmpty) {
-        dev.log(
-          'FlashcardReview: No due cards, getting all cards in deck',
-          name: 'FlashcardReview',
-        );
-        final allCards = await _flashcardService.getAllCardsInDeck(
-          widget.deck.id,
-        );
-        cards = allCards.take(20).toList(); // Limit to 20 cards
-        dev.log(
-          'FlashcardReview: Found ${cards.length} total cards in deck',
-          name: 'FlashcardReview',
-        );
-      }
-
-      if (cards.isEmpty) {
-        dev.log(
-          'FlashcardReview: No cards found in deck at all',
-          name: 'FlashcardReview',
-        );
-        setState(() {
-          _errorMessage = 'No cards found in this deck';
-          _isLoading = false;
-        });
-        return;
-      }
-
-      final session = await _flashcardService.startReviewSession(
-        widget.deck.id,
-      );
-      dev.log(
-        'FlashcardReview: Started review session ${session.id}',
-        name: 'FlashcardReview',
-      );
-
-      setState(() {
-        _cards = cards;
-        _currentSession = session;
-        _isLoading = false;
-      });
-    } catch (e) {
-      dev.log(
-        'FlashcardReview: Error initializing review: $e',
-        name: 'FlashcardReview',
-        error: e,
-      );
-      setState(() {
-        _errorMessage = e.toString();
-        _isLoading = false;
-      });
-    }
   }
 
   Future<void> _showAnswerMethod() async {
@@ -142,30 +77,13 @@ class _FlashcardReviewPageState extends State<FlashcardReviewPage>
     });
   }
 
-  Future<void> _reviewCard(ReviewResult result) async {
-    if (_currentCardIndex >= _cards.length || _currentSession == null) return;
-
-    final currentCard = _cards[_currentCardIndex];
-
-    try {
-      // Update card with spaced repetition
-      await _flashcardService.reviewCard(card: currentCard, result: result);
-
-      // Update session stats
-      _sessionResults[result.name] = (_sessionResults[result.name] ?? 0) + 1;
-      if (result == ReviewResult.good || result == ReviewResult.easy) {
-        _sessionCorrectAnswers++;
-      }
-
-      // Move to next card or finish session
-      if (_currentCardIndex < _cards.length - 1) {
-        await _nextCard();
-      } else {
-        await _finishSession();
-      }
-    } catch (e) {
-      AppSnackBar.showError(context, 'Error reviewing card: ${e.toString()}');
-    }
+  Future<void> _reviewCard(FlashCard card, ReviewResult result) async {
+    await context.read<FlashcardReviewCubit>().reviewCard(
+      card: card,
+      result: result,
+    );
+    // Reset animation state after review
+    await _nextCard();
   }
 
   Future<void> _nextCard() async {
@@ -178,154 +96,158 @@ class _FlashcardReviewPageState extends State<FlashcardReviewPage>
     await _flipController.reverse();
 
     setState(() {
-      _currentCardIndex++;
       _showAnswer = false;
       _isFlipping = false;
     });
   }
 
-  Future<void> _finishSession() async {
-    if (_currentSession == null) return;
-
-    try {
-      await _flashcardService.completeReviewSession(
-        session: _currentSession!,
-        cardsReviewed: _cards.length,
-        correctAnswers: _sessionCorrectAnswers,
-        reviewResults: _sessionResults,
-      );
-
-      if (mounted) {
-        _showCompletionDialog();
-      }
-    } catch (e) {
-      AppSnackBar.showError(context, 'Error saving session: ${e.toString()}');
-    }
-  }
-
-  void _showCompletionDialog() {
+  void _showCompletionDialog(FlashcardReviewState state) {
+    context.read<FlashcardReviewCubit>().completeReviewSession();
     FlashcardCompletionDialog.show(
       context: context,
-      cards: _cards,
-      sessionCorrectAnswers: _sessionCorrectAnswers,
-      currentSession: _currentSession,
+      cards: state.cards,
+      sessionCorrectAnswers: state.sessionCorrectAnswers,
+      currentSession: state.currentSession,
       onComplete: () {},
     );
   }
 
-
-
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return Scaffold(
-        appBar: AppBar(
-          title: TitleMediumText(widget.deck.name),
-          backgroundColor: Colors.transparent,
-        ),
-        body: const Center(child: CircularProgressIndicator()),
-      );
-    }
-
-    if (_errorMessage != null) {
-      return Scaffold(
-        appBar: AppBar(
-          title: TitleMediumText(widget.deck.name),
-          backgroundColor: Colors.transparent,
-        ),
-        body: _buildErrorState(),
-      );
-    }
-
-    if (_currentCardIndex >= _cards.length) {
-      return Scaffold(
-        appBar: AppBar(
-          title: TitleMediumText(widget.deck.name),
-          backgroundColor: Colors.transparent,
-        ),
-        body: const Center(child: CircularProgressIndicator()),
-      );
-    }
-
-    final currentCard = _cards[_currentCardIndex];
-    final progress = (_currentCardIndex + 1) / _cards.length;
-
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      appBar: AppBar(
-        title: TitleMediumText(
-          widget.deck.name,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: [
-          Container(
-            margin: const EdgeInsets.only(right: 16),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primaryContainer,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: LabelMediumText(
-              '${_currentCardIndex + 1}/${_cards.length}',
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          // Progress bar
-          Container(
-            height: 4,
-            margin: const EdgeInsets.symmetric(horizontal: 16),
-            child: LinearProgressIndicator(
-              value: progress,
-              backgroundColor: Theme.of(
-                context,
-              ).colorScheme.outline.withValues(alpha: 0.2),
-              valueColor: AlwaysStoppedAnimation<Color>(
-                Theme.of(context).colorScheme.primary,
+    return BlocListener<FlashcardReviewCubit, FlashcardReviewState>(
+      listener: (context, state) {
+        if (state.errorMsg != null) {
+          AppSnackBar.showError(context, state.errorMsg!);
+          // Clear the message after showing it
+          Future.microtask(
+            () => context.read<FlashcardReviewCubit>().clearMessages(),
+          );
+        }
+        if (state.isSessionCompleted) {
+          _showCompletionDialog(state);
+        }
+      },
+      child: BlocBuilder<FlashcardReviewCubit, FlashcardReviewState>(
+        builder: (context, state) {
+          if (state.isLoading) {
+            return Scaffold(
+              appBar: AppBar(
+                title: TitleMediumText(widget.deck.name),
+                backgroundColor: Colors.transparent,
               ),
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
+              body: const Center(child: CircularProgressIndicator()),
+            );
+          }
 
-          // Card area
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Center(
-                child: FlashcardDisplayWidget(
-                  card: currentCard,
-                  showAnswer: _showAnswer,
-                  flipAnimation: _flipAnimation,
-                  onTap: _showAnswerMethod,
+          if (state.errorMsg != null) {
+            return Scaffold(
+              appBar: AppBar(
+                title: TitleMediumText(widget.deck.name),
+                backgroundColor: Colors.transparent,
+              ),
+              body: _buildErrorState(state.errorMsg!),
+            );
+          }
+
+          if (state.cards.isEmpty) {
+            return Scaffold(
+              appBar: AppBar(
+                title: TitleMediumText(widget.deck.name),
+                backgroundColor: Colors.transparent,
+              ),
+              body: _buildEmptyState(),
+            );
+          }
+
+          final currentCard = state.currentCard;
+          if (currentCard == null) {
+            return Scaffold(
+              appBar: AppBar(
+                title: TitleMediumText(widget.deck.name),
+                backgroundColor: Colors.transparent,
+              ),
+              body: const Center(child: CircularProgressIndicator()),
+            );
+          }
+
+          return Scaffold(
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            appBar: AppBar(
+              title: TitleMediumText(
+                widget.deck.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              actions: [
+                Container(
+                  margin: const EdgeInsets.only(right: 16),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: LabelMediumText(
+                    '${state.currentCardIndex + 1}/${state.cards.length}',
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
+              ],
             ),
-          ),
+            body: Column(
+              children: [
+                // Progress bar
+                Container(
+                  height: 4,
+                  margin: const EdgeInsets.symmetric(horizontal: 16),
+                  child: LinearProgressIndicator(
+                    value: state.progress,
+                    backgroundColor: Theme.of(
+                      context,
+                    ).colorScheme.outline.withValues(alpha: 0.2),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      Theme.of(context).colorScheme.primary,
+                    ),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
 
-          // Action buttons
-          FlashcardReviewButtons(
-            showAnswer: _showAnswer,
-            isFlipping: _isFlipping,
-            onShowAnswer: _showAnswerMethod,
-            onReviewCard: _reviewCard,
-          ),
-        ],
+                // Card area
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: Center(
+                      child: FlashcardDisplayWidget(
+                        card: currentCard,
+                        showAnswer: _showAnswer,
+                        flipAnimation: _flipAnimation,
+                        onTap: _showAnswerMethod,
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Action buttons
+                FlashcardReviewButtons(
+                  showAnswer: _showAnswer,
+                  isFlipping: _isFlipping,
+                  onShowAnswer: _showAnswerMethod,
+                  onReviewCard: (result) => _reviewCard(currentCard, result),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
 
-
-
-
-
-  Widget _buildErrorState() {
+  Widget _buildErrorState(String errorMessage) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32.0),
@@ -333,18 +255,18 @@ class _FlashcardReviewPageState extends State<FlashcardReviewPage>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              _errorMessage == 'No cards due for review'
+              errorMessage == 'No cards due for review'
                   ? Icons.check_circle_outline
                   : Icons.error_outline,
               size: 64,
               color:
-                  _errorMessage == 'No cards due for review'
+                  errorMessage == 'No cards due for review'
                       ? Theme.of(context).colorScheme.primary
                       : Theme.of(context).colorScheme.error,
             ),
             const SizedBox(height: 16),
             HeadlineSmallText(
-              _errorMessage == 'No cards due for review'
+              errorMessage == 'No cards due for review'
                   ? 'All Caught Up!'
                   : 'Error',
               color: Theme.of(
@@ -353,9 +275,9 @@ class _FlashcardReviewPageState extends State<FlashcardReviewPage>
             ),
             const SizedBox(height: 8),
             BodyMediumText(
-              _errorMessage == 'No cards due for review'
+              errorMessage == 'No cards due for review'
                   ? 'No cards are due for review at the moment. Come back later to continue studying.'
-                  : _errorMessage ?? 'Something went wrong',
+                  : errorMessage,
               textAlign: TextAlign.center,
               color: Theme.of(
                 context,
@@ -364,19 +286,62 @@ class _FlashcardReviewPageState extends State<FlashcardReviewPage>
             const SizedBox(height: 24),
             FilledButton.icon(
               onPressed:
-                  _errorMessage == 'No cards due for review'
+                  errorMessage == 'No cards due for review'
                       ? () => Navigator.pop(context)
-                      : _initializeReview,
+                      : () => context
+                          .read<FlashcardReviewCubit>()
+                          .startReviewSession(widget.deck.id),
               icon: Icon(
-                _errorMessage == 'No cards due for review'
+                errorMessage == 'No cards due for review'
                     ? Icons.arrow_back
                     : Icons.refresh,
               ),
               label: Text(
-                _errorMessage == 'No cards due for review'
+                errorMessage == 'No cards due for review'
                     ? 'Back to Flashcards'
                     : 'Retry',
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.style_outlined,
+              size: 64,
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.3),
+            ),
+            const SizedBox(height: 16),
+            HeadlineSmallText(
+              'No Cards Found',
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.6),
+            ),
+            const SizedBox(height: 8),
+            BodyMediumText(
+              'This deck doesn\'t have any cards to review.',
+              textAlign: TextAlign.center,
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.5),
+            ),
+            const SizedBox(height: 24),
+            FilledButton.icon(
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(Icons.arrow_back),
+              label: const Text('Back to Flashcards'),
             ),
           ],
         ),
