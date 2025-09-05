@@ -64,7 +64,9 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: BodyMediumText(AppLocalizations.of(context)!.errorInitializingQuizService),
+            content: BodyMediumText(
+              AppLocalizations.of(context)!.errorInitializingQuizService,
+            ),
           ),
         );
       }
@@ -180,8 +182,6 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
     });
 
     try {
-      debugPrint('Loading quiz data...');
-
       final futures = await Future.wait([
         _quizService.getQuizHistory(),
         _quizService.getQuizStatistics(),
@@ -192,10 +192,6 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
       final statistics = futures[1] as Map<String, dynamic>;
       final performanceTrends = futures[2] as List<Map<String, dynamic>>;
 
-      debugPrint('Loaded ${quizHistory.length} quizzes from history');
-      debugPrint('Statistics: $statistics');
-      debugPrint('Performance trends: ${performanceTrends.length} entries');
-
       setState(() {
         _quizHistory = quizHistory;
         _filteredQuizHistory = quizHistory;
@@ -205,14 +201,17 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
         _applyFiltersAndSort();
       });
     } catch (e) {
-      debugPrint('Error loading quiz data: $e');
       setState(() {
         _isLoading = false;
       });
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: BodyMediumText(AppLocalizations.of(context)!.errorLoadingQuizData)),
+          SnackBar(
+            content: BodyMediumText(
+              AppLocalizations.of(context)!.errorLoadingQuizData,
+            ),
+          ),
         );
       }
     }
@@ -222,7 +221,10 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: TitleLargeText(AppLocalizations.of(context)!.quizHistory, fontWeight: FontWeight.bold),
+        title: TitleLargeText(
+          AppLocalizations.of(context)!.quizHistory,
+          fontWeight: FontWeight.bold,
+        ),
         backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
         actions: [
@@ -248,9 +250,18 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
               indicatorColor: Theme.of(context).colorScheme.primary,
               indicatorWeight: 3.0,
               tabs: [
-                Tab(icon: const Icon(Icons.history), text: AppLocalizations.of(context)!.history),
-                Tab(icon: const Icon(Icons.analytics), text: AppLocalizations.of(context)!.statistics),
-                Tab(icon: const Icon(Icons.trending_up), text: AppLocalizations.of(context)!.progress),
+                Tab(
+                  icon: const Icon(Icons.history),
+                  text: AppLocalizations.of(context)!.history,
+                ),
+                Tab(
+                  icon: const Icon(Icons.analytics),
+                  text: AppLocalizations.of(context)!.statistics,
+                ),
+                Tab(
+                  icon: const Icon(Icons.trending_up),
+                  text: AppLocalizations.of(context)!.progress,
+                ),
               ],
             ),
           ),
@@ -316,21 +327,13 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
     );
   }
 
-
-
   Widget _buildStatisticsTab() {
-    return QuizStatisticsTabWidget(
-      statistics: _statistics,
-    );
+    return QuizStatisticsTabWidget(statistics: _statistics);
   }
 
   Widget _buildProgressTab() {
-    return QuizProgressTabWidget(
-      performanceTrends: _performanceTrends,
-    );
+    return QuizProgressTabWidget(performanceTrends: _performanceTrends);
   }
-
-
 
   String _getFilterLabel(FilterOption filter) {
     return QuizLabelsHelper.getFilterLabel(context, filter);
