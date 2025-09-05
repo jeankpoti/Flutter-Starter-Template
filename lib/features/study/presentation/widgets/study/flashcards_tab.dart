@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import '../../../../../common_widgets/loader_widget.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../common_widgets/text_widgets.dart';
 import '../../../../../common_widgets/app_snackbar_widget.dart';
 import '../../cubit/flashcard_cubit.dart';
 import '../../../domain/models/flashcard.dart';
 import '../../../domain/models/study_material.dart';
-import '../../../domain/models/quiz.dart';
+// import '../../../domain/models/quiz.dart'; // Removed - quiz generation not needed
 import '../../flashcard_review_page.dart';
 import '../../flashcard_deck_page.dart';
 import 'flashcard_deck_creation_dialog_widget.dart';
@@ -16,13 +17,13 @@ import 'flashcard_deck_edit_dialog_widget.dart';
 class FlashcardsTab extends StatefulWidget {
   final List<StudyMaterial> studyMaterials;
   final Function(List<StudyMaterial>, String, String?) onGenerateFromMaterials;
-  final Function(Quiz, String?, String?) onGenerateFromQuiz;
+  // Removed onGenerateFromQuiz - quiz generation not needed
 
   const FlashcardsTab({
     super.key,
     required this.studyMaterials,
     required this.onGenerateFromMaterials,
-    required this.onGenerateFromQuiz,
+    // Removed onGenerateFromQuiz parameter
   });
 
   @override
@@ -67,7 +68,7 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
       child: BlocBuilder<FlashcardCubit, FlashcardState>(
         builder: (context, state) {
           if (state.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(child: LoaderWidget());
           }
 
           if (state.errorMsg != null) {
@@ -91,12 +92,13 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
                   SliverPadding(
                     padding: const EdgeInsets.all(16.0),
                     sliver: SliverGrid(
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        childAspectRatio: 1.2,
-                        crossAxisSpacing: 12.0,
-                        mainAxisSpacing: 12.0,
-                      ),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio: 1.2,
+                            crossAxisSpacing: 12.0,
+                            mainAxisSpacing: 12.0,
+                          ),
                       delegate: SliverChildBuilderDelegate(
                         (context, index) => _buildDeckCard(state.decks[index]),
                         childCount: state.decks.length,
@@ -246,7 +248,7 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
               Expanded(
                 child: _buildActionButton(
                   icon: Icons.auto_awesome_rounded,
-                  label: 'Generate AI',
+                  label: 'Generate Flashcards With AI',
                   onTap: _showGenerateDialog,
                   enabled: widget.studyMaterials.isNotEmpty,
                 ),
@@ -576,12 +578,14 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
       builder:
           (context) => FlashcardDeckEditDialogWidget(
             deck: deck,
-            onUpdateDeck: ({required String name, String? description, String? color}) => _updateDeck(
-              deck: deck,
-              name: name,
-              description: description,
-              color: color,
-            ),
+            onUpdateDeck:
+                ({required String name, String? description, String? color}) =>
+                    _updateDeck(
+                      deck: deck,
+                      name: name,
+                      description: description,
+                      color: color,
+                    ),
           ),
     );
   }
@@ -624,7 +628,9 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
                     color: Theme.of(context).colorScheme.secondary,
                   ),
                   title: const Text('Generate with All Materials'),
-                  subtitle: const Text('Create comprehensive flashcards from all study materials'),
+                  subtitle: const Text(
+                    'Create comprehensive flashcards from all study materials',
+                  ),
                   onTap: () {
                     Navigator.pop(context);
                     _generateFromAllMaterials();
@@ -665,7 +671,7 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
       description: description,
       color: color,
     );
-    
+
     if (mounted) {
       AppSnackBar.showSuccess(context, 'Deck created successfully!');
     }
@@ -683,7 +689,7 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
       description: description,
       color: color,
     );
-    
+
     if (mounted) {
       AppSnackBar.showSuccess(context, 'Deck updated successfully!');
     }
@@ -700,12 +706,16 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
     switch (action) {
       case 'manage':
         Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => FlashcardDeckPage(deck: deck)),
+          MaterialPageRoute(
+            builder: (context) => FlashcardDeckPage(deck: deck),
+          ),
         );
         break;
       case 'study':
         Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => FlashcardReviewPage(deck: deck)),
+          MaterialPageRoute(
+            builder: (context) => FlashcardReviewPage(deck: deck),
+          ),
         );
         break;
       case 'edit':

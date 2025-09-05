@@ -132,16 +132,5 @@ class FlashcardRepositoryImpl implements FlashcardRepositoryInterface {
     );
   }
 
-  @override
-  Future<FlashCardDeck> generateFlashcardsFromQuiz({
-    required Quiz quiz,
-    String? deckName,
-    String? deckDescription,
-  }) async {
-    return await _flashcardService.generateFlashcardsFromQuiz(
-      quiz: quiz,
-      deckName: deckName,
-      deckDescription: deckDescription,
-    );
-  }
+  // Removed generateFlashcardsFromQuiz - quiz generation not needed
 }

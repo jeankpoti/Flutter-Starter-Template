@@ -6,7 +6,7 @@ This defines what flashcard operations the app can do without worrying about spe
 
 import '../models/flashcard.dart';
 import '../models/study_material.dart';
-import '../models/quiz.dart';
+// import '../models/quiz.dart'; // Removed - quiz generation not needed
 
 abstract class FlashcardRepositoryInterface {
   // Initialization
@@ -67,11 +67,7 @@ abstract class FlashcardRepositoryInterface {
     int cardCount = 20,
   });
 
-  Future<FlashCardDeck> generateFlashcardsFromQuiz({
-    required Quiz quiz,
-    String? deckName,
-    String? deckDescription,
-  });
+  // Removed generateFlashcardsFromQuiz - quiz generation not needed
 }
 
 /*

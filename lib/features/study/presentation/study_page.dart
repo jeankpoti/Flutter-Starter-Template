@@ -48,7 +48,9 @@ class StudyPage extends StatelessWidget {
               )..initializeServices(),
         ),
         BlocProvider(
-          create: (context) => FlashcardCubit(),
+          create: (context) => FlashcardCubit(
+            subscriptionCubit: context.read<SubscriptionCubit>(),
+          ),
         ),
       ],
       child: const _StudyPageView(),
@@ -260,7 +262,6 @@ class _StudyPageViewState extends State<_StudyPageView>
                             FlashcardsTab(
                               studyMaterials: state.studyMaterials,
                               onGenerateFromMaterials: _generateFlashcardsFromMaterials,
-                              onGenerateFromQuiz: _generateFlashcardsFromQuiz,
                             ),
                           ],
                         );
@@ -583,12 +584,5 @@ class _StudyPageViewState extends State<_StudyPageView>
     }
   }
 
-  Future<void> _generateFlashcardsFromQuiz(
-    Quiz quiz, 
-    String? deckName, 
-    String? deckDescription
-  ) async {
-    // TODO: Add generateFlashcardsFromQuiz method to FlashcardCubit
-    AppSnackBar.showInfo(context, 'Generate flashcards from quiz coming soon!');
-  }
+  // Removed _generateFlashcardsFromQuiz method - quiz generation not needed
 }

@@ -1,7 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
 import '../../domain/repository/flashcard_generation_repository.dart';
 import '../../data/services/flashcard_generation_service.dart';
+import '../../../subscription/presentation/subscription_cubit.dart';
 
 /// State for flashcard generation
 class FlashcardGenerationState extends Equatable {
@@ -38,12 +40,42 @@ class FlashcardGenerationState extends Equatable {
 /// Cubit for managing flashcard generation from various sources
 class FlashcardGenerationCubit extends Cubit<FlashcardGenerationState> {
   final FlashcardGenerationRepository _repository;
+  final SubscriptionCubit _subscriptionCubit;
 
-  FlashcardGenerationCubit(this._repository) : super(const FlashcardGenerationState());
+  FlashcardGenerationCubit(this._repository, this._subscriptionCubit) : super(const FlashcardGenerationState());
 
   /// Generate flashcards from camera
   Future<void> generateFromCamera() async {
     try {
+      // Check subscription first
+      await _subscriptionCubit.loadSubscriptionStatus();
+      final isSubscribed = _subscriptionCubit.state.isSubscribed;
+      if (!isSubscribed) {
+        try {
+          final result = await RevenueCatUI.presentPaywallIfNeeded('premium_flashcard_generation');
+          if (result == PaywallResult.notPresented || result == PaywallResult.cancelled) {
+            emit(state.copyWith(
+              errorMsg: 'AI flashcard generation requires a premium subscription.',
+            ));
+            return;
+          }
+          // Reload subscription status to check if user subscribed
+          await _subscriptionCubit.loadSubscriptionStatus();
+          final newStatus = _subscriptionCubit.state.isSubscribed;
+          if (!newStatus) {
+            emit(state.copyWith(
+              errorMsg: 'AI flashcard generation requires a premium subscription.',
+            ));
+            return;
+          }
+        } catch (e) {
+          emit(state.copyWith(
+            errorMsg: 'Unable to verify subscription status.',
+          ));
+          return;
+        }
+      }
+
       emit(state.copyWith(isLoading: true, errorMsg: null));
       
       final flashcardContents = await _repository.generateFromCamera();
@@ -70,6 +102,35 @@ class FlashcardGenerationCubit extends Cubit<FlashcardGenerationState> {
   /// Generate flashcards from gallery
   Future<void> generateFromGallery() async {
     try {
+      // Check subscription first
+      await _subscriptionCubit.loadSubscriptionStatus();
+      final isSubscribed = _subscriptionCubit.state.isSubscribed;
+      if (!isSubscribed) {
+        try {
+          final result = await RevenueCatUI.presentPaywallIfNeeded('premium_flashcard_generation');
+          if (result == PaywallResult.notPresented || result == PaywallResult.cancelled) {
+            emit(state.copyWith(
+              errorMsg: 'AI flashcard generation requires a premium subscription.',
+            ));
+            return;
+          }
+          // Reload subscription status to check if user subscribed
+          await _subscriptionCubit.loadSubscriptionStatus();
+          final newStatus = _subscriptionCubit.state.isSubscribed;
+          if (!newStatus) {
+            emit(state.copyWith(
+              errorMsg: 'AI flashcard generation requires a premium subscription.',
+            ));
+            return;
+          }
+        } catch (e) {
+          emit(state.copyWith(
+            errorMsg: 'Unable to verify subscription status.',
+          ));
+          return;
+        }
+      }
+
       emit(state.copyWith(isLoading: true, errorMsg: null));
       
       final flashcardContents = await _repository.generateFromGallery();
@@ -96,6 +157,35 @@ class FlashcardGenerationCubit extends Cubit<FlashcardGenerationState> {
   /// Generate flashcards from file
   Future<void> generateFromFile() async {
     try {
+      // Check subscription first
+      await _subscriptionCubit.loadSubscriptionStatus();
+      final isSubscribed = _subscriptionCubit.state.isSubscribed;
+      if (!isSubscribed) {
+        try {
+          final result = await RevenueCatUI.presentPaywallIfNeeded('premium_flashcard_generation');
+          if (result == PaywallResult.notPresented || result == PaywallResult.cancelled) {
+            emit(state.copyWith(
+              errorMsg: 'AI flashcard generation requires a premium subscription.',
+            ));
+            return;
+          }
+          // Reload subscription status to check if user subscribed
+          await _subscriptionCubit.loadSubscriptionStatus();
+          final newStatus = _subscriptionCubit.state.isSubscribed;
+          if (!newStatus) {
+            emit(state.copyWith(
+              errorMsg: 'AI flashcard generation requires a premium subscription.',
+            ));
+            return;
+          }
+        } catch (e) {
+          emit(state.copyWith(
+            errorMsg: 'Unable to verify subscription status.',
+          ));
+          return;
+        }
+      }
+
       emit(state.copyWith(isLoading: true, errorMsg: null));
       
       final flashcardContents = await _repository.generateFromFile();

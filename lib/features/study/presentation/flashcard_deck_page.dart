@@ -15,6 +15,7 @@ import 'cubit/flashcard_cubit.dart';
 import 'cubit/flashcard_generation_cubit.dart';
 import '../data/repository/flashcard_generation_repository_impl.dart';
 import '../data/services/flashcard_generation_service.dart';
+import '../../subscription/presentation/subscription_cubit.dart';
 
 class FlashcardDeckPage extends StatelessWidget {
   final FlashCardDeck deck;
@@ -30,10 +31,15 @@ class FlashcardDeckPage extends StatelessWidget {
             ..initialize()
             ..loadCards(deck.id),
         ),
-        BlocProvider(create: (context) => FlashcardCubit()),
+        BlocProvider(
+          create: (context) => FlashcardCubit(
+            subscriptionCubit: context.read<SubscriptionCubit>(),
+          ),
+        ),
         BlocProvider(
           create: (context) => FlashcardGenerationCubit(
             FlashcardGenerationRepositoryImpl(FlashcardGenerationService()),
+            context.read<SubscriptionCubit>(),
           ),
         ),
       ],

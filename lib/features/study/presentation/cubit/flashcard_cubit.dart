@@ -1,19 +1,25 @@
 import 'dart:developer' as dev;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
 import '../../domain/models/flashcard.dart';
 import '../../domain/models/study_material.dart';
 import '../../domain/repository/flashcard_repository.dart';
 import '../../data/repository/flashcard_repository_impl.dart';
+import '../../../subscription/presentation/subscription_cubit.dart';
 
 part 'flashcard_state.dart';
 
 class FlashcardCubit extends Cubit<FlashcardState> {
   final FlashcardRepositoryInterface _flashcardRepository;
+  final SubscriptionCubit? _subscriptionCubit;
 
-  FlashcardCubit({FlashcardRepositoryInterface? flashcardRepository})
-      : _flashcardRepository = flashcardRepository ?? FlashcardRepositoryImpl(),
-        super(const FlashcardState());
+  FlashcardCubit({
+    FlashcardRepositoryInterface? flashcardRepository,
+    SubscriptionCubit? subscriptionCubit,
+  }) : _flashcardRepository = flashcardRepository ?? FlashcardRepositoryImpl(),
+       _subscriptionCubit = subscriptionCubit,
+       super(const FlashcardState());
 
   Future<void> initialize() async {
     try {
@@ -108,6 +114,53 @@ class FlashcardCubit extends Cubit<FlashcardState> {
     int cardCount = 20,
   }) async {
     try {
+      // Always check subscription first
+      if (_subscriptionCubit == null) {
+        emit(state.copyWith(
+          isLoading: false,
+          errorMsg: 'Subscription service not available.',
+        ));
+        return;
+      }
+
+      // Load current subscription status
+      await _subscriptionCubit!.loadSubscriptionStatus();
+      final isSubscribed = _subscriptionCubit!.state.isSubscribed;
+      
+      if (!isSubscribed) {
+        try {
+          // Always show paywall for non-subscribers
+          final result = await RevenueCatUI.presentPaywall();
+          
+          if (result == PaywallResult.cancelled || result == PaywallResult.error) {
+            emit(state.copyWith(
+              isLoading: false,
+              errorMsg: 'Premium subscription required for AI flashcard generation.',
+            ));
+            return;
+          }
+          
+          // Recheck subscription after paywall
+          await _subscriptionCubit!.loadSubscriptionStatus();
+          final newStatus = _subscriptionCubit!.state.isSubscribed;
+          
+          if (!newStatus) {
+            emit(state.copyWith(
+              isLoading: false,
+              errorMsg: 'Premium subscription required for AI flashcard generation.',
+            ));
+            return;
+          }
+        } catch (e) {
+          emit(state.copyWith(
+            isLoading: false,
+            errorMsg: 'Unable to process subscription. Please try again.',
+          ));
+          return;
+        }
+      }
+
+      // Proceed with AI generation for subscribers
       emit(state.copyWith(isLoading: true, errorMsg: null));
       await _flashcardRepository.generateFlashcardsFromMaterials(
         materials: materials,
@@ -115,6 +168,7 @@ class FlashcardCubit extends Cubit<FlashcardState> {
         deckDescription: deckDescription,
         cardCount: cardCount,
       );
+      
       // Reload decks after generation
       await loadUserDecks();
       emit(state.copyWith(isSuccess: true));
