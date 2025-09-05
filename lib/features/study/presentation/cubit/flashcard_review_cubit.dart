@@ -87,7 +87,17 @@ class FlashcardReviewCubit extends Cubit<FlashcardReviewState> {
         correctAnswers++;
       }
 
-      // Move to next card or finish session
+      // Handle "again" result - show the same card again
+      if (result == ReviewResult.again) {
+        // Stay on the same card, just update stats
+        emit(state.copyWith(
+          sessionCorrectAnswers: correctAnswers,
+          sessionResults: updatedResults,
+        ));
+        return;
+      }
+
+      // Move to next card or finish session for other results
       if (state.currentCardIndex < state.cards.length - 1) {
         emit(state.copyWith(
           currentCardIndex: state.currentCardIndex + 1,

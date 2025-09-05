@@ -229,7 +229,7 @@ class _FlashcardDeckPageViewState extends State<_FlashcardDeckPageView> {
             ),
             const SizedBox(height: 8),
             BodyMediumText(
-              'Add your first flashcard to start studying.',
+              AppLocalizations.of(context)!.addFirstFlashcard,
               textAlign: TextAlign.center,
               color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
             ),
@@ -371,7 +371,7 @@ class _FlashcardDeckPageViewState extends State<_FlashcardDeckPageView> {
           );
           
           if (mounted) {
-            AppSnackBar.showSuccess(context, 'Deck updated successfully!');
+            AppSnackBar.showSuccess(context, AppLocalizations.of(context)!.deckUpdatedSuccessfully);
             Navigator.of(context).pop();
           }
         },
@@ -400,7 +400,7 @@ class _FlashcardDeckPageViewState extends State<_FlashcardDeckPageView> {
           context: context,
           builder: (context) => AlertDialog(
             title: Text(AppLocalizations.of(context)!.deleteCard),
-            content: const Text('Are you sure you want to delete this flashcard? This action cannot be undone.'),
+            content: Text(AppLocalizations.of(context)!.deleteCardConfirmation),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),

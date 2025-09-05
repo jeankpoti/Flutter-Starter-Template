@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../../common_widgets/text_widgets.dart';
 import '../../../domain/models/flashcard.dart';
 
@@ -61,7 +62,7 @@ class DeckStatsHeaderWidget extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                     BodyMediumText(
-                      'Total Cards',
+                      AppLocalizations.of(context)!.totalCards,
                       color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
                   ],
@@ -72,11 +73,11 @@ class DeckStatsHeaderWidget extends StatelessWidget {
           const SizedBox(height: 20),
           Row(
             children: [
-              Expanded(child: _buildStatChip(context, 'New', newCards, Colors.blue)),
+              Expanded(child: _buildStatChip(context, AppLocalizations.of(context)!.newCards, newCards, Colors.blue)),
               const SizedBox(width: 12),
-              Expanded(child: _buildStatChip(context, 'Due', dueCards, Colors.orange)),
+              Expanded(child: _buildStatChip(context, AppLocalizations.of(context)!.dueCards, dueCards, Colors.orange)),
               const SizedBox(width: 12),
-              Expanded(child: _buildStatChip(context, 'Learning', learningCards, Colors.green)),
+              Expanded(child: _buildStatChip(context, AppLocalizations.of(context)!.learningCards, learningCards, Colors.green)),
             ],
           ),
         ],

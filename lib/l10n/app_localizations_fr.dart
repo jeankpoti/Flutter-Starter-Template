@@ -536,7 +536,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Téléchargez votre premier matériel d\'étude pour commencer !';
 
   @override
-  String get topics => 'sujets';
+  String get topics => 'Sujets';
 
   @override
   String get myStudyMaterials => 'Mes matériaux d\'étude';
@@ -1974,14 +1974,63 @@ class AppLocalizationsFr extends AppLocalizations {
   String get flashcardsDeck => 'Jeu de Cartes Mémoire';
 
   @override
-  String get newCards => 'Nouvelles Cartes';
+  String get newCards => 'Nouveau';
 
   @override
-  String get dueCards => 'Cartes Dues';
+  String get dueCards => 'Dus';
+
+  @override
+  String get learningCards => 'Apprentissage';
 
   @override
   String get totalCards => 'Total des Cartes';
 
   @override
   String get studyProgress => 'Progrès d\'Étude';
+
+  @override
+  String get edit => 'Modifier';
+
+  @override
+  String get tagsExample => 'algèbre, géométrie, calcul';
+
+  @override
+  String get separateTagsComma => 'Séparez les étiquettes par des virgules';
+
+  @override
+  String get deleteCardConfirmation =>
+      'Êtes-vous sûr de vouloir supprimer cette carte mémoire ? Cette action ne peut pas être annulée.';
+
+  @override
+  String get reviewComplete => 'Révision Terminée !';
+
+  @override
+  String get accuracy => 'Précision';
+
+  @override
+  String get cards => 'Cartes';
+
+  @override
+  String get time => 'Temps';
+
+  @override
+  String get showAnswer => 'Afficher la Réponse';
+
+  @override
+  String get howWellDidYouKnow => 'À quel point connaissiez-vous cela ?';
+
+  @override
+  String get reviewAgain => 'Encore';
+
+  @override
+  String get reviewHard => 'Difficile';
+
+  @override
+  String get reviewGood => 'Bien';
+
+  @override
+  String get reviewEasy => 'Facile';
+
+  @override
+  String get tapToRevealAnswer => 'Appuyez pour révéler la réponse';
 }

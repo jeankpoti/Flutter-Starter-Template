@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../../common_widgets/text_widgets.dart';
 import '../../../domain/models/flashcard.dart';
 
@@ -27,11 +28,11 @@ class FlashcardCompletionDialog {
               children: [
                 Icon(
                   Icons.celebration_rounded,
-                  color: Theme.of(context).colorScheme.primary,
+                  color: Theme.of(context).colorScheme.secondary,
                   size: 28,
                 ),
                 const SizedBox(width: 12),
-                const Text('Review Complete!'),
+                Text(AppLocalizations.of(context)!.reviewComplete),
               ],
             ),
             content: Column(
@@ -40,19 +41,19 @@ class FlashcardCompletionDialog {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer,
+                    color: Theme.of(context).colorScheme.secondaryContainer,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Column(
                     children: [
                       TitleLargeText(
                         '$accuracy%',
-                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                        color: Theme.of(context).colorScheme.onSecondaryContainer,
                         fontWeight: FontWeight.bold,
                       ),
                       BodySmallText(
-                        'Accuracy',
-                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                        AppLocalizations.of(context)!.accuracy,
+                        color: Theme.of(context).colorScheme.onSecondaryContainer,
                       ),
                     ],
                   ),
@@ -63,19 +64,19 @@ class FlashcardCompletionDialog {
                   children: [
                     _buildStatColumn(
                       context,
-                      'Cards',
+                      AppLocalizations.of(context)!.cards,
                       cards.length.toString(),
                       Icons.style_rounded,
                     ),
                     _buildStatColumn(
                       context,
-                      'Correct',
+                      AppLocalizations.of(context)!.correct,
                       sessionCorrectAnswers.toString(),
                       Icons.check_circle_outline,
                     ),
                     _buildStatColumn(
                       context,
-                      'Time',
+                      AppLocalizations.of(context)!.time,
                       _formatDuration(
                         currentSession?.duration ?? Duration.zero,
                       ),
@@ -87,19 +88,41 @@ class FlashcardCompletionDialog {
             ),
             actions: [
               FilledButton(
+                style: FilledButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.secondary,
+                  foregroundColor: Theme.of(context).colorScheme.onSecondary,
+                ),
                 onPressed: () {
-                  Navigator.pop(context); // Close dialog
-                  Navigator.pop(context); // Go back to flashcards
+                  // Close the dialog first
+                  Navigator.of(context, rootNavigator: true).pop();
+
+                  // Then navigate back to the previous screen
+                  Future.delayed(const Duration(milliseconds: 50), () {
+                    if (Navigator.canPop(context)) {
+                      Navigator.pop(context);
+                    }
+                  });
+
                   onComplete();
                 },
-                child: const Text('Done'),
+                child: Text(
+                  AppLocalizations.of(context)!.done,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSecondary,
+                  ),
+                ),
               ),
             ],
           ),
     );
   }
 
-  static Widget _buildStatColumn(BuildContext context, String label, String value, IconData icon) {
+  static Widget _buildStatColumn(
+    BuildContext context,
+    String label,
+    String value,
+    IconData icon,
+  ) {
     return Column(
       children: [
         Icon(icon, color: Theme.of(context).colorScheme.secondary, size: 20),

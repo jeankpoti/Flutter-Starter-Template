@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../../common_widgets/text_widgets.dart';
 import '../../../domain/models/flashcard.dart';
 
@@ -48,7 +49,7 @@ class FlashcardReviewButtons extends StatelessWidget {
             ),
             const SizedBox(width: 12),
             LabelLargeText(
-              'Show Answer',
+              AppLocalizations.of(context)!.showAnswer,
               color: Theme.of(context).colorScheme.onSecondary,
               fontWeight: FontWeight.w600,
             ),
@@ -72,7 +73,7 @@ class FlashcardReviewButtons extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
             ),
             child: TitleSmallText(
-              'How well did you know this?',
+              AppLocalizations.of(context)!.howWellDidYouKnow,
               color: Theme.of(context).colorScheme.onSurface,
               textAlign: TextAlign.center,
               fontWeight: FontWeight.w600,
@@ -84,7 +85,7 @@ class FlashcardReviewButtons extends StatelessWidget {
               Expanded(
                 child: _buildReviewButton(
                   context,
-                  label: 'Again',
+                  label: AppLocalizations.of(context)!.reviewAgain,
                   color: Theme.of(context).colorScheme.error,
                   icon: Icons.close_rounded,
                   result: ReviewResult.again,
@@ -94,7 +95,7 @@ class FlashcardReviewButtons extends StatelessWidget {
               Expanded(
                 child: _buildReviewButton(
                   context,
-                  label: 'Hard',
+                  label: AppLocalizations.of(context)!.reviewHard,
                   color: const Color(0xFFFF8C00), // Orange color for hard
                   icon: Icons.trending_down_rounded,
                   result: ReviewResult.hard,
@@ -104,7 +105,7 @@ class FlashcardReviewButtons extends StatelessWidget {
               Expanded(
                 child: _buildReviewButton(
                   context,
-                  label: 'Good',
+                  label: AppLocalizations.of(context)!.reviewGood,
                   color: Theme.of(context).colorScheme.primary,
                   icon: Icons.check_rounded,
                   result: ReviewResult.good,
@@ -114,7 +115,7 @@ class FlashcardReviewButtons extends StatelessWidget {
               Expanded(
                 child: _buildReviewButton(
                   context,
-                  label: 'Easy',
+                  label: AppLocalizations.of(context)!.reviewEasy,
                   color: const Color(0xFF4CAF50), // Green color for easy
                   icon: Icons.trending_up_rounded,
                   result: ReviewResult.easy,

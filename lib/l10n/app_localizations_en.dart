@@ -520,7 +520,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Upload your first study material to get started!';
 
   @override
-  String get topics => 'topics';
+  String get topics => 'Topics';
 
   @override
   String get myStudyMaterials => 'My Study Materials';
@@ -1928,14 +1928,63 @@ class AppLocalizationsEn extends AppLocalizations {
   String get flashcardsDeck => 'Flashcards Deck';
 
   @override
-  String get newCards => 'New Cards';
+  String get newCards => 'New';
 
   @override
-  String get dueCards => 'Due Cards';
+  String get dueCards => 'Due';
+
+  @override
+  String get learningCards => 'Learning';
 
   @override
   String get totalCards => 'Total Cards';
 
   @override
   String get studyProgress => 'Study Progress';
+
+  @override
+  String get edit => 'Edit';
+
+  @override
+  String get tagsExample => 'algebra, geometry, calculus';
+
+  @override
+  String get separateTagsComma => 'Separate tags with commas';
+
+  @override
+  String get deleteCardConfirmation =>
+      'Are you sure you want to delete this flashcard? This action cannot be undone.';
+
+  @override
+  String get reviewComplete => 'Review Complete!';
+
+  @override
+  String get accuracy => 'Accuracy';
+
+  @override
+  String get cards => 'Cards';
+
+  @override
+  String get time => 'Time';
+
+  @override
+  String get showAnswer => 'Show Answer';
+
+  @override
+  String get howWellDidYouKnow => 'How well did you know this?';
+
+  @override
+  String get reviewAgain => 'Again';
+
+  @override
+  String get reviewHard => 'Hard';
+
+  @override
+  String get reviewGood => 'Good';
+
+  @override
+  String get reviewEasy => 'Easy';
+
+  @override
+  String get tapToRevealAnswer => 'Tap to reveal answer';
 }

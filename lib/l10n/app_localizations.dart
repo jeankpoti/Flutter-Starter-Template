@@ -1087,7 +1087,7 @@ abstract class AppLocalizations {
   /// No description provided for @topics.
   ///
   /// In en, this message translates to:
-  /// **'topics'**
+  /// **'Topics'**
   String get topics;
 
   /// No description provided for @myStudyMaterials.
@@ -3529,14 +3529,20 @@ abstract class AppLocalizations {
   /// No description provided for @newCards.
   ///
   /// In en, this message translates to:
-  /// **'New Cards'**
+  /// **'New'**
   String get newCards;
 
   /// No description provided for @dueCards.
   ///
   /// In en, this message translates to:
-  /// **'Due Cards'**
+  /// **'Due'**
   String get dueCards;
+
+  /// No description provided for @learningCards.
+  ///
+  /// In en, this message translates to:
+  /// **'Learning'**
+  String get learningCards;
 
   /// No description provided for @totalCards.
   ///
@@ -3549,6 +3555,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Study Progress'**
   String get studyProgress;
+
+  /// No description provided for @edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get edit;
+
+  /// No description provided for @tagsExample.
+  ///
+  /// In en, this message translates to:
+  /// **'algebra, geometry, calculus'**
+  String get tagsExample;
+
+  /// No description provided for @separateTagsComma.
+  ///
+  /// In en, this message translates to:
+  /// **'Separate tags with commas'**
+  String get separateTagsComma;
+
+  /// No description provided for @deleteCardConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this flashcard? This action cannot be undone.'**
+  String get deleteCardConfirmation;
+
+  /// No description provided for @reviewComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Review Complete!'**
+  String get reviewComplete;
+
+  /// No description provided for @accuracy.
+  ///
+  /// In en, this message translates to:
+  /// **'Accuracy'**
+  String get accuracy;
+
+  /// No description provided for @cards.
+  ///
+  /// In en, this message translates to:
+  /// **'Cards'**
+  String get cards;
+
+  /// No description provided for @time.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get time;
+
+  /// No description provided for @showAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Answer'**
+  String get showAnswer;
+
+  /// No description provided for @howWellDidYouKnow.
+  ///
+  /// In en, this message translates to:
+  /// **'How well did you know this?'**
+  String get howWellDidYouKnow;
+
+  /// No description provided for @reviewAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Again'**
+  String get reviewAgain;
+
+  /// No description provided for @reviewHard.
+  ///
+  /// In en, this message translates to:
+  /// **'Hard'**
+  String get reviewHard;
+
+  /// No description provided for @reviewGood.
+  ///
+  /// In en, this message translates to:
+  /// **'Good'**
+  String get reviewGood;
+
+  /// No description provided for @reviewEasy.
+  ///
+  /// In en, this message translates to:
+  /// **'Easy'**
+  String get reviewEasy;
+
+  /// No description provided for @tapToRevealAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to reveal answer'**
+  String get tapToRevealAnswer;
 }
 
 class _AppLocalizationsDelegate

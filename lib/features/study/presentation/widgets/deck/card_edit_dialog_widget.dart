@@ -171,8 +171,8 @@ class _CardEditDialogWidgetState extends State<CardEditDialogWidget> {
                   controller: _tagsController,
                   decoration: InputDecoration(
                     labelText: AppLocalizations.of(context)!.cardTags,
-                    hintText: 'algebra, geometry, calculus',
-                    helperText: 'Separate tags with commas',
+                    hintText: AppLocalizations.of(context)!.tagsExample,
+                    helperText: AppLocalizations.of(context)!.separateTagsComma,
                     helperStyle: TextStyle(
                       color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                     ),

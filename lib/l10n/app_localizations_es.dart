@@ -532,7 +532,7 @@ class AppLocalizationsEs extends AppLocalizations {
       '¡Sube tu primer material de estudio para comenzar!';
 
   @override
-  String get topics => 'temas';
+  String get topics => 'Temas';
 
   @override
   String get myStudyMaterials => 'Mis materiales de estudio';
@@ -1960,14 +1960,63 @@ class AppLocalizationsEs extends AppLocalizations {
   String get flashcardsDeck => 'Baraja de Tarjetas de Memoria';
 
   @override
-  String get newCards => 'Tarjetas Nuevas';
+  String get newCards => 'Nueva';
 
   @override
-  String get dueCards => 'Tarjetas Vencidas';
+  String get dueCards => 'Vencidas';
+
+  @override
+  String get learningCards => 'Aprendiendo';
 
   @override
   String get totalCards => 'Total de Tarjetas';
 
   @override
   String get studyProgress => 'Progreso de Estudio';
+
+  @override
+  String get edit => 'Editar';
+
+  @override
+  String get tagsExample => 'álgebra, geometría, cálculo';
+
+  @override
+  String get separateTagsComma => 'Separa las etiquetas con comas';
+
+  @override
+  String get deleteCardConfirmation =>
+      '¿Estás seguro de que quieres eliminar esta tarjeta de memoria? Esta acción no se puede deshacer.';
+
+  @override
+  String get reviewComplete => '¡Revisión Completa!';
+
+  @override
+  String get accuracy => 'Precisión';
+
+  @override
+  String get cards => 'Tarjetas';
+
+  @override
+  String get time => 'Tiempo';
+
+  @override
+  String get showAnswer => 'Mostrar Respuesta';
+
+  @override
+  String get howWellDidYouKnow => '¿Qué tan bien sabías esto?';
+
+  @override
+  String get reviewAgain => 'De Nuevo';
+
+  @override
+  String get reviewHard => 'Difícil';
+
+  @override
+  String get reviewGood => 'Bien';
+
+  @override
+  String get reviewEasy => 'Fácil';
+
+  @override
+  String get tapToRevealAnswer => 'Toca para revelar la respuesta';
 }

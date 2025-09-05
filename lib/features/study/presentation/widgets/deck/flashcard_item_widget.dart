@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../../common_widgets/text_widgets.dart';
 import '../../../domain/models/flashcard.dart';
 
@@ -132,19 +133,19 @@ class FlashcardItemWidget extends StatelessWidget {
                     PopupMenuButton<String>(
                       onSelected: onCardAction,
                       itemBuilder: (context) => [
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'edit',
                           child: ListTile(
                             leading: Icon(Icons.edit_rounded),
-                            title: Text('Edit'),
+                            title: Text(AppLocalizations.of(context)!.edit),
                             contentPadding: EdgeInsets.zero,
                           ),
                         ),
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'delete',
                           child: ListTile(
                             leading: Icon(Icons.delete_rounded),
-                            title: Text('Delete'),
+                            title: Text(AppLocalizations.of(context)!.delete),
                             contentPadding: EdgeInsets.zero,
                           ),
                         ),
@@ -218,13 +219,13 @@ class FlashcardItemWidget extends StatelessWidget {
     
     if (card.isNew) {
       color = Colors.blue;
-      label = 'New';
+      label = AppLocalizations.of(context)!.newCards;
     } else if (card.isDue) {
       color = Colors.orange;
-      label = 'Due';
+      label = AppLocalizations.of(context)!.dueCards;
     } else {
       color = Colors.green;
-      label = 'Learning';
+      label = AppLocalizations.of(context)!.learningCards;
     }
     
     return Container(

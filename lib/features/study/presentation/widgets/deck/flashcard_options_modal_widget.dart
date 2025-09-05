@@ -62,7 +62,7 @@ class FlashcardOptionsModalWidget extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Choose how you\'d like to create your flashcard',
+            AppLocalizations.of(context)!.chooseCreationMethod,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
             ),

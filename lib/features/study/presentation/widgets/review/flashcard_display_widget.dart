@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../../common_widgets/text_widgets.dart';
 import '../../../domain/models/flashcard.dart';
 
@@ -249,7 +250,7 @@ class FlashcardDisplayWidget extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   LabelSmallText(
-                                    'Hint',
+                                    AppLocalizations.of(context)!.hint,
                                     color:
                                         Theme.of(context).colorScheme.tertiary,
                                     fontWeight: FontWeight.w600,
@@ -300,7 +301,7 @@ class FlashcardDisplayWidget extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 LabelMediumText(
-                  'Tap to reveal answer',
+                  AppLocalizations.of(context)!.tapToRevealAnswer,
                   color: Theme.of(context).colorScheme.secondary,
                   fontWeight: FontWeight.w500,
                 ),
@@ -383,7 +384,7 @@ class FlashcardDisplayWidget extends StatelessWidget {
                                   ),
                                   const SizedBox(width: 8),
                                   LabelSmallText(
-                                    'Topics',
+                                    AppLocalizations.of(context)!.topics,
                                     color: Theme.of(context)
                                         .colorScheme
                                         .onSurface
