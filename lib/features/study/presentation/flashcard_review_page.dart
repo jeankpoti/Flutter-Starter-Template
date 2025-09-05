@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../common_widgets/text_widgets.dart';
 import '../../../common_widgets/app_snackbar_widget.dart';
 import '../domain/models/flashcard.dart';
@@ -267,8 +268,8 @@ class _FlashcardReviewPageViewState extends State<_FlashcardReviewPageView>
             const SizedBox(height: 16),
             HeadlineSmallText(
               errorMessage == 'No cards due for review'
-                  ? 'All Caught Up!'
-                  : 'Error',
+                  ? AppLocalizations.of(context)!.studyProgress
+                  : AppLocalizations.of(context)!.error,
               color: Theme.of(
                 context,
               ).colorScheme.onSurface.withValues(alpha: 0.6),
@@ -276,7 +277,7 @@ class _FlashcardReviewPageViewState extends State<_FlashcardReviewPageView>
             const SizedBox(height: 8),
             BodyMediumText(
               errorMessage == 'No cards due for review'
-                  ? 'No cards are due for review at the moment. Come back later to continue studying.'
+                  ? AppLocalizations.of(context)!.reviewCards
                   : errorMessage,
               textAlign: TextAlign.center,
               color: Theme.of(
@@ -298,8 +299,8 @@ class _FlashcardReviewPageViewState extends State<_FlashcardReviewPageView>
               ),
               label: Text(
                 errorMessage == 'No cards due for review'
-                    ? 'Back to Flashcards'
-                    : 'Retry',
+                    ? AppLocalizations.of(context)!.flashcards
+                    : AppLocalizations.of(context)!.retry,
               ),
             ),
           ],
@@ -324,14 +325,14 @@ class _FlashcardReviewPageViewState extends State<_FlashcardReviewPageView>
             ),
             const SizedBox(height: 16),
             HeadlineSmallText(
-              'No Cards Found',
+              AppLocalizations.of(context)!.noCardsYet,
               color: Theme.of(
                 context,
               ).colorScheme.onSurface.withValues(alpha: 0.6),
             ),
             const SizedBox(height: 8),
             BodyMediumText(
-              'This deck doesn\'t have any cards to review.',
+              AppLocalizations.of(context)!.addFirstFlashcard,
               textAlign: TextAlign.center,
               color: Theme.of(
                 context,
@@ -341,7 +342,7 @@ class _FlashcardReviewPageViewState extends State<_FlashcardReviewPageView>
             FilledButton.icon(
               onPressed: () => Navigator.pop(context),
               icon: const Icon(Icons.arrow_back),
-              label: const Text('Back to Flashcards'),
+              label: Text(AppLocalizations.of(context)!.flashcards),
             ),
           ],
         ),

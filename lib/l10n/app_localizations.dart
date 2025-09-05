@@ -3171,6 +3171,384 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Expires on {date}'**
   String expiresOn(Object date);
+
+  /// No description provided for @flashcards.
+  ///
+  /// In en, this message translates to:
+  /// **'Flashcards'**
+  String get flashcards;
+
+  /// No description provided for @flashcard.
+  ///
+  /// In en, this message translates to:
+  /// **'Flashcard'**
+  String get flashcard;
+
+  /// No description provided for @deck.
+  ///
+  /// In en, this message translates to:
+  /// **'Deck'**
+  String get deck;
+
+  /// No description provided for @decks.
+  ///
+  /// In en, this message translates to:
+  /// **'Decks'**
+  String get decks;
+
+  /// No description provided for @createDeck.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Deck'**
+  String get createDeck;
+
+  /// No description provided for @editDeck.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Deck'**
+  String get editDeck;
+
+  /// No description provided for @deleteDeck.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Deck'**
+  String get deleteDeck;
+
+  /// No description provided for @deckName.
+  ///
+  /// In en, this message translates to:
+  /// **'Deck Name'**
+  String get deckName;
+
+  /// No description provided for @deckDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Deck Description'**
+  String get deckDescription;
+
+  /// No description provided for @addCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Card'**
+  String get addCard;
+
+  /// No description provided for @editCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Card'**
+  String get editCard;
+
+  /// No description provided for @deleteCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Card'**
+  String get deleteCard;
+
+  /// No description provided for @cardFront.
+  ///
+  /// In en, this message translates to:
+  /// **'Front'**
+  String get cardFront;
+
+  /// No description provided for @cardBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get cardBack;
+
+  /// No description provided for @cardHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Hint (Optional)'**
+  String get cardHint;
+
+  /// No description provided for @cardTags.
+  ///
+  /// In en, this message translates to:
+  /// **'Tags (Optional)'**
+  String get cardTags;
+
+  /// No description provided for @studyCards.
+  ///
+  /// In en, this message translates to:
+  /// **'Study Cards'**
+  String get studyCards;
+
+  /// No description provided for @reviewCards.
+  ///
+  /// In en, this message translates to:
+  /// **'Review Cards'**
+  String get reviewCards;
+
+  /// No description provided for @startStudy.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Study'**
+  String get startStudy;
+
+  /// No description provided for @generateFlashcardsWithAI.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate Flashcards With AI'**
+  String get generateFlashcardsWithAI;
+
+  /// No description provided for @generateFlashcards.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate Flashcards'**
+  String get generateFlashcards;
+
+  /// No description provided for @generateFromMaterials.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate From Materials'**
+  String get generateFromMaterials;
+
+  /// No description provided for @generateFromCamera.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate From Camera'**
+  String get generateFromCamera;
+
+  /// No description provided for @generateFromGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate From Gallery'**
+  String get generateFromGallery;
+
+  /// No description provided for @generateFromFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate From File'**
+  String get generateFromFile;
+
+  /// No description provided for @createManually.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Manually'**
+  String get createManually;
+
+  /// No description provided for @selectImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Image'**
+  String get selectImage;
+
+  /// No description provided for @addNewFlashcard.
+  ///
+  /// In en, this message translates to:
+  /// **'Add New Flashcard'**
+  String get addNewFlashcard;
+
+  /// No description provided for @chooseCreationMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how you\'d like to create your flashcard'**
+  String get chooseCreationMethod;
+
+  /// No description provided for @typeQuestionAndAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Type your question and answer'**
+  String get typeQuestionAndAnswer;
+
+  /// No description provided for @captureContentWithCamera.
+  ///
+  /// In en, this message translates to:
+  /// **'Capture content with camera'**
+  String get captureContentWithCamera;
+
+  /// No description provided for @selectImageFromGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Select image from gallery'**
+  String get selectImageFromGallery;
+
+  /// No description provided for @importFromDocument.
+  ///
+  /// In en, this message translates to:
+  /// **'Import from document or PDF'**
+  String get importFromDocument;
+
+  /// No description provided for @noCardsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No Cards Yet'**
+  String get noCardsYet;
+
+  /// No description provided for @addFirstFlashcard.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your first flashcard to start studying.'**
+  String get addFirstFlashcard;
+
+  /// No description provided for @errorLoadingCards.
+  ///
+  /// In en, this message translates to:
+  /// **'Error Loading Cards'**
+  String get errorLoadingCards;
+
+  /// No description provided for @generatedFlashcards.
+  ///
+  /// In en, this message translates to:
+  /// **'Generated Flashcards'**
+  String get generatedFlashcards;
+
+  /// No description provided for @aiGeneratedCards.
+  ///
+  /// In en, this message translates to:
+  /// **'AI generated {count} flashcard{plural} from your content. Review and select which ones to add.'**
+  String aiGeneratedCards(int count, String plural);
+
+  /// No description provided for @cardNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Card {number}'**
+  String cardNumber(int number);
+
+  /// No description provided for @question.
+  ///
+  /// In en, this message translates to:
+  /// **'Question:'**
+  String get question;
+
+  /// No description provided for @answer.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer:'**
+  String get answer;
+
+  /// No description provided for @hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Hint:'**
+  String get hint;
+
+  /// No description provided for @selectedCards.
+  ///
+  /// In en, this message translates to:
+  /// **'{selected} of {total} cards selected'**
+  String selectedCards(int selected, int total);
+
+  /// No description provided for @addSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Selected'**
+  String get addSelected;
+
+  /// No description provided for @addedFlashcards.
+  ///
+  /// In en, this message translates to:
+  /// **'Added {count} flashcard{plural} successfully!'**
+  String addedFlashcards(int count, String plural);
+
+  /// No description provided for @failedToGenerateFlashcard.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to generate flashcard: {error}'**
+  String failedToGenerateFlashcard(String error);
+
+  /// No description provided for @failedToGenerateFlashcards.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to generate flashcards: {error}'**
+  String failedToGenerateFlashcards(String error);
+
+  /// No description provided for @analyzingImageGeneratingFlashcard.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyzing image and generating flashcard...'**
+  String get analyzingImageGeneratingFlashcard;
+
+  /// No description provided for @processingFileGeneratingFlashcards.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing file and generating flashcards...'**
+  String get processingFileGeneratingFlashcards;
+
+  /// No description provided for @premiumFlashcardGeneration.
+  ///
+  /// In en, this message translates to:
+  /// **'AI flashcard generation requires a premium subscription.'**
+  String get premiumFlashcardGeneration;
+
+  /// No description provided for @premiumSubscriptionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium subscription required for AI flashcard generation.'**
+  String get premiumSubscriptionRequired;
+
+  /// No description provided for @unableToVerifySubscription.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to verify subscription status.'**
+  String get unableToVerifySubscription;
+
+  /// No description provided for @unableToProcessSubscription.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to process subscription. Please try again.'**
+  String get unableToProcessSubscription;
+
+  /// No description provided for @subscriptionServiceNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription service not available.'**
+  String get subscriptionServiceNotAvailable;
+
+  /// No description provided for @deckUpdatedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Deck updated successfully!'**
+  String get deckUpdatedSuccessfully;
+
+  /// No description provided for @cardDeletedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Card deleted successfully'**
+  String get cardDeletedSuccessfully;
+
+  /// No description provided for @confirmDeleteCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this flashcard? This action cannot be undone.'**
+  String get confirmDeleteCard;
+
+  /// No description provided for @fileSizeExceedsLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'File size ({size}MB) exceeds the maximum allowed size of {limit}MB'**
+  String fileSizeExceedsLimit(String size, int limit);
+
+  /// No description provided for @flashcardsDeck.
+  ///
+  /// In en, this message translates to:
+  /// **'Flashcards Deck'**
+  String get flashcardsDeck;
+
+  /// No description provided for @newCards.
+  ///
+  /// In en, this message translates to:
+  /// **'New Cards'**
+  String get newCards;
+
+  /// No description provided for @dueCards.
+  ///
+  /// In en, this message translates to:
+  /// **'Due Cards'**
+  String get dueCards;
+
+  /// No description provided for @totalCards.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Cards'**
+  String get totalCards;
+
+  /// No description provided for @studyProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Study Progress'**
+  String get studyProgress;
 }
 
 class _AppLocalizationsDelegate

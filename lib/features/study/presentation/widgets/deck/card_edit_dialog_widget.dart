@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../../common_widgets/app_snackbar_widget.dart';
 import '../../../domain/models/flashcard.dart';
 import '../../../data/services/flashcard_service.dart';
@@ -68,7 +69,7 @@ class _CardEditDialogWidgetState extends State<CardEditDialogWidget> {
     return AlertDialog(
       backgroundColor: Theme.of(context).colorScheme.surface,
       title: Text(
-        widget.card == null ? 'Add Flashcard' : 'Edit Flashcard',
+        widget.card == null ? AppLocalizations.of(context)!.addCard : AppLocalizations.of(context)!.editCard,
         style: Theme.of(context).textTheme.titleMedium?.copyWith(
           fontWeight: FontWeight.bold,
           color: Theme.of(context).colorScheme.onSurface,
@@ -85,8 +86,8 @@ class _CardEditDialogWidgetState extends State<CardEditDialogWidget> {
                 TextFormField(
                   controller: _frontController,
                   decoration: InputDecoration(
-                    labelText: 'Question (Front)',
-                    hintText: 'Enter the question or prompt',
+                    labelText: '${AppLocalizations.of(context)!.question} (${AppLocalizations.of(context)!.cardFront})',
+                    hintText: AppLocalizations.of(context)!.enterYourAnswer,
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -106,7 +107,7 @@ class _CardEditDialogWidgetState extends State<CardEditDialogWidget> {
                   maxLines: 3,
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Please enter a question';
+                      return AppLocalizations.of(context)!.fullNameRequired.replaceAll('full name', AppLocalizations.of(context)!.question.toLowerCase());
                     }
                     return null;
                   },
@@ -115,8 +116,8 @@ class _CardEditDialogWidgetState extends State<CardEditDialogWidget> {
                 TextFormField(
                   controller: _backController,
                   decoration: InputDecoration(
-                    labelText: 'Answer (Back)',
-                    hintText: 'Enter the answer or explanation',
+                    labelText: '${AppLocalizations.of(context)!.answer} (${AppLocalizations.of(context)!.cardBack})',
+                    hintText: AppLocalizations.of(context)!.enterYourAnswer,
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -136,7 +137,7 @@ class _CardEditDialogWidgetState extends State<CardEditDialogWidget> {
                   maxLines: 3,
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Please enter an answer';
+                      return AppLocalizations.of(context)!.fullNameRequired.replaceAll('full name', AppLocalizations.of(context)!.answer.toLowerCase());
                     }
                     return null;
                   },
@@ -145,8 +146,8 @@ class _CardEditDialogWidgetState extends State<CardEditDialogWidget> {
                 TextFormField(
                   controller: _hintController,
                   decoration: InputDecoration(
-                    labelText: 'Hint (Optional)',
-                    hintText: 'Enter a helpful hint',
+                    labelText: AppLocalizations.of(context)!.cardHint,
+                    hintText: AppLocalizations.of(context)!.hint,
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -169,7 +170,7 @@ class _CardEditDialogWidgetState extends State<CardEditDialogWidget> {
                 TextFormField(
                   controller: _tagsController,
                   decoration: InputDecoration(
-                    labelText: 'Tags (Optional)',
+                    labelText: AppLocalizations.of(context)!.cardTags,
                     hintText: 'algebra, geometry, calculus',
                     helperText: 'Separate tags with commas',
                     helperStyle: TextStyle(
@@ -203,7 +204,7 @@ class _CardEditDialogWidgetState extends State<CardEditDialogWidget> {
           style: TextButton.styleFrom(
             foregroundColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
           ),
-          child: const Text('Cancel'),
+          child: Text(AppLocalizations.of(context)!.cancel),
         ),
         FilledButton(
           onPressed: _isLoading ? null : _saveCard,
@@ -223,7 +224,7 @@ class _CardEditDialogWidgetState extends State<CardEditDialogWidget> {
                 ),
               )
             : Text(
-                widget.card == null ? 'Add' : 'Save',
+                widget.card == null ? AppLocalizations.of(context)!.addCard : AppLocalizations.of(context)!.save,
                 style: TextStyle(
                   color: Theme.of(context).colorScheme.onSecondary,
                 ),
@@ -259,7 +260,7 @@ class _CardEditDialogWidgetState extends State<CardEditDialogWidget> {
           tags: tags,
         );
         if (mounted) {
-          AppSnackBar.showSuccess(context, 'Card added successfully!');
+          AppSnackBar.showSuccess(context, AppLocalizations.of(context)!.addedFlashcards(1, ''));
         }
       } else {
         // Update existing card
@@ -271,7 +272,7 @@ class _CardEditDialogWidgetState extends State<CardEditDialogWidget> {
         );
         await flashcardService.updateCard(updatedCard);
         if (mounted) {
-          AppSnackBar.showSuccess(context, 'Card updated successfully!');
+          AppSnackBar.showSuccess(context, AppLocalizations.of(context)!.deckUpdatedSuccessfully);
         }
       }
 
@@ -281,7 +282,7 @@ class _CardEditDialogWidgetState extends State<CardEditDialogWidget> {
       }
     } catch (e) {
       if (mounted) {
-        AppSnackBar.showError(context, 'Failed to save card: ${e.toString()}');
+        AppSnackBar.showError(context, AppLocalizations.of(context)!.somethingWentWrong);
       }
     } finally {
       if (mounted) {

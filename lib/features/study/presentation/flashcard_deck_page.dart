@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../common_widgets/text_widgets.dart';
 import '../../../common_widgets/app_snackbar_widget.dart';
 import '../domain/models/flashcard.dart';
@@ -144,16 +145,16 @@ class _FlashcardDeckPageViewState extends State<_FlashcardDeckPageView> {
             Icons.add_rounded,
             color: Theme.of(context).colorScheme.secondary,
           ),
-          tooltip: 'Add Card',
+          tooltip: AppLocalizations.of(context)!.addCard,
         ),
         PopupMenuButton<String>(
           onSelected: _handleDeckAction,
-          itemBuilder: (context) => const [
+          itemBuilder: (context) => [
             PopupMenuItem(
               value: 'edit_deck',
               child: ListTile(
                 leading: Icon(Icons.edit_rounded),
-                title: Text('Edit Deck'),
+                title: Text(AppLocalizations.of(context)!.editDeck),
                 contentPadding: EdgeInsets.zero,
               ),
             ),
@@ -161,7 +162,7 @@ class _FlashcardDeckPageViewState extends State<_FlashcardDeckPageView> {
               value: 'study',
               child: ListTile(
                 leading: Icon(Icons.school_rounded),
-                title: Text('Study Cards'),
+                title: Text(AppLocalizations.of(context)!.studyCards),
                 contentPadding: EdgeInsets.zero,
               ),
             ),
@@ -223,7 +224,7 @@ class _FlashcardDeckPageViewState extends State<_FlashcardDeckPageView> {
             ),
             const SizedBox(height: 16),
             HeadlineSmallText(
-              'No Cards Yet',
+              AppLocalizations.of(context)!.noCardsYet,
               color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
             ),
             const SizedBox(height: 8),
@@ -244,7 +245,7 @@ class _FlashcardDeckPageViewState extends State<_FlashcardDeckPageView> {
                 color: Theme.of(context).colorScheme.onSecondary,
               ),
               label: Text(
-                'Add Card',
+                AppLocalizations.of(context)!.addCard,
                 style: TextStyle(color: Theme.of(context).colorScheme.onSecondary),
               ),
             ),
@@ -268,7 +269,7 @@ class _FlashcardDeckPageViewState extends State<_FlashcardDeckPageView> {
             ),
             const SizedBox(height: 16),
             HeadlineSmallText(
-              'Error Loading Cards',
+              AppLocalizations.of(context)!.errorLoadingCards,
               color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
             ),
             const SizedBox(height: 8),
@@ -281,7 +282,7 @@ class _FlashcardDeckPageViewState extends State<_FlashcardDeckPageView> {
             FilledButton.icon(
               onPressed: () => _flashcardDeckCubit?.loadCards(widget.deck.id),
               icon: const Icon(Icons.refresh),
-              label: const Text('Retry'),
+              label: Text(AppLocalizations.of(context)!.retry),
             ),
           ],
         ),
@@ -309,7 +310,7 @@ class _FlashcardDeckPageViewState extends State<_FlashcardDeckPageView> {
           backgroundColor: Theme.of(context).colorScheme.secondary,
           foregroundColor: Theme.of(context).colorScheme.onSecondary,
           icon: const Icon(Icons.school_rounded),
-          label: const Text('Study'),
+          label: Text(AppLocalizations.of(context)!.startStudy),
         );
       },
     );
@@ -398,19 +399,19 @@ class _FlashcardDeckPageViewState extends State<_FlashcardDeckPageView> {
         final confirmed = await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('Delete Card'),
+            title: Text(AppLocalizations.of(context)!.deleteCard),
             content: const Text('Are you sure you want to delete this flashcard? This action cannot be undone.'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text('Cancel'),
+                child: Text(AppLocalizations.of(context)!.cancel),
               ),
               FilledButton(
                 onPressed: () => Navigator.pop(context, true),
                 style: FilledButton.styleFrom(
                   backgroundColor: Theme.of(context).colorScheme.error,
                 ),
-                child: const Text('Delete'),
+                child: Text(AppLocalizations.of(context)!.delete),
               ),
             ],
           ),
@@ -419,7 +420,7 @@ class _FlashcardDeckPageViewState extends State<_FlashcardDeckPageView> {
         if (confirmed == true && mounted) {
           await _flashcardDeckCubit?.deleteCard(card.id, widget.deck.id);
           if (mounted) {
-            AppSnackBar.showSuccess(context, 'Card deleted successfully');
+            AppSnackBar.showSuccess(context, AppLocalizations.of(context)!.cardDeletedSuccessfully);
           }
         }
         break;

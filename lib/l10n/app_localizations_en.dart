@@ -1726,4 +1726,216 @@ class AppLocalizationsEn extends AppLocalizations {
   String expiresOn(Object date) {
     return 'Expires on $date';
   }
+
+  @override
+  String get flashcards => 'Flashcards';
+
+  @override
+  String get flashcard => 'Flashcard';
+
+  @override
+  String get deck => 'Deck';
+
+  @override
+  String get decks => 'Decks';
+
+  @override
+  String get createDeck => 'Create Deck';
+
+  @override
+  String get editDeck => 'Edit Deck';
+
+  @override
+  String get deleteDeck => 'Delete Deck';
+
+  @override
+  String get deckName => 'Deck Name';
+
+  @override
+  String get deckDescription => 'Deck Description';
+
+  @override
+  String get addCard => 'Add Card';
+
+  @override
+  String get editCard => 'Edit Card';
+
+  @override
+  String get deleteCard => 'Delete Card';
+
+  @override
+  String get cardFront => 'Front';
+
+  @override
+  String get cardBack => 'Back';
+
+  @override
+  String get cardHint => 'Hint (Optional)';
+
+  @override
+  String get cardTags => 'Tags (Optional)';
+
+  @override
+  String get studyCards => 'Study Cards';
+
+  @override
+  String get reviewCards => 'Review Cards';
+
+  @override
+  String get startStudy => 'Start Study';
+
+  @override
+  String get generateFlashcardsWithAI => 'Generate Flashcards With AI';
+
+  @override
+  String get generateFlashcards => 'Generate Flashcards';
+
+  @override
+  String get generateFromMaterials => 'Generate From Materials';
+
+  @override
+  String get generateFromCamera => 'Generate From Camera';
+
+  @override
+  String get generateFromGallery => 'Generate From Gallery';
+
+  @override
+  String get generateFromFile => 'Generate From File';
+
+  @override
+  String get createManually => 'Create Manually';
+
+  @override
+  String get selectImage => 'Select Image';
+
+  @override
+  String get addNewFlashcard => 'Add New Flashcard';
+
+  @override
+  String get chooseCreationMethod =>
+      'Choose how you\'d like to create your flashcard';
+
+  @override
+  String get typeQuestionAndAnswer => 'Type your question and answer';
+
+  @override
+  String get captureContentWithCamera => 'Capture content with camera';
+
+  @override
+  String get selectImageFromGallery => 'Select image from gallery';
+
+  @override
+  String get importFromDocument => 'Import from document or PDF';
+
+  @override
+  String get noCardsYet => 'No Cards Yet';
+
+  @override
+  String get addFirstFlashcard => 'Add your first flashcard to start studying.';
+
+  @override
+  String get errorLoadingCards => 'Error Loading Cards';
+
+  @override
+  String get generatedFlashcards => 'Generated Flashcards';
+
+  @override
+  String aiGeneratedCards(int count, String plural) {
+    return 'AI generated $count flashcard$plural from your content. Review and select which ones to add.';
+  }
+
+  @override
+  String cardNumber(int number) {
+    return 'Card $number';
+  }
+
+  @override
+  String get question => 'Question:';
+
+  @override
+  String get answer => 'Answer:';
+
+  @override
+  String get hint => 'Hint:';
+
+  @override
+  String selectedCards(int selected, int total) {
+    return '$selected of $total cards selected';
+  }
+
+  @override
+  String get addSelected => 'Add Selected';
+
+  @override
+  String addedFlashcards(int count, String plural) {
+    return 'Added $count flashcard$plural successfully!';
+  }
+
+  @override
+  String failedToGenerateFlashcard(String error) {
+    return 'Failed to generate flashcard: $error';
+  }
+
+  @override
+  String failedToGenerateFlashcards(String error) {
+    return 'Failed to generate flashcards: $error';
+  }
+
+  @override
+  String get analyzingImageGeneratingFlashcard =>
+      'Analyzing image and generating flashcard...';
+
+  @override
+  String get processingFileGeneratingFlashcards =>
+      'Processing file and generating flashcards...';
+
+  @override
+  String get premiumFlashcardGeneration =>
+      'AI flashcard generation requires a premium subscription.';
+
+  @override
+  String get premiumSubscriptionRequired =>
+      'Premium subscription required for AI flashcard generation.';
+
+  @override
+  String get unableToVerifySubscription =>
+      'Unable to verify subscription status.';
+
+  @override
+  String get unableToProcessSubscription =>
+      'Unable to process subscription. Please try again.';
+
+  @override
+  String get subscriptionServiceNotAvailable =>
+      'Subscription service not available.';
+
+  @override
+  String get deckUpdatedSuccessfully => 'Deck updated successfully!';
+
+  @override
+  String get cardDeletedSuccessfully => 'Card deleted successfully';
+
+  @override
+  String get confirmDeleteCard =>
+      'Are you sure you want to delete this flashcard? This action cannot be undone.';
+
+  @override
+  String fileSizeExceedsLimit(String size, int limit) {
+    return 'File size (${size}MB) exceeds the maximum allowed size of ${limit}MB';
+  }
+
+  @override
+  String get flashcardsDeck => 'Flashcards Deck';
+
+  @override
+  String get newCards => 'New Cards';
+
+  @override
+  String get dueCards => 'Due Cards';
+
+  @override
+  String get totalCards => 'Total Cards';
+
+  @override
+  String get studyProgress => 'Study Progress';
 }

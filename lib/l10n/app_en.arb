@@ -565,5 +565,136 @@
   "restore": "Restore",
   "manageSubscription": "Manage Subscription",
   "cancelTrial": "Cancel Trial",
-  "subscriptionError": "Subscription Error"
+  "subscriptionError": "Subscription Error",
+
+  "flashcards": "Flashcards",
+  "flashcard": "Flashcard",
+  "deck": "Deck",
+  "decks": "Decks",
+  "createDeck": "Create Deck",
+  "editDeck": "Edit Deck",
+  "deleteDeck": "Delete Deck",
+  "deckName": "Deck Name",
+  "deckDescription": "Deck Description",
+  "addCard": "Add Card",
+  "editCard": "Edit Card",
+  "deleteCard": "Delete Card",
+  "cardFront": "Front",
+  "cardBack": "Back",
+  "cardHint": "Hint (Optional)",
+  "cardTags": "Tags (Optional)",
+  "studyCards": "Study Cards",
+  "reviewCards": "Review Cards",
+  "startStudy": "Start Study",
+  "generateFlashcardsWithAI": "Generate Flashcards With AI",
+  "generateFlashcards": "Generate Flashcards",
+  "generateFromMaterials": "Generate From Materials",
+  "generateFromCamera": "Generate From Camera",
+  "generateFromGallery": "Generate From Gallery",
+  "generateFromFile": "Generate From File",
+  "createManually": "Create Manually",
+  "takePhoto": "Take Photo",
+  "uploadPhoto": "Upload Photo",
+  "uploadFile": "Upload File",
+  "selectImage": "Select Image",
+  "addNewFlashcard": "Add New Flashcard",
+  "chooseCreationMethod": "Choose how you'd like to create your flashcard",
+  "typeQuestionAndAnswer": "Type your question and answer",
+  "captureContentWithCamera": "Capture content with camera",
+  "selectImageFromGallery": "Select image from gallery",
+  "importFromDocument": "Import from document or PDF",
+  "noCardsYet": "No Cards Yet",
+  "addFirstFlashcard": "Add your first flashcard to start studying.",
+  "errorLoadingCards": "Error Loading Cards",
+  "retry": "Retry",
+  "generatedFlashcards": "Generated Flashcards",
+  "aiGeneratedCards": "AI generated {count} flashcard{plural} from your content. Review and select which ones to add.",
+  "@aiGeneratedCards": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "cardNumber": "Card {number}",
+  "@cardNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "question": "Question:",
+  "answer": "Answer:",
+  "hint": "Hint:",
+  "selectedCards": "{selected} of {total} cards selected",
+  "@selectedCards": {
+    "placeholders": {
+      "selected": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "addSelected": "Add Selected",
+  "cancel": "Cancel",
+  "addedFlashcards": "Added {count} flashcard{plural} successfully!",
+  "@addedFlashcards": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToGenerateFlashcard": "Failed to generate flashcard: {error}",
+  "@failedToGenerateFlashcard": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToGenerateFlashcards": "Failed to generate flashcards: {error}",
+  "@failedToGenerateFlashcards": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "analyzingImageGeneratingFlashcard": "Analyzing image and generating flashcard...",
+  "processingFileGeneratingFlashcards": "Processing file and generating flashcards...",
+  "premiumFlashcardGeneration": "AI flashcard generation requires a premium subscription.",
+  "premiumSubscriptionRequired": "Premium subscription required for AI flashcard generation.",
+  "unableToVerifySubscription": "Unable to verify subscription status.",
+  "unableToProcessSubscription": "Unable to process subscription. Please try again.",
+  "subscriptionServiceNotAvailable": "Subscription service not available.",
+  "deckUpdatedSuccessfully": "Deck updated successfully!",
+  "cardDeletedSuccessfully": "Card deleted successfully",
+  "confirmDeleteCard": "Are you sure you want to delete this flashcard? This action cannot be undone.",
+  "delete": "Delete",
+  "fileSizeExceedsLimit": "File size ({size}MB) exceeds the maximum allowed size of {limit}MB",
+  "@fileSizeExceedsLimit": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "flashcardsDeck": "Flashcards Deck",
+  "newCards": "New Cards",
+  "dueCards": "Due Cards",
+  "totalCards": "Total Cards",
+  "studyProgress": "Study Progress"
 }

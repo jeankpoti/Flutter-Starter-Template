@@ -579,7 +579,7 @@ class _StudyPageViewState extends State<_StudyPageView>
     if (mounted) {
       AppSnackBar.showSuccess(
         context,
-        'Flashcard deck "$deckName" created successfully!',
+        AppLocalizations.of(context)!.deckUpdatedSuccessfully,
       );
     }
   }

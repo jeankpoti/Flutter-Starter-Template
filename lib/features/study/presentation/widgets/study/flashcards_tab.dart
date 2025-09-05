@@ -48,7 +48,8 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
     return BlocListener<FlashcardCubit, FlashcardState>(
       listener: (context, state) {
         if (state.errorMsg != null) {
-          AppSnackBar.showError(context, state.errorMsg!);
+          String errorMessage = _getLocalizedErrorMessage(context, state.errorMsg!);
+          AppSnackBar.showError(context, errorMessage);
           // Clear the message after showing it
           Future.microtask(() {
             if (context.mounted) {
@@ -157,12 +158,12 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     HeadlineSmallText(
-                      AppLocalizations.of(context)!.flashcardsTab,
+                      AppLocalizations.of(context)!.flashcards,
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
                     BodyMediumText(
-                      'Review with spaced repetition',
+                      AppLocalizations.of(context)!.reviewCards,
                       color: Theme.of(
                         context,
                       ).colorScheme.onSurface.withValues(alpha: 0.7),
@@ -177,20 +178,20 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
             children: [
               _buildStatChip(
                 icon: FontAwesomeIcons.layerGroup,
-                label: '${decks.length} Decks',
+                label: '${decks.length} ${AppLocalizations.of(context)!.decks}',
                 color: Theme.of(context).colorScheme.primary,
               ),
               const SizedBox(width: 12),
               _buildStatChip(
                 icon: FontAwesomeIcons.clone,
-                label: '$totalCards Cards',
+                label: '$totalCards ${AppLocalizations.of(context)!.totalCards}',
                 color: Theme.of(context).colorScheme.tertiary,
               ),
               const SizedBox(width: 12),
               if (dueCards > 0)
                 _buildStatChip(
                   icon: FontAwesomeIcons.clock,
-                  label: '$dueCards Due',
+                  label: '$dueCards ${AppLocalizations.of(context)!.dueCards}',
                   color: Theme.of(context).colorScheme.error,
                 ),
             ],
@@ -230,7 +231,7 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TitleMediumText(
-            'Quick Actions',
+            AppLocalizations.of(context)!.generateFromMaterials,
             fontWeight: FontWeight.w600,
             color: Theme.of(context).colorScheme.onSurface,
           ),
@@ -240,7 +241,7 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
               Expanded(
                 child: _buildActionButton(
                   icon: Icons.add_rounded,
-                  label: 'Create Deck',
+                  label: AppLocalizations.of(context)!.createDeck,
                   onTap: _showCreateDeckDialog,
                 ),
               ),
@@ -248,7 +249,7 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
               Expanded(
                 child: _buildActionButton(
                   icon: Icons.auto_awesome_rounded,
-                  label: 'Generate Flashcards With AI',
+                  label: AppLocalizations.of(context)!.generateFlashcardsWithAI,
                   onTap: _showGenerateDialog,
                   enabled: widget.studyMaterials.isNotEmpty,
                 ),
@@ -360,35 +361,35 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
                     onSelected: (value) => _handleDeckAction(deck, value),
                     itemBuilder:
                         (context) => [
-                          const PopupMenuItem(
+                          PopupMenuItem(
                             value: 'manage',
                             child: ListTile(
                               leading: Icon(Icons.settings_rounded),
-                              title: Text('Manage Cards'),
+                              title: Text(AppLocalizations.of(context)!.studyCards),
                               contentPadding: EdgeInsets.zero,
                             ),
                           ),
-                          const PopupMenuItem(
+                          PopupMenuItem(
                             value: 'study',
                             child: ListTile(
                               leading: Icon(Icons.school_rounded),
-                              title: Text('Study'),
+                              title: Text(AppLocalizations.of(context)!.startStudy),
                               contentPadding: EdgeInsets.zero,
                             ),
                           ),
-                          const PopupMenuItem(
+                          PopupMenuItem(
                             value: 'edit',
                             child: ListTile(
                               leading: Icon(Icons.edit_rounded),
-                              title: Text('Edit Deck'),
+                              title: Text(AppLocalizations.of(context)!.editDeck),
                               contentPadding: EdgeInsets.zero,
                             ),
                           ),
-                          const PopupMenuItem(
+                          PopupMenuItem(
                             value: 'delete',
                             child: ListTile(
                               leading: Icon(Icons.delete_rounded),
-                              title: Text('Delete'),
+                              title: Text(AppLocalizations.of(context)!.delete),
                               contentPadding: EdgeInsets.zero,
                             ),
                           ),
@@ -415,7 +416,7 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   LabelSmallText(
-                    '${deck.cardCount} cards',
+                    '${deck.cardCount} ${AppLocalizations.of(context)!.totalCards.toLowerCase()}',
                     color: Theme.of(
                       context,
                     ).colorScheme.onSurface.withValues(alpha: 0.6),
@@ -431,7 +432,7 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
-                        '${deck.dueCardCount} due',
+                        '${deck.dueCardCount} ${AppLocalizations.of(context)!.dueCards.toLowerCase()}',
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
                           color: Theme.of(context).colorScheme.onError,
                           fontSize: 10,
@@ -465,14 +466,14 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
               ),
               const SizedBox(height: 16),
               HeadlineSmallText(
-                'No Flashcards Yet',
+                AppLocalizations.of(context)!.noCardsYet,
                 color: Theme.of(
                   context,
                 ).colorScheme.onSurface.withValues(alpha: 0.6),
               ),
               const SizedBox(height: 8),
               BodyMediumText(
-                'Create your first flashcard deck or generate one from your study materials.',
+                AppLocalizations.of(context)!.addFirstFlashcard,
                 textAlign: TextAlign.center,
                 color: Theme.of(
                   context,
@@ -491,8 +492,8 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
                 ),
                 label: Text(
                   widget.studyMaterials.isNotEmpty
-                      ? 'Generate AI Flashcards'
-                      : 'Create Deck',
+                      ? AppLocalizations.of(context)!.generateFlashcards
+                      : AppLocalizations.of(context)!.createDeck,
                 ),
               ),
             ],
@@ -518,7 +519,7 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
               ),
               const SizedBox(height: 16),
               HeadlineSmallText(
-                'Error Loading Flashcards',
+                AppLocalizations.of(context)!.errorLoadingCards,
                 color: Theme.of(
                   context,
                 ).colorScheme.onSurface.withValues(alpha: 0.6),
@@ -535,7 +536,7 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
               FilledButton.icon(
                 onPressed: () => context.read<FlashcardCubit>().loadUserDecks(),
                 icon: const Icon(Icons.refresh),
-                label: const Text('Retry'),
+                label: Text(AppLocalizations.of(context)!.retry),
               ),
             ],
           ),
@@ -604,7 +605,7 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 TitleMediumText(
-                  'Generate AI Flashcards',
+                  AppLocalizations.of(context)!.generateFlashcardsWithAI,
                   fontWeight: FontWeight.bold,
                 ),
                 const SizedBox(height: 16),
@@ -613,9 +614,9 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
                     Icons.library_books,
                     color: Theme.of(context).colorScheme.primary,
                   ),
-                  title: const Text('From Selected Materials'),
+                  title: Text(AppLocalizations.of(context)!.generateFromMaterials),
                   subtitle: Text(
-                    '${widget.studyMaterials.length} materials available',
+                    '${widget.studyMaterials.length} ${AppLocalizations.of(context)!.materials.toLowerCase()}',
                   ),
                   onTap: () {
                     Navigator.pop(context);
@@ -627,9 +628,9 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
                     Icons.auto_awesome_rounded,
                     color: Theme.of(context).colorScheme.secondary,
                   ),
-                  title: const Text('Generate with All Materials'),
-                  subtitle: const Text(
-                    'Create comprehensive flashcards from all study materials',
+                  title: Text(AppLocalizations.of(context)!.generateFromAllMaterials),
+                  subtitle: Text(
+                    AppLocalizations.of(context)!.generateFromAllMaterials,
                   ),
                   onTap: () {
                     Navigator.pop(context);
@@ -673,7 +674,7 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
     );
 
     if (mounted) {
-      AppSnackBar.showSuccess(context, 'Deck created successfully!');
+      AppSnackBar.showSuccess(context, AppLocalizations.of(context)!.deckUpdatedSuccessfully);
     }
   }
 
@@ -691,7 +692,7 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
     );
 
     if (mounted) {
-      AppSnackBar.showSuccess(context, 'Deck updated successfully!');
+      AppSnackBar.showSuccess(context, AppLocalizations.of(context)!.deckUpdatedSuccessfully);
     }
   }
 
@@ -726,21 +727,21 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
           context: context,
           builder:
               (context) => AlertDialog(
-                title: const Text('Delete Deck'),
+                title: Text(AppLocalizations.of(context)!.deleteDeck),
                 content: Text(
-                  'Are you sure you want to delete "${deck.name}"? This action cannot be undone.',
+                  AppLocalizations.of(context)!.confirmDeleteCard,
                 ),
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.pop(context, false),
-                    child: const Text('Cancel'),
+                    child: Text(AppLocalizations.of(context)!.cancel),
                   ),
                   FilledButton(
                     onPressed: () => Navigator.pop(context, true),
                     style: FilledButton.styleFrom(
                       backgroundColor: Theme.of(context).colorScheme.error,
                     ),
-                    child: const Text('Delete'),
+                    child: Text(AppLocalizations.of(context)!.delete),
                   ),
                 ],
               ),
@@ -749,10 +750,31 @@ class _FlashcardsTabState extends State<FlashcardsTab> {
         if (confirmed == true) {
           await context.read<FlashcardCubit>().deleteDeck(deck.id);
           if (mounted) {
-            AppSnackBar.showSuccess(context, 'Deck deleted successfully');
+            AppSnackBar.showSuccess(context, AppLocalizations.of(context)!.cardDeletedSuccessfully);
           }
         }
         break;
+    }
+  }
+
+  String _getLocalizedErrorMessage(BuildContext context, String errorKey) {
+    final localizations = AppLocalizations.of(context)!;
+    
+    switch (errorKey) {
+      case 'subscriptionServiceNotAvailable':
+        return localizations.subscriptionServiceNotAvailable;
+      case 'premiumSubscriptionRequired':
+        return localizations.premiumSubscriptionRequired;
+      case 'unableToProcessSubscription':
+        return localizations.unableToProcessSubscription;
+      case 'unableToVerifySubscription':
+        return localizations.unableToVerifySubscription;
+      default:
+        // For error messages that contain dynamic content or are not localized
+        if (errorKey.startsWith('Failed to')) {
+          return localizations.somethingWentWrong;
+        }
+        return errorKey; // Return the original error if no localization found
     }
   }
 }

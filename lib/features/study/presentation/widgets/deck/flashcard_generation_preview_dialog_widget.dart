@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../../../../common_widgets/app_snackbar_widget.dart';
 import '../../../data/services/flashcard_generation_service.dart';
 import '../../../data/services/flashcard_service.dart';
@@ -51,7 +52,7 @@ class _FlashcardGenerationPreviewDialogWidgetState extends State<FlashcardGenera
     return AlertDialog(
       backgroundColor: Theme.of(context).colorScheme.surface,
       title: Text(
-        'Generated Flashcards',
+        AppLocalizations.of(context)!.generatedFlashcards,
         style: Theme.of(context).textTheme.titleMedium?.copyWith(
           fontWeight: FontWeight.bold,
           color: Theme.of(context).colorScheme.onSurface,
@@ -80,7 +81,10 @@ class _FlashcardGenerationPreviewDialogWidgetState extends State<FlashcardGenera
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'AI generated ${widget.generatedCards.length} flashcard${widget.generatedCards.length != 1 ? 's' : ''} from your content. Review and select which ones to add.',
+                      AppLocalizations.of(context)!.aiGeneratedCards(
+                        widget.generatedCards.length,
+                        widget.generatedCards.length != 1 ? 's' : '',
+                      ),
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
                       ),
@@ -116,7 +120,10 @@ class _FlashcardGenerationPreviewDialogWidgetState extends State<FlashcardGenera
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    '${selectedCards.where((selected) => selected).length} of ${widget.generatedCards.length} cards selected',
+                    AppLocalizations.of(context)!.selectedCards(
+                      selectedCards.where((selected) => selected).length,
+                      widget.generatedCards.length,
+                    ),
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
@@ -133,7 +140,7 @@ class _FlashcardGenerationPreviewDialogWidgetState extends State<FlashcardGenera
           style: TextButton.styleFrom(
             foregroundColor: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
           ),
-          child: const Text('Cancel'),
+          child: Text(AppLocalizations.of(context)!.cancel),
         ),
         FilledButton(
           onPressed: _isLoading || !selectedCards.contains(true) ? null : _addSelectedCards,
@@ -153,7 +160,7 @@ class _FlashcardGenerationPreviewDialogWidgetState extends State<FlashcardGenera
                   ),
                 )
               : Text(
-                  'Add Selected',
+                  AppLocalizations.of(context)!.addSelected,
                   style: TextStyle(
                     color: Theme.of(context).colorScheme.onSecondary,
                   ),
@@ -210,7 +217,7 @@ class _FlashcardGenerationPreviewDialogWidgetState extends State<FlashcardGenera
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'Card ${index + 1}',
+                        AppLocalizations.of(context)!.cardNumber(index + 1),
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.w600,
                           color: Theme.of(context).colorScheme.onSurface,
@@ -234,7 +241,7 @@ class _FlashcardGenerationPreviewDialogWidgetState extends State<FlashcardGenera
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Question:',
+                        AppLocalizations.of(context)!.question,
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
                           color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                           fontWeight: FontWeight.w600,
@@ -268,7 +275,7 @@ class _FlashcardGenerationPreviewDialogWidgetState extends State<FlashcardGenera
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Answer:',
+                        AppLocalizations.of(context)!.answer,
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
                           color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                           fontWeight: FontWeight.w600,
@@ -299,7 +306,7 @@ class _FlashcardGenerationPreviewDialogWidgetState extends State<FlashcardGenera
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Hint:',
+                          AppLocalizations.of(context)!.hint,
                           style: Theme.of(context).textTheme.labelSmall?.copyWith(
                             color: Theme.of(context).colorScheme.tertiary,
                             fontWeight: FontWeight.w600,
@@ -384,12 +391,15 @@ class _FlashcardGenerationPreviewDialogWidgetState extends State<FlashcardGenera
         widget.onSaved();
         AppSnackBar.showSuccess(
           context,
-          'Added ${selectedCardsList.length} flashcard${selectedCardsList.length != 1 ? 's' : ''} successfully!',
+          AppLocalizations.of(context)!.addedFlashcards(
+            selectedCardsList.length,
+            selectedCardsList.length != 1 ? 's' : '',
+          ),
         );
       }
     } catch (e) {
       if (mounted) {
-        AppSnackBar.showError(context, 'Failed to add flashcards: ${e.toString()}');
+        AppSnackBar.showError(context, AppLocalizations.of(context)!.somethingWentWrong);
       }
     } finally {
       if (mounted) {

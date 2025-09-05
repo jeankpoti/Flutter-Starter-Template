@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 class FlashcardOptionsModalWidget extends StatelessWidget {
   final VoidCallback onManual;
@@ -53,7 +54,7 @@ class FlashcardOptionsModalWidget extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'Add New Flashcard',
+            AppLocalizations.of(context)!.addNewFlashcard,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
               color: Theme.of(context).colorScheme.onSurface,
@@ -72,8 +73,8 @@ class FlashcardOptionsModalWidget extends StatelessWidget {
           _buildOption(
             context,
             icon: Icons.edit_rounded,
-            title: 'Create Manually',
-            subtitle: 'Type your question and answer',
+            title: AppLocalizations.of(context)!.createManually,
+            subtitle: AppLocalizations.of(context)!.typeQuestionAndAnswer,
             onTap: () {
               Navigator.pop(context);
               onManual();
@@ -85,8 +86,8 @@ class FlashcardOptionsModalWidget extends StatelessWidget {
           _buildOption(
             context,
             icon: Icons.camera_alt_rounded,
-            title: 'Take Photo',
-            subtitle: 'Capture content with camera',
+            title: AppLocalizations.of(context)!.takePhoto,
+            subtitle: AppLocalizations.of(context)!.captureContentWithCamera,
             onTap: () {
               Navigator.pop(context);
               onCamera();
@@ -98,8 +99,8 @@ class FlashcardOptionsModalWidget extends StatelessWidget {
           _buildOption(
             context,
             icon: Icons.photo_library_rounded,
-            title: 'Upload Photo',
-            subtitle: 'Select image from gallery',
+            title: AppLocalizations.of(context)!.uploadPhoto,
+            subtitle: AppLocalizations.of(context)!.selectImageFromGallery,
             onTap: () {
               Navigator.pop(context);
               onGallery();
@@ -111,8 +112,8 @@ class FlashcardOptionsModalWidget extends StatelessWidget {
           _buildOption(
             context,
             icon: Icons.upload_file_rounded,
-            title: 'Upload File',
-            subtitle: 'Import from document or PDF',
+            title: AppLocalizations.of(context)!.uploadFile,
+            subtitle: AppLocalizations.of(context)!.importFromDocument,
             onTap: () {
               Navigator.pop(context);
               onFile();

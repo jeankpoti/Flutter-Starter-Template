@@ -114,10 +114,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get text => 'Texto';
 
   @override
-  String get takePhoto => 'Tomar foto';
+  String get takePhoto => 'Tomar Foto';
 
   @override
-  String get uploadPhoto => 'Subir foto';
+  String get uploadPhoto => 'Subir Foto';
 
   @override
   String get solveProblem => 'Resolver problema';
@@ -1427,7 +1427,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get total => 'Total';
 
   @override
-  String get uploadFile => 'Subir archivo';
+  String get uploadFile => 'Subir Archivo';
 
   @override
   String get uploadFileSubtitle => 'Seleccionar archivos desde tu dispositivo';
@@ -1757,4 +1757,217 @@ class AppLocalizationsEs extends AppLocalizations {
   String expiresOn(Object date) {
     return 'Expira el $date';
   }
+
+  @override
+  String get flashcards => 'Tarjetas de Memoria';
+
+  @override
+  String get flashcard => 'Tarjeta de Memoria';
+
+  @override
+  String get deck => 'Baraja';
+
+  @override
+  String get decks => 'Barajas';
+
+  @override
+  String get createDeck => 'Crear Baraja';
+
+  @override
+  String get editDeck => 'Editar Baraja';
+
+  @override
+  String get deleteDeck => 'Eliminar Baraja';
+
+  @override
+  String get deckName => 'Nombre de la Baraja';
+
+  @override
+  String get deckDescription => 'Descripción de la Baraja';
+
+  @override
+  String get addCard => 'Agregar Tarjeta';
+
+  @override
+  String get editCard => 'Editar Tarjeta';
+
+  @override
+  String get deleteCard => 'Eliminar Tarjeta';
+
+  @override
+  String get cardFront => 'Frente';
+
+  @override
+  String get cardBack => 'Reverso';
+
+  @override
+  String get cardHint => 'Pista (Opcional)';
+
+  @override
+  String get cardTags => 'Etiquetas (Opcional)';
+
+  @override
+  String get studyCards => 'Estudiar Tarjetas';
+
+  @override
+  String get reviewCards => 'Repasar Tarjetas';
+
+  @override
+  String get startStudy => 'Comenzar Estudio';
+
+  @override
+  String get generateFlashcardsWithAI => 'Generar Tarjetas de Memoria con IA';
+
+  @override
+  String get generateFlashcards => 'Generar Tarjetas de Memoria';
+
+  @override
+  String get generateFromMaterials => 'Generar desde Materiales';
+
+  @override
+  String get generateFromCamera => 'Generar desde Cámara';
+
+  @override
+  String get generateFromGallery => 'Generar desde Galería';
+
+  @override
+  String get generateFromFile => 'Generar desde Archivo';
+
+  @override
+  String get createManually => 'Crear Manualmente';
+
+  @override
+  String get selectImage => 'Seleccionar Imagen';
+
+  @override
+  String get addNewFlashcard => 'Agregar Nueva Tarjeta de Memoria';
+
+  @override
+  String get chooseCreationMethod =>
+      'Elige cómo te gustaría crear tu tarjeta de memoria';
+
+  @override
+  String get typeQuestionAndAnswer => 'Escribe tu pregunta y respuesta';
+
+  @override
+  String get captureContentWithCamera => 'Capturar contenido con cámara';
+
+  @override
+  String get selectImageFromGallery => 'Seleccionar imagen desde galería';
+
+  @override
+  String get importFromDocument => 'Importar desde documento o PDF';
+
+  @override
+  String get noCardsYet => 'Aún No Hay Tarjetas';
+
+  @override
+  String get addFirstFlashcard =>
+      'Agrega tu primera tarjeta de memoria para empezar a estudiar.';
+
+  @override
+  String get errorLoadingCards => 'Error Cargando Tarjetas';
+
+  @override
+  String get generatedFlashcards => 'Tarjetas de Memoria Generadas';
+
+  @override
+  String aiGeneratedCards(int count, String plural) {
+    return 'La IA generó $count tarjeta$plural de memoria de tu contenido. Revisa y selecciona cuáles agregar.';
+  }
+
+  @override
+  String cardNumber(int number) {
+    return 'Tarjeta $number';
+  }
+
+  @override
+  String get question => 'Pregunta:';
+
+  @override
+  String get answer => 'Respuesta:';
+
+  @override
+  String get hint => 'Pista:';
+
+  @override
+  String selectedCards(int selected, int total) {
+    return '$selected de $total tarjetas seleccionadas';
+  }
+
+  @override
+  String get addSelected => 'Agregar Seleccionadas';
+
+  @override
+  String addedFlashcards(int count, String plural) {
+    return '¡$count tarjeta$plural de memoria agregada$plural exitosamente!';
+  }
+
+  @override
+  String failedToGenerateFlashcard(String error) {
+    return 'Error al generar tarjeta de memoria: $error';
+  }
+
+  @override
+  String failedToGenerateFlashcards(String error) {
+    return 'Error al generar tarjetas de memoria: $error';
+  }
+
+  @override
+  String get analyzingImageGeneratingFlashcard =>
+      'Analizando imagen y generando tarjeta de memoria...';
+
+  @override
+  String get processingFileGeneratingFlashcards =>
+      'Procesando archivo y generando tarjetas de memoria...';
+
+  @override
+  String get premiumFlashcardGeneration =>
+      'La generación de tarjetas de memoria con IA requiere una suscripción premium.';
+
+  @override
+  String get premiumSubscriptionRequired =>
+      'Se requiere suscripción premium para la generación de tarjetas de memoria con IA.';
+
+  @override
+  String get unableToVerifySubscription =>
+      'No se puede verificar el estado de la suscripción.';
+
+  @override
+  String get unableToProcessSubscription =>
+      'No se puede procesar la suscripción. Inténtalo de nuevo.';
+
+  @override
+  String get subscriptionServiceNotAvailable =>
+      'Servicio de suscripción no disponible.';
+
+  @override
+  String get deckUpdatedSuccessfully => '¡Baraja actualizada exitosamente!';
+
+  @override
+  String get cardDeletedSuccessfully => 'Tarjeta eliminada exitosamente';
+
+  @override
+  String get confirmDeleteCard =>
+      '¿Estás seguro de que quieres eliminar esta tarjeta de memoria? Esta acción no se puede deshacer.';
+
+  @override
+  String fileSizeExceedsLimit(String size, int limit) {
+    return 'El tamaño del archivo (${size}MB) excede el límite máximo permitido de ${limit}MB';
+  }
+
+  @override
+  String get flashcardsDeck => 'Baraja de Tarjetas de Memoria';
+
+  @override
+  String get newCards => 'Tarjetas Nuevas';
+
+  @override
+  String get dueCards => 'Tarjetas Vencidas';
+
+  @override
+  String get totalCards => 'Total de Tarjetas';
+
+  @override
+  String get studyProgress => 'Progreso de Estudio';
 }

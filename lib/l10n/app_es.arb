@@ -565,5 +565,136 @@
   "restore": "Restaurar",
   "manageSubscription": "Administrar suscripción",
   "cancelTrial": "Cancelar prueba",
-  "subscriptionError": "Error de suscripción"
+  "subscriptionError": "Error de suscripción",
+
+  "flashcards": "Tarjetas de Memoria",
+  "flashcard": "Tarjeta de Memoria",
+  "deck": "Baraja",
+  "decks": "Barajas",
+  "createDeck": "Crear Baraja",
+  "editDeck": "Editar Baraja",
+  "deleteDeck": "Eliminar Baraja",
+  "deckName": "Nombre de la Baraja",
+  "deckDescription": "Descripción de la Baraja",
+  "addCard": "Agregar Tarjeta",
+  "editCard": "Editar Tarjeta",
+  "deleteCard": "Eliminar Tarjeta",
+  "cardFront": "Frente",
+  "cardBack": "Reverso",
+  "cardHint": "Pista (Opcional)",
+  "cardTags": "Etiquetas (Opcional)",
+  "studyCards": "Estudiar Tarjetas",
+  "reviewCards": "Repasar Tarjetas",
+  "startStudy": "Comenzar Estudio",
+  "generateFlashcardsWithAI": "Generar Tarjetas de Memoria con IA",
+  "generateFlashcards": "Generar Tarjetas de Memoria",
+  "generateFromMaterials": "Generar desde Materiales",
+  "generateFromCamera": "Generar desde Cámara",
+  "generateFromGallery": "Generar desde Galería",
+  "generateFromFile": "Generar desde Archivo",
+  "createManually": "Crear Manualmente",
+  "takePhoto": "Tomar Foto",
+  "uploadPhoto": "Subir Foto",
+  "uploadFile": "Subir Archivo",
+  "selectImage": "Seleccionar Imagen",
+  "addNewFlashcard": "Agregar Nueva Tarjeta de Memoria",
+  "chooseCreationMethod": "Elige cómo te gustaría crear tu tarjeta de memoria",
+  "typeQuestionAndAnswer": "Escribe tu pregunta y respuesta",
+  "captureContentWithCamera": "Capturar contenido con cámara",
+  "selectImageFromGallery": "Seleccionar imagen desde galería",
+  "importFromDocument": "Importar desde documento o PDF",
+  "noCardsYet": "Aún No Hay Tarjetas",
+  "addFirstFlashcard": "Agrega tu primera tarjeta de memoria para empezar a estudiar.",
+  "errorLoadingCards": "Error Cargando Tarjetas",
+  "retry": "Reintentar",
+  "generatedFlashcards": "Tarjetas de Memoria Generadas",
+  "aiGeneratedCards": "La IA generó {count} tarjeta{plural} de memoria de tu contenido. Revisa y selecciona cuáles agregar.",
+  "@aiGeneratedCards": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "cardNumber": "Tarjeta {number}",
+  "@cardNumber": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "question": "Pregunta:",
+  "answer": "Respuesta:",
+  "hint": "Pista:",
+  "selectedCards": "{selected} de {total} tarjetas seleccionadas",
+  "@selectedCards": {
+    "placeholders": {
+      "selected": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "addSelected": "Agregar Seleccionadas",
+  "cancel": "Cancelar",
+  "addedFlashcards": "¡{count} tarjeta{plural} de memoria agregada{plural} exitosamente!",
+  "@addedFlashcards": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "plural": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToGenerateFlashcard": "Error al generar tarjeta de memoria: {error}",
+  "@failedToGenerateFlashcard": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToGenerateFlashcards": "Error al generar tarjetas de memoria: {error}",
+  "@failedToGenerateFlashcards": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "analyzingImageGeneratingFlashcard": "Analizando imagen y generando tarjeta de memoria...",
+  "processingFileGeneratingFlashcards": "Procesando archivo y generando tarjetas de memoria...",
+  "premiumFlashcardGeneration": "La generación de tarjetas de memoria con IA requiere una suscripción premium.",
+  "premiumSubscriptionRequired": "Se requiere suscripción premium para la generación de tarjetas de memoria con IA.",
+  "unableToVerifySubscription": "No se puede verificar el estado de la suscripción.",
+  "unableToProcessSubscription": "No se puede procesar la suscripción. Inténtalo de nuevo.",
+  "subscriptionServiceNotAvailable": "Servicio de suscripción no disponible.",
+  "deckUpdatedSuccessfully": "¡Baraja actualizada exitosamente!",
+  "cardDeletedSuccessfully": "Tarjeta eliminada exitosamente",
+  "confirmDeleteCard": "¿Estás seguro de que quieres eliminar esta tarjeta de memoria? Esta acción no se puede deshacer.",
+  "delete": "Eliminar",
+  "fileSizeExceedsLimit": "El tamaño del archivo ({size}MB) excede el límite máximo permitido de {limit}MB",
+  "@fileSizeExceedsLimit": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      },
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "flashcardsDeck": "Baraja de Tarjetas de Memoria",
+  "newCards": "Tarjetas Nuevas",
+  "dueCards": "Tarjetas Vencidas",
+  "totalCards": "Total de Tarjetas",
+  "studyProgress": "Progreso de Estudio"
 }

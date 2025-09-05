@@ -118,7 +118,7 @@ class FlashcardCubit extends Cubit<FlashcardState> {
       if (_subscriptionCubit == null) {
         emit(state.copyWith(
           isLoading: false,
-          errorMsg: 'Subscription service not available.',
+          errorMsg: 'subscriptionServiceNotAvailable',
         ));
         return;
       }
@@ -135,7 +135,7 @@ class FlashcardCubit extends Cubit<FlashcardState> {
           if (result == PaywallResult.cancelled || result == PaywallResult.error) {
             emit(state.copyWith(
               isLoading: false,
-              errorMsg: 'Premium subscription required for AI flashcard generation.',
+              errorMsg: 'premiumSubscriptionRequired',
             ));
             return;
           }
@@ -147,14 +147,14 @@ class FlashcardCubit extends Cubit<FlashcardState> {
           if (!newStatus) {
             emit(state.copyWith(
               isLoading: false,
-              errorMsg: 'Premium subscription required for AI flashcard generation.',
+              errorMsg: 'premiumSubscriptionRequired',
             ));
             return;
           }
         } catch (e) {
           emit(state.copyWith(
             isLoading: false,
-            errorMsg: 'Unable to process subscription. Please try again.',
+            errorMsg: 'unableToProcessSubscription',
           ));
           return;
         }
