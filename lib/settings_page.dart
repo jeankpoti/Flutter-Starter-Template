@@ -64,6 +64,9 @@ class _SettingsPageState extends State<SettingsPage> {
         case MathLevel.elementary:
           levelName = localizations.elementary;
           break;
+        case MathLevel.middleSchool:
+          levelName = localizations.middleSchool;
+          break;
         case MathLevel.highSchool:
           levelName = localizations.highSchool;
           break;

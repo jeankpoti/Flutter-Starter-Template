@@ -484,6 +484,24 @@ abstract class AppLocalizations {
   /// **'Simple explanations with easy words'**
   String get elementaryDescription;
 
+  /// No description provided for @middleSchool.
+  ///
+  /// In en, this message translates to:
+  /// **'Middle School'**
+  String get middleSchool;
+
+  /// No description provided for @middleSchoolAgeRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Ages 12-14'**
+  String get middleSchoolAgeRange;
+
+  /// No description provided for @middleSchoolDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear explanations with guided reasoning'**
+  String get middleSchoolDescription;
+
   /// No description provided for @highSchool.
   ///
   /// In en, this message translates to:

@@ -209,6 +209,16 @@ class AppLocalizationsEs extends AppLocalizations {
       'Explicaciones simples con palabras fáciles';
 
   @override
+  String get middleSchool => 'Secundaria Básica';
+
+  @override
+  String get middleSchoolAgeRange => 'Edades 12-14';
+
+  @override
+  String get middleSchoolDescription =>
+      'Explicaciones claras con razonamiento guiado';
+
+  @override
   String get highSchool => 'Secundaria';
 
   @override

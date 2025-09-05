@@ -206,6 +206,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get elementaryDescription => 'Simple explanations with easy words';
 
   @override
+  String get middleSchool => 'Middle School';
+
+  @override
+  String get middleSchoolAgeRange => 'Ages 12-14';
+
+  @override
+  String get middleSchoolDescription =>
+      'Clear explanations with guided reasoning';
+
+  @override
   String get highSchool => 'High School';
 
   @override

@@ -22,6 +22,8 @@ class _MathLevelOnboardingDialogState extends State<MathLevelOnboardingDialog> {
     switch (level) {
       case MathLevel.elementary:
         return AppLocalizations.of(context)!.elementary;
+      case MathLevel.middleSchool:
+        return AppLocalizations.of(context)!.middleSchool;
       case MathLevel.highSchool:
         return AppLocalizations.of(context)!.highSchool;
       case MathLevel.college:
@@ -33,6 +35,8 @@ class _MathLevelOnboardingDialogState extends State<MathLevelOnboardingDialog> {
     switch (level) {
       case MathLevel.elementary:
         return AppLocalizations.of(context)!.elementaryAgeRange;
+      case MathLevel.middleSchool:
+        return AppLocalizations.of(context)!.middleSchoolAgeRange;
       case MathLevel.highSchool:
         return AppLocalizations.of(context)!.highSchoolAgeRange;
       case MathLevel.college:
@@ -44,6 +48,8 @@ class _MathLevelOnboardingDialogState extends State<MathLevelOnboardingDialog> {
     switch (level) {
       case MathLevel.elementary:
         return AppLocalizations.of(context)!.elementaryDescription;
+      case MathLevel.middleSchool:
+        return AppLocalizations.of(context)!.middleSchoolDescription;
       case MathLevel.highSchool:
         return AppLocalizations.of(context)!.highSchoolDescription;
       case MathLevel.college:

@@ -1,5 +1,6 @@
 enum MathLevel {
   elementary('Elementary', 'Ages 6-11', 'Simple explanations with easy words'),
+  middleSchool('Middle School', 'Ages 12-14', 'Clear explanations with guided reasoning'),
   highSchool('High School', 'Ages 14-18', 'Standard mathematical explanations'),
   college('College', 'Ages 18+', 'Advanced mathematical concepts');
 
@@ -26,6 +27,15 @@ enum MathLevel {
 - Keep explanations short and encouraging
 - Avoid complex mathematical terms
 - Use phrases like "Let's think of this as..." or "Imagine you have..."''';
+
+      case MathLevel.middleSchool:
+        return '''Explain for middle school level:
+- Use clear, age-appropriate language with some mathematical terms
+- Break down problems into logical steps with explanations
+- Introduce basic mathematical concepts and vocabulary
+- Use relatable examples from daily life and school experiences
+- Provide guidance on problem-solving strategies
+- Encourage mathematical thinking and reasoning''';
 
       case MathLevel.highSchool:
         return '''Explain for high school level:

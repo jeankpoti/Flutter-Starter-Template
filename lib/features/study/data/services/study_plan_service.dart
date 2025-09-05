@@ -911,6 +911,8 @@ Haz esto apropiado para estudiantes de nivel ${mathLevel.displayName} con progre
     switch (mathLevel) {
       case MathLevel.elementary:
         return StudyPlanDifficulty.beginner;
+      case MathLevel.middleSchool:
+        return StudyPlanDifficulty.beginner;
       case MathLevel.highSchool:
         return StudyPlanDifficulty.intermediate;
       case MathLevel.college:

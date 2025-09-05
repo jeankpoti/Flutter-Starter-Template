@@ -236,6 +236,8 @@ String _getMathLevelDisplayName(BuildContext context, MathLevel level) {
   switch (level) {
     case MathLevel.elementary:
       return localizations.elementary;
+    case MathLevel.middleSchool:
+      return localizations.middleSchool;
     case MathLevel.highSchool:
       return localizations.highSchool;
     case MathLevel.college:
@@ -248,6 +250,8 @@ String _getMathLevelAgeRange(BuildContext context, MathLevel level) {
   switch (level) {
     case MathLevel.elementary:
       return localizations.elementaryAgeRange;
+    case MathLevel.middleSchool:
+      return localizations.middleSchoolAgeRange;
     case MathLevel.highSchool:
       return localizations.highSchoolAgeRange;
     case MathLevel.college:
@@ -260,6 +264,8 @@ String _getMathLevelDescription(BuildContext context, MathLevel level) {
   switch (level) {
     case MathLevel.elementary:
       return localizations.elementaryDescription;
+    case MathLevel.middleSchool:
+      return localizations.middleSchoolDescription;
     case MathLevel.highSchool:
       return localizations.highSchoolDescription;
     case MathLevel.college:
