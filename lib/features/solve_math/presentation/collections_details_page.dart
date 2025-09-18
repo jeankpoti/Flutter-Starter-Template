@@ -14,10 +14,10 @@ import '../../../utils/responsive.dart';
 import '../domain/models/collection.dart';
 
 class CollectionsDetailsPage extends StatelessWidget {
-  Collection collection;
+  final Collection collection;
   final String? imageUrl;
   final String? desc;
-  CollectionsDetailsPage({
+  const CollectionsDetailsPage({
     super.key,
     this.imageUrl,
     this.desc,
@@ -136,22 +136,10 @@ class CollectionsDetailsPage extends StatelessWidget {
                               if (collection.imageUrl != null &&
                                   collection.imageUrl!.isNotEmpty) {
                                 // Share with image if available
-                                await Share.share(
-                                  shareText,
-                                  subject:
-                                      AppLocalizations.of(
-                                        context,
-                                      )!.mathProblemSolution,
-                                );
+                                await Share.share(shareText);
                               } else {
                                 // Share text only
-                                await Share.share(
-                                  shareText,
-                                  subject:
-                                      AppLocalizations.of(
-                                        context,
-                                      )!.mathProblemSolution,
-                                );
+                                await Share.share(shareText);
                               }
                             } catch (e) {
                               if (context.mounted) {

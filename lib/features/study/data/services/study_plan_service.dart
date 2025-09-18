@@ -59,8 +59,7 @@ class StudyPlanService {
       // Extract topics from AI analysis
       extractedTopics = _extractTopicsFromAnalysis(aiAnalysis);
     } catch (e) {
-      // Log error (in production, use proper logging framework)
-      debugPrint('Error analyzing material: $e');
+      // Handle error silently
       
       // Check if it's a non-math content error and re-throw it
       if (e.toString().contains('does not contain mathematical material') ||
@@ -159,8 +158,7 @@ class StudyPlanService {
       final response = await _geminiService!.generateTextContent(prompt);
       final analysisText = response.text ?? '';
       
-      // Debug: Log the response
-      debugPrint('AI Text Analysis Response: ${analysisText.substring(0, analysisText.length.clamp(0, 200))}...');
+      // AI response received
       
       // Check if the response indicates no math content
       if (analysisText.contains('NO_MATH_CONTENT:')) {
@@ -214,8 +212,7 @@ class StudyPlanService {
       
       final analysisText = response.text ?? '';
       
-      // Debug: Log the response
-      debugPrint('AI Analysis Response: ${analysisText.substring(0, analysisText.length.clamp(0, 200))}...');
+      // AI response received
       
       // Check if the response indicates no math content
       if (analysisText.contains('NO_MATH_CONTENT:')) {
@@ -258,9 +255,7 @@ class StudyPlanService {
         mathLevel.displayName,
       );
       
-      debugPrint('PDF Validation: Starting document analysis...');
-      debugPrint('PDF Validation: Document size: ${documentBytes.length} bytes');
-      debugPrint('PDF Validation: Using locale: $locale');
+      // Starting document analysis
       
       // Send PDF with proper MIME type
       final response = await _geminiService!.generateContentWithImage(
@@ -271,25 +266,19 @@ class StudyPlanService {
       
       final analysisText = response.text ?? '';
       
-      // Debug: Log the response
-      debugPrint('PDF Validation: AI Response length: ${analysisText.length}');
-      debugPrint('PDF Validation: AI Response (first 500 chars): ${analysisText.substring(0, analysisText.length.clamp(0, 500))}');
+      // AI response received
       
       // Check if the response starts with NO_MATH_CONTENT (more strict check)
       if (analysisText.trim().startsWith('NO_MATH_CONTENT:')) {
-        debugPrint('PDF Validation: NO_MATH_CONTENT detected at start of response');
         // Extract the error message after NO_MATH_CONTENT:
         final errorMessage = analysisText.split('NO_MATH_CONTENT:')[1].trim();
-        debugPrint('PDF Validation: Throwing exception with message: $errorMessage');
         throw Exception(errorMessage);
       }
       
       // Check if the response indicates no math content anywhere
       if (analysisText.contains('NO_MATH_CONTENT:')) {
-        debugPrint('PDF Validation: NO_MATH_CONTENT detected in response');
         // Extract the error message after NO_MATH_CONTENT:
         final errorMessage = analysisText.split('NO_MATH_CONTENT:')[1].trim();
-        debugPrint('PDF Validation: Throwing exception with message: $errorMessage');
         throw Exception(errorMessage);
       }
       
@@ -326,10 +315,9 @@ class StudyPlanService {
         }
       }
       
-      debugPrint('PDF Validation: Found $programmingKeywordCount programming keywords and $mathKeywordCount math keywords');
+      // Keyword analysis completed
       
       if (programmingKeywordCount >= 3 && mathKeywordCount < 2) {
-        debugPrint('PDF Validation: Detected programming/non-math content based on keyword analysis');
         throw Exception('This document does not contain mathematical material. Please upload a PDF with math problems, equations, or mathematical concepts.');
       }
       
@@ -340,21 +328,17 @@ class StudyPlanService {
           !analysisText.contains('SUJETS COUVERTS:') &&
           !analysisText.contains('RESUMEN DEL DOCUMENTO:') &&
           !analysisText.contains('TEMAS CUBIERTOS:')) {
-        debugPrint('PDF Validation: Response does not contain expected math analysis format');
         throw Exception('This document does not contain mathematical material. Please upload a PDF with math problems, equations, or mathematical concepts.');
       }
       
-      debugPrint('PDF Validation: Math content found, proceeding with analysis');
       return analysisText;
     } catch (e) {
-      debugPrint('PDF Validation: Error occurred: $e');
-      debugPrint('PDF Validation: Error type: ${e.runtimeType}');
+      // Error handling
       
       // Re-throw if it's already a no-math-content error
       if (e.toString().contains('does not contain mathematical material') ||
           e.toString().contains('ne contient pas de matériel mathématique') ||
           e.toString().contains('no contiene material matemático')) {
-        debugPrint('PDF Validation: Re-throwing no-math-content error');
         rethrow;
       }
       

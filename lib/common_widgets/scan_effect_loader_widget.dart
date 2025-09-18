@@ -103,8 +103,8 @@ class _ModernScanEffectLoaderState extends State<ModernScanEffectLoader>
                     borderRadius: BorderRadius.circular(12),
                     gradient: RadialGradient(
                       colors: [
-                        widget.primaryColor.withOpacity(0.1),
-                        widget.primaryColor.withOpacity(0.05),
+                        widget.primaryColor.withValues(alpha: 0.1),
+                        widget.primaryColor.withValues(alpha: 0.05),
                         Colors.transparent,
                       ],
                     ),
@@ -135,7 +135,7 @@ class _ModernScanEffectLoaderState extends State<ModernScanEffectLoader>
                   color: widget.primaryColor,
                   boxShadow: [
                     BoxShadow(
-                      color: widget.primaryColor.withOpacity(0.5),
+                      color: widget.primaryColor.withValues(alpha: 0.5),
                       blurRadius: 8,
                       spreadRadius: 2,
                     ),
@@ -179,9 +179,9 @@ class ModernScanEffectPainter extends CustomPainter {
         Paint()
           ..shader = LinearGradient(
             colors: [
-              primaryColor.withOpacity(0.3),
-              accentColor.withOpacity(0.5),
-              primaryColor.withOpacity(0.3),
+              primaryColor.withValues(alpha: 0.3),
+              accentColor.withValues(alpha: 0.5),
+              primaryColor.withValues(alpha: 0.3),
             ],
             stops: const [0.0, 0.5, 1.0],
           ).createShader(rect)
@@ -199,11 +199,11 @@ class ModernScanEffectPainter extends CustomPainter {
       end: Alignment.centerRight,
       colors: [
         Colors.transparent,
-        primaryColor.withOpacity(0.3),
-        primaryColor.withOpacity(0.8),
+        primaryColor.withValues(alpha: 0.3),
+        primaryColor.withValues(alpha: 0.8),
         primaryColor,
-        primaryColor.withOpacity(0.8),
-        primaryColor.withOpacity(0.3),
+        primaryColor.withValues(alpha: 0.8),
+        primaryColor.withValues(alpha: 0.3),
         Colors.transparent,
       ],
       stops: const [0.0, 0.2, 0.4, 0.5, 0.6, 0.8, 1.0],
@@ -228,7 +228,7 @@ class ModernScanEffectPainter extends CustomPainter {
     final cornerPaint =
         Paint()
           ..color =
-              showPulse ? primaryColor.withOpacity(pulseProgress) : primaryColor
+              showPulse ? primaryColor.withValues(alpha: pulseProgress) : primaryColor
           ..strokeWidth = cornerStroke
           ..style = PaintingStyle.stroke
           ..strokeCap = StrokeCap.round;
@@ -287,9 +287,9 @@ class ModernScanEffectPainter extends CustomPainter {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              primaryColor.withOpacity(0.0),
-              primaryColor.withOpacity(0.1),
-              primaryColor.withOpacity(0.0),
+              primaryColor.withValues(alpha: 0.0),
+              primaryColor.withValues(alpha: 0.1),
+              primaryColor.withValues(alpha: 0.0),
             ],
           ).createShader(highlightRect);
 

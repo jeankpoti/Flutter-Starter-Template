@@ -3154,6 +3154,30 @@ abstract class AppLocalizations {
   /// **'Continue with Free Version'**
   String get continueWithFreeVersion;
 
+  /// No description provided for @tryYourFirstProblemFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Solve Your First Problem Free'**
+  String get tryYourFirstProblemFree;
+
+  /// No description provided for @seeAiMagicInAction.
+  ///
+  /// In en, this message translates to:
+  /// **'See AI Magic in Action'**
+  String get seeAiMagicInAction;
+
+  /// No description provided for @solveAnyMathProblemInstantly.
+  ///
+  /// In en, this message translates to:
+  /// **'Solve any math problem instantly with AI'**
+  String get solveAnyMathProblemInstantly;
+
+  /// No description provided for @aiDemoDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Watch AI solve complex problems in seconds'**
+  String get aiDemoDescription;
+
   /// No description provided for @premiumFeature.
   ///
   /// In en, this message translates to:

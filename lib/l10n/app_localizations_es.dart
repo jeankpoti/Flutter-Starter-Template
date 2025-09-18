@@ -1747,6 +1747,20 @@ class AppLocalizationsEs extends AppLocalizations {
   String get continueWithFreeVersion => 'Continuar con la Versión Gratuita';
 
   @override
+  String get tryYourFirstProblemFree => 'Resuelve tu primer problema gratis';
+
+  @override
+  String get seeAiMagicInAction => 'Ver la magia de la IA en acción';
+
+  @override
+  String get solveAnyMathProblemInstantly =>
+      'Resuelve cualquier problema de matemáticas al instante con IA';
+
+  @override
+  String get aiDemoDescription =>
+      'Mira cómo la IA resuelve problemas complejos en segundos';
+
+  @override
   String get premiumFeature => 'Función Premium';
 
   @override

@@ -48,9 +48,7 @@ class ImageCropperService {
             doneButtonTitle: AppLocalizations.of(context)!.done,
             cancelButtonTitle: AppLocalizations.of(context)!.cancel,
           ),
-          WebUiSettings(
-            context: context,
-          ),
+          WebUiSettings(context: context),
         ],
       );
 
@@ -59,7 +57,6 @@ class ImageCropperService {
       }
       return null;
     } catch (e) {
-      debugPrint('Error cropping image: $e');
       return null;
     }
   }

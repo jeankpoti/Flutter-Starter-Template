@@ -29,13 +29,14 @@ class FlashcardDisplayWidget extends StatelessWidget {
     // Check if text contains LaTeX math expressions (enclosed in $ symbols)
     final mathRegex = RegExp(r'\$([^$]+)\$');
     final matches = mathRegex.allMatches(text);
-    
+
     if (matches.isEmpty) {
       // No math expressions, return regular text
       return Text(
         text,
-        style: style?.copyWith(color: color, fontWeight: fontWeight) ?? 
-               TextStyle(color: color, fontWeight: fontWeight),
+        style:
+            style?.copyWith(color: color, fontWeight: fontWeight) ??
+            TextStyle(color: color, fontWeight: fontWeight),
         textAlign: textAlign ?? TextAlign.center,
       );
     }
@@ -47,32 +48,41 @@ class FlashcardDisplayWidget extends StatelessWidget {
     for (final match in matches) {
       // Add text before the math expression
       if (match.start > lastMatchEnd) {
-        spans.add(TextSpan(
-          text: text.substring(lastMatchEnd, match.start),
-          style: style?.copyWith(color: color, fontWeight: fontWeight) ?? 
-                 TextStyle(color: color, fontWeight: fontWeight),
-        ));
+        spans.add(
+          TextSpan(
+            text: text.substring(lastMatchEnd, match.start),
+            style:
+                style?.copyWith(color: color, fontWeight: fontWeight) ??
+                TextStyle(color: color, fontWeight: fontWeight),
+          ),
+        );
       }
 
       // Add the math expression
       final mathExpression = match.group(1) ?? '';
       try {
-        spans.add(WidgetSpan(
-          child: Math.tex(
-            mathExpression,
-            textStyle: style?.copyWith(color: color, fontWeight: fontWeight) ?? 
-                       TextStyle(color: color, fontWeight: fontWeight),
-            mathStyle: MathStyle.text,
+        spans.add(
+          WidgetSpan(
+            child: Math.tex(
+              mathExpression,
+              textStyle:
+                  style?.copyWith(color: color, fontWeight: fontWeight) ??
+                  TextStyle(color: color, fontWeight: fontWeight),
+              mathStyle: MathStyle.text,
+            ),
+            alignment: PlaceholderAlignment.middle,
           ),
-          alignment: PlaceholderAlignment.middle,
-        ));
+        );
       } catch (e) {
         // If math parsing fails, show the original text
-        spans.add(TextSpan(
-          text: '\$${mathExpression}\$',
-          style: style?.copyWith(color: color, fontWeight: fontWeight) ?? 
-                 TextStyle(color: color, fontWeight: fontWeight),
-        ));
+        spans.add(
+          TextSpan(
+            text: '\$$mathExpression\$',
+            style:
+                style?.copyWith(color: color, fontWeight: fontWeight) ??
+                TextStyle(color: color, fontWeight: fontWeight),
+          ),
+        );
       }
 
       lastMatchEnd = match.end;
@@ -80,11 +90,14 @@ class FlashcardDisplayWidget extends StatelessWidget {
 
     // Add remaining text after the last math expression
     if (lastMatchEnd < text.length) {
-      spans.add(TextSpan(
-        text: text.substring(lastMatchEnd),
-        style: style?.copyWith(color: color, fontWeight: fontWeight) ?? 
-               TextStyle(color: color, fontWeight: fontWeight),
-      ));
+      spans.add(
+        TextSpan(
+          text: text.substring(lastMatchEnd),
+          style:
+              style?.copyWith(color: color, fontWeight: fontWeight) ??
+              TextStyle(color: color, fontWeight: fontWeight),
+        ),
+      );
     }
 
     return RichText(
@@ -258,9 +271,13 @@ class FlashcardDisplayWidget extends StatelessWidget {
                                   const SizedBox(height: 4),
                                   _buildMathText(
                                     card.hint!,
-                                    style: Theme.of(context).textTheme.bodySmall,
+                                    style:
+                                        Theme.of(context).textTheme.bodySmall,
                                     textAlign: TextAlign.left,
-                                    color: Theme.of(context).colorScheme.onTertiaryContainer,
+                                    color:
+                                        Theme.of(
+                                          context,
+                                        ).colorScheme.onTertiaryContainer,
                                   ),
                                 ],
                               ),
@@ -316,7 +333,7 @@ class FlashcardDisplayWidget extends StatelessWidget {
   Widget _buildCardBack(BuildContext context, FlashCard card) {
     return Padding(
       padding: const EdgeInsets.all(8),
-      child: Container(
+      child: SizedBox(
         height: 450,
         child: Column(
           children: [

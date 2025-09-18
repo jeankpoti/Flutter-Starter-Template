@@ -1,18 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart';
 
-enum CardDifficulty {
-  easy,
-  normal,
-  hard,
-}
+enum CardDifficulty { easy, normal, hard }
 
 enum ReviewResult {
-  again,    // Incorrect/forgot (0)
-  hard,     // Correct but difficult (1)
-  good,     // Correct with normal effort (2) 
-  easy,     // Correct and easy (3)
+  again, // Incorrect/forgot (0)
+  hard, // Correct but difficult (1)
+  good, // Correct with normal effort (2)
+  easy, // Correct and easy (3)
 }
 
 class FlashCard extends Equatable {
@@ -62,8 +57,10 @@ class FlashCard extends Equatable {
       'hint': hint,
       'tags': tags,
       'createdAt': Timestamp.fromDate(createdAt),
-      'lastReviewedAt': lastReviewedAt != null ? Timestamp.fromDate(lastReviewedAt!) : null,
-      'nextReviewAt': nextReviewAt != null ? Timestamp.fromDate(nextReviewAt!) : null,
+      'lastReviewedAt':
+          lastReviewedAt != null ? Timestamp.fromDate(lastReviewedAt!) : null,
+      'nextReviewAt':
+          nextReviewAt != null ? Timestamp.fromDate(nextReviewAt!) : null,
       'reviewCount': reviewCount,
       'correctCount': correctCount,
       'difficulty': difficulty.name,
@@ -78,9 +75,8 @@ class FlashCard extends Equatable {
     String userId = map['userId'] ?? '';
     if (userId.isEmpty) {
       // For legacy cards without userId, we'll need to handle this gracefully
-      debugPrint('Warning: FlashCard ${map['id']} missing userId field');
     }
-    
+
     return FlashCard(
       id: map['id'] ?? '',
       userId: userId,
@@ -222,7 +218,8 @@ class FlashCardDeck extends Equatable {
       'color': color,
       'tags': tags,
       'createdAt': Timestamp.fromDate(createdAt),
-      'lastStudiedAt': lastStudiedAt != null ? Timestamp.fromDate(lastStudiedAt!) : null,
+      'lastStudiedAt':
+          lastStudiedAt != null ? Timestamp.fromDate(lastStudiedAt!) : null,
       'cardCount': cardCount,
       'newCardCount': newCardCount,
       'dueCardCount': dueCardCount,
@@ -333,7 +330,8 @@ class ReviewSession extends Equatable {
       'userId': userId,
       'deckId': deckId,
       'startedAt': Timestamp.fromDate(startedAt),
-      'completedAt': completedAt != null ? Timestamp.fromDate(completedAt!) : null,
+      'completedAt':
+          completedAt != null ? Timestamp.fromDate(completedAt!) : null,
       'cardsReviewed': cardsReviewed,
       'correctAnswers': correctAnswers,
       'totalTimeSeconds': totalTimeSeconds,

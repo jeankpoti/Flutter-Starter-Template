@@ -1,8 +1,5 @@
-import 'dart:developer' as dev;
-import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import '../../domain/models/flashcard.dart';
 
 class FlashcardRepository {
@@ -11,22 +8,22 @@ class FlashcardRepository {
 
   String get _userId {
     final uid = _auth.currentUser?.uid ?? '';
-    dev.log('FlashcardRepository: Current user ID: $uid', name: 'FlashcardRepository');
     return uid;
   }
 
   // Collection references
-  CollectionReference get _decksCollection => _firestore.collection('flashcardDecks');
-  CollectionReference get _cardsCollection => _firestore.collection('flashcards');
-  CollectionReference get _sessionsCollection => _firestore.collection('reviewSessions');
+  CollectionReference get _decksCollection =>
+      _firestore.collection('flashcardDecks');
+  CollectionReference get _cardsCollection =>
+      _firestore.collection('flashcards');
+  CollectionReference get _sessionsCollection =>
+      _firestore.collection('reviewSessions');
 
   /// Create a new deck
   Future<void> createDeck(FlashCardDeck deck) async {
     try {
       await _decksCollection.doc(deck.id).set(deck.toMap());
-      debugPrint('Deck created successfully: ${deck.id}');
     } catch (e) {
-      debugPrint('Error creating deck: $e');
       rethrow;
     }
   }
@@ -40,7 +37,6 @@ class FlashcardRepository {
       }
       return null;
     } catch (e) {
-      debugPrint('Error getting deck: $e');
       return null;
     }
   }
@@ -49,39 +45,33 @@ class FlashcardRepository {
   Future<List<FlashCardDeck>> getUserDecks() async {
     try {
       final userId = _userId;
-      dev.log('FlashcardRepository: Getting user decks for userId: $userId', name: 'FlashcardRepository');
-      
+
       if (userId.isEmpty) {
-        dev.log('FlashcardRepository: User ID is empty! User not authenticated.', name: 'FlashcardRepository');
         return [];
       }
-      
-      final query = await _decksCollection
-          .where('userId', isEqualTo: userId)
-          .orderBy('createdAt', descending: true)
-          .get();
 
-      dev.log('FlashcardRepository: Found ${query.docs.length} deck documents', name: 'FlashcardRepository');
-      
-      final decks = query.docs
-          .map((doc) {
-            try {
-              final data = doc.data() as Map<String, dynamic>;
-              dev.log('FlashcardRepository: Deck data: $data', name: 'FlashcardRepository');
-              return FlashCardDeck.fromMap(data);
-            } catch (e) {
-              dev.log('FlashcardRepository: Error parsing deck ${doc.id}: $e', name: 'FlashcardRepository', error: e);
-              return null;
-            }
-          })
-          .where((deck) => deck != null)
-          .cast<FlashCardDeck>()
-          .toList();
+      final query =
+          await _decksCollection
+              .where('userId', isEqualTo: userId)
+              .orderBy('createdAt', descending: true)
+              .get();
 
-      dev.log('FlashcardRepository: Successfully parsed ${decks.length} decks', name: 'FlashcardRepository');
+      final decks =
+          query.docs
+              .map((doc) {
+                try {
+                  final data = doc.data() as Map<String, dynamic>;
+                  return FlashCardDeck.fromMap(data);
+                } catch (e) {
+                  return null;
+                }
+              })
+              .where((deck) => deck != null)
+              .cast<FlashCardDeck>()
+              .toList();
+
       return decks;
     } catch (e) {
-      dev.log('FlashcardRepository: Error getting user decks: $e', name: 'FlashcardRepository', error: e);
       return [];
     }
   }
@@ -90,9 +80,7 @@ class FlashcardRepository {
   Future<void> updateDeck(FlashCardDeck deck) async {
     try {
       await _decksCollection.doc(deck.id).update(deck.toMap());
-      debugPrint('Deck updated successfully: ${deck.id}');
     } catch (e) {
-      debugPrint('Error updating deck: $e');
       rethrow;
     }
   }
@@ -101,15 +89,13 @@ class FlashcardRepository {
   Future<void> deleteDeck(String deckId) async {
     try {
       final userId = _userId;
-      dev.log('FlashcardRepository: Deleting deck $deckId for user $userId', name: 'FlashcardRepository');
-      
-      // Delete all cards in the deck first - use userId in query for security rules
-      final cardsQuery = await _cardsCollection
-          .where('userId', isEqualTo: userId)
-          .where('deckId', isEqualTo: deckId)
-          .get();
 
-      dev.log('FlashcardRepository: Found ${cardsQuery.docs.length} cards to delete', name: 'FlashcardRepository');
+      // Delete all cards in the deck first - use userId in query for security rules
+      final cardsQuery =
+          await _cardsCollection
+              .where('userId', isEqualTo: userId)
+              .where('deckId', isEqualTo: deckId)
+              .get();
 
       final batch = _firestore.batch();
 
@@ -122,9 +108,7 @@ class FlashcardRepository {
       batch.delete(_decksCollection.doc(deckId));
 
       await batch.commit();
-      dev.log('FlashcardRepository: Deck and all its cards deleted successfully: $deckId', name: 'FlashcardRepository');
     } catch (e) {
-      dev.log('FlashcardRepository: Error deleting deck: $e', name: 'FlashcardRepository', error: e);
       rethrow;
     }
   }
@@ -132,16 +116,9 @@ class FlashcardRepository {
   /// Create a new card
   Future<void> createCard(FlashCard card) async {
     try {
-      dev.log('FlashcardRepository: Creating card ${card.id} for deck ${card.deckId}', name: 'FlashcardRepository');
-      dev.log('FlashcardRepository: Card front: ${card.front.substring(0, min(100, card.front.length))}', name: 'FlashcardRepository');
-      
       final cardData = card.toMap();
-      dev.log('FlashcardRepository: Card data: $cardData', name: 'FlashcardRepository');
-      
       await _cardsCollection.doc(card.id).set(cardData);
-      dev.log('FlashcardRepository: Card created successfully: ${card.id}', name: 'FlashcardRepository');
     } catch (e) {
-      dev.log('FlashcardRepository: Error creating card: $e', name: 'FlashcardRepository', error: e);
       rethrow;
     }
   }
@@ -155,7 +132,6 @@ class FlashcardRepository {
       }
       return null;
     } catch (e) {
-      debugPrint('Error getting card: $e');
       return null;
     }
   }
@@ -163,51 +139,53 @@ class FlashcardRepository {
   /// Get all cards in a deck
   Future<List<FlashCard>> getCardsInDeck(String deckId) async {
     try {
-      dev.log('FlashcardRepository: Querying cards for deckId: $deckId', name: 'FlashcardRepository');
-      
       // Use userId + deckId query to match security rules
       final userId = _userId;
-      final query = await _cardsCollection
-          .where('userId', isEqualTo: userId)
-          .where('deckId', isEqualTo: deckId)
-          .get();
-
-      dev.log('FlashcardRepository: Query found ${query.docs.length} cards for userId: $userId, deckId: $deckId', name: 'FlashcardRepository');
+      final query =
+          await _cardsCollection
+              .where('userId', isEqualTo: userId)
+              .where('deckId', isEqualTo: deckId)
+              .get();
 
       // Filter for active cards in memory since we can't do 3-field query without index
-      final cards = query.docs
-          .map((doc) => FlashCard.fromMap(doc.data() as Map<String, dynamic>))
-          .where((card) => card.isActive)
-          .toList();
+      final cards =
+          query.docs
+              .map(
+                (doc) => FlashCard.fromMap(doc.data() as Map<String, dynamic>),
+              )
+              .where((card) => card.isActive)
+              .toList();
 
-      dev.log('FlashcardRepository: After isActive filter: ${cards.length} cards', name: 'FlashcardRepository');
       return cards;
     } catch (e) {
-      dev.log('FlashcardRepository: Error getting cards in deck: $e', name: 'FlashcardRepository', error: e);
       return [];
     }
   }
 
   /// Get due cards for a deck
-  Future<List<FlashCard>> getDueCardsInDeck(String deckId, {int limit = 20}) async {
+  Future<List<FlashCard>> getDueCardsInDeck(
+    String deckId, {
+    int limit = 20,
+  }) async {
     try {
       final userId = _userId;
-      dev.log('FlashcardRepository: Getting due cards for deckId: $deckId, userId: $userId', name: 'FlashcardRepository');
-      
+
       // Get cards that are due (nextReviewAt is null or in the past) - include userId for security rules
-      final query = await _cardsCollection
-          .where('userId', isEqualTo: userId)
-          .where('deckId', isEqualTo: deckId)
-          .limit(limit * 2) // Get more than needed to filter properly
-          .get();
+      final query =
+          await _cardsCollection
+              .where('userId', isEqualTo: userId)
+              .where('deckId', isEqualTo: deckId)
+              .limit(limit * 2) // Get more than needed to filter properly
+              .get();
 
-      final cards = query.docs
-          .map((doc) => FlashCard.fromMap(doc.data() as Map<String, dynamic>))
-          .where((card) => card.isActive && card.isDue)
-          .take(limit)
-          .toList();
-
-      dev.log('FlashcardRepository: Found ${cards.length} due cards after filtering', name: 'FlashcardRepository');
+      final cards =
+          query.docs
+              .map(
+                (doc) => FlashCard.fromMap(doc.data() as Map<String, dynamic>),
+              )
+              .where((card) => card.isActive && card.isDue)
+              .take(limit)
+              .toList();
 
       // Sort by priority: new cards first, then by due date
       cards.sort((a, b) {
@@ -221,7 +199,6 @@ class FlashcardRepository {
 
       return cards;
     } catch (e) {
-      debugPrint('Error getting due cards: $e');
       return [];
     }
   }
@@ -230,9 +207,7 @@ class FlashcardRepository {
   Future<void> updateCard(FlashCard card) async {
     try {
       await _cardsCollection.doc(card.id).update(card.toMap());
-      debugPrint('Card updated successfully: ${card.id}');
     } catch (e) {
-      debugPrint('Error updating card: $e');
       rethrow;
     }
   }
@@ -241,9 +216,7 @@ class FlashcardRepository {
   Future<void> deleteCard(String cardId) async {
     try {
       await _cardsCollection.doc(cardId).delete();
-      debugPrint('Card deleted successfully: $cardId');
     } catch (e) {
-      debugPrint('Error deleting card: $e');
       rethrow;
     }
   }
@@ -252,9 +225,7 @@ class FlashcardRepository {
   Future<void> createReviewSession(ReviewSession session) async {
     try {
       await _sessionsCollection.doc(session.id).set(session.toMap());
-      debugPrint('Review session created successfully: ${session.id}');
     } catch (e) {
-      debugPrint('Error creating review session: $e');
       rethrow;
     }
   }
@@ -263,28 +234,31 @@ class FlashcardRepository {
   Future<void> updateReviewSession(ReviewSession session) async {
     try {
       await _sessionsCollection.doc(session.id).update(session.toMap());
-      debugPrint('Review session updated successfully: ${session.id}');
     } catch (e) {
-      debugPrint('Error updating review session: $e');
       rethrow;
     }
   }
 
   /// Get review sessions for a deck
-  Future<List<ReviewSession>> getReviewSessions(String deckId, {int limit = 10}) async {
+  Future<List<ReviewSession>> getReviewSessions(
+    String deckId, {
+    int limit = 10,
+  }) async {
     try {
-      final query = await _sessionsCollection
-          .where('userId', isEqualTo: _userId)
-          .where('deckId', isEqualTo: deckId)
-          .orderBy('startedAt', descending: true)
-          .limit(limit)
-          .get();
+      final query =
+          await _sessionsCollection
+              .where('userId', isEqualTo: _userId)
+              .where('deckId', isEqualTo: deckId)
+              .orderBy('startedAt', descending: true)
+              .limit(limit)
+              .get();
 
       return query.docs
-          .map((doc) => ReviewSession.fromMap(doc.data() as Map<String, dynamic>))
+          .map(
+            (doc) => ReviewSession.fromMap(doc.data() as Map<String, dynamic>),
+          )
           .toList();
     } catch (e) {
-      debugPrint('Error getting review sessions: $e');
       return [];
     }
   }
@@ -292,17 +266,19 @@ class FlashcardRepository {
   /// Get all review sessions for the current user
   Future<List<ReviewSession>> getUserReviewSessions({int limit = 50}) async {
     try {
-      final query = await _sessionsCollection
-          .where('userId', isEqualTo: _userId)
-          .orderBy('startedAt', descending: true)
-          .limit(limit)
-          .get();
+      final query =
+          await _sessionsCollection
+              .where('userId', isEqualTo: _userId)
+              .orderBy('startedAt', descending: true)
+              .limit(limit)
+              .get();
 
       return query.docs
-          .map((doc) => ReviewSession.fromMap(doc.data() as Map<String, dynamic>))
+          .map(
+            (doc) => ReviewSession.fromMap(doc.data() as Map<String, dynamic>),
+          )
           .toList();
     } catch (e) {
-      debugPrint('Error getting user review sessions: $e');
       return [];
     }
   }
@@ -320,12 +296,18 @@ class FlashcardRepository {
 
       double averageSuccessRate = 0.0;
       if (cards.isNotEmpty) {
-        final totalSuccessRate = cards.fold(0.0, (sum, card) => sum + card.successRate);
+        final totalSuccessRate = cards.fold(
+          0.0,
+          (sum, card) => sum + card.successRate,
+        );
         averageSuccessRate = totalSuccessRate / cards.length;
       }
 
       final completedSessions = sessions.where((s) => s.isCompleted).length;
-      final totalStudyTime = sessions.fold(0, (sum, session) => sum + session.totalTimeSeconds);
+      final totalStudyTime = sessions.fold(
+        0,
+        (sum, session) => sum + session.totalTimeSeconds,
+      );
 
       return {
         'totalCards': totalCards,
@@ -337,7 +319,6 @@ class FlashcardRepository {
         'totalStudyTimeSeconds': totalStudyTime,
       };
     } catch (e) {
-      debugPrint('Error getting deck statistics: $e');
       return {
         'totalCards': 0,
         'newCards': 0,
@@ -355,19 +336,20 @@ class FlashcardRepository {
     try {
       final cards = await getCardsInDeck(deckId);
       final deck = await getDeck(deckId);
-      
+
       if (deck != null) {
         final newCardCount = cards.where((c) => c.isNew).length;
         final dueCardCount = cards.where((c) => c.isDue && !c.isNew).length;
-        
-        await updateDeck(deck.copyWith(
-          cardCount: cards.length,
-          newCardCount: newCardCount,
-          dueCardCount: dueCardCount,
-        ));
+
+        await updateDeck(
+          deck.copyWith(
+            cardCount: cards.length,
+            newCardCount: newCardCount,
+            dueCardCount: dueCardCount,
+          ),
+        );
       }
     } catch (e) {
-      debugPrint('Error updating deck card counts: $e');
       // Don't rethrow as this is a background operation
     }
   }
@@ -377,14 +359,13 @@ class FlashcardRepository {
     try {
       final allCards = await getCardsInDeck(deckId);
       final lowercaseQuery = query.toLowerCase();
-      
+
       return allCards.where((card) {
         return card.front.toLowerCase().contains(lowercaseQuery) ||
-               card.back.toLowerCase().contains(lowercaseQuery) ||
-               card.tags.any((tag) => tag.toLowerCase().contains(lowercaseQuery));
+            card.back.toLowerCase().contains(lowercaseQuery) ||
+            card.tags.any((tag) => tag.toLowerCase().contains(lowercaseQuery));
       }).toList();
     } catch (e) {
-      debugPrint('Error searching cards: $e');
       return [];
     }
   }
@@ -395,17 +376,13 @@ class FlashcardRepository {
       final allCards = await getCardsInDeck(deckId);
       return allCards.where((card) => card.tags.contains(tag)).toList();
     } catch (e) {
-      debugPrint('Error getting cards by tag: $e');
       return [];
     }
   }
 
   /// Stream deck updates
   Stream<FlashCardDeck?> streamDeck(String deckId) {
-    return _decksCollection
-        .doc(deckId)
-        .snapshots()
-        .map((doc) {
+    return _decksCollection.doc(deckId).snapshots().map((doc) {
       if (doc.exists && doc.data() != null) {
         return FlashCardDeck.fromMap(doc.data() as Map<String, dynamic>);
       }
@@ -420,10 +397,13 @@ class FlashcardRepository {
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map((query) {
-      return query.docs
-          .map((doc) => FlashCardDeck.fromMap(doc.data() as Map<String, dynamic>))
-          .toList();
-    });
+          return query.docs
+              .map(
+                (doc) =>
+                    FlashCardDeck.fromMap(doc.data() as Map<String, dynamic>),
+              )
+              .toList();
+        });
   }
 
   /// Stream cards in deck
@@ -433,10 +413,12 @@ class FlashcardRepository {
         .where('deckId', isEqualTo: deckId)
         .snapshots()
         .map((query) {
-      return query.docs
-          .map((doc) => FlashCard.fromMap(doc.data() as Map<String, dynamic>))
-          .where((card) => card.isActive)
-          .toList();
-    });
+          return query.docs
+              .map(
+                (doc) => FlashCard.fromMap(doc.data() as Map<String, dynamic>),
+              )
+              .where((card) => card.isActive)
+              .toList();
+        });
   }
 }

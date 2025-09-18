@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import '../../domain/models/study_plan.dart';
 import 'study_material_repository.dart';
 
@@ -252,7 +251,6 @@ class StudyPlanRepository {
           try {
             await _materialRepository.deleteMaterial(materialId);
           } catch (e) {
-            debugPrint('Warning: Could not delete material $materialId: $e');
             // Continue with other materials even if one fails
           }
         }

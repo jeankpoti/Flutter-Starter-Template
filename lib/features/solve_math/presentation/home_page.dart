@@ -37,7 +37,6 @@ class _HomePageState extends State<HomePage>
         PermissionLifecycleMixin {
   final TextEditingController _textController = TextEditingController();
   late TabController _tabController;
-  DateTime? _lastResultShownTimestamp;
 
   // Design system spacing constants
   static const double _spacing4 = 16.0;
@@ -274,7 +273,6 @@ class _HomePageState extends State<HomePage>
                 // state.resultTimestamp != _lastResultShownTimestamp
                 ) {
                   // Track the timestamp to prevent showing the same result twice
-                  _lastResultShownTimestamp = state.resultTimestamp;
 
                   // Mark result as shown immediately to prevent duplicate dialogs
                   context.read<SolveMathCubit>().markResultAsShown();

@@ -1,5 +1,5 @@
 class Validator {
-  static checkEmail(email) {
+  static String? checkEmail(email) {
     Pattern pattern =
         r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
     RegExp regex = RegExp(pattern.toString());
@@ -10,7 +10,7 @@ class Validator {
     }
   }
 
-  static validateEmail(String email) {
+  static dynamic validateEmail(String email) {
     if (email.isEmpty) {
       return 'Please provide your email';
     } else {

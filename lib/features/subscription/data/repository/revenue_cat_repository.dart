@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -39,7 +38,6 @@ class RevenueCatRepository implements SubscriptionRepository {
       final customerInfo = await Purchases.getCustomerInfo();
       return _mapCustomerInfoToSubscriptionModel(customerInfo);
     } catch (e) {
-      debugPrint('Failed to get subscription status: $e');
       return SubscriptionModel.initial();
     }
   }
@@ -50,7 +48,6 @@ class RevenueCatRepository implements SubscriptionRepository {
       final customerInfo = await Purchases.restorePurchases();
       return _mapCustomerInfoToSubscriptionModel(customerInfo);
     } catch (e) {
-      debugPrint('Failed to restore purchases: $e');
       rethrow;
     }
   }
@@ -62,13 +59,11 @@ class RevenueCatRepository implements SubscriptionRepository {
       final current = offerings.current;
 
       if (current == null) {
-        debugPrint('No current offering available');
         return [];
       }
 
       return current.availablePackages;
     } catch (e) {
-      debugPrint('Failed to get offerings: $e');
       return [];
     }
   }
@@ -79,11 +74,6 @@ class RevenueCatRepository implements SubscriptionRepository {
       final purchaseResult = await Purchases.purchasePackage(package);
       return _mapCustomerInfoToSubscriptionModel(purchaseResult);
     } catch (e) {
-      if (e is PurchasesErrorCode) {
-        debugPrint('Purchase error: $e');
-      } else {
-        debugPrint('Failed to purchase package: $e');
-      }
       return null;
     }
   }
@@ -96,7 +86,6 @@ class RevenueCatRepository implements SubscriptionRepository {
         Subscription.entitlementID,
       );
     } catch (e) {
-      debugPrint('Failed to check subscription status: $e');
       return false;
     }
   }
@@ -109,13 +98,10 @@ class RevenueCatRepository implements SubscriptionRepository {
 
       if (managementURL != null) {
         await launchUrl(Uri.parse(managementURL));
-        debugPrint('Opened subscription management page');
       } else {
-        debugPrint('Management URL is null');
         throw Exception('Unable to get subscription management URL');
       }
     } catch (e) {
-      debugPrint('Failed to open subscription management: $e');
       rethrow;
     }
   }

@@ -122,8 +122,7 @@ class AppReviewService {
 
   /// Open store listing directly (fallback option)
   static Future<void> openStoreListing() async {
-    // TODO: Replace with your actual app IDs
-    const androidAppId = 'com.yourcompany.mathai';
+    const androidAppId = 'com.jeankpoti.mathai.math_ai';
     const iosAppId = '6746733499'; // Your iOS app ID
 
     final url =

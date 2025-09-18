@@ -27,12 +27,13 @@ class FlashcardItemWidget extends StatelessWidget {
   }) {
     final mathRegex = RegExp(r'\$([^$]+)\$');
     final matches = mathRegex.allMatches(text);
-    
+
     if (matches.isEmpty) {
       return Text(
         text,
-        style: style?.copyWith(color: color, fontWeight: fontWeight) ?? 
-               TextStyle(color: color, fontWeight: fontWeight),
+        style:
+            style?.copyWith(color: color, fontWeight: fontWeight) ??
+            TextStyle(color: color, fontWeight: fontWeight),
         textAlign: textAlign ?? TextAlign.start,
         maxLines: maxLines,
         overflow: maxLines != null ? TextOverflow.ellipsis : null,
@@ -44,48 +45,60 @@ class FlashcardItemWidget extends StatelessWidget {
 
     for (final match in matches) {
       if (match.start > lastMatchEnd) {
-        spans.add(TextSpan(
-          text: text.substring(lastMatchEnd, match.start),
-          style: style?.copyWith(color: color, fontWeight: fontWeight) ?? 
-                 TextStyle(color: color, fontWeight: fontWeight),
-        ));
+        spans.add(
+          TextSpan(
+            text: text.substring(lastMatchEnd, match.start),
+            style:
+                style?.copyWith(color: color, fontWeight: fontWeight) ??
+                TextStyle(color: color, fontWeight: fontWeight),
+          ),
+        );
       }
 
       final mathExpression = match.group(1) ?? '';
       try {
-        spans.add(WidgetSpan(
-          child: Container(
-            constraints: const BoxConstraints(maxWidth: 100),
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              alignment: Alignment.centerLeft,
-              child: Math.tex(
-                mathExpression,
-                textStyle: style?.copyWith(color: color, fontWeight: fontWeight) ?? 
-                           TextStyle(color: color, fontWeight: fontWeight),
-                mathStyle: MathStyle.text,
+        spans.add(
+          WidgetSpan(
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 100),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Math.tex(
+                  mathExpression,
+                  textStyle:
+                      style?.copyWith(color: color, fontWeight: fontWeight) ??
+                      TextStyle(color: color, fontWeight: fontWeight),
+                  mathStyle: MathStyle.text,
+                ),
               ),
             ),
+            alignment: PlaceholderAlignment.middle,
           ),
-          alignment: PlaceholderAlignment.middle,
-        ));
+        );
       } catch (e) {
-        spans.add(TextSpan(
-          text: '\$${mathExpression}\$',
-          style: style?.copyWith(color: color, fontWeight: fontWeight) ?? 
-                 TextStyle(color: color, fontWeight: fontWeight),
-        ));
+        spans.add(
+          TextSpan(
+            text: '\$$mathExpression\$',
+            style:
+                style?.copyWith(color: color, fontWeight: fontWeight) ??
+                TextStyle(color: color, fontWeight: fontWeight),
+          ),
+        );
       }
 
       lastMatchEnd = match.end;
     }
 
     if (lastMatchEnd < text.length) {
-      spans.add(TextSpan(
-        text: text.substring(lastMatchEnd),
-        style: style?.copyWith(color: color, fontWeight: fontWeight) ?? 
-               TextStyle(color: color, fontWeight: fontWeight),
-      ));
+      spans.add(
+        TextSpan(
+          text: text.substring(lastMatchEnd),
+          style:
+              style?.copyWith(color: color, fontWeight: fontWeight) ??
+              TextStyle(color: color, fontWeight: fontWeight),
+        ),
+      );
     }
 
     return RichText(
@@ -132,30 +145,33 @@ class FlashcardItemWidget extends StatelessWidget {
                     const Spacer(),
                     PopupMenuButton<String>(
                       onSelected: onCardAction,
-                      itemBuilder: (context) => [
-                        PopupMenuItem(
-                          value: 'edit',
-                          child: ListTile(
-                            leading: Icon(Icons.edit_rounded),
-                            title: Text(AppLocalizations.of(context)!.edit),
-                            contentPadding: EdgeInsets.zero,
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: 'delete',
-                          child: ListTile(
-                            leading: Icon(Icons.delete_rounded),
-                            title: Text(AppLocalizations.of(context)!.delete),
-                            contentPadding: EdgeInsets.zero,
-                          ),
-                        ),
-                      ],
+                      itemBuilder:
+                          (context) => [
+                            PopupMenuItem(
+                              value: 'edit',
+                              child: ListTile(
+                                leading: Icon(Icons.edit_rounded),
+                                title: Text(AppLocalizations.of(context)!.edit),
+                                contentPadding: EdgeInsets.zero,
+                              ),
+                            ),
+                            PopupMenuItem(
+                              value: 'delete',
+                              child: ListTile(
+                                leading: Icon(Icons.delete_rounded),
+                                title: Text(
+                                  AppLocalizations.of(context)!.delete,
+                                ),
+                                contentPadding: EdgeInsets.zero,
+                              ),
+                            ),
+                          ],
                     ),
                   ],
                 ),
-                
+
                 const SizedBox(height: 12),
-                
+
                 // Card content preview
                 _buildMathText(
                   card.front,
@@ -164,45 +180,63 @@ class FlashcardItemWidget extends StatelessWidget {
                   fontWeight: FontWeight.w500,
                   maxLines: 2,
                 ),
-                
+
                 const SizedBox(height: 8),
-                
+
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.3),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.surfaceContainer.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: _buildMathText(
                     card.back,
                     style: Theme.of(context).textTheme.bodyMedium,
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.8),
                     maxLines: 2,
                   ),
                 ),
-                
+
                 // Tags
                 if (card.tags.isNotEmpty) ...[
                   const SizedBox(height: 12),
                   Wrap(
                     spacing: 6,
                     runSpacing: 6,
-                    children: card.tags.take(3).map((tag) => Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.2),
-                        ),
-                      ),
-                      child: LabelSmallText(
-                        tag,
-                        color: Theme.of(context).colorScheme.secondary,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    )).toList(),
+                    children:
+                        card.tags
+                            .take(3)
+                            .map(
+                              (tag) => Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).colorScheme.secondary
+                                      .withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .secondary
+                                        .withValues(alpha: 0.2),
+                                  ),
+                                ),
+                                child: LabelSmallText(
+                                  tag,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            )
+                            .toList(),
                   ),
                 ],
               ],
@@ -216,7 +250,7 @@ class FlashcardItemWidget extends StatelessWidget {
   Widget _buildCardStatusChip(BuildContext context) {
     Color color;
     String label;
-    
+
     if (card.isNew) {
       color = Colors.blue;
       label = AppLocalizations.of(context)!.newCards;
@@ -227,18 +261,14 @@ class FlashcardItemWidget extends StatelessWidget {
       color = Colors.green;
       label = AppLocalizations.of(context)!.learningCards;
     }
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
       ),
-      child: LabelSmallText(
-        label,
-        color: color,
-        fontWeight: FontWeight.w600,
-      ),
+      child: LabelSmallText(label, color: color, fontWeight: FontWeight.w600),
     );
   }
 }

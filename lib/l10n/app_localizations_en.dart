@@ -1717,6 +1717,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get continueWithFreeVersion => 'Continue with Free Version';
 
   @override
+  String get tryYourFirstProblemFree => 'Solve Your First Problem Free';
+
+  @override
+  String get seeAiMagicInAction => 'See AI Magic in Action';
+
+  @override
+  String get solveAnyMathProblemInstantly =>
+      'Solve any math problem instantly with AI';
+
+  @override
+  String get aiDemoDescription => 'Watch AI solve complex problems in seconds';
+
+  @override
   String get premiumFeature => 'Premium Feature';
 
   @override

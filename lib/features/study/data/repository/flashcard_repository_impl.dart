@@ -1,18 +1,17 @@
 import '../../domain/models/flashcard.dart';
 import '../../domain/models/study_material.dart';
-import '../../domain/models/quiz.dart';
 import '../../domain/repository/flashcard_repository.dart';
 import '../services/flashcard_service.dart';
 
 /// Implementation of FlashcardRepositoryInterface using FlashcardService
-/// 
+///
 /// This class acts as an adapter between the domain layer and the data layer,
 /// delegating all operations to the FlashcardService while implementing the domain interface.
 class FlashcardRepositoryImpl implements FlashcardRepositoryInterface {
   final FlashcardService _flashcardService;
 
   FlashcardRepositoryImpl({FlashcardService? flashcardService})
-      : _flashcardService = flashcardService ?? FlashcardService();
+    : _flashcardService = flashcardService ?? FlashcardService();
 
   @override
   Future<void> initialize() async {

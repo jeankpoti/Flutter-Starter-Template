@@ -1,13 +1,10 @@
-import 'dart:developer' as dev;
 import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import '../../../solve_math/data/repository/gemini_solve_math_repo.dart';
 import '../../../settings/data/preferences_service.dart';
 import '../../../settings/domain/models/math_level.dart';
 import '../../domain/models/flashcard.dart';
 import '../../domain/models/study_material.dart';
-import '../../domain/models/quiz.dart';
 import '../repository/flashcard_repository.dart';
 
 class FlashcardService {
@@ -25,22 +22,17 @@ class FlashcardService {
   Future<void> initialize() async {
     _geminiService ??= GeminiSolveMathRepo();
     _flashcardRepository ??= FlashcardRepository();
-    
+
     // Check authentication
     final currentUser = FirebaseAuth.instance.currentUser;
-    dev.log('FlashcardService: Current user: ${currentUser?.uid}', name: 'FlashcardService');
-    dev.log('FlashcardService: User email: ${currentUser?.email}', name: 'FlashcardService');
-    
+
     if (currentUser == null) {
-      dev.log('FlashcardService: No authenticated user found!', name: 'FlashcardService');
       throw Exception('User must be authenticated to use flashcard service');
     }
-    
+
     if (!_geminiService!.isInitialized) {
       await _geminiService!.initialize();
     }
-    
-    dev.log('FlashcardService: Initialization completed', name: 'FlashcardService');
   }
 
   /// Generate flashcards from study materials using AI
@@ -57,7 +49,7 @@ class FlashcardService {
 
     // Combine material content for AI analysis
     final combinedContent = _combineMaterialsContent(materials);
-    
+
     // Generate flashcards using AI
     final cards = await _generateFlashcardsFromContent(
       content: combinedContent,
@@ -80,18 +72,14 @@ class FlashcardService {
     );
 
     // Save deck and cards
-    dev.log('FlashcardService: Creating deck: ${deck.name} with ${cards.length} cards', name: 'FlashcardService');
+
     await _flashcardRepository!.createDeck(deck);
-    dev.log('FlashcardService: Deck created, now saving ${cards.length} cards...', name: 'FlashcardService');
-    
+
     for (int i = 0; i < cards.length; i++) {
       final card = cards[i];
-      dev.log('FlashcardService: Saving card ${i + 1}/${cards.length}: ${card.front.substring(0, min(50, card.front.length))}...', name: 'FlashcardService');
+
       await _flashcardRepository!.createCard(card.copyWith(deckId: deck.id));
-      dev.log('FlashcardService: Card ${i + 1} saved successfully', name: 'FlashcardService');
     }
-    
-    dev.log('FlashcardService: All cards saved successfully', name: 'FlashcardService');
 
     return deck;
   }
@@ -114,18 +102,24 @@ class FlashcardService {
 
     final response = await _geminiService!.generateTextContent(prompt);
     final flashcardText = response.text ?? '';
-    
+
     final cards = _parseFlashcardsFromAIResponse(flashcardText);
-    
+
     // Ensure all AI-generated cards have userId
     final userId = FirebaseAuth.instance.currentUser?.uid ?? '';
     return cards.map((card) => card.copyWith(userId: userId)).toList();
   }
 
   /// Get flashcard generation prompt
-  String _getFlashcardGenerationPrompt(String languageCode, String content, String levelDisplayName, int cardCount) {
+  String _getFlashcardGenerationPrompt(
+    String languageCode,
+    String content,
+    String levelDisplayName,
+    int cardCount,
+  ) {
     final Map<String, String> prompts = {
-      'en': '''You are an expert math teacher creating flashcards. Based on the study material below, create exactly $cardCount flashcards.
+      'en':
+          '''You are an expert math teacher creating flashcards. Based on the study material below, create exactly $cardCount flashcards.
 
 STUDY MATERIAL:
 $content
@@ -152,9 +146,10 @@ Tags: [Tag1, Tag2]
 
 Continue this pattern for all $cardCount flashcards. Make sure to cover the most important concepts from the material.''',
 
-      'fr': '''Vous êtes un professeur de mathématiques expert créant des cartes mémoire. Basé sur le matériel d\'étude ci-dessous, créez exactement $cardCount cartes mémoire.
+      'fr':
+          '''Vous êtes un professeur de mathématiques expert créant des cartes mémoire. Basé sur le matériel d'étude ci-dessous, créez exactement $cardCount cartes mémoire.
 
-MATÉRIEL D\'ÉTUDE :
+MATÉRIEL D'ÉTUDE :
 $content
 
 EXIGENCES :
@@ -174,7 +169,8 @@ Hint: [Indice utile facultatif]
 
 Continuez ce modèle pour toutes les $cardCount cartes mémoire.''',
 
-      'es': '''Eres un profesor de matemáticas experto creando tarjetas de memoria. Basado en el material de estudio a continuación, crea exactamente $cardCount tarjetas de memoria.
+      'es':
+          '''Eres un profesor de matemáticas experto creando tarjetas de memoria. Basado en el material de estudio a continuación, crea exactamente $cardCount tarjetas de memoria.
 
 MATERIAL DE ESTUDIO:
 $content
@@ -203,34 +199,41 @@ Continúa este patrón para todas las $cardCount tarjetas de memoria.''',
   /// Parse AI response into flashcards
   List<FlashCard> _parseFlashcardsFromAIResponse(String response) {
     final cards = <FlashCard>[];
-    final cardBlocks = response.split(RegExp(r'FLASHCARD \d+:|CARTE MÉMOIRE \d+ :|TARJETA DE MEMORIA \d+:'));
-    
+    final cardBlocks = response.split(
+      RegExp(r'FLASHCARD \d+:|CARTE MÉMOIRE \d+ :|TARJETA DE MEMORIA \d+:'),
+    );
+
     for (int i = 1; i < cardBlocks.length; i++) {
       final block = cardBlocks[i].trim();
       if (block.isEmpty) continue;
-      
+
       try {
         final card = _parseFlashcardBlock(block);
         if (card != null) {
           cards.add(card);
         }
       } catch (e) {
-        debugPrint('Error parsing flashcard block $i: $e');
+        // Silently continue on parsing errors
       }
     }
-    
+
     return cards;
   }
 
   /// Parse individual flashcard block
   FlashCard? _parseFlashcardBlock(String block) {
-    final lines = block.split('\n').map((line) => line.trim()).where((line) => line.isNotEmpty).toList();
-    
+    final lines =
+        block
+            .split('\n')
+            .map((line) => line.trim())
+            .where((line) => line.isNotEmpty)
+            .toList();
+
     String front = '';
     String back = '';
     List<String> tags = [];
     String? hint;
-    
+
     for (final line in lines) {
       if (line.startsWith('Front:')) {
         front = line.replaceFirst('Front:', '').trim();
@@ -238,21 +241,25 @@ Continúa este patrón para todas las $cardCount tarjetas de memoria.''',
         back = line.replaceFirst('Back:', '').trim();
       } else if (line.startsWith('Tags:')) {
         final tagsStr = line.replaceFirst('Tags:', '').trim();
-        tags = tagsStr.split(',').map((t) => t.trim().replaceAll('[', '').replaceAll(']', '')).toList();
+        tags =
+            tagsStr
+                .split(',')
+                .map((t) => t.trim().replaceAll('[', '').replaceAll(']', ''))
+                .toList();
       } else if (line.startsWith('Hint:')) {
         hint = line.replaceFirst('Hint:', '').trim();
       }
     }
-    
+
     if (front.isEmpty || back.isEmpty) {
       return null;
     }
-    
+
     final userId = FirebaseAuth.instance.currentUser?.uid ?? '';
     if (userId.isEmpty) {
-      dev.log('FlashcardService: Warning - No authenticated user when creating flashcard', name: 'FlashcardService');
+      // Warning: No authenticated user when creating flashcard
     }
-    
+
     return FlashCard(
       id: _generateId(),
       userId: userId,
@@ -274,11 +281,11 @@ Continúa este patrón para todas las $cardCount tarjetas de memoria.''',
   }) async {
     final now = DateTime.now();
     int quality = result.index; // 0 = again, 1 = hard, 2 = good, 3 = easy
-    
+
     // SM-2 Algorithm implementation
     double newEaseFactor = card.easeFactor;
     int newInterval = card.interval;
-    
+
     if (quality >= 2) {
       // Correct answer
       if (card.reviewCount == 0) {
@@ -288,17 +295,19 @@ Continúa este patrón para todas las $cardCount tarjetas de memoria.''',
       } else {
         newInterval = (card.interval * card.easeFactor).round();
       }
-      
+
       // Update ease factor
-      newEaseFactor = card.easeFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
+      newEaseFactor =
+          card.easeFactor +
+          (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
       if (newEaseFactor < 1.3) newEaseFactor = 1.3;
     } else {
       // Incorrect answer - reset interval but keep ease factor
       newInterval = 1;
     }
-    
+
     final nextReviewDate = now.add(Duration(days: newInterval));
-    
+
     final updatedCard = card.copyWith(
       lastReviewedAt: now,
       nextReviewAt: nextReviewDate,
@@ -307,23 +316,21 @@ Continúa este patrón para todas las $cardCount tarjetas de memoria.''',
       easeFactor: newEaseFactor,
       interval: newInterval,
     );
-    
+
     // Save to repository
     await _flashcardRepository!.updateCard(updatedCard);
-    
+
     return updatedCard;
   }
 
   /// Get cards due for review in a deck
   Future<List<FlashCard>> getDueCards(String deckId, {int limit = 20}) async {
     try {
-      dev.log('FlashcardService: Getting due cards for deck $deckId', name: 'FlashcardService');
       final allCards = await _flashcardRepository!.getCardsInDeck(deckId);
-      dev.log('FlashcardService: Found ${allCards.length} total cards in deck', name: 'FlashcardService');
-      
-      final dueCards = allCards.where((card) => card.isDue && card.isActive).toList();
-      dev.log('FlashcardService: Found ${dueCards.length} due cards', name: 'FlashcardService');
-      
+
+      final dueCards =
+          allCards.where((card) => card.isDue && card.isActive).toList();
+
       // Sort by priority: new cards first, then by due date
       dueCards.sort((a, b) {
         if (a.isNew && !b.isNew) return -1;
@@ -333,10 +340,9 @@ Continúa este patrón para todas las $cardCount tarjetas de memoria.''',
         if (b.nextReviewAt == null) return 1;
         return a.nextReviewAt!.compareTo(b.nextReviewAt!);
       });
-      
+
       return dueCards.take(limit).toList();
     } catch (e) {
-      dev.log('FlashcardService: Error getting due cards: $e', name: 'FlashcardService', error: e);
       return [];
     }
   }
@@ -344,12 +350,9 @@ Continúa este patrón para todas las $cardCount tarjetas de memoria.''',
   /// Get all cards in a deck (for review when no due cards)
   Future<List<FlashCard>> getAllCardsInDeck(String deckId) async {
     try {
-      dev.log('FlashcardService: Getting all cards for deck $deckId', name: 'FlashcardService');
       final cards = await _flashcardRepository!.getCardsInDeck(deckId);
-      dev.log('FlashcardService: Found ${cards.length} cards in deck', name: 'FlashcardService');
       return cards;
     } catch (e) {
-      dev.log('FlashcardService: Error getting all cards: $e', name: 'FlashcardService', error: e);
       return [];
     }
   }
@@ -362,7 +365,7 @@ Continúa este patrón para todas las $cardCount tarjetas de memoria.''',
     List<String> tags = const [],
   }) async {
     final userId = FirebaseAuth.instance.currentUser?.uid ?? '';
-    
+
     final deck = FlashCardDeck(
       id: _generateId(),
       userId: userId,
@@ -372,7 +375,7 @@ Continúa este patrón para todas las $cardCount tarjetas de memoria.''',
       tags: tags,
       createdAt: DateTime.now(),
     );
-    
+
     await _flashcardRepository!.createDeck(deck);
     return deck;
   }
@@ -398,33 +401,29 @@ Continúa este patrón para todas las $cardCount tarjetas de memoria.''',
       // Explicitly set nextReviewAt to null for new cards to make them due
       nextReviewAt: null,
     );
-    
-    dev.log('FlashcardService: Creating card - isNew: ${card.isNew}, isDue: ${card.isDue}', name: 'FlashcardService');
+
     await _flashcardRepository!.createCard(card);
-    dev.log('FlashcardService: Card created successfully: ${card.id}', name: 'FlashcardService');
-    
+
     // Update deck card count
     final deck = await _flashcardRepository!.getDeck(deckId);
     if (deck != null) {
-      await _flashcardRepository!.updateDeck(deck.copyWith(
-        cardCount: deck.cardCount + 1,
-        newCardCount: deck.newCardCount + 1,
-      ));
-      dev.log('FlashcardService: Updated deck card counts', name: 'FlashcardService');
+      await _flashcardRepository!.updateDeck(
+        deck.copyWith(
+          cardCount: deck.cardCount + 1,
+          newCardCount: deck.newCardCount + 1,
+        ),
+      );
     }
-    
+
     return card;
   }
 
   /// Get all decks for current user
   Future<List<FlashCardDeck>> getUserDecks() async {
     try {
-      dev.log('FlashcardService: Getting user decks...', name: 'FlashcardService');
       final result = await _flashcardRepository!.getUserDecks();
-      dev.log('FlashcardService: Got ${result.length} decks', name: 'FlashcardService');
       return result;
     } catch (e) {
-      dev.log('FlashcardService: Error getting user decks: $e', name: 'FlashcardService', error: e);
       return [];
     }
   }
@@ -433,18 +432,21 @@ Continúa este patrón para todas las $cardCount tarjetas de memoria.''',
   Future<Map<String, dynamic>> getDeckStatistics(String deckId) async {
     try {
       final cards = await _flashcardRepository!.getCardsInDeck(deckId);
-      
+
       final total = cards.length;
       final newCards = cards.where((c) => c.isNew).length;
       final dueCards = cards.where((c) => c.isDue && !c.isNew).length;
       final learningCards = cards.where((c) => !c.isNew && !c.isDue).length;
-      
+
       double averageSuccessRate = 0.0;
       if (cards.isNotEmpty) {
-        final totalSuccessRate = cards.fold(0.0, (sum, card) => sum + card.successRate);
+        final totalSuccessRate = cards.fold(
+          0.0,
+          (sum, card) => sum + card.successRate,
+        );
         averageSuccessRate = totalSuccessRate / cards.length;
       }
-      
+
       return {
         'totalCards': total,
         'newCards': newCards,
@@ -453,7 +455,6 @@ Continúa este patrón para todas las $cardCount tarjetas de memoria.''',
         'averageSuccessRate': averageSuccessRate,
       };
     } catch (e) {
-      debugPrint('Error getting deck statistics: $e');
       return {
         'totalCards': 0,
         'newCards': 0,
@@ -467,14 +468,14 @@ Continúa este patrón para todas las $cardCount tarjetas de memoria.''',
   /// Start a review session
   Future<ReviewSession> startReviewSession(String deckId) async {
     final userId = FirebaseAuth.instance.currentUser?.uid ?? '';
-    
+
     final session = ReviewSession(
       id: _generateId(),
       userId: userId,
       deckId: deckId,
       startedAt: DateTime.now(),
     );
-    
+
     await _flashcardRepository!.createReviewSession(session);
     return session;
   }
@@ -492,24 +493,24 @@ Continúa este patrón para todas las $cardCount tarjetas de memoria.''',
       correctAnswers: correctAnswers,
       reviewResults: reviewResults,
     );
-    
+
     await _flashcardRepository!.updateReviewSession(completedSession);
-    
+
     // Update deck last studied time
     final deck = await _flashcardRepository!.getDeck(session.deckId);
     if (deck != null) {
-      await _flashcardRepository!.updateDeck(deck.copyWith(
-        lastStudiedAt: DateTime.now(),
-      ));
+      await _flashcardRepository!.updateDeck(
+        deck.copyWith(lastStudiedAt: DateTime.now()),
+      );
     }
-    
+
     return completedSession;
   }
 
   /// Helper methods
   String _combineMaterialsContent(List<StudyMaterial> materials) {
     final buffer = StringBuffer();
-    
+
     for (final material in materials) {
       buffer.writeln('Material: ${material.title}');
       if (material.content != null) {
@@ -521,13 +522,13 @@ Continúa este patrón para todas las $cardCount tarjetas de memoria.''',
       buffer.writeln('Topics: ${material.extractedTopics.join(", ")}');
       buffer.writeln('---');
     }
-    
+
     return buffer.toString();
   }
 
   String _generateId() {
-    return DateTime.now().millisecondsSinceEpoch.toString() + 
-           _random.nextInt(1000).toString();
+    return DateTime.now().millisecondsSinceEpoch.toString() +
+        _random.nextInt(1000).toString();
   }
 
   /// Delete deck and all its cards
@@ -535,7 +536,6 @@ Continúa este patrón para todas las $cardCount tarjetas de memoria.''',
     try {
       await _flashcardRepository!.deleteDeck(deckId);
     } catch (e) {
-      debugPrint('Error deleting deck: $e');
       rethrow;
     }
   }
@@ -545,7 +545,6 @@ Continúa este patrón para todas las $cardCount tarjetas de memoria.''',
     try {
       await _flashcardRepository!.deleteCard(cardId);
     } catch (e) {
-      debugPrint('Error deleting card: $e');
       rethrow;
     }
   }
@@ -556,7 +555,6 @@ Continúa este patrón para todas las $cardCount tarjetas de memoria.''',
       await _flashcardRepository!.updateDeck(deck);
       return deck;
     } catch (e) {
-      debugPrint('Error updating deck: $e');
       rethrow;
     }
   }
@@ -567,9 +565,7 @@ Continúa este patrón para todas las $cardCount tarjetas de memoria.''',
       await _flashcardRepository!.updateCard(card);
       return card;
     } catch (e) {
-      debugPrint('Error updating card: $e');
       rethrow;
     }
   }
-
 }

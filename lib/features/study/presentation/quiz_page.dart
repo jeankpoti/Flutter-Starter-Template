@@ -787,19 +787,12 @@ class _QuizPageState extends State<QuizPage> {
 
   Future<void> _saveQuizToHistory(Quiz quiz) async {
     try {
-      debugPrint(
-        'Saving quiz to history: ${quiz.id}, attemptCount: ${quiz.attemptCount}',
-      );
-      debugPrint('Quiz status: ${quiz.status}, score: ${quiz.lastScore}');
-
       if (quiz.attemptCount == 1) {
         // First attempt - save new quiz
         await _quizService.saveQuizToHistory(quiz);
-        debugPrint('Quiz saved successfully as new quiz');
       } else {
         // Retake - update existing quiz
         await _quizService.updateQuizInHistory(quiz);
-        debugPrint('Quiz updated successfully');
       }
 
       if (mounted) {
@@ -821,7 +814,6 @@ class _QuizPageState extends State<QuizPage> {
         );
       }
     } catch (e) {
-      debugPrint('Error saving quiz to history: $e');
       if (mounted) {
         AppSnackBar.showError(
           context,

@@ -8,6 +8,7 @@ import 'dart:developer';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter/material.dart';
 
 import '../domain/repository/account_repo.dart';
 import 'account_state.dart';
@@ -23,7 +24,7 @@ class AccountCubit extends Cubit<AccountState> {
   ) : super(const AccountState());
 
   // signInWithApple
-  Future<void> signInWithApple(context) async {
+  Future<void> signInWithApple(BuildContext context) async {
     //Show loading
     emit(state.copyWith(isLoading: true));
 
@@ -52,7 +53,7 @@ class AccountCubit extends Cubit<AccountState> {
   }
 
   // signInWithGooogle
-  Future<void> signInWithGooogle(context) async {
+  Future<void> signInWithGooogle(BuildContext context) async {
     try {
       //Show loading
       emit(state.copyWith(isLoading: true));
@@ -79,7 +80,7 @@ class AccountCubit extends Cubit<AccountState> {
     String fullName,
     String email,
     String password,
-    context,
+    BuildContext context,
   ) async {
     try {
       //Show loading
@@ -110,7 +111,7 @@ class AccountCubit extends Cubit<AccountState> {
   Future<void> signInWithEmailAndPassword(
     String email,
     String password,
-    context,
+    BuildContext context,
   ) async {
     try {
       //Show loading
@@ -167,7 +168,7 @@ class AccountCubit extends Cubit<AccountState> {
   }
 
   // signUpWithGoogle
-  Future<void> signUpWithGoogle(context) async {
+  Future<void> signUpWithGoogle(BuildContext context) async {
     try {
       //Show loading
       emit(state.copyWith(isLoading: true));
@@ -184,7 +185,7 @@ class AccountCubit extends Cubit<AccountState> {
   }
 
   // signUpWithApple
-  Future<void> signUpWithApple(context) async {
+  Future<void> signUpWithApple(BuildContext context) async {
     try {
       //Show loading
       emit(state.copyWith(isLoading: true));
@@ -211,7 +212,7 @@ class AccountCubit extends Cubit<AccountState> {
   }
 
   // resetPassword
-  Future<void> resetPassword(context, email) async {
+  Future<void> resetPassword(BuildContext context, String email) async {
     try {
       //Show loading
       emit(state.copyWith(isLoading: true));
@@ -227,7 +228,7 @@ class AccountCubit extends Cubit<AccountState> {
     }
   }
 
-  Future<void> deleteUserWithHisData(context) async {
+  Future<void> deleteUserWithHisData(BuildContext context) async {
     try {
       //Show loading
       emit(state.copyWith(isLoading: true));

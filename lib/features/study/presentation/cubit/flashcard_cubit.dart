@@ -27,7 +27,11 @@ class FlashcardCubit extends Cubit<FlashcardState> {
       await _flashcardRepository.initialize();
       emit(state.copyWith(isLoading: false));
     } catch (e) {
-      dev.log('FlashcardCubit: Error initializing: $e', name: 'FlashcardCubit', error: e);
+      dev.log(
+        'FlashcardCubit: Error initializing: $e',
+        name: 'FlashcardCubit',
+        error: e,
+      );
       emit(state.copyWith(isLoading: false, errorMsg: e.toString()));
     }
   }
@@ -36,14 +40,17 @@ class FlashcardCubit extends Cubit<FlashcardState> {
     try {
       emit(state.copyWith(isLoading: true, errorMsg: null));
       final decks = await _flashcardRepository.getUserDecks();
-      dev.log('FlashcardCubit: Loaded ${decks.length} decks', name: 'FlashcardCubit');
-      emit(state.copyWith(
-        isLoading: false,
-        decks: decks,
-        isSuccess: true,
-      ));
+      dev.log(
+        'FlashcardCubit: Loaded ${decks.length} decks',
+        name: 'FlashcardCubit',
+      );
+      emit(state.copyWith(isLoading: false, decks: decks, isSuccess: true));
     } catch (e) {
-      dev.log('FlashcardCubit: Error loading decks: $e', name: 'FlashcardCubit', error: e);
+      dev.log(
+        'FlashcardCubit: Error loading decks: $e',
+        name: 'FlashcardCubit',
+        error: e,
+      );
       emit(state.copyWith(isLoading: false, errorMsg: e.toString()));
     }
   }
@@ -64,8 +71,17 @@ class FlashcardCubit extends Cubit<FlashcardState> {
       await loadUserDecks();
       emit(state.copyWith(isSuccess: true));
     } catch (e) {
-      dev.log('FlashcardCubit: Error creating deck: $e', name: 'FlashcardCubit', error: e);
-      emit(state.copyWith(isLoading: false, errorMsg: 'Failed to create deck: ${e.toString()}'));
+      dev.log(
+        'FlashcardCubit: Error creating deck: $e',
+        name: 'FlashcardCubit',
+        error: e,
+      );
+      emit(
+        state.copyWith(
+          isLoading: false,
+          errorMsg: 'Failed to create deck: ${e.toString()}',
+        ),
+      );
     }
   }
 
@@ -77,7 +93,11 @@ class FlashcardCubit extends Cubit<FlashcardState> {
       await loadUserDecks();
       emit(state.copyWith(isSuccess: true));
     } catch (e) {
-      dev.log('FlashcardCubit: Error deleting deck: $e', name: 'FlashcardCubit', error: e);
+      dev.log(
+        'FlashcardCubit: Error deleting deck: $e',
+        name: 'FlashcardCubit',
+        error: e,
+      );
       emit(state.copyWith(isLoading: false, errorMsg: 'Failed to delete deck'));
     }
   }
@@ -90,20 +110,29 @@ class FlashcardCubit extends Cubit<FlashcardState> {
   }) async {
     try {
       emit(state.copyWith(isLoading: true, errorMsg: null));
-      
+
       final updatedDeck = deck.copyWith(
         name: name,
         description: description,
         color: color,
       );
-      
+
       await _flashcardRepository.updateDeck(updatedDeck);
       // Reload decks after update
       await loadUserDecks();
       emit(state.copyWith(isSuccess: true));
     } catch (e) {
-      dev.log('FlashcardCubit: Error updating deck: $e', name: 'FlashcardCubit', error: e);
-      emit(state.copyWith(isLoading: false, errorMsg: 'Failed to update deck: ${e.toString()}'));
+      dev.log(
+        'FlashcardCubit: Error updating deck: $e',
+        name: 'FlashcardCubit',
+        error: e,
+      );
+      emit(
+        state.copyWith(
+          isLoading: false,
+          errorMsg: 'Failed to update deck: ${e.toString()}',
+        ),
+      );
     }
   }
 
@@ -116,46 +145,55 @@ class FlashcardCubit extends Cubit<FlashcardState> {
     try {
       // Always check subscription first
       if (_subscriptionCubit == null) {
-        emit(state.copyWith(
-          isLoading: false,
-          errorMsg: 'subscriptionServiceNotAvailable',
-        ));
+        emit(
+          state.copyWith(
+            isLoading: false,
+            errorMsg: 'subscriptionServiceNotAvailable',
+          ),
+        );
         return;
       }
 
       // Load current subscription status
-      await _subscriptionCubit!.loadSubscriptionStatus();
-      final isSubscribed = _subscriptionCubit!.state.isSubscribed;
-      
+      await _subscriptionCubit.loadSubscriptionStatus();
+      final isSubscribed = _subscriptionCubit.state.isSubscribed;
+
       if (!isSubscribed) {
         try {
           // Always show paywall for non-subscribers
           final result = await RevenueCatUI.presentPaywall();
-          
-          if (result == PaywallResult.cancelled || result == PaywallResult.error) {
-            emit(state.copyWith(
-              isLoading: false,
-              errorMsg: 'premiumSubscriptionRequired',
-            ));
+
+          if (result == PaywallResult.cancelled ||
+              result == PaywallResult.error) {
+            emit(
+              state.copyWith(
+                isLoading: false,
+                errorMsg: 'premiumSubscriptionRequired',
+              ),
+            );
             return;
           }
-          
+
           // Recheck subscription after paywall
-          await _subscriptionCubit!.loadSubscriptionStatus();
-          final newStatus = _subscriptionCubit!.state.isSubscribed;
-          
+          await _subscriptionCubit.loadSubscriptionStatus();
+          final newStatus = _subscriptionCubit.state.isSubscribed;
+
           if (!newStatus) {
-            emit(state.copyWith(
-              isLoading: false,
-              errorMsg: 'premiumSubscriptionRequired',
-            ));
+            emit(
+              state.copyWith(
+                isLoading: false,
+                errorMsg: 'premiumSubscriptionRequired',
+              ),
+            );
             return;
           }
         } catch (e) {
-          emit(state.copyWith(
-            isLoading: false,
-            errorMsg: 'unableToProcessSubscription',
-          ));
+          emit(
+            state.copyWith(
+              isLoading: false,
+              errorMsg: 'unableToProcessSubscription',
+            ),
+          );
           return;
         }
       }
@@ -168,13 +206,22 @@ class FlashcardCubit extends Cubit<FlashcardState> {
         deckDescription: deckDescription,
         cardCount: cardCount,
       );
-      
+
       // Reload decks after generation
       await loadUserDecks();
       emit(state.copyWith(isSuccess: true));
     } catch (e) {
-      dev.log('FlashcardCubit: Error generating flashcards: $e', name: 'FlashcardCubit', error: e);
-      emit(state.copyWith(isLoading: false, errorMsg: 'Failed to generate flashcards: ${e.toString()}'));
+      dev.log(
+        'FlashcardCubit: Error generating flashcards: $e',
+        name: 'FlashcardCubit',
+        error: e,
+      );
+      emit(
+        state.copyWith(
+          isLoading: false,
+          errorMsg: 'Failed to generate flashcards: ${e.toString()}',
+        ),
+      );
     }
   }
 

@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/foundation.dart';
 import 'dart:io';
 import '../../domain/models/study_material.dart';
 import '../../../../common/utils/file_size_validator.dart';
@@ -189,7 +188,6 @@ class StudyMaterialRepository {
         try {
           await _storage.refFromURL(material.firebaseStoragePath!).delete();
         } catch (e) {
-          debugPrint('Warning: Could not delete image from storage: $e');
           // Continue with document deletion even if image deletion fails
         }
       }

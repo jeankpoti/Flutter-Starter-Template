@@ -1758,6 +1758,21 @@ class AppLocalizationsFr extends AppLocalizations {
   String get continueWithFreeVersion => 'Continuer avec la Version Gratuite';
 
   @override
+  String get tryYourFirstProblemFree =>
+      'Résolvez votre premier problème gratuitement';
+
+  @override
+  String get seeAiMagicInAction => 'Voir la magie de l\'IA en action';
+
+  @override
+  String get solveAnyMathProblemInstantly =>
+      'Résolvez instantanément tout problème de maths avec l\'IA';
+
+  @override
+  String get aiDemoDescription =>
+      'Regardez l\'IA résoudre des problèmes complexes en quelques secondes';
+
+  @override
   String get premiumFeature => 'Fonctionnalité Premium';
 
   @override

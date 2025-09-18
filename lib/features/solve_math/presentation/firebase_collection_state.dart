@@ -4,7 +4,7 @@ import 'package:equatable/equatable.dart';
 import '../domain/models/collection.dart';
 
 class FirebaseCollectionState extends Equatable {
-  List<Collection> collections;
+  final List<Collection> collections;
   final bool isLoading;
   final bool isError;
   final DocumentSnapshot?
@@ -12,7 +12,7 @@ class FirebaseCollectionState extends Equatable {
   final bool isLoadingMore; // For loading subsequent pages
   final bool hasMoreData;
 
-  FirebaseCollectionState({
+  const FirebaseCollectionState({
     this.collections = const [],
     this.isLoading = false,
     this.isError = false,

@@ -51,7 +51,11 @@ class GeminiSolveMathRepo implements SolveMathRepo {
   }
 
   // Generate content with image and custom prompt
-  Future<GenerateContentResponse> generateContentWithImage(String prompt, Uint8List imageBytes, {String mimeType = 'image/jpeg'}) async {
+  Future<GenerateContentResponse> generateContentWithImage(
+    String prompt,
+    Uint8List imageBytes, {
+    String mimeType = 'image/jpeg',
+  }) async {
     if (!_isInitialized || _model == null) {
       throw Exception(
         'GeminiService not initialized. Call initialize() first.',
@@ -129,9 +133,6 @@ class GeminiSolveMathRepo implements SolveMathRepo {
     }
 
     try {
-      // print('Identifying : ${imageFile.runtimeType}');
-      // final image = await File(imageFile).readAsBytes();
-      // print('Identifying 2 : ${image.runtimeType}');
       // Handle different types of input
       Uint8List imageBytes;
 

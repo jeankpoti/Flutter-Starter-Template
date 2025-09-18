@@ -32,7 +32,7 @@ class ModernTabBar extends StatelessWidget {
         labelColor: Theme.of(context).colorScheme.onSecondaryContainer,
         unselectedLabelColor: Theme.of(
           context,
-        ).colorScheme.onSurface.withOpacity(0.6),
+        ).colorScheme.onSurface.withValues(alpha: 0.6),
         indicatorSize: TabBarIndicatorSize.tab,
         dividerColor: Colors.transparent,
         labelStyle: Theme.of(

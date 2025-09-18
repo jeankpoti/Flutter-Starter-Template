@@ -246,36 +246,6 @@ class FlashcardGenerationService {
     }
   }
 
-  /// Parse single flashcard content from AI response
-  FlashcardContent _parseFlashcardContent(String response) {
-    try {
-      // Extract JSON from response (AI might include extra text)
-      final jsonStart = response.indexOf('{');
-      final jsonEnd = response.lastIndexOf('}') + 1;
-      
-      if (jsonStart == -1 || jsonEnd <= jsonStart) {
-        throw FlashcardGenerationException('Invalid response format from AI');
-      }
-
-      final jsonString = response.substring(jsonStart, jsonEnd);
-      final Map<String, dynamic> data = jsonDecode(jsonString);
-
-      return FlashcardContent(
-        question: data['question']?.toString() ?? 'Generated Question',
-        answer: data['answer']?.toString() ?? 'Generated Answer',
-        hint: data['hint']?.toString(),
-        tags: (data['tags'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
-      );
-    } catch (e) {
-      // Fallback: create basic flashcard from response
-      return FlashcardContent(
-        question: 'What is the main concept in this content?',
-        answer: response.length > 200 ? '${response.substring(0, 200)}...' : response,
-        hint: null,
-        tags: ['AI Generated'],
-      );
-    }
-  }
 
   /// Parse multiple flashcard content from AI response
   List<FlashcardContent> _parseMultipleFlashcardContent(String response) {

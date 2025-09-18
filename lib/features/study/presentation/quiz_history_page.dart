@@ -57,7 +57,6 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
       await _quizService.initialize();
       await _loadQuizData();
     } catch (e) {
-      debugPrint('Error initializing quiz service: $e');
       setState(() {
         _isLoading = false;
       });

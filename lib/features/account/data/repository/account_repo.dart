@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
@@ -19,7 +20,7 @@ class FirebaseRepo implements AccountRepo {
   Future<bool> signInWithEmailAndPassword(
     String email,
     String password,
-    context,
+    BuildContext context,
   ) async {
     try {
       final userCredential = await _auth.signInWithEmailAndPassword(
@@ -29,57 +30,56 @@ class FirebaseRepo implements AccountRepo {
 
       // Check if email is verified
       if (userCredential.user != null && userCredential.user!.emailVerified) {
-        // _success = true;
-        return true; // MODIFIED: Return true for successful sign-in with verified email
+        return true;
       } else {
         // If email is not verified, sign out the user and show an error message
         await _auth.signOut();
-        AppSnackBar.showError(
-          context,
-          "Your email is not verified. Please check your inbox for the verification email.",
-        );
-        // _success =
-        //     false; // Ensure success is false since sign-in should not proceed
-        return false; // MODIFIED: Return false if email is not verified
+        if (context.mounted) {
+          AppSnackBar.showError(
+            context,
+            "Your email is not verified. Please check your inbox for the verification email.",
+          );
+        }
+        return false;
       }
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        // Show error message
+      if (context.mounted) {
+        if (e.code == 'user-not-found') {
+          AppSnackBar.showError(
+            context,
+            "No user found for that email.. Please try again.",
+          );
+        } else if (e.code == 'wrong-password') {
+          AppSnackBar.showError(
+            context,
+            "Wrong password provided for that user. Please try again.",
+          );
+        } else if (e.code == 'invalid-credential') {
+          AppSnackBar.showError(
+            context,
+            "Email or password incorrect. Please try again.",
+          );
+        } else {
+          AppSnackBar.showError(
+            context,
+            "An authentication error occurred. Please try again.",
+          );
+        }
+      }
+      return false;
+    } catch (e) {
+      if (context.mounted) {
         AppSnackBar.showError(
           context,
-          "No user found for that email.. Please try again.",
-        );
-      } else if (e.code == 'wrong-password') {
-        // Show error message
-        AppSnackBar.showError(
-          context,
-          "Wrong password provided for that user. Please try again.",
-        );
-      } else if (e.code == 'invalid-credential') {
-        AppSnackBar.showError(
-          context,
-          "Email or password incorrect. Please try again.",
-        );
-      } else {
-        AppSnackBar.showError(
-          context,
-          "An authentication error occurred. Please try again.",
+          "An unexpected error occurred. Please try again.",
         );
       }
-      return false; // MODIFIED: Return false for any FirebaseAuthException
-    } catch (e) {
-      // Handle any other errors
-      AppSnackBar.showError(
-        context,
-        "An unexpected error occurred. Please try again.",
-      );
-      return false; // MODIFIED: Return false for any other error
+      return false;
     }
   }
 
   @override
-  Future<bool> signInWithApple(context) async {
-    log('signInWithApple called');
+  Future<bool> signInWithApple(BuildContext context) async {
     try {
       // Request an Apple ID Credential
       final appleCredential = await SignInWithApple.getAppleIDCredential(
@@ -87,12 +87,6 @@ class FirebaseRepo implements AccountRepo {
           AppleIDAuthorizationScopes.email,
           AppleIDAuthorizationScopes.fullName,
         ],
-        // webAuthenticationOptions: WebAuthenticationOptions(
-        //   clientId: 'com.jeankpoti.studybuddy',
-        //   redirectUri: Uri.parse(
-        //     'https://humble-achieved-collision.glitch.me/callbacks/sign_in_with_apple',
-        //   ),
-        // ),
       );
 
       // Check if user exists using Cloud Function BEFORE authenticating
@@ -102,23 +96,15 @@ class FirebaseRepo implements AccountRepo {
       if (appleId != null) {
         try {
           // Call the Cloud Function via HTTP to check if user exists
-          const functionUrl = 'https://us-central1-math-homework-ai.cloudfunctions.net/checkAppleUserExists';
-          
-          log('Calling Cloud Function with data: {appleId: $appleId}');
-          
+          const functionUrl =
+              'https://us-central1-math-homework-ai.cloudfunctions.net/checkAppleUserExists';
+
           final response = await http.post(
             Uri.parse(functionUrl),
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: json.encode({
-              'appleId': appleId,
-            }),
+            headers: {'Content-Type': 'application/json'},
+            body: json.encode({'appleId': appleId}),
           );
-          
-          log('Response status: ${response.statusCode}');
-          log('Response body: ${response.body}');
-          
+
           if (response.statusCode == 200) {
             final data = json.decode(response.body);
             final bool userExists = data['exists'] ?? false;
@@ -126,24 +112,21 @@ class FirebaseRepo implements AccountRepo {
 
             if (!userExists) {
               log('Account not found for Apple ID: $appleId');
-              // User doesn't exist in our database - don't create Firebase Auth account
-              AppSnackBar.showError(
-                context,
-                "Account not found. Please sign up first!",
-              );
+              if (context.mounted) {
+                AppSnackBar.showError(
+                  context,
+                  "Account not found. Please sign up first!",
+                );
+              }
               return false;
             }
           } else {
-            log('Cloud Function returned error: ${response.body}');
             throw Exception('Failed to check user existence');
           }
         } catch (error) {
-          log('Error calling Cloud Function: $error');
           rethrow;
         }
-      } else {
-        log('Apple ID is null - this might be a privacy setting');
-      }
+      } else {}
 
       // Create an OAuth credential for Firebase
       final oauthCredential = OAuthProvider("apple.com").credential(
@@ -163,17 +146,16 @@ class FirebaseRepo implements AccountRepo {
         // User exists and signed in successfully
         return true;
       } else {
-        // User is null after successful credential exchange, which is unexpected.
-        AppSnackBar.showError(
-          context,
-          "Failed to retrieve user information after Apple Sign-In.",
-        );
+        if (context.mounted) {
+          AppSnackBar.showError(
+            context,
+            "Failed to retrieve user information after Apple Sign-In.",
+          );
+        }
         return false;
       }
     } on SignInWithAppleAuthorizationException catch (e) {
       log('SignInWithAppleAuthorizationException: ${e.code} - ${e.message}');
-      // ADDED: Specific catch for Apple Sign In Authorization exceptions
-      // This is the error you were originally seeing. Handle it gracefully.
 
       String displayMessage = "Sign in with Apple failed.";
       if (e.code == AuthorizationErrorCode.canceled) {
@@ -189,29 +171,33 @@ class FirebaseRepo implements AccountRepo {
         displayMessage =
             "An unknown error occurred with Apple Sign-In. Please try again.";
       }
-      AppSnackBar.showError(context, displayMessage);
-      return false; // ADDED: Return false
+      if (context.mounted) {
+        AppSnackBar.showError(context, displayMessage);
+      }
+      return false;
     } on FirebaseAuthException catch (e) {
-      // ADDED: Specific catch for Firebase Auth exceptions
-
-      AppSnackBar.showError(
-        context,
-        "Firebase authentication failed with Apple Sign-In: ${e.message}",
-      );
-      return false; // ADDED: Return false
+      if (context.mounted) {
+        AppSnackBar.showError(
+          context,
+          "Firebase authentication failed with Apple Sign-In: ${e.message}",
+        );
+      }
+      return false;
     } catch (e) {
       log('Unexpected error in signInWithApple: $e');
       log('Error type: ${e.runtimeType}');
-      AppSnackBar.showError(
-        context,
-        "An unexpected error occurred during Apple Sign-In!",
-      );
-      return false; // MODIFIED: Return false on other errors
+      if (context.mounted) {
+        AppSnackBar.showError(
+          context,
+          "An unexpected error occurred during Apple Sign-In!",
+        );
+      }
+      return false;
     }
   }
 
   @override
-  Future<bool> signInWithGooogle(context) async {
+  Future<bool> signInWithGooogle(BuildContext context) async {
     try {
       // Start Google Sign In flow
       final GoogleSignInAccount? googleSignInAccount =
@@ -251,8 +237,6 @@ class FirebaseRepo implements AccountRepo {
       final User? user = userCredential.user;
 
       if (user != null) {
-        // Navigate to the home screen
-        // GoRouter.of(context).pushReplacementNamed(AppRoute.mainView.name);
         return true;
       } else {
         return false;
@@ -271,7 +255,7 @@ class FirebaseRepo implements AccountRepo {
   }
 
   @override
-  Future<UserCredential> signUpWithGoogle(context) async {
+  Future<UserCredential> signUpWithGoogle(BuildContext context) async {
     try {
       // Trigger the Google Sign In flow
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
@@ -284,22 +268,19 @@ class FirebaseRepo implements AccountRepo {
       final email = googleUser.email;
       try {
         // Call the Cloud Function via HTTP to check if user exists
-        const functionUrl = 'https://us-central1-math-homework-ai.cloudfunctions.net/checkGoogleUserExists';
-        
+        const functionUrl =
+            'https://us-central1-math-homework-ai.cloudfunctions.net/checkGoogleUserExists';
+
         final response = await http.post(
           Uri.parse(functionUrl),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: json.encode({
-            'email': email,
-          }),
+          headers: {'Content-Type': 'application/json'},
+          body: json.encode({'email': email}),
         );
-        
+
         if (response.statusCode == 200) {
           final data = json.decode(response.body);
           final bool userExists = data['exists'] ?? false;
-          
+
           if (userExists) {
             // User already exists - show the message
             await _googleSignIn.signOut();
@@ -352,7 +333,6 @@ class FirebaseRepo implements AccountRepo {
           throw Exception('Failed to save user data: $firestoreError');
         }
 
-        // _signUpWithGoogleSuccess = true;
         return userCredential;
       } catch (authError) {
         throw Exception('Authentication failed: $authError');
@@ -365,7 +345,7 @@ class FirebaseRepo implements AccountRepo {
   }
 
   @override
-  Future<UserCredential> signUpWithApple(context) async {
+  Future<UserCredential> signUpWithApple(BuildContext context) async {
     try {
       final appleCredential = await SignInWithApple.getAppleIDCredential(
         scopes: [
@@ -379,22 +359,19 @@ class FirebaseRepo implements AccountRepo {
       if (appleId != null) {
         try {
           // Call the Cloud Function via HTTP to check if user exists
-          const functionUrl = 'https://us-central1-math-homework-ai.cloudfunctions.net/checkAppleUserExists';
-          
+          const functionUrl =
+              'https://us-central1-math-homework-ai.cloudfunctions.net/checkAppleUserExists';
+
           final response = await http.post(
             Uri.parse(functionUrl),
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: json.encode({
-              'appleId': appleId,
-            }),
+            headers: {'Content-Type': 'application/json'},
+            body: json.encode({'appleId': appleId}),
           );
-          
+
           if (response.statusCode == 200) {
             final data = json.decode(response.body);
             final bool userExists = data['exists'] ?? false;
-            
+
             if (userExists) {
               // User already exists - show the message
               if (context.mounted) {
@@ -436,8 +413,6 @@ class FirebaseRepo implements AccountRepo {
         'isSubscribed': false, // Free subscription
         'createdAt': DateTime.now(),
       });
-
-      // _signUpWithAppleSuccess = true;
 
       return userCredential;
     } catch (e) {
@@ -482,7 +457,9 @@ class FirebaseRepo implements AccountRepo {
       }
 
       // Show error message
-      AppSnackBar.showError(context, errorMessage);
+      if (context.mounted) {
+        AppSnackBar.showError(context, errorMessage);
+      }
     }
     return Future.error('An error occurred while signing up with Apple.');
   }
@@ -492,7 +469,7 @@ class FirebaseRepo implements AccountRepo {
     String fullName,
     String email,
     String password,
-    context,
+    BuildContext context,
   ) async {
     try {
       UserCredential userCredential = await _auth
@@ -513,46 +490,43 @@ class FirebaseRepo implements AccountRepo {
       User? user = userCredential.user;
       if (user != null && !user.emailVerified) {
         // Send an email verification if the user is created successfully and email is not verified
-        // Note: This uses standard email verification, not email link authentication
-        // Firebase Dynamic Links deprecation (Aug 2025) doesn't affect this implementation
         await user.sendEmailVerification();
-        
+
         // Sign out the user so they can't access the app until email is verified
         await _auth.signOut();
-        
+
         // Show a message to inform the user
-        AppSnackBar.showSuccess(
-          context,
-          "Verification email has been sent. Please check your inbox and verify your email before signing in.",
-        );
+        if (context.mounted) {
+          AppSnackBar.showSuccess(
+            context,
+            "Verification email has been sent. Please check your inbox and verify your email before signing in.",
+          );
+        }
       }
 
-      // _success = true;
-      return true; // Return true for successful sign-up
-
-      // return userCredential;
+      return true;
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'weak-password') {
-        // Show error message
-        AppSnackBar.showError(context, "The password provided is too weak.");
-      } else if (e.code == 'email-already-in-use') {
-        // Show error message
-        AppSnackBar.showError(
-          context,
-          "The account already exists for that email.",
-        );
-      } else {
-        // Show generic error message for other Firebase errors
-        AppSnackBar.showError(
-          context,
-          "An authentication error occurred. Please try again.",
-        );
+      if (context.mounted) {
+        if (e.code == 'weak-password') {
+          AppSnackBar.showError(context, "The password provided is too weak.");
+        } else if (e.code == 'email-already-in-use') {
+          AppSnackBar.showError(
+            context,
+            "The account already exists for that email.",
+          );
+        } else {
+          AppSnackBar.showError(
+            context,
+            "An authentication error occurred. Please try again.",
+          );
+        }
       }
-      return false; // Return false for any FirebaseAuthException
+      return false;
     } catch (e) {
-      // Show error message
-      AppSnackBar.showError(context, "An error occurred while signing up.");
-      return false; // Return false for any other error
+      if (context.mounted) {
+        AppSnackBar.showError(context, "An error occurred while signing up.");
+      }
+      return false;
     }
   }
 
@@ -562,35 +536,35 @@ class FirebaseRepo implements AccountRepo {
   }
 
   @override
-  Future<void> resetPassword(context, String email) async {
+  Future<void> resetPassword(BuildContext context, String email) async {
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-      // Show a message to the user indicating that the email was sent
 
-      AppSnackBar.showInfo(
-        context,
-        "Password reset email will be sent to your email if the email exist in our system. Check your inbox.",
-      );
-
-      // _success = true;
+      if (context.mounted) {
+        AppSnackBar.showInfo(
+          context,
+          "Password reset email will be sent to your email if the email exist in our system. Check your inbox.",
+        );
+      }
     } on FirebaseAuthException catch (e) {
-      // Handle errors, such as invalid email
-
-      AppSnackBar.showError(
-        context,
-        "Failed to send password reset email: ${e.message}",
-      );
+      if (context.mounted) {
+        AppSnackBar.showError(
+          context,
+          "Failed to send password reset email: ${e.message}",
+        );
+      }
     } catch (e) {
-      // Handle any other errors
-      AppSnackBar.showError(
-        context,
-        "An unexpected error occurred. Please try again.",
-      );
+      if (context.mounted) {
+        AppSnackBar.showError(
+          context,
+          "An unexpected error occurred. Please try again.",
+        );
+      }
     }
   }
 
   @override
-  Future<void> deleteUserWithHisData(context) async {
+  Future<void> deleteUserWithHisData(BuildContext context) async {
     try {
       final user = FirebaseAuth.instance.currentUser;
 

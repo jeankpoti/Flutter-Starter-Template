@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -447,7 +446,6 @@ class StudyCubit extends Cubit<StudyState> {
         documentBytes = await _documentService.processPdfFile(file);
       }
 
-      debugPrint('StudyCubit: About to analyze material with type: $type');
       // Analyze the material
       final studyMaterial = await _studyPlanService.analyzeMaterial(
         materialId: materialId,
@@ -497,15 +495,12 @@ class StudyCubit extends Cubit<StudyState> {
       if (!isClosed) {
         String errorMessage = 'Error processing material: $e';
 
-        debugPrint('StudyCubit: Error processing material: $e');
-        debugPrint('StudyCubit: Error type: ${e.runtimeType}');
-        debugPrint('StudyCubit: Material type: $type');
+        // Error processing material
 
         // Check if it's a non-math content error and localize it
         if (e.toString().contains('does not contain mathematical material') ||
             e.toString().contains('ne contient pas de matériel mathématique') ||
             e.toString().contains('no contiene material matemático')) {
-          debugPrint('StudyCubit: Non-math content error detected');
           // We need BuildContext to get localized strings
           // For now, we'll use the error message as is
           // The UI layer should handle localization when displaying this error
@@ -517,7 +512,6 @@ class StudyCubit extends Cubit<StudyState> {
           } else {
             errorMessage = 'NON_MATH_CONTENT_ERROR';
           }
-          debugPrint('StudyCubit: Setting error message to: $errorMessage');
         }
 
         emit(

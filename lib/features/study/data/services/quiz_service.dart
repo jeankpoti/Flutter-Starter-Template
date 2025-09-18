@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import '../../../solve_math/data/repository/gemini_solve_math_repo.dart';
 import '../../../settings/data/preferences_service.dart';
 import '../../../settings/domain/models/math_level.dart';
@@ -26,7 +25,7 @@ class QuizService {
     // Only assign if not already assigned
     _geminiService ??= GeminiSolveMathRepo();
     _quizRepository ??= QuizRepository();
-    
+
     // Only initialize if not already initialized
     if (!_geminiService!.isInitialized) {
       await _geminiService!.initialize();
@@ -48,7 +47,7 @@ class QuizService {
 
     // Combine material content for AI analysis
     final combinedContent = _combineMaterialsContent(materials);
-    
+
     // Generate questions using AI
     final questions = await _generateQuestionsFromContent(
       content: combinedContent,
@@ -90,7 +89,7 @@ class QuizService {
 
     // Use specific topics or all topics from study plan
     final topicsToUse = specificTopics ?? studyPlan.topics;
-    
+
     // Generate questions from topics
     final questions = await _generateQuestionsFromTopics(
       topics: topicsToUse,
@@ -134,7 +133,7 @@ class QuizService {
 
     final response = await _geminiService!.generateTextContent(prompt);
     final questionText = response.text ?? '';
-    
+
     return _parseQuestionsFromAIResponse(questionText, locale);
   }
 
@@ -147,7 +146,7 @@ class QuizService {
     required int questionCount,
   }) async {
     final topicsContent = _combineTopicsContent(topics);
-    
+
     return _generateQuestionsFromContent(
       content: topicsContent,
       mathLevel: mathLevel,
@@ -158,32 +157,44 @@ class QuizService {
   }
 
   /// Parse AI response into quiz questions
-  List<QuizQuestion> _parseQuestionsFromAIResponse(String response, String locale) {
+  List<QuizQuestion> _parseQuestionsFromAIResponse(
+    String response,
+    String locale,
+  ) {
     final questions = <QuizQuestion>[];
     // Support English, French, and Spanish question headers
-    final questionBlocks = response.split(RegExp(r'(QUESTION \d+:|QUESTION \d+ :|PREGUNTA \d+:)'));
-    
+    final questionBlocks = response.split(
+      RegExp(r'(QUESTION \d+:|QUESTION \d+ :|PREGUNTA \d+:)'),
+    );
+
     for (int i = 1; i < questionBlocks.length; i++) {
       final block = questionBlocks[i].trim();
       if (block.isEmpty) continue;
-      
+
       try {
         final question = _parseQuestionBlock(block, i, locale);
         if (question != null) {
           questions.add(question);
         }
-      } catch (e) {
-        debugPrint('Error parsing question block $i: $e');
-      }
+      } catch (e) {}
     }
-    
+
     return questions;
   }
 
   /// Parse individual question block
-  QuizQuestion? _parseQuestionBlock(String block, int questionNumber, String locale) {
-    final lines = block.split('\n').map((line) => line.trim()).where((line) => line.isNotEmpty).toList();
-    
+  QuizQuestion? _parseQuestionBlock(
+    String block,
+    int questionNumber,
+    String locale,
+  ) {
+    final lines =
+        block
+            .split('\n')
+            .map((line) => line.trim())
+            .where((line) => line.isNotEmpty)
+            .toList();
+
     QuestionType? type;
     String questionText = '';
     List<QuizAnswer> answers = [];
@@ -191,13 +202,13 @@ class QuizService {
     String? explanation;
     List<String> topics = [];
     int points = 1;
-    
+
     String? correctAnswer;
     List<String> options = [];
-    
+
     for (int i = 0; i < lines.length; i++) {
       final line = lines[i];
-      
+
       if (line.startsWith('Type:')) {
         final typeStr = line.replaceFirst('Type:', '').trim();
         type = _parseQuestionType(typeStr);
@@ -219,16 +230,20 @@ class QuizService {
         explanation = line.replaceFirst('Explanation:', '').trim();
       } else if (line.startsWith('Topics:')) {
         final topicsStr = line.replaceFirst('Topics:', '').trim();
-        topics = topicsStr.split(',').map((t) => t.trim().replaceAll('[', '').replaceAll(']', '')).toList();
+        topics =
+            topicsStr
+                .split(',')
+                .map((t) => t.trim().replaceAll('[', '').replaceAll(']', ''))
+                .toList();
       } else if (line.startsWith('Points:')) {
         points = int.tryParse(line.replaceFirst('Points:', '').trim()) ?? 1;
       }
     }
-    
+
     if (type == null || questionText.isEmpty) {
       return null;
     }
-    
+
     // Create answers based on question type
     switch (type) {
       case QuestionType.multipleChoice:
@@ -238,13 +253,16 @@ class QuizService {
       case QuestionType.shortAnswer:
       case QuestionType.fillInTheBlank:
         // For text-based questions, ensure we don't use letter-based answers
-        if (correctAnswer != null && correctAnswer.length == 1 && RegExp(r'^[A-D]$').hasMatch(correctAnswer) && options.isNotEmpty) {
+        if (correctAnswer != null &&
+            correctAnswer.length == 1 &&
+            RegExp(r'^[A-D]$').hasMatch(correctAnswer) &&
+            options.isNotEmpty) {
           // This looks like a multiple choice answer that was incorrectly labeled as short answer
           // Try to extract the actual answer from the options
-          final letterIndex = correctAnswer.codeUnitAt(0) - 65; // A=0, B=1, C=2, D=3
+          final letterIndex =
+              correctAnswer.codeUnitAt(0) - 65; // A=0, B=1, C=2, D=3
           if (letterIndex >= 0 && letterIndex < options.length) {
             correctAnswerId = options[letterIndex];
-            debugPrint('Warning: Converting multiple choice answer "$correctAnswer" to actual answer: "${correctAnswerId}"');
           } else {
             correctAnswerId = correctAnswer;
           }
@@ -258,7 +276,7 @@ class QuizService {
         correctAnswerId = answers.firstWhere((a) => a.isCorrect).id;
         break;
     }
-    
+
     return QuizQuestion(
       id: _generateId(),
       questionText: questionText,
@@ -288,21 +306,23 @@ class QuizService {
   }
 
   /// Create multiple choice answers
-  List<QuizAnswer> _createMultipleChoiceAnswers(List<String> options, String? correctAnswer) {
+  List<QuizAnswer> _createMultipleChoiceAnswers(
+    List<String> options,
+    String? correctAnswer,
+  ) {
     final answers = <QuizAnswer>[];
-    
+
     for (int i = 0; i < options.length; i++) {
       final option = options[i];
       final optionLetter = String.fromCharCode(65 + i); // A, B, C, D
-      final isCorrect = correctAnswer == optionLetter || correctAnswer == option;
-      
-      answers.add(QuizAnswer(
-        id: _generateId(),
-        text: option,
-        isCorrect: isCorrect,
-      ));
+      final isCorrect =
+          correctAnswer == optionLetter || correctAnswer == option;
+
+      answers.add(
+        QuizAnswer(id: _generateId(), text: option, isCorrect: isCorrect),
+      );
     }
-    
+
     return answers;
   }
 
@@ -310,12 +330,16 @@ class QuizService {
   bool _isTrueAnswer(String? answer, String locale) {
     if (answer == null) return false;
     final lowerAnswer = answer.toLowerCase().trim();
-    
+
     switch (locale) {
       case 'fr':
-        return lowerAnswer == 'true' || lowerAnswer == 'vrai' || lowerAnswer == 'v';
+        return lowerAnswer == 'true' ||
+            lowerAnswer == 'vrai' ||
+            lowerAnswer == 'v';
       case 'es':
-        return lowerAnswer == 'true' || lowerAnswer == 'verdadero' || lowerAnswer == 'v';
+        return lowerAnswer == 'true' ||
+            lowerAnswer == 'verdadero' ||
+            lowerAnswer == 'v';
       default:
         return lowerAnswer == 'true' || lowerAnswer == 't';
     }
@@ -325,7 +349,7 @@ class QuizService {
   List<QuizAnswer> _createTrueFalseAnswers(bool correctIsTrue, String locale) {
     String trueText = 'True';
     String falseText = 'False';
-    
+
     switch (locale) {
       case 'fr':
         trueText = 'Vrai';
@@ -339,18 +363,10 @@ class QuizService {
         trueText = 'True';
         falseText = 'False';
     }
-    
+
     return [
-      QuizAnswer(
-        id: _generateId(),
-        text: trueText,
-        isCorrect: correctIsTrue,
-      ),
-      QuizAnswer(
-        id: _generateId(),
-        text: falseText,
-        isCorrect: !correctIsTrue,
-      ),
+      QuizAnswer(id: _generateId(), text: trueText, isCorrect: correctIsTrue),
+      QuizAnswer(id: _generateId(), text: falseText, isCorrect: !correctIsTrue),
     ];
   }
 
@@ -362,7 +378,7 @@ class QuizService {
     String? textAnswer,
   }) {
     bool isCorrect = false;
-    
+
     switch (question.type) {
       case QuestionType.multipleChoice:
       case QuestionType.trueFalse:
@@ -370,12 +386,17 @@ class QuizService {
         break;
       case QuestionType.shortAnswer:
       case QuestionType.fillInTheBlank:
-        if (textAnswer != null && textAnswer.trim().isNotEmpty && question.correctAnswerId != null) {
-          isCorrect = _compareTextAnswers(textAnswer, question.correctAnswerId!);
+        if (textAnswer != null &&
+            textAnswer.trim().isNotEmpty &&
+            question.correctAnswerId != null) {
+          isCorrect = _compareTextAnswers(
+            textAnswer,
+            question.correctAnswerId!,
+          );
         }
         break;
     }
-    
+
     return UserQuizAnswer(
       questionId: questionId,
       selectedAnswerId: selectedAnswerId,
@@ -391,18 +412,23 @@ class QuizService {
     required UserQuizAnswer answer,
   }) {
     // Remove any existing answer for this question
-    final updatedAnswers = quiz.userAnswers
-        .where((ua) => ua.questionId != answer.questionId)
-        .toList();
-    
+    final updatedAnswers =
+        quiz.userAnswers
+            .where((ua) => ua.questionId != answer.questionId)
+            .toList();
+
     // Add the new answer
     updatedAnswers.add(answer);
-    
+
     // Calculate progress and status
     final isCompleted = updatedAnswers.length == quiz.questions.length;
-    final newScore = isCompleted ? _calculateQuizScore(quiz.questions, updatedAnswers) : null;
-    final newStatus = isCompleted ? QuizStatus.completed : QuizStatus.inProgress;
-    
+    final newScore =
+        isCompleted
+            ? _calculateQuizScore(quiz.questions, updatedAnswers)
+            : null;
+    final newStatus =
+        isCompleted ? QuizStatus.completed : QuizStatus.inProgress;
+
     return quiz.copyWith(
       userAnswers: updatedAnswers,
       lastScore: newScore,
@@ -413,57 +439,70 @@ class QuizService {
   }
 
   /// Calculate quiz score based on correct answers
-  double _calculateQuizScore(List<QuizQuestion> questions, List<UserQuizAnswer> answers) {
+  double _calculateQuizScore(
+    List<QuizQuestion> questions,
+    List<UserQuizAnswer> answers,
+  ) {
     if (questions.isEmpty || answers.isEmpty) return 0.0;
-    
+
     int correctAnswers = answers.where((ua) => ua.isCorrect).length;
     return (correctAnswers / questions.length) * 100;
   }
 
   /// Get detailed question tracking for a quiz
   Map<String, dynamic> getQuestionTracking(Quiz quiz) {
-    final answeredQuestionIds = quiz.userAnswers.map((ua) => ua.questionId).toSet();
-    final unansweredQuestions = quiz.questions
-        .where((q) => !answeredQuestionIds.contains(q.id))
-        .toList();
-    
+    final answeredQuestionIds =
+        quiz.userAnswers.map((ua) => ua.questionId).toSet();
+    final unansweredQuestions =
+        quiz.questions
+            .where((q) => !answeredQuestionIds.contains(q.id))
+            .toList();
+
     final correctAnswers = quiz.userAnswers.where((ua) => ua.isCorrect).length;
     final incorrectAnswers = quiz.userAnswers.length - correctAnswers;
-    
+
     return {
       'totalQuestions': quiz.questions.length,
       'answeredCount': quiz.userAnswers.length,
       'unansweredCount': unansweredQuestions.length,
       'correctCount': correctAnswers,
       'incorrectCount': incorrectAnswers,
-      'completionPercentage': (quiz.userAnswers.length / quiz.questions.length) * 100,
-      'accuracyPercentage': quiz.userAnswers.isEmpty ? 0.0 : (correctAnswers / quiz.userAnswers.length) * 100,
+      'completionPercentage':
+          (quiz.userAnswers.length / quiz.questions.length) * 100,
+      'accuracyPercentage':
+          quiz.userAnswers.isEmpty
+              ? 0.0
+              : (correctAnswers / quiz.userAnswers.length) * 100,
       'unansweredQuestions': unansweredQuestions,
-      'answeredQuestions': quiz.questions
-          .where((q) => answeredQuestionIds.contains(q.id))
-          .toList(),
+      'answeredQuestions':
+          quiz.questions
+              .where((q) => answeredQuestionIds.contains(q.id))
+              .toList(),
     };
   }
 
   /// Get performance by question type
   Map<String, dynamic> getQuestionTypePerformance(List<Quiz> quizzes) {
     final typeStats = <QuestionType, Map<String, int>>{};
-    
+
     for (final quiz in quizzes) {
       for (final question in quiz.questions) {
         typeStats[question.type] ??= {'total': 0, 'correct': 0};
-        typeStats[question.type]!['total'] = typeStats[question.type]!['total']! + 1;
-        
-        final userAnswer = quiz.userAnswers
-            .where((ua) => ua.questionId == question.id)
-            .firstOrNull;
-        
+        typeStats[question.type]!['total'] =
+            typeStats[question.type]!['total']! + 1;
+
+        final userAnswer =
+            quiz.userAnswers
+                .where((ua) => ua.questionId == question.id)
+                .firstOrNull;
+
         if (userAnswer != null && userAnswer.isCorrect) {
-          typeStats[question.type]!['correct'] = typeStats[question.type]!['correct']! + 1;
+          typeStats[question.type]!['correct'] =
+              typeStats[question.type]!['correct']! + 1;
         }
       }
     }
-    
+
     final performance = <String, dynamic>{};
     for (final entry in typeStats.entries) {
       final total = entry.value['total']!;
@@ -474,31 +513,32 @@ class QuizService {
         'accuracy': total > 0 ? (correct / total) * 100 : 0.0,
       };
     }
-    
+
     return performance;
   }
 
   /// Get topic-based performance analysis
   Map<String, dynamic> getTopicPerformance(List<Quiz> quizzes) {
     final topicStats = <String, Map<String, int>>{};
-    
+
     for (final quiz in quizzes) {
       for (final question in quiz.questions) {
         for (final topic in question.relatedTopics) {
           topicStats[topic] ??= {'total': 0, 'correct': 0};
           topicStats[topic]!['total'] = topicStats[topic]!['total']! + 1;
-          
-          final userAnswer = quiz.userAnswers
-              .where((ua) => ua.questionId == question.id)
-              .firstOrNull;
-          
+
+          final userAnswer =
+              quiz.userAnswers
+                  .where((ua) => ua.questionId == question.id)
+                  .firstOrNull;
+
           if (userAnswer != null && userAnswer.isCorrect) {
             topicStats[topic]!['correct'] = topicStats[topic]!['correct']! + 1;
           }
         }
       }
     }
-    
+
     final performance = <String, dynamic>{};
     for (final entry in topicStats.entries) {
       final total = entry.value['total']!;
@@ -509,7 +549,7 @@ class QuizService {
         'accuracy': total > 0 ? (correct / total) * 100 : 0.0,
       };
     }
-    
+
     return performance;
   }
 
@@ -518,105 +558,125 @@ class QuizService {
     if (quiz.userAnswers.length < 2) {
       return {'averageTimePerQuestion': 0, 'timePattern': 'insufficient_data'};
     }
-    
-    final sortedAnswers = quiz.userAnswers.toList()
-      ..sort((a, b) => a.answeredAt.compareTo(b.answeredAt));
-    
+
+    final sortedAnswers =
+        quiz.userAnswers.toList()
+          ..sort((a, b) => a.answeredAt.compareTo(b.answeredAt));
+
     final timeDifferences = <Duration>[];
     for (int i = 1; i < sortedAnswers.length; i++) {
       timeDifferences.add(
         sortedAnswers[i].answeredAt.difference(sortedAnswers[i - 1].answeredAt),
       );
     }
-    
-    final averageTime = timeDifferences.isNotEmpty
-        ? timeDifferences.map((d) => d.inSeconds).reduce((a, b) => a + b) / timeDifferences.length
-        : 0;
-    
+
+    final averageTime =
+        timeDifferences.isNotEmpty
+            ? timeDifferences.map((d) => d.inSeconds).reduce((a, b) => a + b) /
+                timeDifferences.length
+            : 0;
+
     String pattern = 'steady';
     if (timeDifferences.isNotEmpty) {
       final firstHalf = timeDifferences.take(timeDifferences.length ~/ 2);
       final secondHalf = timeDifferences.skip(timeDifferences.length ~/ 2);
-      
-      final firstAvg = firstHalf.map((d) => d.inSeconds).reduce((a, b) => a + b) / firstHalf.length;
-      final secondAvg = secondHalf.map((d) => d.inSeconds).reduce((a, b) => a + b) / secondHalf.length;
-      
+
+      final firstAvg =
+          firstHalf.map((d) => d.inSeconds).reduce((a, b) => a + b) /
+          firstHalf.length;
+      final secondAvg =
+          secondHalf.map((d) => d.inSeconds).reduce((a, b) => a + b) /
+          secondHalf.length;
+
       if (secondAvg > firstAvg * 1.5) {
         pattern = 'slowing_down';
       } else if (secondAvg < firstAvg * 0.7) {
         pattern = 'speeding_up';
       }
     }
-    
+
     return {
       'averageTimePerQuestion': averageTime,
       'timePattern': pattern,
-      'totalTimeSpent': quiz.userAnswers.isNotEmpty && quiz.userAnswers.length > 1
-          ? sortedAnswers.last.answeredAt.difference(sortedAnswers.first.answeredAt).inMinutes
-          : 0,
+      'totalTimeSpent':
+          quiz.userAnswers.isNotEmpty && quiz.userAnswers.length > 1
+              ? sortedAnswers.last.answeredAt
+                  .difference(sortedAnswers.first.answeredAt)
+                  .inMinutes
+              : 0,
     };
   }
 
   /// Compare text answers with some tolerance
   bool _compareTextAnswers(String userAnswer, String correctAnswer) {
-    final userNormalized = userAnswer.toLowerCase().trim().replaceAll(RegExp(r'\s+'), ' ');
-    final correctNormalized = correctAnswer.toLowerCase().trim().replaceAll(RegExp(r'\s+'), ' ');
-    
+    final userNormalized = userAnswer.toLowerCase().trim().replaceAll(
+      RegExp(r'\s+'),
+      ' ',
+    );
+    final correctNormalized = correctAnswer.toLowerCase().trim().replaceAll(
+      RegExp(r'\s+'),
+      ' ',
+    );
+
     // Exact match
     if (userNormalized == correctNormalized) return true;
-    
+
     // For math expressions, remove spaces and check
     final userMath = userAnswer.replaceAll(RegExp(r'\s+'), '');
     final correctMath = correctAnswer.replaceAll(RegExp(r'\s+'), '');
     if (userMath.toLowerCase() == correctMath.toLowerCase()) return true;
-    
+
     // Handle common mathematical equivalents
     final userMathNormalized = _normalizeMathExpression(userMath.toLowerCase());
-    final correctMathNormalized = _normalizeMathExpression(correctMath.toLowerCase());
+    final correctMathNormalized = _normalizeMathExpression(
+      correctMath.toLowerCase(),
+    );
     if (userMathNormalized == correctMathNormalized) return true;
-    
+
     // Check if user answer contains the correct answer or vice versa
-    if (userNormalized.contains(correctNormalized) || correctNormalized.contains(userNormalized)) {
+    if (userNormalized.contains(correctNormalized) ||
+        correctNormalized.contains(userNormalized)) {
       return true;
     }
-    
+
     // Handle equations with variables (like "x=5" vs "5" vs "x = 5")
     if (_compareEquationAnswers(userAnswer, correctAnswer)) return true;
-    
+
     return false;
   }
 
   /// Normalize mathematical expressions for comparison
   String _normalizeMathExpression(String expression) {
     String normalized = expression
-        .replaceAll('×', '*')  // Normalize multiplication signs
-        .replaceAll('÷', '/')  // Normalize division
-        .replaceAll('−', '-')  // Normalize minus sign
-        .replaceAll(' ', '');  // Remove all spaces
-        
+        .replaceAll('×', '*') // Normalize multiplication signs
+        .replaceAll('÷', '/') // Normalize division
+        .replaceAll('−', '-') // Normalize minus sign
+        .replaceAll(' ', ''); // Remove all spaces
+
     // Handle algebraic expressions like "5x" vs "x*5" or "5*x"
     // Match patterns like "5x" and convert to standard form
     normalized = normalized.replaceAllMapped(
       RegExp(r'(\d+)([a-zA-Z])'),
-      (match) => '${match.group(1)}*${match.group(2)}'
+      (match) => '${match.group(1)}*${match.group(2)}',
     );
-    
-    // Handle patterns like "x5" and convert to "x*5"  
+
+    // Handle patterns like "x5" and convert to "x*5"
     normalized = normalized.replaceAllMapped(
       RegExp(r'([a-zA-Z])(\d+)'),
-      (match) => '${match.group(1)}*${match.group(2)}'
+      (match) => '${match.group(1)}*${match.group(2)}',
     );
-    
+
     // Sort multiplication terms alphabetically (e.g., "x*5" becomes "5*x")
     final parts = normalized.split('*');
     if (parts.length == 2) {
       final numbers = parts.where((p) => RegExp(r'^\d+$').hasMatch(p)).toList();
-      final variables = parts.where((p) => RegExp(r'^[a-zA-Z]+$').hasMatch(p)).toList();
+      final variables =
+          parts.where((p) => RegExp(r'^[a-zA-Z]+$').hasMatch(p)).toList();
       if (numbers.isNotEmpty && variables.isNotEmpty) {
         normalized = '${numbers.join('*')}*${variables.join('*')}';
       }
     }
-    
+
     return normalized;
   }
 
@@ -625,21 +685,23 @@ class QuizService {
     // Extract variable and value from equations like "y=5", "x=2", etc.
     final userParts = _extractEquationParts(userAnswer);
     final correctParts = _extractEquationParts(correctAnswer);
-    
+
     if (userParts != null && correctParts != null) {
       // Both have variable and value - check if they match exactly
-      return userParts['variable']?.toLowerCase() == correctParts['variable']?.toLowerCase() &&
-             userParts['value']?.toLowerCase() == correctParts['value']?.toLowerCase();
+      return userParts['variable']?.toLowerCase() ==
+              correctParts['variable']?.toLowerCase() &&
+          userParts['value']?.toLowerCase() ==
+              correctParts['value']?.toLowerCase();
     }
-    
+
     // If one is just a value and the other is an equation, check the values
     final userValue = _extractAnswerValue(userAnswer);
     final correctValue = _extractAnswerValue(correctAnswer);
-    
+
     if (userValue != null && correctValue != null) {
       return userValue.toLowerCase() == correctValue.toLowerCase();
     }
-    
+
     return false;
   }
 
@@ -659,26 +721,26 @@ class QuizService {
   String? _extractAnswerValue(String answer) {
     // Handle patterns like "x=5", "y = 5", "answer is 5", etc.
     final patterns = [
-      RegExp(r'[a-zA-Z]\s*=\s*([^,\s]+)'),  // x=5, y = 5
-      RegExp(r'is\s+([^,\s]+)'),            // answer is 5
-      RegExp(r'equals?\s+([^,\s]+)'),       // equals 5
-      RegExp(r'^([^=]+)$'),                 // just the value: 5
+      RegExp(r'[a-zA-Z]\s*=\s*([^,\s]+)'), // x=5, y = 5
+      RegExp(r'is\s+([^,\s]+)'), // answer is 5
+      RegExp(r'equals?\s+([^,\s]+)'), // equals 5
+      RegExp(r'^([^=]+)$'), // just the value: 5
     ];
-    
+
     for (final pattern in patterns) {
       final match = pattern.firstMatch(answer.trim());
       if (match != null && match.group(1) != null) {
         return match.group(1)!.trim();
       }
     }
-    
+
     return null;
   }
 
   /// Helper methods
   String _combineMaterialsContent(List<StudyMaterial> materials) {
     final buffer = StringBuffer();
-    
+
     for (final material in materials) {
       buffer.writeln('Material: ${material.title}');
       if (material.content != null) {
@@ -690,23 +752,25 @@ class QuizService {
       buffer.writeln('Topics: ${material.extractedTopics.join(", ")}');
       buffer.writeln('---');
     }
-    
+
     return buffer.toString();
   }
 
   String _combineTopicsContent(List<StudyTopic> topics) {
     final buffer = StringBuffer();
-    
+
     for (final topic in topics) {
       buffer.writeln('Topic: ${topic.title}');
       buffer.writeln('Description: ${topic.description}');
       buffer.writeln('Key Concepts: ${topic.keyConceptsList.join(", ")}');
       if (topic.practiceProblems.isNotEmpty) {
-        buffer.writeln('Practice Problems: ${topic.practiceProblems.join(", ")}');
+        buffer.writeln(
+          'Practice Problems: ${topic.practiceProblems.join(", ")}',
+        );
       }
       buffer.writeln('---');
     }
-    
+
     return buffer.toString();
   }
 
@@ -718,8 +782,8 @@ class QuizService {
   }
 
   String _generateId() {
-    return DateTime.now().millisecondsSinceEpoch.toString() + 
-           _random.nextInt(1000).toString();
+    return DateTime.now().millisecondsSinceEpoch.toString() +
+        _random.nextInt(1000).toString();
   }
 
   /// Save completed quiz to history
@@ -727,7 +791,6 @@ class QuizService {
     try {
       await _quizRepository!.saveQuiz(quiz);
     } catch (e) {
-      debugPrint('Error saving quiz to history: $e');
       rethrow;
     }
   }
@@ -737,7 +800,6 @@ class QuizService {
     try {
       await _quizRepository!.updateQuiz(quiz);
     } catch (e) {
-      debugPrint('Error updating quiz in history: $e');
       rethrow;
     }
   }
@@ -747,7 +809,6 @@ class QuizService {
     try {
       return await _quizRepository!.getUserQuizzes();
     } catch (e) {
-      debugPrint('Error fetching quiz history: $e');
       return [];
     }
   }
@@ -757,7 +818,6 @@ class QuizService {
     try {
       return await _quizRepository!.getQuizzesForMaterials(materialIds);
     } catch (e) {
-      debugPrint('Error fetching quizzes for materials: $e');
       return [];
     }
   }
@@ -767,7 +827,6 @@ class QuizService {
     try {
       return await _quizRepository!.getQuizStatistics();
     } catch (e) {
-      debugPrint('Error fetching quiz statistics: $e');
       return {
         'totalQuizzes': 0,
         'averageScore': 0.0,
@@ -781,11 +840,12 @@ class QuizService {
   }
 
   /// Get performance trends over time
-  Future<List<Map<String, dynamic>>> getPerformanceTrends({int days = 30}) async {
+  Future<List<Map<String, dynamic>>> getPerformanceTrends({
+    int days = 30,
+  }) async {
     try {
       return await _quizRepository!.getPerformanceTrends(days: days);
     } catch (e) {
-      debugPrint('Error fetching performance trends: $e');
       return [];
     }
   }
@@ -795,7 +855,6 @@ class QuizService {
     try {
       await _quizRepository!.deleteQuiz(quizId);
     } catch (e) {
-      debugPrint('Error deleting quiz from history: $e');
       rethrow;
     }
   }
@@ -804,9 +863,7 @@ class QuizService {
   Future<void> saveQuizProgress(Quiz quiz) async {
     try {
       await _quizRepository!.updateQuiz(quiz);
-      debugPrint('Quiz progress saved: ${quiz.id}');
     } catch (e) {
-      debugPrint('Error saving quiz progress: $e');
       rethrow;
     }
   }
@@ -817,53 +874,64 @@ class QuizService {
     int totalAnswered = 0;
     int totalCorrect = 0;
     int totalIncorrect = 0;
-    
+
     final questionTypeBreakdown = <String, Map<String, int>>{};
     final topicBreakdown = <String, Map<String, int>>{};
     final timePatterns = <String, int>{};
-    
+
     for (final quiz in quizzes) {
       totalQuestions += quiz.questions.length;
       totalAnswered += quiz.userAnswers.length;
       totalCorrect += quiz.userAnswers.where((ua) => ua.isCorrect).length;
       totalIncorrect += quiz.userAnswers.where((ua) => !ua.isCorrect).length;
-      
+
       // Track question type performance
       for (final question in quiz.questions) {
         final type = question.type.name;
-        questionTypeBreakdown[type] ??= {'total': 0, 'answered': 0, 'correct': 0};
-        questionTypeBreakdown[type]!['total'] = questionTypeBreakdown[type]!['total']! + 1;
-        
-        final userAnswer = quiz.userAnswers
-            .where((ua) => ua.questionId == question.id)
-            .firstOrNull;
-        
+        questionTypeBreakdown[type] ??= {
+          'total': 0,
+          'answered': 0,
+          'correct': 0,
+        };
+        questionTypeBreakdown[type]!['total'] =
+            questionTypeBreakdown[type]!['total']! + 1;
+
+        final userAnswer =
+            quiz.userAnswers
+                .where((ua) => ua.questionId == question.id)
+                .firstOrNull;
+
         if (userAnswer != null) {
-          questionTypeBreakdown[type]!['answered'] = questionTypeBreakdown[type]!['answered']! + 1;
+          questionTypeBreakdown[type]!['answered'] =
+              questionTypeBreakdown[type]!['answered']! + 1;
           if (userAnswer.isCorrect) {
-            questionTypeBreakdown[type]!['correct'] = questionTypeBreakdown[type]!['correct']! + 1;
+            questionTypeBreakdown[type]!['correct'] =
+                questionTypeBreakdown[type]!['correct']! + 1;
           }
         }
-        
+
         // Track topic performance
         for (final topic in question.relatedTopics) {
           topicBreakdown[topic] ??= {'total': 0, 'answered': 0, 'correct': 0};
-          topicBreakdown[topic]!['total'] = topicBreakdown[topic]!['total']! + 1;
-          
+          topicBreakdown[topic]!['total'] =
+              topicBreakdown[topic]!['total']! + 1;
+
           if (userAnswer != null) {
-            topicBreakdown[topic]!['answered'] = topicBreakdown[topic]!['answered']! + 1;
+            topicBreakdown[topic]!['answered'] =
+                topicBreakdown[topic]!['answered']! + 1;
             if (userAnswer.isCorrect) {
-              topicBreakdown[topic]!['correct'] = topicBreakdown[topic]!['correct']! + 1;
+              topicBreakdown[topic]!['correct'] =
+                  topicBreakdown[topic]!['correct']! + 1;
             }
           }
         }
       }
-      
+
       // Track time patterns
       final timePattern = getAnswerTimePatterns(quiz)['timePattern'] as String;
       timePatterns[timePattern] = (timePatterns[timePattern] ?? 0) + 1;
     }
-    
+
     return {
       'overall': {
         'totalQuestions': totalQuestions,
@@ -871,8 +939,10 @@ class QuizService {
         'totalCorrect': totalCorrect,
         'totalIncorrect': totalIncorrect,
         'unanswered': totalQuestions - totalAnswered,
-        'overallAccuracy': totalAnswered > 0 ? (totalCorrect / totalAnswered) * 100 : 0.0,
-        'completionRate': totalQuestions > 0 ? (totalAnswered / totalQuestions) * 100 : 0.0,
+        'overallAccuracy':
+            totalAnswered > 0 ? (totalCorrect / totalAnswered) * 100 : 0.0,
+        'completionRate':
+            totalQuestions > 0 ? (totalAnswered / totalQuestions) * 100 : 0.0,
       },
       'questionTypeBreakdown': questionTypeBreakdown,
       'topicBreakdown': topicBreakdown,
@@ -881,9 +951,12 @@ class QuizService {
   }
 
   /// Get questions that need review (frequently answered incorrectly)
-  List<Map<String, dynamic>> getQuestionsNeedingReview(List<Quiz> quizzes, {double threshold = 50.0}) {
+  List<Map<String, dynamic>> getQuestionsNeedingReview(
+    List<Quiz> quizzes, {
+    double threshold = 50.0,
+  }) {
     final questionPerformance = <String, Map<String, dynamic>>{};
-    
+
     for (final quiz in quizzes) {
       for (final question in quiz.questions) {
         if (!questionPerformance.containsKey(question.id)) {
@@ -895,11 +968,12 @@ class QuizService {
             'type': question.type.name,
           };
         }
-        
-        final userAnswer = quiz.userAnswers
-            .where((ua) => ua.questionId == question.id)
-            .firstOrNull;
-        
+
+        final userAnswer =
+            quiz.userAnswers
+                .where((ua) => ua.questionId == question.id)
+                .firstOrNull;
+
         if (userAnswer != null) {
           questionPerformance[question.id]!['totalAttempts']++;
           if (userAnswer.isCorrect) {
@@ -908,14 +982,14 @@ class QuizService {
         }
       }
     }
-    
+
     final needReview = <Map<String, dynamic>>[];
-    
+
     for (final entry in questionPerformance.entries) {
       final data = entry.value;
       final totalAttempts = data['totalAttempts'] as int;
       final correctAttempts = data['correctAttempts'] as int;
-      
+
       if (totalAttempts > 0) {
         final accuracy = (correctAttempts / totalAttempts) * 100;
         if (accuracy < threshold) {
@@ -931,10 +1005,12 @@ class QuizService {
         }
       }
     }
-    
+
     // Sort by worst performance first
-    needReview.sort((a, b) => (a['accuracy'] as double).compareTo(b['accuracy'] as double));
-    
+    needReview.sort(
+      (a, b) => (a['accuracy'] as double).compareTo(b['accuracy'] as double),
+    );
+
     return needReview;
   }
 
@@ -949,11 +1025,11 @@ class QuizService {
         'recommendations': <String>[],
       };
     }
-    
+
     final topicPerformance = getTopicPerformance(quizzes);
     final strongTopics = <String>[];
     final weakTopics = <String>[];
-    
+
     for (final entry in topicPerformance.entries) {
       final accuracy = entry.value['accuracy'] as double;
       if (accuracy >= 80) {
@@ -962,22 +1038,24 @@ class QuizService {
         weakTopics.add(entry.key);
       }
     }
-    
+
     // Analyze trends (compare recent vs older performance)
     final recentQuizzes = quizzes.take(quizzes.length ~/ 2).toList();
     final olderQuizzes = quizzes.skip(quizzes.length ~/ 2).toList();
-    
+
     final recentTopicPerformance = getTopicPerformance(recentQuizzes);
     final olderTopicPerformance = getTopicPerformance(olderQuizzes);
-    
+
     final improvingTopics = <String>[];
     final strugglingTopics = <String>[];
-    
+
     for (final topic in recentTopicPerformance.keys) {
       if (olderTopicPerformance.containsKey(topic)) {
-        final recentAccuracy = recentTopicPerformance[topic]!['accuracy'] as double;
-        final olderAccuracy = olderTopicPerformance[topic]!['accuracy'] as double;
-        
+        final recentAccuracy =
+            recentTopicPerformance[topic]!['accuracy'] as double;
+        final olderAccuracy =
+            olderTopicPerformance[topic]!['accuracy'] as double;
+
         if (recentAccuracy > olderAccuracy + 10) {
           improvingTopics.add(topic);
         } else if (recentAccuracy < olderAccuracy - 10) {
@@ -985,19 +1063,25 @@ class QuizService {
         }
       }
     }
-    
+
     // Generate recommendations
     final recommendations = <String>[];
     if (weakTopics.isNotEmpty) {
-      recommendations.add('Focus on reviewing ${weakTopics.take(3).join(", ")} concepts');
+      recommendations.add(
+        'Focus on reviewing ${weakTopics.take(3).join(", ")} concepts',
+      );
     }
     if (strugglingTopics.isNotEmpty) {
-      recommendations.add('Practice more ${strugglingTopics.take(2).join(" and ")} problems');
+      recommendations.add(
+        'Practice more ${strugglingTopics.take(2).join(" and ")} problems',
+      );
     }
     if (strongTopics.isNotEmpty) {
-      recommendations.add('Great work on ${strongTopics.take(2).join(" and ")}! Keep it up');
+      recommendations.add(
+        'Great work on ${strongTopics.take(2).join(" and ")}! Keep it up',
+      );
     }
-    
+
     return {
       'strongTopics': strongTopics,
       'weakTopics': weakTopics,
