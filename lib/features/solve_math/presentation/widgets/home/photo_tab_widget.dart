@@ -92,7 +92,7 @@ class PhotoTabWidget extends StatelessWidget {
                       ),
 
                     // Loading overlay
-                    if (imageCaptureState.isLoading || state.isIdentifying)
+                    if (imageCaptureState.isLoading || state.isIdentifying || state.isShowingAd)
                       Container(
                         decoration: BoxDecoration(
                           color: Theme.of(
@@ -110,13 +110,11 @@ class PhotoTabWidget extends StatelessWidget {
                               ),
                               const SizedBox(height: _spacing4),
                               BodyMediumText(
-                                state.isIdentifying
-                                    ? AppLocalizations.of(
-                                      context,
-                                    )!.analyzingProblem
-                                    : AppLocalizations.of(
-                                      context,
-                                    )!.processingImage,
+                                state.isShowingAd
+                                    ? AppLocalizations.of(context)!.loadingAd
+                                    : state.isIdentifying
+                                        ? AppLocalizations.of(context)!.analyzingProblem
+                                        : AppLocalizations.of(context)!.processingImage,
                                 color: Theme.of(context).colorScheme.primary,
                                 fontWeight: FontWeight.w500,
                               ),

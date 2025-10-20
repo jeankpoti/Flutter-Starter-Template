@@ -547,7 +547,7 @@ abstract class AppLocalizations {
   /// No description provided for @rateUs.
   ///
   /// In en, this message translates to:
-  /// **'Rate Us'**
+  /// **'Love MathGenie AI? Rate us on the App Store!'**
   String get rateUs;
 
   /// No description provided for @shareWithFriends.
@@ -3519,6 +3519,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Premium subscription required for AI flashcard generation.'**
   String get premiumSubscriptionRequired;
+
+  /// No description provided for @watchAdToSeeSolution.
+  ///
+  /// In en, this message translates to:
+  /// **'Watch Ad to See Solution'**
+  String get watchAdToSeeSolution;
+
+  /// No description provided for @loadingAd.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading ad...'**
+  String get loadingAd;
+
+  /// No description provided for @adFailedToLoad.
+  ///
+  /// In en, this message translates to:
+  /// **'Ad failed to load. Please try again.'**
+  String get adFailedToLoad;
+
+  /// No description provided for @watchAdFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Please watch the ad to see your solution'**
+  String get watchAdFirst;
+
+  /// No description provided for @adLoadingPleaseWait.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading ad, please wait...'**
+  String get adLoadingPleaseWait;
+
+  /// No description provided for @skipAdsForever.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip ads forever with Premium'**
+  String get skipAdsForever;
+
+  /// No description provided for @processingAfterAd.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing your solution...'**
+  String get processingAfterAd;
 
   /// No description provided for @unableToVerifySubscription.
   ///

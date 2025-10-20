@@ -182,10 +182,13 @@ class _HomePageState extends State<HomePage>
   }
 
   void _solveMath({File? imageFile, String? textInput}) {
+    // Check subscription status
+    final isSubscribed = context.read<SubscriptionCubit>().state.isSubscribed;
+    
     if (imageFile != null) {
-      context.read<SolveMathCubit>().solveMath(imageFile);
+      context.read<SolveMathCubit>().solveMath(imageFile, isSubscribed: isSubscribed);
     } else if (textInput != null) {
-      context.read<SolveMathCubit>().solveMath(textInput);
+      context.read<SolveMathCubit>().solveMath(textInput, isSubscribed: isSubscribed);
     }
   }
 
@@ -291,6 +294,24 @@ class _HomePageState extends State<HomePage>
                     AppLocalizations.of(context)!.mathSolvingError,
                     isError: true,
                   );
+                }
+                
+                // Handle ad-related error messages
+                if (state.errorMsg != null) {
+                  String message;
+                  switch (state.errorMsg) {
+                    case 'adFailedToLoad':
+                      message = AppLocalizations.of(context)!.adFailedToLoad;
+                      break;
+                    case 'watchAdFirst':
+                      message = AppLocalizations.of(context)!.watchAdFirst;
+                      break;
+                    default:
+                      message = state.errorMsg!;
+                  }
+                  _showSnackBarMessage(message, isError: true);
+                  // Clear the error after showing it
+                  context.read<SolveMathCubit>().clearError();
                 }
               },
             ),
@@ -400,7 +421,10 @@ class _HomePageState extends State<HomePage>
                                         .read<SolveMathCubit>()
                                         .emptyResult();
                                   },
-                                  onSolvePressed: _handleSubscriptionAndSolve,
+                                  onSolvePressed: () async {
+                                    final imageFile = context.read<ImageCaptureCubit>().state.imageFile;
+                                    _solveMath(imageFile: imageFile);
+                                  },
                                 ),
                               ],
                             ),
@@ -415,7 +439,7 @@ class _HomePageState extends State<HomePage>
                                   textController: _textController,
                                   isTablet: isTablet,
                                   onSolvePressed:
-                                      () => _handleSubscriptionAndSolve(
+                                      () => _solveMath(
                                         textInput: _textController.text.trim(),
                                       ),
                                   showSnackBarMessage: _showSnackBarMessage,

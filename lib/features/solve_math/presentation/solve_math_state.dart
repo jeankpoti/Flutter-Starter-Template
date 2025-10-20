@@ -8,6 +8,8 @@ class SolveMathState extends Equatable {
   final bool isError;
   final bool resultShown;
   final DateTime? resultTimestamp;
+  final bool isShowingAd;
+  final String? errorMsg;
 
   const SolveMathState({
     this.result = '',
@@ -17,6 +19,8 @@ class SolveMathState extends Equatable {
     this.isError = false,
     this.resultShown = false,
     this.resultTimestamp,
+    this.isShowingAd = false,
+    this.errorMsg,
   });
 
   SolveMathState copyWith({
@@ -27,6 +31,8 @@ class SolveMathState extends Equatable {
     bool? isError,
     bool? resultShown,
     DateTime? resultTimestamp,
+    bool? isShowingAd,
+    String? errorMsg,
   }) {
     return SolveMathState(
       result: result ?? this.result,
@@ -36,6 +42,8 @@ class SolveMathState extends Equatable {
       isError: isError ?? this.isError,
       resultShown: resultShown ?? this.resultShown,
       resultTimestamp: resultTimestamp ?? this.resultTimestamp,
+      isShowingAd: isShowingAd ?? this.isShowingAd,
+      errorMsg: errorMsg,
     );
   }
 
@@ -48,5 +56,7 @@ class SolveMathState extends Equatable {
     isError,
     resultShown,
     resultTimestamp,
+    isShowingAd,
+    errorMsg,
   ];
 }

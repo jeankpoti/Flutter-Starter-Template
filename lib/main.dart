@@ -10,6 +10,8 @@ import 'package:math_ai/features/solve_math/data/repository/gemini_solve_math_re
 import 'package:math_ai/l10n/app_localizations.dart';
 import 'package:math_ai/core/services/analytics_service.dart';
 import 'package:math_ai/core/services/app_review_service.dart';
+import 'package:math_ai/core/services/ad_service.dart';
+import 'package:math_ai/features/ads/presentation/ad_cubit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'features/study/presentation/study_page.dart';
@@ -58,6 +60,10 @@ void main() async {
   final subscriptionRepository = RevenueCatRepository();
   await subscriptionRepository.initialize();
 
+  // Initialize AdService
+  final adService = AdService.instance;
+  await AdService.initialize();
+
   // Initialize repositories in parallel
   await Future.wait([geminiService.initialize()]);
 
@@ -78,7 +84,11 @@ void main() async {
         ),
 
         BlocProvider<SolveMathCubit>(
-          create: (context) => SolveMathCubit(geminiService, firebaseMathRepo),
+          create: (context) => SolveMathCubit(geminiService, firebaseMathRepo, adService),
+        ),
+
+        BlocProvider<AdCubit>(
+          create: (context) => AdCubit(adService),
         ),
 
         BlocProvider<FirebaseCollectionCubit>(

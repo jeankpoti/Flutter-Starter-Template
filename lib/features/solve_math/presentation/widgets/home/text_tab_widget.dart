@@ -119,7 +119,7 @@ class TextTabWidget extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton.icon(
-                    onPressed: state.isIdentifying
+                    onPressed: (state.isIdentifying || state.isShowingAd)
                         ? null
                         : () async {
                             if (textController.text.trim().isEmpty) {
@@ -132,7 +132,7 @@ class TextTabWidget extends StatelessWidget {
                             }
                             onSolvePressed();
                           },
-                    icon: state.isIdentifying
+                    icon: (state.isIdentifying || state.isShowingAd)
                         ? SizedBox(
                             width: 20,
                             height: 20,
@@ -143,9 +143,11 @@ class TextTabWidget extends StatelessWidget {
                           )
                         : const Icon(Icons.auto_awesome, size: 20),
                     label: LabelLargeText(
-                      state.isIdentifying
-                          ? AppLocalizations.of(context)!.solving
-                          : AppLocalizations.of(context)!.solveProblem,
+                      state.isShowingAd
+                          ? AppLocalizations.of(context)!.loadingAd
+                          : state.isIdentifying
+                              ? AppLocalizations.of(context)!.solving
+                              : AppLocalizations.of(context)!.solveProblem,
                       fontWeight: FontWeight.w600,
                       color: Theme.of(context).colorScheme.onSecondary,
                     ),

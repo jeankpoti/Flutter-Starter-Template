@@ -240,7 +240,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get getPremium => 'Obtenir Premium';
 
   @override
-  String get rateUs => 'Notez-nous';
+  String get rateUs =>
+      'Vous aimez MathGenie AI ? Notez-nous sur l\'App Store !';
 
   @override
   String get shareWithFriends => 'Partager avec des amis';
@@ -1967,6 +1968,30 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get premiumSubscriptionRequired =>
       'Abonnement premium requis pour la génération de cartes mémoire IA.';
+
+  @override
+  String get watchAdToSeeSolution => 'Regarder une Pub pour Voir la Solution';
+
+  @override
+  String get loadingAd => 'Chargement de la publicité...';
+
+  @override
+  String get adFailedToLoad =>
+      'Échec du chargement de la publicité. Veuillez réessayer.';
+
+  @override
+  String get watchAdFirst =>
+      'Veuillez regarder la publicité pour voir votre solution';
+
+  @override
+  String get adLoadingPleaseWait =>
+      'Chargement de la publicité, veuillez patienter...';
+
+  @override
+  String get skipAdsForever => 'Ignorer les pubs pour toujours avec Premium';
+
+  @override
+  String get processingAfterAd => 'Traitement de votre solution...';
 
   @override
   String get unableToVerifySubscription =>

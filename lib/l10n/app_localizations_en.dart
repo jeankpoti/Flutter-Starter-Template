@@ -237,7 +237,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get getPremium => 'Get Premium';
 
   @override
-  String get rateUs => 'Rate Us';
+  String get rateUs => 'Love MathGenie AI? Rate us on the App Store!';
 
   @override
   String get shareWithFriends => 'Share with Friends';
@@ -1919,6 +1919,27 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get premiumSubscriptionRequired =>
       'Premium subscription required for AI flashcard generation.';
+
+  @override
+  String get watchAdToSeeSolution => 'Watch Ad to See Solution';
+
+  @override
+  String get loadingAd => 'Loading ad...';
+
+  @override
+  String get adFailedToLoad => 'Ad failed to load. Please try again.';
+
+  @override
+  String get watchAdFirst => 'Please watch the ad to see your solution';
+
+  @override
+  String get adLoadingPleaseWait => 'Loading ad, please wait...';
+
+  @override
+  String get skipAdsForever => 'Skip ads forever with Premium';
+
+  @override
+  String get processingAfterAd => 'Processing your solution...';
 
   @override
   String get unableToVerifySubscription =>
