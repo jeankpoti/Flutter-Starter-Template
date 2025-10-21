@@ -14,6 +14,7 @@ import '../../common/presentation/permission_cubit.dart';
 import '../../common/presentation/mixins/permission_lifecycle_mixin.dart';
 import '../../../utils/responsive.dart';
 import '../../subscription/presentation/subscription_cubit.dart';
+import '../../subscription/presentation/subscription_state.dart';
 import 'firebase_collection_cubit.dart';
 import 'solve_math_cubit.dart';
 import 'solve_math_state.dart';
@@ -151,35 +152,6 @@ class _HomePageState extends State<HomePage>
     }
   }
 
-  Future<void> _handleSubscriptionAndSolve({String? textInput}) async {
-    final imageFile = context.read<ImageCaptureCubit>().state.imageFile;
-    // _solveMath(imageFile: imageFile, textInput: textInput);
-
-    final subscriptionCubit = context.read<SubscriptionCubit>();
-    await subscriptionCubit.loadSubscriptionStatus();
-    final isSubscribed = subscriptionCubit.state.isSubscribed;
-
-    if (!isSubscribed) {
-      try {
-        await RevenueCatUI.presentPaywall();
-        await subscriptionCubit.loadSubscriptionStatus();
-        final newStatus = subscriptionCubit.state.isSubscribed;
-
-        if (newStatus && mounted) {
-          _solveMath(imageFile: imageFile, textInput: textInput);
-        }
-      } catch (e) {
-        if (mounted) {
-          _showSnackBarMessage(
-            AppLocalizations.of(context)!.subscriptionError,
-            isError: true,
-          );
-        }
-      }
-    } else if (mounted) {
-      _solveMath(imageFile: imageFile, textInput: textInput);
-    }
-  }
 
   void _solveMath({File? imageFile, String? textInput}) {
     // Check subscription status
@@ -248,6 +220,70 @@ class _HomePageState extends State<HomePage>
         backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
         appBar: AppBarWidget(
           title: AppLocalizations.of(context)!.solveMathProblem,
+          actions: [
+            // Show premium upgrade icon for free users
+            BlocBuilder<SubscriptionCubit, SubscriptionState>(
+              builder: (context, subscriptionState) {
+                if (!subscriptionState.isSubscribed) {
+                  return Container(
+                    margin: const EdgeInsets.only(right: 8.0),
+                    child: IconButton(
+                      onPressed: () async {
+                        final message = AppLocalizations.of(context)!.premiumNoAds;
+                        try {
+                          await RevenueCatUI.presentPaywall();
+                        } catch (e) {
+                          // Fallback: show snackbar with upgrade message
+                          if (mounted) {
+                            _showSnackBarMessage(message);
+                          }
+                        }
+                      },
+                      icon: Container(
+                        padding: const EdgeInsets.all(8.0),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.amber,
+                              Colors.orange,
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(8.0),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.amber.withValues(alpha: 0.3),
+                              offset: const Offset(0, 2),
+                              blurRadius: 4.0,
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.star,
+                              color: Colors.white,
+                              size: 16,
+                            ),
+                            const SizedBox(width: 4),
+                            Icon(
+                              Icons.block,
+                              color: Colors.white,
+                              size: 14,
+                            ),
+                          ],
+                        ),
+                      ),
+                      tooltip: AppLocalizations.of(context)!.skipAdsWithPremium,
+                    ),
+                  );
+                }
+                return const SizedBox.shrink();
+              },
+            ),
+          ],
         ),
         body: MultiBlocListener(
           listeners: [

@@ -1942,6 +1942,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get processingAfterAd => 'Processing your solution...';
 
   @override
+  String get skipAdsWithPremium => 'Skip Ads with Premium';
+
+  @override
+  String get stopAdsForever => 'Stop ads forever with Premium';
+
+  @override
+  String get premiumNoAds => 'Get Premium to enjoy ad-free math solving!';
+
+  @override
   String get unableToVerifySubscription =>
       'Unable to verify subscription status.';
 

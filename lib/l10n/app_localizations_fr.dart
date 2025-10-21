@@ -1994,6 +1994,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get processingAfterAd => 'Traitement de votre solution...';
 
   @override
+  String get skipAdsWithPremium => 'Passer les pubs avec Premium';
+
+  @override
+  String get stopAdsForever => 'Arrêtez les pubs pour toujours avec Premium';
+
+  @override
+  String get premiumNoAds =>
+      'Obtenez Premium pour résoudre les maths sans publicité !';
+
+  @override
   String get unableToVerifySubscription =>
       'Impossible de vérifier le statut de l\'abonnement.';
 

@@ -3562,6 +3562,24 @@ abstract class AppLocalizations {
   /// **'Processing your solution...'**
   String get processingAfterAd;
 
+  /// No description provided for @skipAdsWithPremium.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip Ads with Premium'**
+  String get skipAdsWithPremium;
+
+  /// No description provided for @stopAdsForever.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop ads forever with Premium'**
+  String get stopAdsForever;
+
+  /// No description provided for @premiumNoAds.
+  ///
+  /// In en, this message translates to:
+  /// **'Get Premium to enjoy ad-free math solving!'**
+  String get premiumNoAds;
+
   /// No description provided for @unableToVerifySubscription.
   ///
   /// In en, this message translates to:

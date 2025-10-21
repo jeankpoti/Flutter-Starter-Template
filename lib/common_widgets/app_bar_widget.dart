@@ -5,7 +5,8 @@ import 'text_widgets.dart';
 class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   final String? title;
   final bool? isAction;
-  const AppBarWidget({super.key, this.title, this.isAction});
+  final List<Widget>? actions;
+  const AppBarWidget({super.key, this.title, this.isAction, this.actions});
 
   @override
   // final Size preferredSize = const Size.fromHeight(kToolbarHeight);
@@ -20,7 +21,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
       // centerTitle: true,
       backgroundColor: Colors.transparent,
 
-      // actions: isAction == true ? [] : null,
+      actions: actions,
     );
   }
 }
