@@ -9,24 +9,32 @@ class PermissionState extends Equatable {
   final bool isLoading;
   final bool isFirstTimeCamera;
   final bool isFirstTimeGallery;
+  final bool isFirstTimeMicrophone;
   final bool hasCameraBeenDenied;
   final bool hasGalleryBeenDenied;
+  final bool hasMicrophoneBeenDenied;
   final bool pendingCameraPermission;
   final bool pendingGalleryPermission;
+  final bool pendingMicrophonePermission;
   final PermissionStatus? cameraStatus;
   final PermissionStatus? galleryStatus;
+  final PermissionStatus? microphoneStatus;
   final String? message;
 
   const PermissionState({
     this.isLoading = false,
     this.isFirstTimeCamera = true,
     this.isFirstTimeGallery = true,
+    this.isFirstTimeMicrophone = true,
     this.hasCameraBeenDenied = false,
     this.hasGalleryBeenDenied = false,
+    this.hasMicrophoneBeenDenied = false,
     this.pendingCameraPermission = false,
     this.pendingGalleryPermission = false,
+    this.pendingMicrophonePermission = false,
     this.cameraStatus,
     this.galleryStatus,
+    this.microphoneStatus,
     this.message,
   });
 
@@ -34,24 +42,32 @@ class PermissionState extends Equatable {
     bool? isLoading,
     bool? isFirstTimeCamera,
     bool? isFirstTimeGallery,
+    bool? isFirstTimeMicrophone,
     bool? hasCameraBeenDenied,
     bool? hasGalleryBeenDenied,
+    bool? hasMicrophoneBeenDenied,
     bool? pendingCameraPermission,
     bool? pendingGalleryPermission,
+    bool? pendingMicrophonePermission,
     PermissionStatus? cameraStatus,
     PermissionStatus? galleryStatus,
+    PermissionStatus? microphoneStatus,
     String? message,
   }) {
     return PermissionState(
       isLoading: isLoading ?? this.isLoading,
       isFirstTimeCamera: isFirstTimeCamera ?? this.isFirstTimeCamera,
       isFirstTimeGallery: isFirstTimeGallery ?? this.isFirstTimeGallery,
+      isFirstTimeMicrophone: isFirstTimeMicrophone ?? this.isFirstTimeMicrophone,
       hasCameraBeenDenied: hasCameraBeenDenied ?? this.hasCameraBeenDenied,
       hasGalleryBeenDenied: hasGalleryBeenDenied ?? this.hasGalleryBeenDenied,
+      hasMicrophoneBeenDenied: hasMicrophoneBeenDenied ?? this.hasMicrophoneBeenDenied,
       pendingCameraPermission: pendingCameraPermission ?? this.pendingCameraPermission,
       pendingGalleryPermission: pendingGalleryPermission ?? this.pendingGalleryPermission,
+      pendingMicrophonePermission: pendingMicrophonePermission ?? this.pendingMicrophonePermission,
       cameraStatus: cameraStatus ?? this.cameraStatus,
       galleryStatus: galleryStatus ?? this.galleryStatus,
+      microphoneStatus: microphoneStatus ?? this.microphoneStatus,
       message: message,
     );
   }
@@ -61,12 +77,16 @@ class PermissionState extends Equatable {
     isLoading,
     isFirstTimeCamera,
     isFirstTimeGallery,
+    isFirstTimeMicrophone,
     hasCameraBeenDenied,
     hasGalleryBeenDenied,
+    hasMicrophoneBeenDenied,
     pendingCameraPermission,
     pendingGalleryPermission,
+    pendingMicrophonePermission,
     cameraStatus,
     galleryStatus,
+    microphoneStatus,
     message,
   ];
 }
@@ -80,15 +100,19 @@ class PermissionCubit extends Cubit<PermissionState> {
     final prefs = await SharedPreferences.getInstance();
     final isFirstTimeCamera = prefs.getBool('isFirstTimeCamera') ?? true;
     final isFirstTimeGallery = prefs.getBool('isFirstTimeGallery') ?? true;
+    final isFirstTimeMicrophone = prefs.getBool('isFirstTimeMicrophone') ?? true;
     final hasCameraBeenDenied = prefs.getBool('hasCameraBeenDenied') ?? false;
     final hasGalleryBeenDenied = prefs.getBool('hasGalleryBeenDenied') ?? false;
+    final hasMicrophoneBeenDenied = prefs.getBool('hasMicrophoneBeenDenied') ?? false;
 
     emit(
       state.copyWith(
         isFirstTimeCamera: isFirstTimeCamera,
         isFirstTimeGallery: isFirstTimeGallery,
+        isFirstTimeMicrophone: isFirstTimeMicrophone,
         hasCameraBeenDenied: hasCameraBeenDenied,
         hasGalleryBeenDenied: hasGalleryBeenDenied,
+        hasMicrophoneBeenDenied: hasMicrophoneBeenDenied,
       ),
     );
   }
@@ -138,6 +162,57 @@ class PermissionCubit extends Cubit<PermissionState> {
         state.copyWith(
           isLoading: false,
           message: 'Error requesting camera permission',
+        ),
+      );
+      rethrow;
+    }
+  }
+
+  // Request microphone permission
+  Future<PermissionStatus> requestMicrophonePermission() async {
+    emit(state.copyWith(isLoading: true));
+
+    try {
+      PermissionStatus microphoneStatus = PermissionStatus.denied;
+      
+      // Store the previous denial status before making the request
+      final wasPreviouslyDenied = state.hasMicrophoneBeenDenied;
+      
+      // Request microphone permission based on platform
+      if (Platform.isAndroid || Platform.isIOS) {
+        microphoneStatus = await Permission.microphone.request();
+      }
+
+      final prefs = await SharedPreferences.getInstance();
+      
+      // If it was the first time AND permission was granted, update the flag
+      if (state.isFirstTimeMicrophone && microphoneStatus.isGranted) {
+        await prefs.setBool('isFirstTimeMicrophone', false);
+        emit(state.copyWith(isFirstTimeMicrophone: false));
+      }
+      
+      // Track if microphone permission has been denied
+      if (microphoneStatus.isDenied || microphoneStatus.isPermanentlyDenied) {
+        await prefs.setBool('hasMicrophoneBeenDenied', true);
+      }
+
+      // Update state with microphone status
+      emit(
+        state.copyWith(
+          isLoading: false,
+          microphoneStatus: microphoneStatus,
+          hasMicrophoneBeenDenied: microphoneStatus.isDenied || microphoneStatus.isPermanentlyDenied,
+          pendingMicrophonePermission: wasPreviouslyDenied && 
+            (microphoneStatus.isDenied || microphoneStatus.isPermanentlyDenied),
+        ),
+      );
+
+      return microphoneStatus;
+    } catch (e) {
+      emit(
+        state.copyWith(
+          isLoading: false,
+          message: 'Error requesting microphone permission',
         ),
       );
       rethrow;
@@ -229,6 +304,21 @@ class PermissionCubit extends Cubit<PermissionState> {
         ),
       );
     }
+
+    if (state.pendingMicrophonePermission) {
+      final microphoneStatus = await Permission.microphone.status;
+
+      emit(
+        state.copyWith(
+          microphoneStatus: microphoneStatus,
+          pendingMicrophonePermission: false,
+          message:
+              microphoneStatus.isGranted
+                  ? 'Microphone permission granted. Please try voice input again.'
+                  : null,
+        ),
+      );
+    }
   }
 
   // Clear any messages
@@ -243,6 +333,10 @@ class PermissionCubit extends Cubit<PermissionState> {
 
   void setPendingGalleryPermission(bool pending) {
     emit(state.copyWith(pendingGalleryPermission: pending));
+  }
+
+  void setPendingMicrophonePermission(bool pending) {
+    emit(state.copyWith(pendingMicrophonePermission: pending));
   }
 
   // Check if should show permission dialog
@@ -263,6 +357,16 @@ class PermissionCubit extends Cubit<PermissionState> {
     // Note: We check the state that was loaded from SharedPreferences,
     // not the state updated during the current request
     return state.hasGalleryBeenDenied && 
+           (status.isDenied || status.isPermanentlyDenied);
+  }
+
+  bool shouldShowMicrophoneDialog(PermissionStatus status) {
+    // Show dialog only if:
+    // 1. Permission was denied in a previous attempt (stored in state before this request)
+    // 2. Permission is currently denied or permanently denied
+    // Note: We check the state that was loaded from SharedPreferences,
+    // not the state updated during the current request
+    return state.hasMicrophoneBeenDenied && 
            (status.isDenied || status.isPermanentlyDenied);
   }
 

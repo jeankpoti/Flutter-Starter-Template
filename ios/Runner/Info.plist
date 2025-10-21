@@ -43,6 +43,10 @@
 	<string>This app needs camera access to take pictures of math problems for solving</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This app needs photos access to let you upload math problems for solving</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app needs microphone access to let you speak math problems for solving using voice input</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>This app uses speech recognition to convert your spoken math problems into text for AI solving</string>
 	<key>PHPhotoLibraryPreventAutomaticLimitedAccessAlert</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

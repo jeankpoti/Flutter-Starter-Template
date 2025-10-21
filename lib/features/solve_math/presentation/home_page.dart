@@ -21,6 +21,7 @@ import 'solve_math_state.dart';
 import 'image_capture_cubit.dart';
 import 'widgets/home/photo_tab_widget.dart';
 import 'widgets/home/text_tab_widget.dart';
+import 'widgets/home/voice_tab_widget.dart';
 import 'widgets/home/result_dialog_widget.dart';
 import 'widgets/home/modern_tab_bar_widget.dart';
 
@@ -46,7 +47,7 @@ class _HomePageState extends State<HomePage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
     // Initialize permissions
     context.read<PermissionCubit>().initializePermissions();
   }
@@ -478,6 +479,20 @@ class _HomePageState extends State<HomePage>
                                       () => _solveMath(
                                         textInput: _textController.text.trim(),
                                       ),
+                                  showSnackBarMessage: _showSnackBarMessage,
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          // Voice Tab with its own scroll
+                          SingleChildScrollView(
+                            padding: const EdgeInsets.all(_spacing4),
+                            child: Column(
+                              children: [
+                                VoiceTabWidget(
+                                  isTablet: isTablet,
+                                  onVoiceResult: (voiceText) => _solveMath(textInput: voiceText),
                                   showSnackBarMessage: _showSnackBarMessage,
                                 ),
                               ],

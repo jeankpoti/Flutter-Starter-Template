@@ -51,6 +51,11 @@ class ModernTabBarWidget extends StatelessWidget {
             text: AppLocalizations.of(context)!.text,
             height: 60,
           ),
+          Tab(
+            icon: const Icon(Icons.mic_outlined),
+            text: 'Voice',
+            height: 60,
+          ),
         ],
       ),
     );
