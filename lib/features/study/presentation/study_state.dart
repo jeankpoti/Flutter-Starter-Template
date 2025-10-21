@@ -21,6 +21,9 @@ class StudyState extends Equatable {
   final bool isUploadingPhoto;
   final bool studyPlanGenerated;
 
+  // Ad states
+  final bool isShowingAd;
+
   const StudyState({
     this.studyMaterials = const [],
     this.studyPlans = const [],
@@ -35,6 +38,7 @@ class StudyState extends Equatable {
     this.isUploadingText = false,
     this.isUploadingPhoto = false,
     this.studyPlanGenerated = false,
+    this.isShowingAd = false,
   });
 
   StudyState copyWith({
@@ -53,6 +57,7 @@ class StudyState extends Equatable {
     bool? isUploadingText,
     bool? isUploadingPhoto,
     bool? studyPlanGenerated,
+    bool? isShowingAd,
   }) {
     return StudyState(
       studyMaterials: studyMaterials ?? this.studyMaterials,
@@ -73,6 +78,7 @@ class StudyState extends Equatable {
       isUploadingText: isUploadingText ?? this.isUploadingText,
       isUploadingPhoto: isUploadingPhoto ?? this.isUploadingPhoto,
       studyPlanGenerated: studyPlanGenerated ?? this.studyPlanGenerated,
+      isShowingAd: isShowingAd ?? this.isShowingAd,
     );
   }
 
@@ -91,5 +97,6 @@ class StudyState extends Equatable {
         isUploadingText,
         isUploadingPhoto,
         studyPlanGenerated,
+        isShowingAd,
       ];
 }

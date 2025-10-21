@@ -17,6 +17,7 @@ import 'cubit/flashcard_generation_cubit.dart';
 import '../data/repository/flashcard_generation_repository_impl.dart';
 import '../data/services/flashcard_generation_service.dart';
 import '../../subscription/presentation/subscription_cubit.dart';
+import '../../../core/services/ad_service.dart';
 
 class FlashcardDeckPage extends StatelessWidget {
   final FlashCardDeck deck;
@@ -35,12 +36,14 @@ class FlashcardDeckPage extends StatelessWidget {
         BlocProvider(
           create: (context) => FlashcardCubit(
             subscriptionCubit: context.read<SubscriptionCubit>(),
+            adService: AdService.instance,
           ),
         ),
         BlocProvider(
           create: (context) => FlashcardGenerationCubit(
             FlashcardGenerationRepositoryImpl(FlashcardGenerationService()),
             context.read<SubscriptionCubit>(),
+            AdService.instance,
           ),
         ),
       ],
@@ -96,7 +99,16 @@ class _FlashcardDeckPageViewState extends State<_FlashcardDeckPageView> {
         BlocListener<FlashcardGenerationCubit, FlashcardGenerationState>(
           listener: (context, state) {
             if (state.errorMsg != null) {
-              AppSnackBar.showError(context, state.errorMsg!);
+              String errorMessage = state.errorMsg!;
+              
+              // Localize ad error messages
+              if (errorMessage == 'adFailedToLoad') {
+                errorMessage = AppLocalizations.of(context)!.adFailedToLoad;
+              } else if (errorMessage == 'watchAdFirst') {
+                errorMessage = AppLocalizations.of(context)!.watchAdFirst;
+              }
+              
+              AppSnackBar.showError(context, errorMessage);
               if (mounted && _generationCubit != null) {
                 _generationCubit!.clearMessages();
               }

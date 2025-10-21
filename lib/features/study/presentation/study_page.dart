@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../common_widgets/app_snackbar_widget.dart';
 import '../../../common_widgets/text_widgets.dart';
@@ -8,6 +9,8 @@ import '../../../common_widgets/permission_denied_dialog_widget.dart';
 import '../../common/presentation/permission_cubit.dart';
 import '../../common/presentation/mixins/permission_lifecycle_mixin.dart';
 import '../../subscription/presentation/subscription_cubit.dart';
+import '../../subscription/presentation/subscription_state.dart';
+import '../../../core/services/ad_service.dart';
 import '../data/services/study_plan_service.dart';
 import '../data/services/quiz_service.dart';
 import '../data/repository/study_material_repository.dart';
@@ -45,11 +48,13 @@ class StudyPage extends StatelessWidget {
                 picker: ImagePicker(),
                 permissionCubit: context.read<PermissionCubit>(),
                 subscriptionCubit: context.read<SubscriptionCubit>(),
+                adService: AdService.instance,
               )..initializeServices(),
         ),
         BlocProvider(
           create: (context) => FlashcardCubit(
             subscriptionCubit: context.read<SubscriptionCubit>(),
+            adService: AdService.instance,
           ),
         ),
       ],
@@ -157,6 +162,10 @@ class _StudyPageViewState extends State<_StudyPageView>
                 errorMessage = AppLocalizations.of(context)!.nonMathTextError;
               } else if (errorMessage == 'NON_MATH_DOCUMENT_ERROR') {
                 errorMessage = AppLocalizations.of(context)!.nonMathDocumentError;
+              } else if (errorMessage == 'adFailedToLoad') {
+                errorMessage = AppLocalizations.of(context)!.adFailedToLoad;
+              } else if (errorMessage == 'watchAdFirst') {
+                errorMessage = AppLocalizations.of(context)!.watchAdFirst;
               }
               
               AppSnackBar.showError(
@@ -177,6 +186,27 @@ class _StudyPageViewState extends State<_StudyPageView>
             }
           },
         ),
+        BlocListener<FlashcardCubit, FlashcardState>(
+          listenWhen: (previous, current) =>
+              previous.errorMsg != current.errorMsg && current.errorMsg != null,
+          listener: (context, state) {
+            if (state.errorMsg != null) {
+              String errorMessage = state.errorMsg!;
+              
+              // Localize ad error messages
+              if (errorMessage == 'adFailedToLoad') {
+                errorMessage = AppLocalizations.of(context)!.adFailedToLoad;
+              } else if (errorMessage == 'watchAdFirst') {
+                errorMessage = AppLocalizations.of(context)!.watchAdFirst;
+              } else if (errorMessage == 'adServiceNotAvailable') {
+                errorMessage = AppLocalizations.of(context)!.somethingWentWrong;
+              }
+              
+              AppSnackBar.showError(context, errorMessage);
+              context.read<FlashcardCubit>().clearMessages();
+            }
+          },
+        ),
       ],
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
@@ -188,6 +218,68 @@ class _StudyPageViewState extends State<_StudyPageView>
           backgroundColor: Colors.transparent,
           elevation: 0,
           actions: [
+            // Show premium upgrade icon for free users
+            BlocBuilder<SubscriptionCubit, SubscriptionState>(
+              builder: (context, subscriptionState) {
+                if (!subscriptionState.isSubscribed) {
+                  return Container(
+                    margin: const EdgeInsets.only(right: 8.0),
+                    child: IconButton(
+                      onPressed: () async {
+                        final message = AppLocalizations.of(context)!.premiumNoAds;
+                        try {
+                          await RevenueCatUI.presentPaywall();
+                        } catch (e) {
+                          // Fallback: show snackbar with upgrade message
+                          if (mounted) {
+                            _showSnackBarMessage(message);
+                          }
+                        }
+                      },
+                      icon: Container(
+                        padding: const EdgeInsets.all(8.0),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.amber,
+                              Colors.orange,
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(8.0),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.amber.withValues(alpha: 0.3),
+                              offset: const Offset(0, 2),
+                              blurRadius: 4.0,
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.star,
+                              color: Colors.white,
+                              size: 16,
+                            ),
+                            const SizedBox(width: 4),
+                            Icon(
+                              Icons.block,
+                              color: Colors.white,
+                              size: 14,
+                            ),
+                          ],
+                        ),
+                      ),
+                      tooltip: AppLocalizations.of(context)!.skipAdsWithPremium,
+                    ),
+                  );
+                }
+                return const SizedBox.shrink();
+              },
+            ),
             IconButton(
               icon: Icon(
                 Icons.refresh_rounded,
@@ -221,7 +313,8 @@ class _StudyPageViewState extends State<_StudyPageView>
                               isProcessing:
                                   state.isProcessing ||
                                   state.isUploadingPhoto ||
-                                  state.isUploadingText,
+                                  state.isUploadingText ||
+                                  state.isShowingAd,
                               studyMaterials: state.studyMaterials,
                               onPhotoUpload: _handlePhotoUpload,
                               onGalleryUpload: _handleGalleryUpload,
@@ -278,7 +371,8 @@ class _StudyPageViewState extends State<_StudyPageView>
   }
 
   Future<void> _handlePhotoUpload() async {
-    final handled = await context.read<StudyCubit>().handlePhotoUpload();
+    final isSubscribed = context.read<SubscriptionCubit>().state.isSubscribed;
+    final handled = await context.read<StudyCubit>().handlePhotoUpload(isSubscribed: isSubscribed);
     
     if (!mounted) return;
     
@@ -294,7 +388,8 @@ class _StudyPageViewState extends State<_StudyPageView>
   }
   
   Future<void> _handleGalleryUpload() async {
-    final handled = await context.read<StudyCubit>().handleGalleryUpload();
+    final isSubscribed = context.read<SubscriptionCubit>().state.isSubscribed;
+    final handled = await context.read<StudyCubit>().handleGalleryUpload(isSubscribed: isSubscribed);
     
     if (!mounted) return;
     
@@ -311,6 +406,7 @@ class _StudyPageViewState extends State<_StudyPageView>
 
   void _handleTextInput() async {
     final studyCubit = context.read<StudyCubit>();
+    final isSubscribed = context.read<SubscriptionCubit>().state.isSubscribed;
     final result = await showDialog<String>(
       context: context,
       builder:
@@ -321,12 +417,13 @@ class _StudyPageViewState extends State<_StudyPageView>
     );
     
     if (result != null && result.isNotEmpty) {
-      studyCubit.processTextMaterial(result);
+      studyCubit.processTextMaterial(result, isSubscribed: isSubscribed);
     }
   }
 
   Future<void> _handleDocumentUpload() async {
-    final handled = await context.read<StudyCubit>().handleDocumentUpload();
+    final isSubscribed = context.read<SubscriptionCubit>().state.isSubscribed;
+    final handled = await context.read<StudyCubit>().handleDocumentUpload(isSubscribed: isSubscribed);
     
     if (!mounted) return;
     
@@ -348,6 +445,7 @@ class _StudyPageViewState extends State<_StudyPageView>
   }) async {
     try {
       final studyCubit = context.read<StudyCubit>();
+      final isSubscribed = context.read<SubscriptionCubit>().state.isSubscribed;
 
       StudyPlan? selectedPlan;
 
@@ -374,6 +472,7 @@ class _StudyPageViewState extends State<_StudyPageView>
         questionCount: questionCount,
         timeLimit: timeLimit,
         selectedPlan: selectedPlan,
+        isSubscribed: isSubscribed,
       );
 
       if (mounted) {
@@ -400,7 +499,10 @@ class _StudyPageViewState extends State<_StudyPageView>
 
   Future<void> _generateQuizFromAllMaterials() async {
     try {
-      final quiz = await context.read<StudyCubit>().generateAllMaterialsQuiz();
+      final isSubscribed = context.read<SubscriptionCubit>().state.isSubscribed;
+      final quiz = await context.read<StudyCubit>().generateAllMaterialsQuiz(
+        isSubscribed: isSubscribed,
+      );
 
       if (mounted) {
         Navigator.of(
@@ -414,11 +516,13 @@ class _StudyPageViewState extends State<_StudyPageView>
 
   Future<void> _startQuizFromPlan(StudyPlan plan) async {
     try {
+      final isSubscribed = context.read<SubscriptionCubit>().state.isSubscribed;
       final quiz = await context.read<StudyCubit>().generateQuizFromPlan(
         plan,
         difficulty: QuizDifficulty.medium,
         questionCount: 10,
         timeLimit: 15,
+        isSubscribed: isSubscribed,
       );
 
       if (mounted) {

@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
 
 import '../data/repository/study_material_repository.dart';
 import '../data/repository/study_plan_repository.dart';
@@ -16,6 +15,7 @@ import '../domain/models/study_plan.dart';
 import '../domain/models/quiz.dart';
 import '../../common/presentation/permission_cubit.dart';
 import '../../subscription/presentation/subscription_cubit.dart';
+import '../../../core/services/ad_service.dart';
 import 'study_state.dart';
 
 class StudyCubit extends Cubit<StudyState> {
@@ -26,7 +26,7 @@ class StudyCubit extends Cubit<StudyState> {
   final DocumentProcessingService _documentService;
   final ImagePicker _picker;
   final PermissionCubit _permissionCubit;
-  final SubscriptionCubit _subscriptionCubit;
+  final AdService _adService;
 
   static const int _maxImagesPerSelection = 5;
 
@@ -38,6 +38,7 @@ class StudyCubit extends Cubit<StudyState> {
     required ImagePicker picker,
     required PermissionCubit permissionCubit,
     required SubscriptionCubit subscriptionCubit,
+    required AdService adService,
     DocumentProcessingService? documentService,
   }) : _materialRepository = materialRepository,
        _planRepository = planRepository,
@@ -46,7 +47,7 @@ class StudyCubit extends Cubit<StudyState> {
        _documentService = documentService ?? DocumentProcessingService(),
        _picker = picker,
        _permissionCubit = permissionCubit,
-       _subscriptionCubit = subscriptionCubit,
+       _adService = adService,
        super(const StudyState());
 
   Future<void> initializeServices() async {
@@ -98,36 +99,15 @@ class StudyCubit extends Cubit<StudyState> {
   }
 
   // Upload Methods
-  Future<bool> handlePhotoUpload() async {
+  Future<bool> handlePhotoUpload({bool isSubscribed = false}) async {
     try {
-      // Check subscription first
-      await _subscriptionCubit.loadSubscriptionStatus();
-      final isSubscribed = _subscriptionCubit.state.isSubscribed;
-
+      // Show ad for free users before photo upload
       if (!isSubscribed) {
-        try {
-          // Show paywall
-          await RevenueCatUI.presentPaywall();
-
-          // Reload subscription status to check if user subscribed
-          await _subscriptionCubit.loadSubscriptionStatus();
-          final newStatus = _subscriptionCubit.state.isSubscribed;
-
-          if (!newStatus) {
-            // User didn't subscribe, don't proceed
-            return true;
-          }
-          // User subscribed, continue with photo capture
-        } catch (e) {
-          // Error showing paywall
-          if (!isClosed) {
-            emit(
-              state.copyWith(
-                errorMsg: 'Subscription required to generate study materials',
-              ),
-            );
-          }
-          return true;
+        await showAdForFreeUser();
+        
+        // Check if ad failed or user didn't watch
+        if (state.errorMsg != null) {
+          return true; // Return handled but blocked
         }
       }
 
@@ -178,36 +158,15 @@ class StudyCubit extends Cubit<StudyState> {
     }
   }
 
-  Future<bool> handleGalleryUpload() async {
+  Future<bool> handleGalleryUpload({bool isSubscribed = false}) async {
     try {
-      // Check subscription first
-      await _subscriptionCubit.loadSubscriptionStatus();
-      final isSubscribed = _subscriptionCubit.state.isSubscribed;
-
+      // Show ad for free users before gallery upload
       if (!isSubscribed) {
-        try {
-          // Show paywall
-          await RevenueCatUI.presentPaywall();
-
-          // Reload subscription status to check if user subscribed
-          await _subscriptionCubit.loadSubscriptionStatus();
-          final newStatus = _subscriptionCubit.state.isSubscribed;
-
-          if (!newStatus) {
-            // User didn't subscribe, don't proceed
-            return true;
-          }
-          // User subscribed, continue with gallery selection
-        } catch (e) {
-          // Error showing paywall
-          if (!isClosed) {
-            emit(
-              state.copyWith(
-                errorMsg: 'Subscription required to generate study materials',
-              ),
-            );
-          }
-          return true;
+        await showAdForFreeUser();
+        
+        // Check if ad failed or user didn't watch
+        if (state.errorMsg != null) {
+          return true; // Return handled but blocked
         }
       }
 
@@ -271,37 +230,16 @@ class StudyCubit extends Cubit<StudyState> {
     }
   }
 
-  Future<void> processTextMaterial(String text) async {
+  Future<void> processTextMaterial(String text, {bool isSubscribed = false}) async {
     emit(state.copyWith(isUploadingText: true));
     try {
-      // Check subscription first
-      await _subscriptionCubit.loadSubscriptionStatus();
-      final isSubscribed = _subscriptionCubit.state.isSubscribed;
-
+      // Show ad for free users before processing
       if (!isSubscribed) {
-        emit(state.copyWith(isUploadingText: false));
-        try {
-          // Show paywall
-          await RevenueCatUI.presentPaywall();
-
-          // Reload subscription status to check if user subscribed
-          await _subscriptionCubit.loadSubscriptionStatus();
-          final newStatus = _subscriptionCubit.state.isSubscribed;
-
-          if (!newStatus) {
-            // User didn't subscribe, don't proceed
-            return;
-          }
-          // User subscribed, continue with text processing
-        } catch (e) {
-          // Error showing paywall
-          if (!isClosed) {
-            emit(
-              state.copyWith(
-                errorMsg: 'Subscription required to generate study materials',
-              ),
-            );
-          }
+        await showAdForFreeUser();
+        
+        // Check if ad failed or user didn't watch
+        if (state.errorMsg != null) {
+          emit(state.copyWith(isUploadingText: false));
           return;
         }
       }
@@ -323,36 +261,15 @@ class StudyCubit extends Cubit<StudyState> {
     }
   }
 
-  Future<bool> handleDocumentUpload() async {
+  Future<bool> handleDocumentUpload({bool isSubscribed = false}) async {
     try {
-      // Check subscription first
-      await _subscriptionCubit.loadSubscriptionStatus();
-      final isSubscribed = _subscriptionCubit.state.isSubscribed;
-
+      // Show ad for free users before document upload
       if (!isSubscribed) {
-        try {
-          // Show paywall
-          await RevenueCatUI.presentPaywall();
-
-          // Reload subscription status to check if user subscribed
-          await _subscriptionCubit.loadSubscriptionStatus();
-          final newStatus = _subscriptionCubit.state.isSubscribed;
-
-          if (!newStatus) {
-            // User didn't subscribe, don't proceed
-            return true;
-          }
-          // User subscribed, continue with document selection
-        } catch (e) {
-          // Error showing paywall
-          if (!isClosed) {
-            emit(
-              state.copyWith(
-                errorMsg: 'Subscription required to generate study materials',
-              ),
-            );
-          }
-          return true;
+        await showAdForFreeUser();
+        
+        // Check if ad failed or user didn't watch
+        if (state.errorMsg != null) {
+          return true; // Return handled but blocked
         }
       }
 
@@ -578,10 +495,22 @@ class StudyCubit extends Cubit<StudyState> {
     required int questionCount,
     required int timeLimit,
     StudyPlan? selectedPlan,
+    bool isSubscribed = false,
   }) async {
     _setQuizLoading(difficulty, true);
 
     try {
+      // Show ad for free users before quiz generation
+      if (!isSubscribed) {
+        await showAdForFreeUser();
+        
+        // Check if ad failed or user didn't watch
+        if (state.errorMsg != null) {
+          _setQuizLoading(difficulty, false);
+          return Future.error('Ad required for quiz generation');
+        }
+      }
+
       // Check if we have no materials or plans
       if (state.studyMaterials.isEmpty && state.studyPlans.isEmpty) {
         _setQuizLoading(difficulty, false);
@@ -647,10 +576,22 @@ class StudyCubit extends Cubit<StudyState> {
     required QuizDifficulty difficulty,
     required int questionCount,
     required int timeLimit,
+    bool isSubscribed = false,
   }) async {
     emit(state.copyWith(processingPlanId: plan.id));
 
     try {
+      // Show ad for free users before quiz generation
+      if (!isSubscribed) {
+        await showAdForFreeUser();
+        
+        // Check if ad failed or user didn't watch
+        if (state.errorMsg != null) {
+          emit(state.copyWith(clearProcessingPlanId: true));
+          return Future.error('Ad required for quiz generation');
+        }
+      }
+
       final quiz = await _quizService.generateQuizFromStudyPlan(
         studyPlan: plan,
         difficulty: difficulty,
@@ -675,10 +616,21 @@ class StudyCubit extends Cubit<StudyState> {
     }
   }
 
-  Future<Quiz> generateAllMaterialsQuiz() async {
+  Future<Quiz> generateAllMaterialsQuiz({bool isSubscribed = false}) async {
     emit(state.copyWith(isAllMaterialsQuizLoading: true));
 
     try {
+      // Show ad for free users before quiz generation
+      if (!isSubscribed) {
+        await showAdForFreeUser();
+        
+        // Check if ad failed or user didn't watch
+        if (state.errorMsg != null) {
+          emit(state.copyWith(isAllMaterialsQuizLoading: false));
+          return Future.error('Ad required for quiz generation');
+        }
+      }
+
       final quiz = await _quizService.generateQuizFromMaterials(
         materials: state.studyMaterials,
         difficulty: QuizDifficulty.medium,
@@ -851,6 +803,32 @@ class StudyCubit extends Cubit<StudyState> {
   void clearStudyPlanGenerated() {
     if (!isClosed) {
       emit(state.copyWith(studyPlanGenerated: false));
+    }
+  }
+
+  Future<void> showAdForFreeUser() async {
+    try {
+      emit(state.copyWith(isShowingAd: true));
+      
+      final adResult = await _adService.showRewardedAd();
+      
+      if (!isClosed) {
+        emit(state.copyWith(isShowingAd: false));
+        
+        if (!adResult) {
+          emit(state.copyWith(
+            errorMsg: 'watchAdFirst',
+          ));
+          return;
+        }
+      }
+    } catch (e) {
+      if (!isClosed) {
+        emit(state.copyWith(
+          isShowingAd: false,
+          errorMsg: 'adFailedToLoad',
+        ));
+      }
     }
   }
 }

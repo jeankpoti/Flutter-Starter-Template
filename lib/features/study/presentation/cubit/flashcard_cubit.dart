@@ -1,24 +1,27 @@
 import 'dart:developer' as dev;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
 import '../../domain/models/flashcard.dart';
 import '../../domain/models/study_material.dart';
 import '../../domain/repository/flashcard_repository.dart';
 import '../../data/repository/flashcard_repository_impl.dart';
 import '../../../subscription/presentation/subscription_cubit.dart';
+import '../../../../core/services/ad_service.dart';
 
 part 'flashcard_state.dart';
 
 class FlashcardCubit extends Cubit<FlashcardState> {
   final FlashcardRepositoryInterface _flashcardRepository;
   final SubscriptionCubit? _subscriptionCubit;
+  final AdService? _adService;
 
   FlashcardCubit({
     FlashcardRepositoryInterface? flashcardRepository,
     SubscriptionCubit? subscriptionCubit,
+    AdService? adService,
   }) : _flashcardRepository = flashcardRepository ?? FlashcardRepositoryImpl(),
        _subscriptionCubit = subscriptionCubit,
+       _adService = adService,
        super(const FlashcardState());
 
   Future<void> initialize() async {
@@ -159,41 +162,10 @@ class FlashcardCubit extends Cubit<FlashcardState> {
       final isSubscribed = _subscriptionCubit.state.isSubscribed;
 
       if (!isSubscribed) {
-        try {
-          // Always show paywall for non-subscribers
-          final result = await RevenueCatUI.presentPaywall();
-
-          if (result == PaywallResult.cancelled ||
-              result == PaywallResult.error) {
-            emit(
-              state.copyWith(
-                isLoading: false,
-                errorMsg: 'premiumSubscriptionRequired',
-              ),
-            );
-            return;
-          }
-
-          // Recheck subscription after paywall
-          await _subscriptionCubit.loadSubscriptionStatus();
-          final newStatus = _subscriptionCubit.state.isSubscribed;
-
-          if (!newStatus) {
-            emit(
-              state.copyWith(
-                isLoading: false,
-                errorMsg: 'premiumSubscriptionRequired',
-              ),
-            );
-            return;
-          }
-        } catch (e) {
-          emit(
-            state.copyWith(
-              isLoading: false,
-              errorMsg: 'unableToProcessSubscription',
-            ),
-          );
+        await showAdForFreeUser();
+        
+        // Check if ad failed or user didn't watch
+        if (state.errorMsg != null) {
           return;
         }
       }
@@ -227,5 +199,39 @@ class FlashcardCubit extends Cubit<FlashcardState> {
 
   void clearMessages() {
     emit(state.copyWith(errorMsg: null, isSuccess: false));
+  }
+
+  /// Show ad for free users before flashcard generation
+  Future<void> showAdForFreeUser() async {
+    if (_adService == null) {
+      emit(state.copyWith(
+        errorMsg: 'adServiceNotAvailable',
+      ));
+      return;
+    }
+
+    try {
+      emit(state.copyWith(isShowingAd: true));
+      
+      final adResult = await _adService.showRewardedAd();
+      
+      if (!isClosed) {
+        emit(state.copyWith(isShowingAd: false));
+        
+        if (!adResult) {
+          emit(state.copyWith(
+            errorMsg: 'watchAdFirst',
+          ));
+          return;
+        }
+      }
+    } catch (e) {
+      if (!isClosed) {
+        emit(state.copyWith(
+          isShowingAd: false,
+          errorMsg: 'adFailedToLoad',
+        ));
+      }
+    }
   }
 }

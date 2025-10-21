@@ -1,9 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
 import '../../domain/repository/flashcard_generation_repository.dart';
 import '../../data/services/flashcard_generation_service.dart';
 import '../../../subscription/presentation/subscription_cubit.dart';
+import '../../../../core/services/ad_service.dart';
 
 /// State for flashcard generation
 class FlashcardGenerationState extends Equatable {
@@ -11,12 +11,14 @@ class FlashcardGenerationState extends Equatable {
   final bool isSuccess;
   final String? errorMsg;
   final List<FlashcardContent> generatedCards;
+  final bool isShowingAd;
 
   const FlashcardGenerationState({
     this.isLoading = false,
     this.isSuccess = false,
     this.errorMsg,
     this.generatedCards = const [],
+    this.isShowingAd = false,
   });
 
   FlashcardGenerationState copyWith({
@@ -24,25 +26,28 @@ class FlashcardGenerationState extends Equatable {
     bool? isSuccess,
     String? errorMsg,
     List<FlashcardContent>? generatedCards,
+    bool? isShowingAd,
   }) {
     return FlashcardGenerationState(
       isLoading: isLoading ?? this.isLoading,
       isSuccess: isSuccess ?? this.isSuccess,
       errorMsg: errorMsg,
       generatedCards: generatedCards ?? this.generatedCards,
+      isShowingAd: isShowingAd ?? this.isShowingAd,
     );
   }
 
   @override
-  List<Object?> get props => [isLoading, isSuccess, errorMsg, generatedCards];
+  List<Object?> get props => [isLoading, isSuccess, errorMsg, generatedCards, isShowingAd];
 }
 
 /// Cubit for managing flashcard generation from various sources
 class FlashcardGenerationCubit extends Cubit<FlashcardGenerationState> {
   final FlashcardGenerationRepository _repository;
   final SubscriptionCubit _subscriptionCubit;
+  final AdService _adService;
 
-  FlashcardGenerationCubit(this._repository, this._subscriptionCubit) : super(const FlashcardGenerationState());
+  FlashcardGenerationCubit(this._repository, this._subscriptionCubit, this._adService) : super(const FlashcardGenerationState());
 
   /// Generate flashcards from camera
   Future<void> generateFromCamera() async {
@@ -51,27 +56,10 @@ class FlashcardGenerationCubit extends Cubit<FlashcardGenerationState> {
       await _subscriptionCubit.loadSubscriptionStatus();
       final isSubscribed = _subscriptionCubit.state.isSubscribed;
       if (!isSubscribed) {
-        try {
-          final result = await RevenueCatUI.presentPaywallIfNeeded('premium_flashcard_generation');
-          if (result == PaywallResult.notPresented || result == PaywallResult.cancelled) {
-            emit(state.copyWith(
-              errorMsg: 'AI flashcard generation requires a premium subscription.',
-            ));
-            return;
-          }
-          // Reload subscription status to check if user subscribed
-          await _subscriptionCubit.loadSubscriptionStatus();
-          final newStatus = _subscriptionCubit.state.isSubscribed;
-          if (!newStatus) {
-            emit(state.copyWith(
-              errorMsg: 'AI flashcard generation requires a premium subscription.',
-            ));
-            return;
-          }
-        } catch (e) {
-          emit(state.copyWith(
-            errorMsg: 'Unable to verify subscription status.',
-          ));
+        await showAdForFreeUser();
+        
+        // Check if ad failed or user didn't watch
+        if (state.errorMsg != null) {
           return;
         }
       }
@@ -106,27 +94,10 @@ class FlashcardGenerationCubit extends Cubit<FlashcardGenerationState> {
       await _subscriptionCubit.loadSubscriptionStatus();
       final isSubscribed = _subscriptionCubit.state.isSubscribed;
       if (!isSubscribed) {
-        try {
-          final result = await RevenueCatUI.presentPaywallIfNeeded('premium_flashcard_generation');
-          if (result == PaywallResult.notPresented || result == PaywallResult.cancelled) {
-            emit(state.copyWith(
-              errorMsg: 'AI flashcard generation requires a premium subscription.',
-            ));
-            return;
-          }
-          // Reload subscription status to check if user subscribed
-          await _subscriptionCubit.loadSubscriptionStatus();
-          final newStatus = _subscriptionCubit.state.isSubscribed;
-          if (!newStatus) {
-            emit(state.copyWith(
-              errorMsg: 'AI flashcard generation requires a premium subscription.',
-            ));
-            return;
-          }
-        } catch (e) {
-          emit(state.copyWith(
-            errorMsg: 'Unable to verify subscription status.',
-          ));
+        await showAdForFreeUser();
+        
+        // Check if ad failed or user didn't watch
+        if (state.errorMsg != null) {
           return;
         }
       }
@@ -161,27 +132,10 @@ class FlashcardGenerationCubit extends Cubit<FlashcardGenerationState> {
       await _subscriptionCubit.loadSubscriptionStatus();
       final isSubscribed = _subscriptionCubit.state.isSubscribed;
       if (!isSubscribed) {
-        try {
-          final result = await RevenueCatUI.presentPaywallIfNeeded('premium_flashcard_generation');
-          if (result == PaywallResult.notPresented || result == PaywallResult.cancelled) {
-            emit(state.copyWith(
-              errorMsg: 'AI flashcard generation requires a premium subscription.',
-            ));
-            return;
-          }
-          // Reload subscription status to check if user subscribed
-          await _subscriptionCubit.loadSubscriptionStatus();
-          final newStatus = _subscriptionCubit.state.isSubscribed;
-          if (!newStatus) {
-            emit(state.copyWith(
-              errorMsg: 'AI flashcard generation requires a premium subscription.',
-            ));
-            return;
-          }
-        } catch (e) {
-          emit(state.copyWith(
-            errorMsg: 'Unable to verify subscription status.',
-          ));
+        await showAdForFreeUser();
+        
+        // Check if ad failed or user didn't watch
+        if (state.errorMsg != null) {
           return;
         }
       }
@@ -217,5 +171,32 @@ class FlashcardGenerationCubit extends Cubit<FlashcardGenerationState> {
   /// Clear generated cards
   void clearGeneratedCards() {
     emit(state.copyWith(generatedCards: []));
+  }
+
+  /// Show ad for free users before flashcard generation
+  Future<void> showAdForFreeUser() async {
+    try {
+      emit(state.copyWith(isShowingAd: true));
+      
+      final adResult = await _adService.showRewardedAd();
+      
+      if (!isClosed) {
+        emit(state.copyWith(isShowingAd: false));
+        
+        if (!adResult) {
+          emit(state.copyWith(
+            errorMsg: 'watchAdFirst',
+          ));
+          return;
+        }
+      }
+    } catch (e) {
+      if (!isClosed) {
+        emit(state.copyWith(
+          isShowingAd: false,
+          errorMsg: 'adFailedToLoad',
+        ));
+      }
+    }
   }
 }
