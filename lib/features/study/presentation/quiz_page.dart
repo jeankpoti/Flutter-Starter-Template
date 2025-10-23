@@ -807,8 +807,9 @@ class _QuizPageState extends State<QuizPage> {
       await AppReviewService.incrementQuizzesCompleted();
       
       // Only request review for good scores (70% or higher)
-      if (quiz.lastScore != null && quiz.lastScore! >= 70) {
+      if (quiz.lastScore != null && quiz.lastScore! >= 70 && mounted) {
         await AppReviewService.checkAndRequestReview(
+          context: context,
           triggerPoint: 'quiz_completion',
           afterPositiveAction: true,
         );

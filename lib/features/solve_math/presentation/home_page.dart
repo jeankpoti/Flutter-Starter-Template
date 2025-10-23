@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../common_widgets/permission_denied_dialog_widget.dart';
 import '../../../l10n/app_localizations.dart';
 import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
+import '../../../core/services/app_review_service.dart';
 
 import '../../../common_widgets/app_bar_widget.dart';
 import '../data/services/image_cropper_service.dart';
@@ -316,6 +317,14 @@ class _HomePageState extends State<HomePage>
                     isRefresh: true,
                   );
                   _showResultDialog(isTablet, state.result);
+                  
+                  // Check for app review after successful solve
+                  AppReviewService.checkAndRequestReview(
+                    context: context,
+                    triggerPoint: 'problem_solved',
+                    afterPositiveAction: true,
+                  );
+                  
                   // Clear the selected image after successful solving
                   context.read<ImageCaptureCubit>().clearImage();
                   // Clear the text input as well

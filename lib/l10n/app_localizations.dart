@@ -3742,6 +3742,48 @@ abstract class AppLocalizations {
   /// **'Easy'**
   String get reviewEasy;
 
+  /// No description provided for @enjoyingMathGenie.
+  ///
+  /// In en, this message translates to:
+  /// **'Enjoying MathGenie AI?'**
+  String get enjoyingMathGenie;
+
+  /// No description provided for @rateYourExperience.
+  ///
+  /// In en, this message translates to:
+  /// **'How many stars would you give us?'**
+  String get rateYourExperience;
+
+  /// No description provided for @tapNumberOfStars.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the number of stars that represents your experience'**
+  String get tapNumberOfStars;
+
+  /// No description provided for @maybeLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Maybe Later'**
+  String get maybeLater;
+
+  /// No description provided for @helpUsImprove.
+  ///
+  /// In en, this message translates to:
+  /// **'Help Us Improve'**
+  String get helpUsImprove;
+
+  /// No description provided for @feedbackMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'d love to hear your feedback to make the app better for you!'**
+  String get feedbackMessage;
+
+  /// No description provided for @sendFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Feedback'**
+  String get sendFeedback;
+
   /// No description provided for @tapToRevealAnswer.
   ///
   /// In en, this message translates to:

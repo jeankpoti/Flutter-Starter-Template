@@ -2092,5 +2092,28 @@ class AppLocalizationsFr extends AppLocalizations {
   String get reviewEasy => 'Facile';
 
   @override
+  String get enjoyingMathGenie => 'Vous appréciez MathGenie AI?';
+
+  @override
+  String get rateYourExperience => 'Combien d\'étoiles nous donneriez-vous?';
+
+  @override
+  String get tapNumberOfStars =>
+      'Appuyez sur le nombre d\'étoiles qui représente votre expérience';
+
+  @override
+  String get maybeLater => 'Peut-être plus tard';
+
+  @override
+  String get helpUsImprove => 'Aidez-nous à nous améliorer';
+
+  @override
+  String get feedbackMessage =>
+      'Nous aimerions connaître vos commentaires pour améliorer l\'application!';
+
+  @override
+  String get sendFeedback => 'Envoyer des commentaires';
+
+  @override
   String get tapToRevealAnswer => 'Appuyez pour révéler la réponse';
 }

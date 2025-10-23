@@ -729,6 +729,13 @@
   "reviewHard": "Difficile",
   "reviewGood": "Bien",
   "reviewEasy": "Facile",
+  "enjoyingMathGenie": "Vous appréciez MathGenie AI?",
+  "rateYourExperience": "Combien d'étoiles nous donneriez-vous?",
+  "tapNumberOfStars": "Appuyez sur le nombre d'étoiles qui représente votre expérience",
+  "maybeLater": "Peut-être plus tard",
+  "helpUsImprove": "Aidez-nous à nous améliorer",
+  "feedbackMessage": "Nous aimerions connaître vos commentaires pour améliorer l'application!",
+  "sendFeedback": "Envoyer des commentaires",
   "tapToRevealAnswer": "Appuyez pour révéler la réponse",
   "topics": "Sujets"
 }

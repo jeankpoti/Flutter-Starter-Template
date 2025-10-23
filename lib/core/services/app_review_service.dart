@@ -1,8 +1,11 @@
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:math_ai/core/services/analytics_service.dart';
+import 'package:math_ai/l10n/app_localizations.dart';
+import 'package:math_ai/common_widgets/text_widgets.dart';
 
 class AppReviewService {
   static const String _appLaunchCountKey = 'app_launch_count';
@@ -41,8 +44,9 @@ class AppReviewService {
     await prefs.setInt(_quizzesCompletedKey, count + 1);
   }
 
-  /// Check conditions and request review if appropriate
+  /// Check conditions and request review if appropriate (with context for custom dialog)
   static Future<void> checkAndRequestReview({
+    required BuildContext context,
     required String triggerPoint,
     bool afterPositiveAction = false,
   }) async {
@@ -95,20 +99,210 @@ class AppReviewService {
         },
       );
 
-      // Check if in-app review is available
-      if (await _inAppReview.isAvailable()) {
-        await _inAppReview.requestReview();
-        await prefs.setString(
-          _lastRequestDateKey,
-          DateTime.now().toIso8601String(),
-        );
-
-        // Log that review was requested
-        await AnalyticsService.logEvent(
-          name: 'review_requested',
-          parameters: {'method': 'in_app', 'trigger_point': triggerPoint},
-        );
+      // Show our custom rating dialog
+      if (context.mounted) {
+        await _showCustomRatingDialog(context, triggerPoint);
       }
+    }
+  }
+
+  /// Check conditions and request review (legacy method for Cubits without context)
+  static Future<void> checkAndRequestReviewLegacy({
+    required String triggerPoint,
+    bool afterPositiveAction = false,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // Don't ask if user has already rated the app
+    final hasRated = prefs.getBool(_hasRatedAppKey) ?? false;
+    if (hasRated) return;
+
+    // Don't ask if already requested recently
+    final lastRequestDate = prefs.getString(_lastRequestDateKey);
+    if (lastRequestDate != null) {
+      final daysSinceLastRequest =
+          DateTime.now().difference(DateTime.parse(lastRequestDate)).inDays;
+      if (daysSinceLastRequest < _daysBetweenRequests) return;
+    }
+
+    // Check if minimum conditions are met
+    final launchCount = prefs.getInt(_appLaunchCountKey) ?? 0;
+    final problemsSolved = prefs.getInt(_problemsSolvedKey) ?? 0;
+    final quizzesCompleted = prefs.getInt(_quizzesCompletedKey) ?? 0;
+
+    // Special case: Always ask after first problem solved
+    final isFirstProblemSolved =
+        triggerPoint == 'problem_solved' && problemsSolved == 1;
+
+    final meetsBasicRequirements =
+        launchCount >= _minLaunches && problemsSolved >= _minProblemsSolved;
+
+    // For quiz completion, also check quiz counts
+    final meetsQuizRequirement =
+        triggerPoint == 'quiz_completion'
+            ? quizzesCompleted >= _minQuizzesCompleted
+            : true;
+
+    final shouldRequest =
+        afterPositiveAction &&
+        (isFirstProblemSolved ||
+            (meetsBasicRequirements && meetsQuizRequirement));
+
+    if (shouldRequest) {
+      // Log analytics event
+      await AnalyticsService.logEvent(
+        name: 'review_prompt_triggered',
+        parameters: {
+          'trigger_point': triggerPoint,
+          'launch_count': launchCount,
+          'problems_solved': problemsSolved,
+          'quizzes_completed': quizzesCompleted,
+        },
+      );
+
+      // Use native review directly (no custom dialog)
+      await _requestAppStoreReview(triggerPoint, 5); // Assume 5-star intent
+    }
+  }
+
+  /// Show custom rating dialog with clear instructions
+  static Future<void> _showCustomRatingDialog(
+    BuildContext context,
+    String triggerPoint,
+  ) async {
+    if (!context.mounted) return;
+    
+    return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+        title: _buildDialogTitle(context, Icons.star_rate, AppLocalizations.of(context)!.enjoyingMathGenie),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            BodyMediumText(AppLocalizations.of(context)!.rateYourExperience, textAlign: TextAlign.center),
+            const SizedBox(height: 8),
+            BodySmallText(
+              AppLocalizations.of(context)!.tapNumberOfStars,
+              textAlign: TextAlign.center,
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+            ),
+            const SizedBox(height: 20),
+            _buildStarRating(context, triggerPoint),
+          ],
+        ),
+        actions: [_buildCancelButton(context, AppLocalizations.of(context)!.maybeLater)],
+      ),
+    );
+  }
+
+  /// Build star rating row
+  static Widget _buildStarRating(BuildContext context, String triggerPoint) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(5, (index) => 
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: IconButton(
+            icon: Icon(Icons.star_border, color: Theme.of(context).colorScheme.secondary, size: 32),
+            onPressed: () => _handleStarRating(context, index + 1, triggerPoint),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Handle star rating selection
+  static Future<void> _handleStarRating(BuildContext context, int rating, String triggerPoint) async {
+    Navigator.pop(context);
+    
+    await AnalyticsService.logEvent(
+      name: 'custom_rating_selected',
+      parameters: {'rating': rating, 'trigger_point': triggerPoint},
+    );
+
+    if (rating >= 4) {
+      await _requestAppStoreReview(triggerPoint, rating);
+    } else {
+      if (context.mounted) await _showFeedbackDialog(context, rating, triggerPoint);
+    }
+  }
+
+  /// Request App Store review for good ratings
+  static Future<void> _requestAppStoreReview(String triggerPoint, int rating) async {
+    final prefs = await SharedPreferences.getInstance();
+    
+    if (await _inAppReview.isAvailable()) {
+      await _inAppReview.requestReview();
+      await prefs.setString(_lastRequestDateKey, DateTime.now().toIso8601String());
+      
+      await AnalyticsService.logEvent(
+        name: 'review_requested',
+        parameters: {'method': 'in_app', 'trigger_point': triggerPoint, 'custom_rating': rating},
+      );
+    } else {
+      await openStoreListing();
+    }
+  }
+
+  /// Show feedback dialog for low ratings
+  static Future<void> _showFeedbackDialog(BuildContext context, int rating, String triggerPoint) async {
+    if (!context.mounted) return;
+    
+    return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+        title: _buildDialogTitle(context, Icons.feedback_outlined, AppLocalizations.of(context)!.helpUsImprove),
+        content: BodyMediumText(AppLocalizations.of(context)!.feedbackMessage, textAlign: TextAlign.center),
+        actions: [
+          _buildCancelButton(context, AppLocalizations.of(context)!.notNow),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _sendFeedbackEmail(rating, triggerPoint);
+            },
+            child: LabelLargeText(AppLocalizations.of(context)!.sendFeedback, color: Theme.of(context).colorScheme.secondary),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Build reusable dialog title
+  static Widget _buildDialogTitle(BuildContext context, IconData icon, String title) {
+    return Row(
+      children: [
+        Icon(icon, color: Theme.of(context).colorScheme.secondary, size: 28),
+        const SizedBox(width: 12),
+        Expanded(child: HeadlineSmallText(title, fontWeight: FontWeight.bold)),
+      ],
+    );
+  }
+
+  /// Build reusable cancel button
+  static Widget _buildCancelButton(BuildContext context, String text) {
+    return TextButton(
+      onPressed: () => Navigator.pop(context),
+      child: LabelLargeText(text, color: Theme.of(context).colorScheme.onSurface),
+    );
+  }
+
+  /// Send feedback email for low ratings
+  static Future<void> _sendFeedbackEmail(int rating, String triggerPoint) async {
+    const email = 'support@mathgenie.ai';
+    final subject = Uri.encodeComponent('MathGenie AI Feedback');
+    final body = Uri.encodeComponent(
+      'Hi MathGenie Team,\n\nI rated the app $rating stars and would like to share my feedback:\n\n[Please describe what could be improved]\n\nThanks!'
+    );
+    
+    final uri = Uri.parse('mailto:$email?subject=$subject&body=$body');
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+      await AnalyticsService.logEvent(
+        name: 'feedback_email_opened',
+        parameters: {'rating': rating, 'trigger_point': triggerPoint},
+      );
     }
   }
 

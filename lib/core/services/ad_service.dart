@@ -6,12 +6,18 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 class AdService {
   static AdService? _instance;
   static AdService get instance => _instance ??= AdService._();
-  
+
   AdService._();
 
   // Test Ad Unit IDs (replace with actual IDs for production)
-  static const String _rewardedAdUnitIdAndroid = 'ca-app-pub-3940256099942544/5224354917';
-  static const String _rewardedAdUnitIdIOS = 'ca-app-pub-3940256099942544/1712485313';
+  static const String _rewardedAdUnitIdAndroid =
+      'ca-app-pub-3940256099942544/5224354917';
+  // static const String _rewardedAdUnitIdIOS =
+  //     'ca-app-pub-9068204541773057~7141744607';
+  // static const String _rewardedAdUnitIdAndroid =
+  //     'ca-app-pub-3940256099942544/5224354917';
+  static const String _rewardedAdUnitIdIOS =
+      'ca-app-pub-3940256099942544/1712485313';
 
   RewardedAd? _rewardedAd;
   bool _isRewardedAdLoading = false;
@@ -42,7 +48,7 @@ class AdService {
           onAdLoaded: (RewardedAd ad) {
             _rewardedAd = ad;
             _isRewardedAdLoading = false;
-            
+
             // Set the full screen content callback
             _rewardedAd?.fullScreenContentCallback = FullScreenContentCallback(
               onAdDismissedFullScreenContent: (RewardedAd ad) {
@@ -53,7 +59,10 @@ class AdService {
                   loadRewardedAd();
                 });
               },
-              onAdFailedToShowFullScreenContent: (RewardedAd ad, AdError error) {
+              onAdFailedToShowFullScreenContent: (
+                RewardedAd ad,
+                AdError error,
+              ) {
                 ad.dispose();
                 _rewardedAd = null;
                 // Preload the next ad in background

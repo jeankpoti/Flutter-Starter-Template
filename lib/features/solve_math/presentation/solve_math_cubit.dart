@@ -83,12 +83,8 @@ class SolveMathCubit extends Cubit<SolveMathState> {
         ),
       );
       
-      // Increment problems solved counter and check for review
+      // Increment problems solved counter
       await AppReviewService.incrementProblemsSolved();
-      await AppReviewService.checkAndRequestReview(
-        triggerPoint: 'problem_solved',
-        afterPositiveAction: true,
-      );
     } catch (e) {
       emit(
         state.copyWith(
