@@ -36,7 +36,11 @@ class ActionButtonsWidget extends StatelessWidget {
           children: [
             Expanded(
               child: _ActionButton(
-                icon: Icons.camera_alt,
+                icon: imageCaptureState.isCamera &&
+                        imageCaptureState.imageFile != null &&
+                        solveMathState.result.isEmpty
+                    ? Icons.auto_awesome
+                    : Icons.camera_alt,
                 label:
                     imageCaptureState.isCamera &&
                             imageCaptureState.imageFile != null &&
@@ -67,7 +71,11 @@ class ActionButtonsWidget extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: _ActionButton(
-                icon: Icons.photo_library,
+                icon: imageCaptureState.isGallery &&
+                        imageCaptureState.imageFile != null &&
+                        solveMathState.result.isEmpty
+                    ? Icons.auto_awesome
+                    : Icons.photo_library,
                 label:
                     imageCaptureState.isGallery &&
                             imageCaptureState.imageFile != null &&

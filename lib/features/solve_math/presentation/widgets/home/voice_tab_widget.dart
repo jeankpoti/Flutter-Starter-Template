@@ -6,6 +6,7 @@ import '../../../../../l10n/app_localizations.dart';
 import '../../../../../common_widgets/text_widgets.dart';
 import '../../../../common/presentation/permission_cubit.dart';
 import '../../../../../common_widgets/permission_denied_dialog_widget.dart';
+import '../../solve_math_cubit.dart';
 
 class VoiceTabWidget extends StatefulWidget {
   final bool isTablet;
@@ -82,8 +83,7 @@ class _VoiceTabWidgetState extends State<VoiceTabWidget> {
           _confidence = result.confidence;
         });
         
-        if (result.finalResult && _voiceText.isNotEmpty) {
-          widget.onVoiceResult(_voiceText);
+        if (result.finalResult) {
           _stopListening();
         }
       },
@@ -125,6 +125,8 @@ class _VoiceTabWidgetState extends State<VoiceTabWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final solveMathState = context.watch<SolveMathCubit>().state;
+    
     return Column(
       children: [
         // Voice input info card
@@ -281,19 +283,38 @@ class _VoiceTabWidgetState extends State<VoiceTabWidget> {
             const SizedBox(width: _spacing4),
             Expanded(
               child: ElevatedButton.icon(
-                onPressed: _voiceText.isNotEmpty && !_isListening
+                onPressed: _voiceText.isNotEmpty && !_isListening && !solveMathState.isIdentifying && !solveMathState.isShowingAd
                   ? () => widget.onVoiceResult(_voiceText)
                   : null,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                  backgroundColor: Theme.of(context).colorScheme.secondary,
+                  foregroundColor: Theme.of(context).colorScheme.onSecondary,
                   minimumSize: const Size(double.infinity, 48),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12.0),
                   ),
                 ),
-                icon: const Icon(Icons.psychology),
-                label: Text(AppLocalizations.of(context)!.solve),
+                icon: (solveMathState.isIdentifying || solveMathState.isShowingAd)
+                  ? SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Theme.of(context).colorScheme.onSecondary,
+                      ),
+                    )
+                  : const Icon(Icons.auto_awesome, size: 20),
+                label: Text(
+                  solveMathState.isShowingAd
+                    ? AppLocalizations.of(context)!.loadingAd
+                    : solveMathState.isIdentifying
+                      ? AppLocalizations.of(context)!.solving
+                      : AppLocalizations.of(context)!.solve,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSecondary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
             ),
           ],

@@ -153,15 +153,20 @@ class _HomePageState extends State<HomePage>
     }
   }
 
-
   void _solveMath({File? imageFile, String? textInput}) {
     // Check subscription status
     final isSubscribed = context.read<SubscriptionCubit>().state.isSubscribed;
-    
+
     if (imageFile != null) {
-      context.read<SolveMathCubit>().solveMath(imageFile, isSubscribed: isSubscribed);
+      context.read<SolveMathCubit>().solveMath(
+        imageFile,
+        isSubscribed: isSubscribed,
+      );
     } else if (textInput != null) {
-      context.read<SolveMathCubit>().solveMath(textInput, isSubscribed: isSubscribed);
+      context.read<SolveMathCubit>().solveMath(
+        textInput,
+        isSubscribed: isSubscribed,
+      );
     }
   }
 
@@ -230,7 +235,8 @@ class _HomePageState extends State<HomePage>
                     margin: const EdgeInsets.only(right: 8.0),
                     child: IconButton(
                       onPressed: () async {
-                        final message = AppLocalizations.of(context)!.premiumNoAds;
+                        final message =
+                            AppLocalizations.of(context)!.premiumNoAds;
                         try {
                           await RevenueCatUI.presentPaywall();
                         } catch (e) {
@@ -244,10 +250,7 @@ class _HomePageState extends State<HomePage>
                         padding: const EdgeInsets.all(8.0),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [
-                              Colors.amber,
-                              Colors.orange,
-                            ],
+                            colors: [Colors.amber, Colors.orange],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
@@ -263,17 +266,9 @@ class _HomePageState extends State<HomePage>
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(
-                              Icons.star,
-                              color: Colors.white,
-                              size: 16,
-                            ),
+                            Icon(Icons.star, color: Colors.white, size: 16),
                             const SizedBox(width: 4),
-                            Icon(
-                              Icons.block,
-                              color: Colors.white,
-                              size: 14,
-                            ),
+                            Icon(Icons.block, color: Colors.white, size: 14),
                           ],
                         ),
                       ),
@@ -332,7 +327,7 @@ class _HomePageState extends State<HomePage>
                     isError: true,
                   );
                 }
-                
+
                 // Handle ad-related error messages
                 if (state.errorMsg != null) {
                   String message;
@@ -388,63 +383,63 @@ class _HomePageState extends State<HomePage>
                             child: Column(
                               children: [
                                 // Header Section for Photo Tab
-                                Container(
-                                  padding: const EdgeInsets.all(_spacing6),
-                                  decoration: BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: [
-                                        Theme.of(context)
-                                            .colorScheme
-                                            .secondaryContainer
-                                            .withValues(alpha: 0.3),
-                                        Theme.of(context).colorScheme.tertiary
-                                            .withValues(alpha: 0.2),
-                                      ],
-                                      begin: Alignment.topLeft,
-                                      end: Alignment.bottomRight,
-                                    ),
-                                    borderRadius: BorderRadius.circular(16.0),
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Icon(
-                                            Icons.auto_awesome,
-                                            size: 28,
-                                            color:
-                                                Theme.of(
-                                                  context,
-                                                ).colorScheme.secondary,
-                                          ),
-                                          const SizedBox(width: 12),
-                                          HeadlineSmallText(
-                                            AppLocalizations.of(
-                                              context,
-                                            )!.aiMathSolver,
-                                            fontWeight: FontWeight.bold,
-                                            color:
-                                                Theme.of(
-                                                  context,
-                                                ).colorScheme.onSurface,
-                                          ),
-                                        ],
-                                      ),
+                                // Container(
+                                //   padding: const EdgeInsets.all(_spacing6),
+                                //   decoration: BoxDecoration(
+                                //     gradient: LinearGradient(
+                                //       colors: [
+                                //         Theme.of(context)
+                                //             .colorScheme
+                                //             .secondaryContainer
+                                //             .withValues(alpha: 0.3),
+                                //         Theme.of(context).colorScheme.tertiary
+                                //             .withValues(alpha: 0.2),
+                                //       ],
+                                //       begin: Alignment.topLeft,
+                                //       end: Alignment.bottomRight,
+                                //     ),
+                                //     borderRadius: BorderRadius.circular(16.0),
+                                //   ),
+                                //   child: Column(
+                                //     children: [
+                                //       Row(
+                                //         children: [
+                                //           Icon(
+                                //             Icons.auto_awesome,
+                                //             size: 28,
+                                //             color:
+                                //                 Theme.of(
+                                //                   context,
+                                //                 ).colorScheme.secondary,
+                                //           ),
+                                //           const SizedBox(width: 12),
+                                //           HeadlineSmallText(
+                                //             AppLocalizations.of(
+                                //               context,
+                                //             )!.aiMathSolver,
+                                //             fontWeight: FontWeight.bold,
+                                //             color:
+                                //                 Theme.of(
+                                //                   context,
+                                //                 ).colorScheme.onSurface,
+                                //           ),
+                                //         ],
+                                //       ),
 
-                                      const SizedBox(height: 8),
-                                      BodyMediumText(
-                                        AppLocalizations.of(
-                                          context,
-                                        )!.mathSolverDescription,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurface
-                                            .withValues(alpha: 0.8),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                                //       const SizedBox(height: 8),
+                                //       BodyMediumText(
+                                //         AppLocalizations.of(
+                                //           context,
+                                //         )!.mathSolverDescription,
+                                //         color: Theme.of(context)
+                                //             .colorScheme
+                                //             .onSurface
+                                //             .withValues(alpha: 0.8),
+                                //         textAlign: TextAlign.center,
+                                //       ),
+                                //     ],
+                                //   ),
+                                // ),
                                 const SizedBox(height: _spacing6),
                                 PhotoTabWidget(
                                   isTablet: isTablet,
@@ -459,7 +454,11 @@ class _HomePageState extends State<HomePage>
                                         .emptyResult();
                                   },
                                   onSolvePressed: () async {
-                                    final imageFile = context.read<ImageCaptureCubit>().state.imageFile;
+                                    final imageFile =
+                                        context
+                                            .read<ImageCaptureCubit>()
+                                            .state
+                                            .imageFile;
                                     _solveMath(imageFile: imageFile);
                                   },
                                 ),
@@ -492,7 +491,9 @@ class _HomePageState extends State<HomePage>
                               children: [
                                 VoiceTabWidget(
                                   isTablet: isTablet,
-                                  onVoiceResult: (voiceText) => _solveMath(textInput: voiceText),
+                                  onVoiceResult:
+                                      (voiceText) =>
+                                          _solveMath(textInput: voiceText),
                                   showSnackBarMessage: _showSnackBarMessage,
                                 ),
                               ],
