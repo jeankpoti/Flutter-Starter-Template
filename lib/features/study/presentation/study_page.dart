@@ -52,10 +52,11 @@ class StudyPage extends StatelessWidget {
               )..initializeServices(),
         ),
         BlocProvider(
-          create: (context) => FlashcardCubit(
-            subscriptionCubit: context.read<SubscriptionCubit>(),
-            adService: AdService.instance,
-          ),
+          create:
+              (context) => FlashcardCubit(
+                subscriptionCubit: context.read<SubscriptionCubit>(),
+                adService: AdService.instance,
+              ),
         ),
       ],
       child: const _StudyPageView(),
@@ -71,7 +72,10 @@ class _StudyPageView extends StatefulWidget {
 }
 
 class _StudyPageViewState extends State<_StudyPageView>
-    with SingleTickerProviderStateMixin, WidgetsBindingObserver, PermissionLifecycleMixin {
+    with
+        SingleTickerProviderStateMixin,
+        WidgetsBindingObserver,
+        PermissionLifecycleMixin {
   late TabController _tabController;
 
   static const double _spacing4 = 16.0;
@@ -89,7 +93,7 @@ class _StudyPageViewState extends State<_StudyPageView>
     _tabController.dispose();
     super.dispose();
   }
-  
+
   // Override from PermissionLifecycleMixin - handles showing messages
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -106,7 +110,7 @@ class _StudyPageViewState extends State<_StudyPageView>
       }
     }
   }
-  
+
   void _showSnackBarMessage(String message, {bool isError = false}) {
     if (!mounted) return;
 
@@ -150,28 +154,28 @@ class _StudyPageViewState extends State<_StudyPageView>
         BlocListener<StudyCubit, StudyState>(
           listenWhen:
               (previous, current) =>
-                  previous.errorMsg != current.errorMsg && current.errorMsg != null,
+                  previous.errorMsg != current.errorMsg &&
+                  current.errorMsg != null,
           listener: (context, state) {
             if (state.errorMsg != null) {
               String errorMessage = state.errorMsg!;
-              
+
               // Check if it's a non-math content error and localize it
               if (errorMessage == 'NON_MATH_CONTENT_ERROR') {
-                errorMessage = AppLocalizations.of(context)!.nonMathContentError;
+                errorMessage =
+                    AppLocalizations.of(context)!.nonMathContentError;
               } else if (errorMessage == 'NON_MATH_TEXT_ERROR') {
                 errorMessage = AppLocalizations.of(context)!.nonMathTextError;
               } else if (errorMessage == 'NON_MATH_DOCUMENT_ERROR') {
-                errorMessage = AppLocalizations.of(context)!.nonMathDocumentError;
+                errorMessage =
+                    AppLocalizations.of(context)!.nonMathDocumentError;
               } else if (errorMessage == 'adFailedToLoad') {
                 errorMessage = AppLocalizations.of(context)!.adFailedToLoad;
               } else if (errorMessage == 'watchAdFirst') {
                 errorMessage = AppLocalizations.of(context)!.watchAdFirst;
               }
-              
-              AppSnackBar.showError(
-                context,
-                errorMessage,
-              );
+
+              AppSnackBar.showError(context, errorMessage);
               // Clear the error message
               context.read<StudyCubit>().clearError();
             }
@@ -187,12 +191,14 @@ class _StudyPageViewState extends State<_StudyPageView>
           },
         ),
         BlocListener<FlashcardCubit, FlashcardState>(
-          listenWhen: (previous, current) =>
-              previous.errorMsg != current.errorMsg && current.errorMsg != null,
+          listenWhen:
+              (previous, current) =>
+                  previous.errorMsg != current.errorMsg &&
+                  current.errorMsg != null,
           listener: (context, state) {
             if (state.errorMsg != null) {
               String errorMessage = state.errorMsg!;
-              
+
               // Localize ad error messages
               if (errorMessage == 'adFailedToLoad') {
                 errorMessage = AppLocalizations.of(context)!.adFailedToLoad;
@@ -201,7 +207,7 @@ class _StudyPageViewState extends State<_StudyPageView>
               } else if (errorMessage == 'adServiceNotAvailable') {
                 errorMessage = AppLocalizations.of(context)!.somethingWentWrong;
               }
-              
+
               AppSnackBar.showError(context, errorMessage);
               context.read<FlashcardCubit>().clearMessages();
             }
@@ -211,9 +217,8 @@ class _StudyPageViewState extends State<_StudyPageView>
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
         appBar: AppBar(
-          title: HeadlineSmallText(
+          title: TitleLargeText(
             AppLocalizations.of(context)!.studyMaterialsTitle,
-            fontWeight: FontWeight.w600,
           ),
           backgroundColor: Colors.transparent,
           elevation: 0,
@@ -226,7 +231,8 @@ class _StudyPageViewState extends State<_StudyPageView>
                     margin: const EdgeInsets.only(right: 8.0),
                     child: IconButton(
                       onPressed: () async {
-                        final message = AppLocalizations.of(context)!.premiumNoAds;
+                        final message =
+                            AppLocalizations.of(context)!.premiumNoAds;
                         try {
                           await RevenueCatUI.presentPaywall();
                         } catch (e) {
@@ -240,10 +246,7 @@ class _StudyPageViewState extends State<_StudyPageView>
                         padding: const EdgeInsets.all(8.0),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [
-                              Colors.amber,
-                              Colors.orange,
-                            ],
+                            colors: [Colors.amber, Colors.orange],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
@@ -259,17 +262,9 @@ class _StudyPageViewState extends State<_StudyPageView>
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(
-                              Icons.star,
-                              color: Colors.white,
-                              size: 16,
-                            ),
+                            Icon(Icons.star, color: Colors.white, size: 16),
                             const SizedBox(width: 4),
-                            Icon(
-                              Icons.block,
-                              color: Colors.white,
-                              size: 14,
-                            ),
+                            Icon(Icons.block, color: Colors.white, size: 14),
                           ],
                         ),
                       ),
@@ -354,7 +349,8 @@ class _StudyPageViewState extends State<_StudyPageView>
                             ),
                             FlashcardsTab(
                               studyMaterials: state.studyMaterials,
-                              onGenerateFromMaterials: _generateFlashcardsFromMaterials,
+                              onGenerateFromMaterials:
+                                  _generateFlashcardsFromMaterials,
                             ),
                           ],
                         );
@@ -372,10 +368,12 @@ class _StudyPageViewState extends State<_StudyPageView>
 
   Future<void> _handlePhotoUpload() async {
     final isSubscribed = context.read<SubscriptionCubit>().state.isSubscribed;
-    final handled = await context.read<StudyCubit>().handlePhotoUpload(isSubscribed: isSubscribed);
-    
+    final handled = await context.read<StudyCubit>().handlePhotoUpload(
+      isSubscribed: isSubscribed,
+    );
+
     if (!mounted) return;
-    
+
     if (!handled) {
       // Show permission dialog
       if (mounted) {
@@ -386,13 +384,15 @@ class _StudyPageViewState extends State<_StudyPageView>
       }
     }
   }
-  
+
   Future<void> _handleGalleryUpload() async {
     final isSubscribed = context.read<SubscriptionCubit>().state.isSubscribed;
-    final handled = await context.read<StudyCubit>().handleGalleryUpload(isSubscribed: isSubscribed);
-    
+    final handled = await context.read<StudyCubit>().handleGalleryUpload(
+      isSubscribed: isSubscribed,
+    );
+
     if (!mounted) return;
-    
+
     if (!handled) {
       // Show permission dialog
       if (mounted) {
@@ -415,7 +415,7 @@ class _StudyPageViewState extends State<_StudyPageView>
             child: const TextInputDialog(),
           ),
     );
-    
+
     if (result != null && result.isNotEmpty) {
       studyCubit.processTextMaterial(result, isSubscribed: isSubscribed);
     }
@@ -423,10 +423,12 @@ class _StudyPageViewState extends State<_StudyPageView>
 
   Future<void> _handleDocumentUpload() async {
     final isSubscribed = context.read<SubscriptionCubit>().state.isSubscribed;
-    final handled = await context.read<StudyCubit>().handleDocumentUpload(isSubscribed: isSubscribed);
-    
+    final handled = await context.read<StudyCubit>().handleDocumentUpload(
+      isSubscribed: isSubscribed,
+    );
+
     if (!mounted) return;
-    
+
     if (!handled) {
       // Show permission dialog for iOS/macOS
       if (mounted) {
@@ -670,16 +672,16 @@ class _StudyPageViewState extends State<_StudyPageView>
   }
 
   Future<void> _generateFlashcardsFromMaterials(
-    List<StudyMaterial> materials, 
-    String deckName, 
-    String? deckDescription
+    List<StudyMaterial> materials,
+    String deckName,
+    String? deckDescription,
   ) async {
     await context.read<FlashcardCubit>().generateFlashcardsFromMaterials(
       materials: materials,
       deckName: deckName,
       deckDescription: deckDescription,
     );
-    
+
     if (mounted) {
       AppSnackBar.showSuccess(
         context,

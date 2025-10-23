@@ -3784,6 +3784,30 @@ abstract class AppLocalizations {
   /// **'Send Feedback'**
   String get sendFeedback;
 
+  /// No description provided for @feedbackEmailError.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot open email app. Please copy the email address.'**
+  String get feedbackEmailError;
+
+  /// No description provided for @copyEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy Email'**
+  String get copyEmail;
+
+  /// No description provided for @supportEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Support Email'**
+  String get supportEmail;
+
+  /// No description provided for @contactSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact Support'**
+  String get contactSupport;
+
   /// No description provided for @tapToRevealAnswer.
   ///
   /// In en, this message translates to:

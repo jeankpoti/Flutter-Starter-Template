@@ -737,6 +737,10 @@
   "helpUsImprove": "Help Us Improve",
   "feedbackMessage": "We'd love to hear your feedback to make the app better for you!",
   "sendFeedback": "Send Feedback",
+  "feedbackEmailError": "Cannot open email app. Please copy the email address.",
+  "copyEmail": "Copy Email",
+  "supportEmail": "Support Email",
+  "contactSupport": "Contact Support",
   "tapToRevealAnswer": "Tap to reveal answer",
   "topics": "Topics"
 }

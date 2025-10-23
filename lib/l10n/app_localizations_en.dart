@@ -2062,5 +2062,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sendFeedback => 'Send Feedback';
 
   @override
+  String get feedbackEmailError =>
+      'Cannot open email app. Please copy the email address.';
+
+  @override
+  String get copyEmail => 'Copy Email';
+
+  @override
+  String get supportEmail => 'Support Email';
+
+  @override
+  String get contactSupport => 'Contact Support';
+
+  @override
   String get tapToRevealAnswer => 'Tap to reveal answer';
 }

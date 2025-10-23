@@ -736,6 +736,10 @@
   "helpUsImprove": "Aidez-nous à nous améliorer",
   "feedbackMessage": "Nous aimerions connaître vos commentaires pour améliorer l'application!",
   "sendFeedback": "Envoyer des commentaires",
+  "feedbackEmailError": "Impossible d'ouvrir l'application e-mail. Veuillez copier l'adresse e-mail.",
+  "copyEmail": "Copier l'e-mail",
+  "supportEmail": "E-mail de support",
+  "contactSupport": "Contacter le support",
   "tapToRevealAnswer": "Appuyez pour révéler la réponse",
   "topics": "Sujets"
 }

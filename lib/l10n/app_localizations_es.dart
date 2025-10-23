@@ -2097,5 +2097,18 @@ class AppLocalizationsEs extends AppLocalizations {
   String get sendFeedback => 'Enviar comentarios';
 
   @override
+  String get feedbackEmailError =>
+      'No se puede abrir la aplicación de correo. Por favor, copia la dirección de correo.';
+
+  @override
+  String get copyEmail => 'Copiar correo';
+
+  @override
+  String get supportEmail => 'Correo de soporte';
+
+  @override
+  String get contactSupport => 'Contactar soporte';
+
+  @override
   String get tapToRevealAnswer => 'Toca para revelar la respuesta';
 }

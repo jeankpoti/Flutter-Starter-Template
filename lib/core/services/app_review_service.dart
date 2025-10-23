@@ -50,59 +50,11 @@ class AppReviewService {
     required String triggerPoint,
     bool afterPositiveAction = false,
   }) async {
-    final prefs = await SharedPreferences.getInstance();
-
-    // Don't ask if user has already rated the app
-    final hasRated = prefs.getBool(_hasRatedAppKey) ?? false;
-    if (hasRated) return;
-
-    // Don't ask if already requested recently
-    final lastRequestDate = prefs.getString(_lastRequestDateKey);
-    if (lastRequestDate != null) {
-      final daysSinceLastRequest =
-          DateTime.now().difference(DateTime.parse(lastRequestDate)).inDays;
-      if (daysSinceLastRequest < _daysBetweenRequests) return;
-    }
-
-    // Check if minimum conditions are met
-    final launchCount = prefs.getInt(_appLaunchCountKey) ?? 0;
-    final problemsSolved = prefs.getInt(_problemsSolvedKey) ?? 0;
-    final quizzesCompleted = prefs.getInt(_quizzesCompletedKey) ?? 0;
-
-    // Special case: Always ask after first problem solved
-    final isFirstProblemSolved =
-        triggerPoint == 'problem_solved' && problemsSolved == 1;
-
-    final meetsBasicRequirements =
-        launchCount >= _minLaunches && problemsSolved >= _minProblemsSolved;
-
-    // For quiz completion, also check quiz counts
-    final meetsQuizRequirement =
-        triggerPoint == 'quiz_completion'
-            ? quizzesCompleted >= _minQuizzesCompleted
-            : true;
-
-    final shouldRequest =
-        afterPositiveAction &&
-        (isFirstProblemSolved ||
-            (meetsBasicRequirements && meetsQuizRequirement));
-
-    if (shouldRequest) {
-      // Log analytics event
-      await AnalyticsService.logEvent(
-        name: 'review_prompt_triggered',
-        parameters: {
-          'trigger_point': triggerPoint,
-          'launch_count': launchCount,
-          'problems_solved': problemsSolved,
-          'quizzes_completed': quizzesCompleted,
-        },
-      );
-
-      // Show our custom rating dialog
-      if (context.mounted) {
-        await _showCustomRatingDialog(context, triggerPoint);
-      }
+    if (!await _shouldRequestReview(triggerPoint, afterPositiveAction)) return;
+    
+    // Show our custom rating dialog
+    if (context.mounted) {
+      await _showCustomRatingDialog(context, triggerPoint);
     }
   }
 
@@ -111,18 +63,24 @@ class AppReviewService {
     required String triggerPoint,
     bool afterPositiveAction = false,
   }) async {
+    if (!await _shouldRequestReview(triggerPoint, afterPositiveAction)) return;
+    
+    // Use native review directly (no custom dialog)
+    await _requestAppStoreReview(triggerPoint, 5); // Assume 5-star intent
+  }
+
+  /// Check if review should be requested based on conditions
+  static Future<bool> _shouldRequestReview(String triggerPoint, bool afterPositiveAction) async {
     final prefs = await SharedPreferences.getInstance();
 
     // Don't ask if user has already rated the app
-    final hasRated = prefs.getBool(_hasRatedAppKey) ?? false;
-    if (hasRated) return;
+    if (prefs.getBool(_hasRatedAppKey) ?? false) return false;
 
     // Don't ask if already requested recently
     final lastRequestDate = prefs.getString(_lastRequestDateKey);
     if (lastRequestDate != null) {
-      final daysSinceLastRequest =
-          DateTime.now().difference(DateTime.parse(lastRequestDate)).inDays;
-      if (daysSinceLastRequest < _daysBetweenRequests) return;
+      final daysSinceLastRequest = DateTime.now().difference(DateTime.parse(lastRequestDate)).inDays;
+      if (daysSinceLastRequest < _daysBetweenRequests) return false;
     }
 
     // Check if minimum conditions are met
@@ -130,39 +88,20 @@ class AppReviewService {
     final problemsSolved = prefs.getInt(_problemsSolvedKey) ?? 0;
     final quizzesCompleted = prefs.getInt(_quizzesCompletedKey) ?? 0;
 
-    // Special case: Always ask after first problem solved
-    final isFirstProblemSolved =
-        triggerPoint == 'problem_solved' && problemsSolved == 1;
+    final isFirstProblemSolved = triggerPoint == 'problem_solved' && problemsSolved == 1;
+    final meetsBasicRequirements = launchCount >= _minLaunches && problemsSolved >= _minProblemsSolved;
+    final meetsQuizRequirement = triggerPoint == 'quiz_completion' ? quizzesCompleted >= _minQuizzesCompleted : true;
 
-    final meetsBasicRequirements =
-        launchCount >= _minLaunches && problemsSolved >= _minProblemsSolved;
-
-    // For quiz completion, also check quiz counts
-    final meetsQuizRequirement =
-        triggerPoint == 'quiz_completion'
-            ? quizzesCompleted >= _minQuizzesCompleted
-            : true;
-
-    final shouldRequest =
-        afterPositiveAction &&
-        (isFirstProblemSolved ||
-            (meetsBasicRequirements && meetsQuizRequirement));
+    final shouldRequest = afterPositiveAction && (isFirstProblemSolved || (meetsBasicRequirements && meetsQuizRequirement));
 
     if (shouldRequest) {
-      // Log analytics event
       await AnalyticsService.logEvent(
         name: 'review_prompt_triggered',
-        parameters: {
-          'trigger_point': triggerPoint,
-          'launch_count': launchCount,
-          'problems_solved': problemsSolved,
-          'quizzes_completed': quizzesCompleted,
-        },
+        parameters: {'trigger_point': triggerPoint, 'launch_count': launchCount, 'problems_solved': problemsSolved, 'quizzes_completed': quizzesCompleted},
       );
-
-      // Use native review directly (no custom dialog)
-      await _requestAppStoreReview(triggerPoint, 5); // Assume 5-star intent
     }
+
+    return shouldRequest;
   }
 
   /// Show custom rating dialog with clear instructions
@@ -290,20 +229,73 @@ class AppReviewService {
 
   /// Send feedback email for low ratings
   static Future<void> _sendFeedbackEmail(int rating, String triggerPoint) async {
+    await sendGeneralFeedback(
+      context: null,
+      feedbackType: 'low_rating',
+      additionalInfo: 'Rating: $rating stars, Trigger: $triggerPoint',
+    );
+  }
+
+  /// General feedback functionality (can be used from anywhere)
+  static Future<void> sendGeneralFeedback({
+    BuildContext? context,
+    String feedbackType = 'general',
+    String? additionalInfo,
+  }) async {
     const email = 'support@mathgenie.ai';
     final subject = Uri.encodeComponent('MathGenie AI Feedback');
-    final body = Uri.encodeComponent(
-      'Hi MathGenie Team,\n\nI rated the app $rating stars and would like to share my feedback:\n\n[Please describe what could be improved]\n\nThanks!'
-    );
     
-    final uri = Uri.parse('mailto:$email?subject=$subject&body=$body');
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
+    final feedbackMessages = {
+      'low_rating': 'I have some feedback to help improve the app:',
+      'general': 'I would like to share some feedback:',
+      'bug_report': 'I encountered an issue and would like to report it:',
+      'feature_request': 'I have a feature request:',
+    };
+    
+    String bodyText = 'Hi MathGenie Team,\n\n${feedbackMessages[feedbackType] ?? feedbackMessages['general']}\n\n';
+    bodyText += '[Please describe your feedback here]\n\n';
+    if (additionalInfo != null) bodyText += 'Additional Info: $additionalInfo\n\n';
+    bodyText += 'Thanks!\n\n---\nSent from MathGenie AI';
+    
+    final uri = Uri.parse('mailto:$email?subject=$subject&body=${Uri.encodeComponent(bodyText)}');
+    
+    try {
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+        await AnalyticsService.logEvent(
+          name: 'feedback_email_opened',
+          parameters: {'feedback_type': feedbackType, 'has_additional_info': additionalInfo != null},
+        );
+      } else if (context?.mounted == true) {
+        _showFeedbackError(context!);
+      }
+    } catch (e) {
+      if (context?.mounted == true) _showFeedbackError(context!);
       await AnalyticsService.logEvent(
-        name: 'feedback_email_opened',
-        parameters: {'rating': rating, 'trigger_point': triggerPoint},
+        name: 'feedback_email_failed',
+        parameters: {'feedback_type': feedbackType, 'error': e.toString()},
       );
     }
+  }
+
+  /// Show error when email app cannot be opened
+  static void _showFeedbackError(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(AppLocalizations.of(context)!.feedbackEmailError),
+        backgroundColor: Theme.of(context).colorScheme.error,
+        action: SnackBarAction(
+          label: AppLocalizations.of(context)!.copyEmail,
+          textColor: Theme.of(context).colorScheme.onError,
+          onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('${AppLocalizations.of(context)!.supportEmail}: support@mathgenie.ai'),
+              duration: const Duration(seconds: 5),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   /// Mark that user has rated the app (to stop asking)

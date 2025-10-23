@@ -22,6 +22,7 @@ import 'features/subscription/presentation/subscription_page.dart';
 import 'l10n/app_localizations.dart';
 import 'main.dart';
 import 'theme/theme_cubit.dart';
+import 'core/services/app_review_service.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -272,6 +273,19 @@ class _SettingsPageState extends State<SettingsPage> {
                             );
                           }
                         }
+                      },
+                    ),
+                    SettingsListTile(
+                      text: AppLocalizations.of(context)!.sendFeedback,
+                      icon: Icon(
+                        Icons.email_outlined,
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                      onTap: () {
+                        AppReviewService.sendGeneralFeedback(
+                          context: context,
+                          feedbackType: 'general',
+                        );
                       },
                     ),
                     if (user != null)

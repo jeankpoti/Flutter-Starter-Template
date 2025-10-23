@@ -2115,5 +2115,18 @@ class AppLocalizationsFr extends AppLocalizations {
   String get sendFeedback => 'Envoyer des commentaires';
 
   @override
+  String get feedbackEmailError =>
+      'Impossible d\'ouvrir l\'application e-mail. Veuillez copier l\'adresse e-mail.';
+
+  @override
+  String get copyEmail => 'Copier l\'e-mail';
+
+  @override
+  String get supportEmail => 'E-mail de support';
+
+  @override
+  String get contactSupport => 'Contacter le support';
+
+  @override
   String get tapToRevealAnswer => 'Appuyez pour révéler la réponse';
 }
