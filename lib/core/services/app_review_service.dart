@@ -15,9 +15,6 @@ class AppReviewService {
   static const String _hasRatedAppKey = 'has_rated_app';
 
   // Minimum requirements before showing review prompt
-  static const int _minLaunches =
-      1; // Can ask on first launch if they solve a problem
-  static const int _minProblemsSolved = 1; // Ask after first successful solve
   static const int _minQuizzesCompleted = 2;
   static const int _daysBetweenRequests = 60; // 2 months
 
@@ -89,10 +86,10 @@ class AppReviewService {
     final quizzesCompleted = prefs.getInt(_quizzesCompletedKey) ?? 0;
 
     final isFirstProblemSolved = triggerPoint == 'problem_solved' && problemsSolved == 1;
-    final meetsBasicRequirements = launchCount >= _minLaunches && problemsSolved >= _minProblemsSolved;
-    final meetsQuizRequirement = triggerPoint == 'quiz_completion' ? quizzesCompleted >= _minQuizzesCompleted : true;
-
-    final shouldRequest = afterPositiveAction && (isFirstProblemSolved || (meetsBasicRequirements && meetsQuizRequirement));
+    final isFirstEligibleQuiz = triggerPoint == 'quiz_completion' && quizzesCompleted >= _minQuizzesCompleted;
+    
+    // Only show review on specific milestones, not every action
+    final shouldRequest = afterPositiveAction && (isFirstProblemSolved || isFirstEligibleQuiz);
 
     if (shouldRequest) {
       await AnalyticsService.logEvent(

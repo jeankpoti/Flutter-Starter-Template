@@ -1,8 +1,10 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import '../domain/models/math_level.dart';
+import '../domain/models/response_length.dart';
 
 class PreferencesService {
   static const String _mathLevelKey = 'math_level';
+  static const String _responseLengthKey = 'response_length';
   static const String _isFirstTimeKey = 'is_first_time';
   static const String _localeKey = 'selected_locale';
   
@@ -37,6 +39,19 @@ class PreferencesService {
 
   Future<void> setFirstTimeComplete() async {
     await _prefs!.setBool(_isFirstTimeKey, false);
+  }
+
+  // Response Length preferences
+  Future<void> setResponseLength(ResponseLength length) async {
+    await _prefs!.setString(_responseLengthKey, length.name);
+  }
+
+  ResponseLength getResponseLength() {
+    final lengthString = _prefs!.getString(_responseLengthKey);
+    if (lengthString == null) {
+      return ResponseLength.short; // Default to short
+    }
+    return ResponseLength.fromString(lengthString);
   }
 
   // Locale preferences

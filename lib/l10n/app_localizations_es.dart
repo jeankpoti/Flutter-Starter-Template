@@ -187,6 +187,34 @@ class AppLocalizationsEs extends AppLocalizations {
       'Elige tu nivel educativo para explicaciones personalizadas';
 
   @override
+  String get responseLength => 'Longitud de respuesta';
+
+  @override
+  String get responseLengthDescription =>
+      'Elige qué tan detalladas quieres las explicaciones de IA';
+
+  @override
+  String get responseLengthShort => 'Corta';
+
+  @override
+  String get responseLengthMedium => 'Media';
+
+  @override
+  String get responseLengthLong => 'Larga';
+
+  @override
+  String get responseLengthShortDesc =>
+      'Explicaciones rápidas con pasos esenciales';
+
+  @override
+  String get responseLengthMediumDesc =>
+      'Explicaciones equilibradas con buen nivel de detalle';
+
+  @override
+  String get responseLengthLongDesc =>
+      'Explicaciones completas con contexto detallado';
+
+  @override
   String get language => 'Idioma';
 
   @override

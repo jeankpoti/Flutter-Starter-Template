@@ -442,6 +442,54 @@ abstract class AppLocalizations {
   /// **'Choose your education level for personalized explanations'**
   String get mathLevelDescription;
 
+  /// No description provided for @responseLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Response Length'**
+  String get responseLength;
+
+  /// No description provided for @responseLengthDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how detailed you want the AI explanations'**
+  String get responseLengthDescription;
+
+  /// No description provided for @responseLengthShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Short'**
+  String get responseLengthShort;
+
+  /// No description provided for @responseLengthMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get responseLengthMedium;
+
+  /// No description provided for @responseLengthLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Long'**
+  String get responseLengthLong;
+
+  /// No description provided for @responseLengthShortDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick explanations with essential steps'**
+  String get responseLengthShortDesc;
+
+  /// No description provided for @responseLengthMediumDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Balanced explanations with good detail'**
+  String get responseLengthMediumDesc;
+
+  /// No description provided for @responseLengthLongDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Comprehensive explanations with full context'**
+  String get responseLengthLongDesc;
+
   /// No description provided for @language.
   ///
   /// In en, this message translates to:

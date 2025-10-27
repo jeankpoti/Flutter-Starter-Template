@@ -6,6 +6,7 @@ import 'dart:async';
 import '../../domain/respository/solve_math_repo.dart';
 import '../../../settings/data/preferences_service.dart';
 import '../../../settings/domain/models/math_level.dart';
+import '../../../settings/domain/models/response_length.dart';
 import 'prompt_localizer.dart';
 
 class GeminiSolveMathRepo implements SolveMathRepo {
@@ -25,8 +26,17 @@ class GeminiSolveMathRepo implements SolveMathRepo {
   Future<void> initialize() async {
     if (!_isInitialized) {
       try {
+        // Get user's response length preference
+        final prefs = await PreferencesService.getInstance();
+        final responseLength = prefs.getResponseLength();
+        
         _model = FirebaseAI.googleAI().generativeModel(
           model: 'gemini-2.5-flash-lite',
+          generationConfig: GenerationConfig(
+            maxOutputTokens: responseLength.maxTokens,
+            temperature: 0.7,
+            topP: 0.9,
+          ),
         );
         _isInitialized = true;
       } catch (e) {
@@ -37,6 +47,12 @@ class GeminiSolveMathRepo implements SolveMathRepo {
 
   // Check if the service is initialized
   bool get isInitialized => _isInitialized;
+
+  // Method to reinitialize when settings change
+  Future<void> reinitialize() async {
+    _isInitialized = false;
+    await initialize();
+  }
 
   // Generate content from text prompt
   Future<GenerateContentResponse> generateTextContent(String prompt) async {
@@ -87,11 +103,13 @@ class GeminiSolveMathRepo implements SolveMathRepo {
       // Get user's math level preference and locale
       final prefs = await PreferencesService.getInstance();
       final mathLevel = prefs.getMathLevel();
+      final responseLength = prefs.getResponseLength();
       final locale = prefs.getLocale();
 
       final prompt = _buildAgeAppropriatePrompt(
         textInput.trim(),
         mathLevel,
+        responseLength,
         locale,
       );
 
@@ -105,20 +123,23 @@ class GeminiSolveMathRepo implements SolveMathRepo {
   String _buildAgeAppropriatePrompt(
     String mathProblem,
     MathLevel level,
+    ResponseLength responseLength,
     String locale,
   ) {
+    final combinedContext = '${level.toPromptContext()}\n\n${responseLength.toPromptContext()}';
     return PromptLocalizer.getMathSolvingPrompt(
       locale,
       mathProblem,
-      level.toPromptContext(),
+      combinedContext,
       level.displayName,
     );
   }
 
-  String _buildImagePrompt(MathLevel level, String locale) {
+  String _buildImagePrompt(MathLevel level, ResponseLength responseLength, String locale) {
+    final combinedContext = '${level.toPromptContext()}\n\n${responseLength.toPromptContext()}';
     return PromptLocalizer.getImageAnalysisPrompt(
       locale,
-      level.toPromptContext(),
+      combinedContext,
       level.displayName,
     );
   }
@@ -154,11 +175,12 @@ class GeminiSolveMathRepo implements SolveMathRepo {
       // Get user's math level preference and locale for image solving
       final prefs = await PreferencesService.getInstance();
       final mathLevel = prefs.getMathLevel();
+      final responseLength = prefs.getResponseLength();
       final locale = prefs.getLocale();
 
       // Create the image part with the bytes
       final imagePart = InlineDataPart('image/jpeg', imageBytes);
-      final prompt = TextPart(_buildImagePrompt(mathLevel, locale));
+      final prompt = TextPart(_buildImagePrompt(mathLevel, responseLength, locale));
 
       // Convert file to bytes first
       // final imageBytes = await imageFile!.readAsBytes(); I
