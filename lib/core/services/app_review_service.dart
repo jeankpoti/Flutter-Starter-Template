@@ -239,7 +239,7 @@ class AppReviewService {
     String feedbackType = 'general',
     String? additionalInfo,
   }) async {
-    const email = 'support@mathgenie.ai';
+    const email = 'support@jkstudioo.com';
     final subject = Uri.encodeComponent('MathGenie AI Feedback');
     
     final feedbackMessages = {
@@ -286,7 +286,7 @@ class AppReviewService {
           textColor: Theme.of(context).colorScheme.onError,
           onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('${AppLocalizations.of(context)!.supportEmail}: support@mathgenie.ai'),
+              content: Text('${AppLocalizations.of(context)!.supportEmail}: support@jkstudioo.com'),
               duration: const Duration(seconds: 5),
             ),
           ),

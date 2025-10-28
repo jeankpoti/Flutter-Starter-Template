@@ -2139,4 +2139,22 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get tapToRevealAnswer => 'Toca para revelar la respuesta';
+
+  @override
+  String get aiPreferences => 'Preferencias de IA';
+
+  @override
+  String get appPreferences => 'Preferencias de la aplicación';
+
+  @override
+  String get premium => 'Premium';
+
+  @override
+  String get supportAndFeedback => 'Soporte y comentarios';
+
+  @override
+  String get legal => 'Legal';
+
+  @override
+  String get account => 'Cuenta';
 }

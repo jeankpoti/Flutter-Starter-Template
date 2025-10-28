@@ -750,5 +750,11 @@
   "supportEmail": "Support Email",
   "contactSupport": "Contact Support",
   "tapToRevealAnswer": "Tap to reveal answer",
-  "topics": "Topics"
+  "topics": "Topics",
+  "aiPreferences": "AI Preferences",
+  "appPreferences": "App Preferences",
+  "premium": "Premium",
+  "supportAndFeedback": "Support & Feedback",
+  "legal": "Legal",
+  "account": "Account"
 }

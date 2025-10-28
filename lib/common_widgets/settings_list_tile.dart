@@ -16,14 +16,14 @@ class SettingsListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: Theme.of(context).colorScheme.primary..withValues(),
-          ),
-        ),
-      ),
+    return SizedBox(
+      // decoration: BoxDecoration(
+      //   border: Border(
+      //     bottom: BorderSide(
+      //       color: Theme.of(context).colorScheme.primary..withValues(),
+      //     ),
+      //   ),
+      // ),
       child: ListTile(
         leading: icon,
         title: Text(

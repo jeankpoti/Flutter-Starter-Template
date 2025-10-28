@@ -8,10 +8,11 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'common_widgets/app_bar_widget.dart';
 import 'common_widgets/app_snackbar_widget.dart';
+import 'common_widgets/delete_account_dialog_widget.dart';
 import 'common_widgets/loader_widget.dart';
 import 'common_widgets/settings_list_tile.dart';
 import 'common_widgets/settings_dropdown_widget.dart';
-import 'common_widgets/text_widgets.dart';
+import 'common_widgets/settings_section_header_widget.dart';
 import 'features/account/presentation/account_cubit.dart';
 import 'features/account/presentation/account_state.dart';
 import 'features/account/presentation/reset_password_page.dart';
@@ -169,24 +170,33 @@ class _SettingsPageState extends State<SettingsPage> {
 
               return SingleChildScrollView(
                 child: Column(
-                  spacing: 10,
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Math Level Section
+                    // AI Preferences Section
+                    SettingsSectionHeaderWidget(
+                      isDeco: false,
+                      title: AppLocalizations.of(context)!.aiPreferences,
+                      icon: Icons.psychology,
+                      margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                    ),
                     MathLevelDropdown(
                       selectedLevel: _selectedLevel,
                       isLoading: _isLoadingMathLevel,
                       onChanged: _saveMathLevel,
                     ),
-
-                    // Response Length Section
+                    const SizedBox(height: 8),
                     ResponseLengthDropdown(
                       selectedLength: _selectedResponseLength,
                       isLoading: _isLoadingResponseLength,
                       onChanged: _saveResponseLength,
                     ),
 
-                    // Language Section
+                    // App Preferences Section
+                    SettingsSectionHeaderWidget(
+                      isDeco: true,
+                      title: AppLocalizations.of(context)!.appPreferences,
+                      icon: Icons.settings,
+                    ),
                     BlocBuilder<LocaleCubit, Locale>(
                       builder: (context, currentLocale) {
                         return LanguageDropdown(
@@ -213,23 +223,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         );
                       },
                     ),
-
-                    SettingsListTile(
-                      text: AppLocalizations.of(context)!.getPremium,
-                      icon: Icon(
-                        Icons.logout,
-                        color: Theme.of(context).colorScheme.secondary,
-                      ),
-                      onTap:
-                          () => PersistentNavBarNavigator.pushNewScreen(
-                            context,
-                            screen: SubscriptionPage(),
-                            withNavBar: false,
-                            pageTransitionAnimation:
-                                PageTransitionAnimation.cupertino,
-                          ),
-                    ),
-
+                    const SizedBox(height: 8),
                     SettingsListTile(
                       text: AppLocalizations.of(context)!.changeTheme,
                       icon: Icon(
@@ -247,6 +241,36 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                     ),
 
+                    // Premium Section
+                    SettingsSectionHeaderWidget(
+                      isDeco: true,
+
+                      title: AppLocalizations.of(context)!.premium,
+                      icon: Icons.star,
+                    ),
+                    SettingsListTile(
+                      text: AppLocalizations.of(context)!.getPremium,
+                      icon: Icon(
+                        Icons.diamond,
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                      onTap:
+                          () => PersistentNavBarNavigator.pushNewScreen(
+                            context,
+                            screen: SubscriptionPage(),
+                            withNavBar: false,
+                            pageTransitionAnimation:
+                                PageTransitionAnimation.cupertino,
+                          ),
+                    ),
+
+                    // Support & Feedback Section
+                    SettingsSectionHeaderWidget(
+                      isDeco: true,
+
+                      title: AppLocalizations.of(context)!.supportAndFeedback,
+                      icon: Icons.help_outline,
+                    ),
                     SettingsListTile(
                       text: AppLocalizations.of(context)!.rateUs,
                       icon: Icon(
@@ -279,6 +303,48 @@ class _SettingsPageState extends State<SettingsPage> {
                       },
                     ),
                     SettingsListTile(
+                      text: AppLocalizations.of(context)!.sendFeedback,
+                      icon: Icon(
+                        Icons.email_outlined,
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                      onTap: () {
+                        AppReviewService.sendGeneralFeedback(
+                          context: context,
+                          feedbackType: 'general',
+                        );
+                      },
+                    ),
+                    SettingsListTile(
+                      text: AppLocalizations.of(context)!.support,
+                      icon: Icon(
+                        Icons.help_center,
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                      onTap: () async {
+                        const url = "https://mathgenieai.jeankpoti.com/support";
+                        if (await canLaunchUrl(Uri.parse(url))) {
+                          await launchUrl(
+                            Uri.parse(url),
+                            mode: LaunchMode.externalApplication,
+                          );
+                        } else {
+                          if (context.mounted) {
+                            AppSnackBar.showError(
+                              context,
+                              AppLocalizations.of(context)!.couldNotOpenTerms,
+                            );
+                          }
+                        }
+                      },
+                    ),
+
+                    // Legal Section
+                    // SettingsSectionHeaderWidget(
+                    //   title: AppLocalizations.of(context)!.legal,
+                    //   icon: Icons.gavel,
+                    // ),
+                    SettingsListTile(
                       text: AppLocalizations.of(context)!.privacyPolicyTerms,
                       icon: Icon(
                         Icons.privacy_tip,
@@ -304,43 +370,14 @@ class _SettingsPageState extends State<SettingsPage> {
                         }
                       },
                     ),
-                    SettingsListTile(
-                      text: AppLocalizations.of(context)!.support,
-                      icon: Icon(
-                        Icons.description,
-                        color: Theme.of(context).colorScheme.secondary,
+
+                    // Account Section
+                    if (user != null) ...[
+                      SettingsSectionHeaderWidget(
+                        isDeco: true,
+                        title: AppLocalizations.of(context)!.account,
+                        icon: Icons.person,
                       ),
-                      onTap: () async {
-                        const url = "https://mathgenieai.jeankpoti.com/support";
-                        if (await canLaunchUrl(Uri.parse(url))) {
-                          await launchUrl(
-                            Uri.parse(url),
-                            mode: LaunchMode.externalApplication,
-                          );
-                        } else {
-                          if (context.mounted) {
-                            AppSnackBar.showError(
-                              context,
-                              AppLocalizations.of(context)!.couldNotOpenTerms,
-                            );
-                          }
-                        }
-                      },
-                    ),
-                    SettingsListTile(
-                      text: AppLocalizations.of(context)!.sendFeedback,
-                      icon: Icon(
-                        Icons.email_outlined,
-                        color: Theme.of(context).colorScheme.secondary,
-                      ),
-                      onTap: () {
-                        AppReviewService.sendGeneralFeedback(
-                          context: context,
-                          feedbackType: 'general',
-                        );
-                      },
-                    ),
-                    if (user != null)
                       SettingsListTile(
                         text: AppLocalizations.of(context)!.signOut,
                         icon: Icon(
@@ -351,151 +388,20 @@ class _SettingsPageState extends State<SettingsPage> {
                           await accountCubit.signOut();
                         },
                       ),
-
-                    if (user != null)
                       ExpansionTile(
-                        title: BodyMediumText(
+                        title: Text(
                           AppLocalizations.of(context)!.accountSettings,
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        leading: Icon(
+                          Icons.settings,
+                          color: Theme.of(context).colorScheme.secondary,
                         ),
                         children: [
-                          ListTile(
-                            leading: Icon(
-                              Icons.person,
-                              color: Theme.of(context).colorScheme.secondary,
-                            ),
-                            title: BodyMediumText(
-                              AppLocalizations.of(context)!.deleteAccount,
-                            ),
-                            onTap: () async {
-                              String confirmText = '';
-
-                              final bool? confirm = await showDialog<bool>(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    backgroundColor:
-                                        Theme.of(context).colorScheme.surface,
-                                    title: BodyMediumText(
-                                      AppLocalizations.of(
-                                        context,
-                                      )!.deleteAccount,
-                                    ),
-                                    content: Column(
-                                      spacing: 16,
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        BodyMediumText(
-                                          AppLocalizations.of(
-                                            context,
-                                          )!.deleteAccountConfirmation,
-                                        ),
-                                        TextField(
-                                          onChanged:
-                                              (value) => confirmText = value,
-                                          style: TextStyle(
-                                            color:
-                                                Theme.of(
-                                                  context,
-                                                ).colorScheme.secondary,
-                                          ),
-                                          cursorColor:
-                                              Theme.of(
-                                                context,
-                                              ).colorScheme.secondary,
-                                          decoration: InputDecoration(
-                                            hintText:
-                                                AppLocalizations.of(
-                                                  context,
-                                                )!.typeDeleteHint,
-                                            fillColor:
-                                                Theme.of(
-                                                  context,
-                                                ).colorScheme.secondary,
-                                            labelStyle: TextStyle(
-                                              color:
-                                                  Theme.of(
-                                                    context,
-                                                  ).colorScheme.secondary,
-                                            ),
-                                            focusColor: Colors.white,
-                                            hintStyle:
-                                                Theme.of(
-                                                  context,
-                                                ).textTheme.titleMedium!,
-                                            enabledBorder: UnderlineInputBorder(
-                                              borderSide: BorderSide(
-                                                color:
-                                                    Theme.of(
-                                                      context,
-                                                    ).colorScheme.secondary,
-                                              ),
-                                            ),
-                                            focusedBorder: UnderlineInputBorder(
-                                              borderSide: BorderSide(
-                                                color:
-                                                    Theme.of(
-                                                      context,
-                                                    ).colorScheme.secondary,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed:
-                                            () => Navigator.pop(context, false),
-                                        child: Text(
-                                          AppLocalizations.of(context)!.cancel,
-                                          style:
-                                              Theme.of(
-                                                context,
-                                              ).textTheme.bodyMedium!,
-                                        ),
-                                      ),
-                                      TextButton(
-                                        onPressed: () {
-                                          if (confirmText ==
-                                              AppLocalizations.of(
-                                                context,
-                                              )!.deleteText) {
-                                            Navigator.pop(context, true);
-                                          } else {
-                                            AppSnackBar.showError(
-                                              context,
-                                              AppLocalizations.of(
-                                                context,
-                                              )!.deleteConfirmationError,
-                                            );
-                                          }
-                                        },
-                                        child: Text(
-                                          AppLocalizations.of(
-                                            context,
-                                          )!.deleteAccount,
-                                          style:
-                                              Theme.of(
-                                                context,
-                                              ).textTheme.bodyMedium!,
-                                        ),
-                                      ),
-                                    ],
-                                  );
-                                },
-                              );
-
-                              if (confirm == true && context.mounted) {
-                                await accountCubit.deleteUserWithHisData(
-                                  context,
-                                );
-                              }
-                            },
-                          ),
                           SettingsListTile(
                             text: AppLocalizations.of(context)!.resetPassword,
                             icon: Icon(
-                              Icons.logout,
+                              Icons.lock_reset,
                               color: Theme.of(context).colorScheme.secondary,
                             ),
                             onTap:
@@ -507,8 +413,24 @@ class _SettingsPageState extends State<SettingsPage> {
                                   ),
                                 ),
                           ),
+                          SettingsListTile(
+                            text: AppLocalizations.of(context)!.deleteAccount,
+                            icon: Icon(
+                              Icons.delete_forever,
+                              color: Theme.of(context).colorScheme.error,
+                            ),
+                            onTap:
+                                () => DeleteAccountDialogWidget.show(
+                                  context,
+                                  accountCubit,
+                                ),
+                          ),
                         ],
                       ),
+                    ],
+
+                    // Add bottom padding
+                    const SizedBox(height: 32),
                   ],
                 ),
               );

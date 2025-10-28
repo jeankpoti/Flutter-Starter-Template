@@ -3861,6 +3861,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Tap to reveal answer'**
   String get tapToRevealAnswer;
+
+  /// No description provided for @aiPreferences.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Preferences'**
+  String get aiPreferences;
+
+  /// No description provided for @appPreferences.
+  ///
+  /// In en, this message translates to:
+  /// **'App Preferences'**
+  String get appPreferences;
+
+  /// No description provided for @premium.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium'**
+  String get premium;
+
+  /// No description provided for @supportAndFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Support & Feedback'**
+  String get supportAndFeedback;
+
+  /// No description provided for @legal.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal'**
+  String get legal;
+
+  /// No description provided for @account.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get account;
 }
 
 class _AppLocalizationsDelegate

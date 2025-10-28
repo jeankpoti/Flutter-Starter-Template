@@ -2157,4 +2157,22 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get tapToRevealAnswer => 'Appuyez pour révéler la réponse';
+
+  @override
+  String get aiPreferences => 'Préférences IA';
+
+  @override
+  String get appPreferences => 'Préférences de l\'application';
+
+  @override
+  String get premium => 'Premium';
+
+  @override
+  String get supportAndFeedback => 'Support et commentaires';
+
+  @override
+  String get legal => 'Légal';
+
+  @override
+  String get account => 'Compte';
 }

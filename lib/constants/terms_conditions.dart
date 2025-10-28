@@ -77,7 +77,7 @@ Welcome to MathGenie AI! By using the MathGenie AI app, you agree to these Terms
 
 12. **Contact Information**
 
-   For any questions or concerns about these Terms, please contact us at jkstudio385@gmail.com.
+   For any questions or concerns about these Terms, please contact us at support@jkstudioo.com.
 
 ---
 
@@ -136,7 +136,7 @@ Your privacy is important to us. This Privacy Policy outlines how MathGenie AI c
 
 8. **Children's Privacy**
 
-   MathGenie AI is intended for students of all educational levels. For users under the age of 18, parental or legal guardian consent is required. We do not knowingly collect personal information from children under 13 without parental consent. Parents or guardians may contact us at jkstudio385@gmail.com to review or request deletion of their child’s information.
+   MathGenie AI is intended for students of all educational levels. For users under the age of 18, parental or legal guardian consent is required. We do not knowingly collect personal information from children under 13 without parental consent. Parents or guardians may contact us at support@jkstudioo.com to review or request deletion of their child’s information.
 
 9. **Changes to This Privacy Policy**
 
@@ -144,7 +144,7 @@ Your privacy is important to us. This Privacy Policy outlines how MathGenie AI c
 
 10. **Contact Us**
 
-   If you have any questions or concerns about this Privacy Policy or how your data is handled, please reach out to us at jkstudio385@gmail.com.
+   If you have any questions or concerns about this Privacy Policy or how your data is handled, please reach out to us at support@jkstudioo.com.
 
 ---
 
@@ -231,7 +231,7 @@ Bienvenue sur MathGenie AI ! En utilisant l'application MathGenie AI, vous accep
 
 12. **Informations de contact**
 
-   Pour toute question ou préoccupation concernant ces Conditions, veuillez nous contacter à jkstudio385@gmail.com.
+   Pour toute question ou préoccupation concernant ces Conditions, veuillez nous contacter à support@jkstudioo.com.
 
 ---
 
@@ -290,7 +290,7 @@ Votre confidentialité est importante pour nous. Cette Politique de confidential
 
 8. **Confidentialité des enfants**
 
-   MathGenie AI est destiné aux utilisateurs de tous âges. Pour les utilisateurs de moins de 18 ans, le consentement parental ou d'un tuteur légal est requis. Nous ne collectons pas sciemment d'informations personnelles d'enfants de moins de 13 ans sans consentement parental. Les parents ou tuteurs peuvent nous contacter à jkstudio385@gmail.com pour examiner ou demander la suppression des informations de leur enfant.
+   MathGenie AI est destiné aux utilisateurs de tous âges. Pour les utilisateurs de moins de 18 ans, le consentement parental ou d'un tuteur légal est requis. Nous ne collectons pas sciemment d'informations personnelles d'enfants de moins de 13 ans sans consentement parental. Les parents ou tuteurs peuvent nous contacter à support@jkstudioo.com pour examiner ou demander la suppression des informations de leur enfant.
 
 9. **Modifications de cette Politique de confidentialité**
 
@@ -298,7 +298,7 @@ Votre confidentialité est importante pour nous. Cette Politique de confidential
 
 10. **Nous contacter**
 
-   Si vous avez des questions ou préoccupations concernant cette Politique de confidentialité ou la façon dont vos données sont traitées, veuillez nous contacter à jkstudio385@gmail.com.
+   Si vous avez des questions ou préoccupations concernant cette Politique de confidentialité ou la façon dont vos données sont traitées, veuillez nous contacter à support@jkstudioo.com.
 
 ---
 
@@ -385,7 +385,7 @@ _Última actualización: 13/08/25_
 
 12. **Información de Contacto**
 
-   Para cualquier pregunta o inquietud sobre estos Términos, por favor contáctanos en jkstudio385@gmail.com.
+   Para cualquier pregunta o inquietud sobre estos Términos, por favor contáctanos en support@jkstudioo.com.
 
 ---
 
@@ -444,7 +444,7 @@ Tu privacidad es importante para nosotros. Esta Política de Privacidad describe
 
 8. **Privacidad de los Niños**
 
-   MathGenie AI está destinado a estudiantes de todos los niveles educativos. Para usuarios menores de 18 años, se requiere el consentimiento de los padres o tutor legal. No recopilamos conscientemente información personal de niños menores de 13 años sin el consentimiento de los padres. Los padres o tutores pueden contactarnos en jkstudio385@gmail.com para revisar o solicitar la eliminación de la información de su hijo.
+   MathGenie AI está destinado a estudiantes de todos los niveles educativos. Para usuarios menores de 18 años, se requiere el consentimiento de los padres o tutor legal. No recopilamos conscientemente información personal de niños menores de 13 años sin el consentimiento de los padres. Los padres o tutores pueden contactarnos en support@jkstudioo.com para revisar o solicitar la eliminación de la información de su hijo.
 
 9. **Cambios a esta Política de Privacidad**
 
@@ -452,7 +452,7 @@ Tu privacidad es importante para nosotros. Esta Política de Privacidad describe
 
 10. **Contáctanos**
 
-   Si tienes alguna pregunta o inquietud sobre esta Política de Privacidad o cómo se manejan tus datos, por favor contáctanos en jkstudio385@gmail.com.
+   Si tienes alguna pregunta o inquietud sobre esta Política de Privacidad o cómo se manejan tus datos, por favor contáctanos en support@jkstudioo.com.
 
 ---
 
