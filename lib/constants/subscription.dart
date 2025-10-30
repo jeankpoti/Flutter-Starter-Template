@@ -12,5 +12,5 @@ Read more about this here: https://www.revenuecat.com/blog/schedule-2-section-3-
   static const appleApiKey = 'appl_shwJQPpdtBaTUOyQsIFuqnxeyOA';
 
   //TO DO: add the Google API key for your app from the RevenueCat dashboard: https://app.revenuecat.com
-  static const googleApiKey = 'googl_api_key';
+  static const googleApiKey = 'goog_eLABGmSfHDaswzyYyxIIIqABXPg';
 }

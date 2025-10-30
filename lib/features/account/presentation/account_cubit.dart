@@ -173,14 +173,18 @@ class AccountCubit extends Cubit<AccountState> {
       //Show loading
       emit(state.copyWith(isLoading: true));
 
-      await accountRepo.signUpWithGoogle(context);
+      final UserCredential userCredential = await accountRepo.signUpWithGoogle(context);
 
-      //  On success -> isLoading: false, no error message
-      emit(state.copyWith(isLoading: false, isSuccess: true, errorMsg: null));
+      if (userCredential.user != null) {
+        //  On success -> isLoading: false, no error message
+        emit(state.copyWith(isLoading: false, isSuccess: true, errorMsg: null));
+      } else {
+        emit(state.copyWith(isLoading: false, isSuccess: false, errorMsg: null));
+      }
     } catch (e) {
       log(e.toString());
-      // On error -> isLoading: false, error message
-      emit(state.copyWith(isLoading: false, errorMsg: 'Something went wrong'));
+      // On error -> isLoading: false, no error message (repository already shows error)
+      emit(state.copyWith(isLoading: false, isSuccess: false, errorMsg: null));
     }
   }
 

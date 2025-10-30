@@ -48,7 +48,7 @@ class AppReviewService {
     bool afterPositiveAction = false,
   }) async {
     if (!await _shouldRequestReview(triggerPoint, afterPositiveAction)) return;
-    
+
     // Show our custom rating dialog
     if (context.mounted) {
       await _showCustomRatingDialog(context, triggerPoint);
@@ -61,13 +61,16 @@ class AppReviewService {
     bool afterPositiveAction = false,
   }) async {
     if (!await _shouldRequestReview(triggerPoint, afterPositiveAction)) return;
-    
+
     // Use native review directly (no custom dialog)
     await _requestAppStoreReview(triggerPoint, 5); // Assume 5-star intent
   }
 
   /// Check if review should be requested based on conditions
-  static Future<bool> _shouldRequestReview(String triggerPoint, bool afterPositiveAction) async {
+  static Future<bool> _shouldRequestReview(
+    String triggerPoint,
+    bool afterPositiveAction,
+  ) async {
     final prefs = await SharedPreferences.getInstance();
 
     // Don't ask if user has already rated the app
@@ -76,7 +79,8 @@ class AppReviewService {
     // Don't ask if already requested recently
     final lastRequestDate = prefs.getString(_lastRequestDateKey);
     if (lastRequestDate != null) {
-      final daysSinceLastRequest = DateTime.now().difference(DateTime.parse(lastRequestDate)).inDays;
+      final daysSinceLastRequest =
+          DateTime.now().difference(DateTime.parse(lastRequestDate)).inDays;
       if (daysSinceLastRequest < _daysBetweenRequests) return false;
     }
 
@@ -85,16 +89,25 @@ class AppReviewService {
     final problemsSolved = prefs.getInt(_problemsSolvedKey) ?? 0;
     final quizzesCompleted = prefs.getInt(_quizzesCompletedKey) ?? 0;
 
-    final isFirstProblemSolved = triggerPoint == 'problem_solved' && problemsSolved == 1;
-    final isFirstEligibleQuiz = triggerPoint == 'quiz_completion' && quizzesCompleted >= _minQuizzesCompleted;
-    
+    final isFirstProblemSolved =
+        triggerPoint == 'problem_solved' && problemsSolved == 1;
+    final isFirstEligibleQuiz =
+        triggerPoint == 'quiz_completion' &&
+        quizzesCompleted >= _minQuizzesCompleted;
+
     // Only show review on specific milestones, not every action
-    final shouldRequest = afterPositiveAction && (isFirstProblemSolved || isFirstEligibleQuiz);
+    final shouldRequest =
+        afterPositiveAction && (isFirstProblemSolved || isFirstEligibleQuiz);
 
     if (shouldRequest) {
       await AnalyticsService.logEvent(
         name: 'review_prompt_triggered',
-        parameters: {'trigger_point': triggerPoint, 'launch_count': launchCount, 'problems_solved': problemsSolved, 'quizzes_completed': quizzesCompleted},
+        parameters: {
+          'trigger_point': triggerPoint,
+          'launch_count': launchCount,
+          'problems_solved': problemsSolved,
+          'quizzes_completed': quizzesCompleted,
+        },
       );
     }
 
@@ -107,28 +120,45 @@ class AppReviewService {
     String triggerPoint,
   ) async {
     if (!context.mounted) return;
-    
+
     return showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
-        title: _buildDialogTitle(context, Icons.star_rate, AppLocalizations.of(context)!.enjoyingMathGenie),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            BodyMediumText(AppLocalizations.of(context)!.rateYourExperience, textAlign: TextAlign.center),
-            const SizedBox(height: 8),
-            BodySmallText(
-              AppLocalizations.of(context)!.tapNumberOfStars,
-              textAlign: TextAlign.center,
-              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+      builder:
+          (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16.0),
             ),
-            const SizedBox(height: 20),
-            _buildStarRating(context, triggerPoint),
-          ],
-        ),
-        actions: [_buildCancelButton(context, AppLocalizations.of(context)!.maybeLater)],
-      ),
+            title: _buildDialogTitle(
+              context,
+              Icons.star_rate,
+              AppLocalizations.of(context)!.enjoyingMathGenie,
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                BodyMediumText(
+                  AppLocalizations.of(context)!.rateYourExperience,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                BodySmallText(
+                  AppLocalizations.of(context)!.tapNumberOfStars,
+                  textAlign: TextAlign.center,
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withValues(alpha: 0.7),
+                ),
+                const SizedBox(height: 20),
+                _buildStarRating(context, triggerPoint),
+              ],
+            ),
+            actions: [
+              _buildCancelButton(
+                context,
+                AppLocalizations.of(context)!.maybeLater,
+              ),
+            ],
+          ),
     );
   }
 
@@ -136,12 +166,18 @@ class AppReviewService {
   static Widget _buildStarRating(BuildContext context, String triggerPoint) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(5, (index) => 
-        Padding(
+      children: List.generate(
+        5,
+        (index) => Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4),
           child: IconButton(
-            icon: Icon(Icons.star_border, color: Theme.of(context).colorScheme.secondary, size: 32),
-            onPressed: () => _handleStarRating(context, index + 1, triggerPoint),
+            icon: Icon(
+              Icons.star_border,
+              color: Theme.of(context).colorScheme.secondary,
+              size: 32,
+            ),
+            onPressed:
+                () => _handleStarRating(context, index + 1, triggerPoint),
           ),
         ),
       ),
@@ -149,9 +185,13 @@ class AppReviewService {
   }
 
   /// Handle star rating selection
-  static Future<void> _handleStarRating(BuildContext context, int rating, String triggerPoint) async {
+  static Future<void> _handleStarRating(
+    BuildContext context,
+    int rating,
+    String triggerPoint,
+  ) async {
     Navigator.pop(context);
-    
+
     await AnalyticsService.logEvent(
       name: 'custom_rating_selected',
       parameters: {'rating': rating, 'trigger_point': triggerPoint},
@@ -160,21 +200,32 @@ class AppReviewService {
     if (rating >= 4) {
       await _requestAppStoreReview(triggerPoint, rating);
     } else {
-      if (context.mounted) await _showFeedbackDialog(context, rating, triggerPoint);
+      if (context.mounted)
+        await _showFeedbackDialog(context, rating, triggerPoint);
     }
   }
 
   /// Request App Store review for good ratings
-  static Future<void> _requestAppStoreReview(String triggerPoint, int rating) async {
+  static Future<void> _requestAppStoreReview(
+    String triggerPoint,
+    int rating,
+  ) async {
     final prefs = await SharedPreferences.getInstance();
-    
+
     if (await _inAppReview.isAvailable()) {
       await _inAppReview.requestReview();
-      await prefs.setString(_lastRequestDateKey, DateTime.now().toIso8601String());
-      
+      await prefs.setString(
+        _lastRequestDateKey,
+        DateTime.now().toIso8601String(),
+      );
+
       await AnalyticsService.logEvent(
         name: 'review_requested',
-        parameters: {'method': 'in_app', 'trigger_point': triggerPoint, 'custom_rating': rating},
+        parameters: {
+          'method': 'in_app',
+          'trigger_point': triggerPoint,
+          'custom_rating': rating,
+        },
       );
     } else {
       await openStoreListing();
@@ -182,31 +233,52 @@ class AppReviewService {
   }
 
   /// Show feedback dialog for low ratings
-  static Future<void> _showFeedbackDialog(BuildContext context, int rating, String triggerPoint) async {
+  static Future<void> _showFeedbackDialog(
+    BuildContext context,
+    int rating,
+    String triggerPoint,
+  ) async {
     if (!context.mounted) return;
-    
+
     return showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
-        title: _buildDialogTitle(context, Icons.feedback_outlined, AppLocalizations.of(context)!.helpUsImprove),
-        content: BodyMediumText(AppLocalizations.of(context)!.feedbackMessage, textAlign: TextAlign.center),
-        actions: [
-          _buildCancelButton(context, AppLocalizations.of(context)!.notNow),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              _sendFeedbackEmail(rating, triggerPoint);
-            },
-            child: LabelLargeText(AppLocalizations.of(context)!.sendFeedback, color: Theme.of(context).colorScheme.secondary),
+      builder:
+          (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16.0),
+            ),
+            title: _buildDialogTitle(
+              context,
+              Icons.feedback_outlined,
+              AppLocalizations.of(context)!.helpUsImprove,
+            ),
+            content: BodyMediumText(
+              AppLocalizations.of(context)!.feedbackMessage,
+              textAlign: TextAlign.center,
+            ),
+            actions: [
+              _buildCancelButton(context, AppLocalizations.of(context)!.notNow),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _sendFeedbackEmail(rating, triggerPoint);
+                },
+                child: LabelLargeText(
+                  AppLocalizations.of(context)!.sendFeedback,
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
   /// Build reusable dialog title
-  static Widget _buildDialogTitle(BuildContext context, IconData icon, String title) {
+  static Widget _buildDialogTitle(
+    BuildContext context,
+    IconData icon,
+    String title,
+  ) {
     return Row(
       children: [
         Icon(icon, color: Theme.of(context).colorScheme.secondary, size: 28),
@@ -220,12 +292,18 @@ class AppReviewService {
   static Widget _buildCancelButton(BuildContext context, String text) {
     return TextButton(
       onPressed: () => Navigator.pop(context),
-      child: LabelLargeText(text, color: Theme.of(context).colorScheme.onSurface),
+      child: LabelLargeText(
+        text,
+        color: Theme.of(context).colorScheme.onSurface,
+      ),
     );
   }
 
   /// Send feedback email for low ratings
-  static Future<void> _sendFeedbackEmail(int rating, String triggerPoint) async {
+  static Future<void> _sendFeedbackEmail(
+    int rating,
+    String triggerPoint,
+  ) async {
     await sendGeneralFeedback(
       context: null,
       feedbackType: 'low_rating',
@@ -241,33 +319,51 @@ class AppReviewService {
   }) async {
     const email = 'support@jkstudioo.com';
     final subject = Uri.encodeComponent('MathGenie AI Feedback');
-    
+
     final feedbackMessages = {
       'low_rating': 'I have some feedback to help improve the app:',
       'general': 'I would like to share some feedback:',
       'bug_report': 'I encountered an issue and would like to report it:',
       'feature_request': 'I have a feature request:',
     };
-    
-    String bodyText = 'Hi MathGenie Team,\n\n${feedbackMessages[feedbackType] ?? feedbackMessages['general']}\n\n';
+
+    String bodyText =
+        'Hi MathGenie Team,\n\n${feedbackMessages[feedbackType] ?? feedbackMessages['general']}\n\n';
     bodyText += '[Please describe your feedback here]\n\n';
-    if (additionalInfo != null) bodyText += 'Additional Info: $additionalInfo\n\n';
+    if (additionalInfo != null)
+      bodyText += 'Additional Info: $additionalInfo\n\n';
     bodyText += 'Thanks!\n\n---\nSent from MathGenie AI';
-    
-    final uri = Uri.parse('mailto:$email?subject=$subject&body=${Uri.encodeComponent(bodyText)}');
-    
+
+    final uri = Uri.parse(
+      'mailto:$email?subject=$subject&body=${Uri.encodeComponent(bodyText)}',
+    );
+
     try {
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      // Try to launch the email app
+      final launched = await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
+
+      if (launched) {
         await AnalyticsService.logEvent(
           name: 'feedback_email_opened',
-          parameters: {'feedback_type': feedbackType, 'has_additional_info': additionalInfo != null},
+          parameters: {
+            'feedback_type': feedbackType,
+            'has_additional_info': additionalInfo != null,
+          },
         );
-      } else if (context?.mounted == true) {
-        _showFeedbackError(context!);
+      } else {
+        // If launch failed, show error only if context is available
+        if (context?.mounted == true) {
+          _showFeedbackError(context!);
+        }
       }
     } catch (e) {
-      if (context?.mounted == true) _showFeedbackError(context!);
+      // Only show error if context is available
+      if (context?.mounted == true) {
+        // _showFeedbackError(context!);
+      }
       await AnalyticsService.logEvent(
         name: 'feedback_email_failed',
         parameters: {'feedback_type': feedbackType, 'error': e.toString()},
@@ -284,12 +380,15 @@ class AppReviewService {
         action: SnackBarAction(
           label: AppLocalizations.of(context)!.copyEmail,
           textColor: Theme.of(context).colorScheme.onError,
-          onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('${AppLocalizations.of(context)!.supportEmail}: support@jkstudioo.com'),
-              duration: const Duration(seconds: 5),
-            ),
-          ),
+          onPressed:
+              () => ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    '${AppLocalizations.of(context)!.supportEmail}: support@jkstudioo.com',
+                  ),
+                  duration: const Duration(seconds: 5),
+                ),
+              ),
         ),
       ),
     );
