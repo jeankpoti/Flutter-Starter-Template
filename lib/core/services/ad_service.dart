@@ -12,12 +12,16 @@ class AdService {
   // Test Ad Unit IDs (replace with actual IDs for production)
   static const String _rewardedAdUnitIdAndroid =
       'ca-app-pub-3940256099942544/5224354917';
+
   // static const String _rewardedAdUnitIdIOS =
-  //     'ca-app-pub-9068204541773057~7141744607';
-  // static const String _rewardedAdUnitIdAndroid =
-  //     'ca-app-pub-3940256099942544/5224354917';
+  //     'ca-app-pub-3940256099942544/1712485313';
+
+  // Real Ad Unit IDs
   static const String _rewardedAdUnitIdIOS =
-      'ca-app-pub-3940256099942544/1712485313';
+      'ca-app-pub-9068204541773057/3523897368';
+
+  // static const String _rewardedAdUnitIdAndroid =
+  //     'ca-app-pub-9068204541773057/5566109912';
 
   RewardedAd? _rewardedAd;
   bool _isRewardedAdLoading = false;

@@ -19,16 +19,15 @@ class SettingsSectionHeaderWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: margin ?? const EdgeInsets.fromLTRB(16, 24, 16, 8),
-      decoration:
-          isDeco
-              ? BoxDecoration(
-                border: Border(
-                  top: BorderSide(
-                    color: Theme.of(context).colorScheme.primary..withValues(),
-                  ),
+      decoration: isDeco
+          ? BoxDecoration(
+              border: Border(
+                top: BorderSide(
+                  color: Theme.of(context).colorScheme.primary,
                 ),
-              )
-              : BoxDecoration(backgroundBlendMode: BlendMode.clear),
+              ),
+            )
+          : null,
       child: Padding(
         padding: const EdgeInsets.only(top: 16.0),
         child: Row(

@@ -322,7 +322,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         color: Theme.of(context).colorScheme.secondary,
                       ),
                       onTap: () async {
-                        const url = "https://mathgenieai.jeankpoti.com/support";
+                        const url = "https://mathgenieai.jkstudioo.com/support";
                         if (await canLaunchUrl(Uri.parse(url))) {
                           await launchUrl(
                             Uri.parse(url),
@@ -352,7 +352,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                       onTap: () async {
                         const url =
-                            "https://mathgenieai.jeankpoti.com/privacy-policy";
+                            "https://mathgenieai.jkstudioo.com/privacy-policy";
                         if (await canLaunchUrl(Uri.parse(url))) {
                           await launchUrl(
                             Uri.parse(url),

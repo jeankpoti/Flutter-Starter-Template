@@ -3,7 +3,7 @@ class TermsConditions {
 ### MathGenie AI Terms of Service
 
 
-_Last updated: 8/13/25_
+_Last updated: 10/30/25_
 
 Welcome to MathGenie AI! By using the MathGenie AI app, you agree to these Terms of Service ("Terms"). Please read them carefully before accessing or using the app.
 
@@ -83,7 +83,7 @@ Welcome to MathGenie AI! By using the MathGenie AI app, you agree to these Terms
 
 ### MathGenie AI Privacy Policy
 
-_Last updated: 8/13/25_
+_Last updated: 10/30/25_
 
 Your privacy is important to us. This Privacy Policy outlines how MathGenie AI collects, uses, and protects your information when you use the app.
 
@@ -95,34 +95,72 @@ Your privacy is important to us. This Privacy Policy outlines how MathGenie AI c
    - **Usage Data**: This includes information about how you use the app, such as math problems you solve, quizzes you take, study materials you upload, and AI-generated solutions.
    - **Device Information**: We may collect information about the device you use to access MathGenie AI, including the hardware model, operating system, and unique device identifiers.
 
+   ### Advertising Data
+   When you interact with advertisements in our app, we and our advertising partners may collect:
+   - **Device Identifiers**: Advertising ID (Android) or Identifier for Advertisers (IDFA) on iOS
+   - **Product Interaction Data**: How you interact with the app (taps, scrolls, app launches, time spent)
+   - **Advertising Performance Data**: Information about ads shown to you, including impressions, clicks, and interactions
+   - **Performance Metrics**: App performance data that may affect ad delivery
+   - **Crash and Diagnostic Data**: Technical information to ensure optimal ad performance
+
 2. **How We Use Your Information**
-
-   We use the information we collect to:
-
-   - Provide and improve the functionality of the MathGenie AI app.
-   - Personalize your experience, such as providing math problem solutions, generating practice quizzes, and tracking your learning progress.
-   - Help you organize and manage your math study materials and problem collections.
-   - Analyze usage patterns to enhance app performance and user satisfaction.
-
-   We do not sell or share your personal information with third parties for their marketing purposes.
+  - **App Functionality**: Authentication, core features, customer support
+  - **Product Personalization**: Customize your learning experience
+  - **Analytics**: Improve app performance and understand user behavior
+  - **Advertising**: Display relevant advertisements through Google AdMob
+  - **Performance Monitoring**: Ensure optimal app and ad performance
 
 3. **AI Interaction Data**
 
    When you interact with Google Gemini AI, the AI may process and store your queries to improve its responses and provide a better experience. However, the AI does not access any of your personal data unless explicitly provided in a query or prompt.
 
-4. **Data Sharing**
+4. **Third-Party Services**
 
-   We may share your data in the following circumstances:
+   ### Google AdMob
+   We use Google AdMob to display advertisements in our app. AdMob may collect and use:
+   - Device advertising identifiers
+   - App interaction and usage patterns
+   - Ad performance and interaction data
+   - Device and network information
 
-   - With your consent, such as when you choose to share your progress or achievements.
-   - To comply with legal obligations, such as responding to lawful requests from public authorities.
-   - To protect the rights, safety, or security of MathGenie AI, its users, or others.
+   **Data Sharing**: This information is shared with Google for advertising purposes and may be combined with data from other apps and websites to provide targeted advertisements.
 
-5. **Data Security**
+   **Cross-Platform Tracking**: Google may use this data to show you relevant ads across other apps and websites in their advertising network.
+
+   **Privacy Controls**: You can limit ad tracking through your device settings:
+   - **iOS**: Settings > Privacy & Security > Tracking, or Settings > Privacy & Security > Apple Advertising
+   - **Android**: Settings > Privacy > Ads, or Settings > Google > Ads
+
+   Learn more: [Google AdMob Privacy Policy](https://support.google.com/admob/answer/6128543)
+
+5. **Data Sharing**
+
+   We do not sell your personal information. However, we may share certain data:
+   - **Advertising Partners**: Device identifiers and usage data with Google AdMob for advertising purposes
+   - **Service Providers**: Technical data with our service providers (Firebase, Google Gemini AI)
+   - **Legal Requirements**: When required by law or to protect our rights
+   - **With your consent**: Such as when you choose to share your progress or achievements
+
+6. **Data Security**
 
    We take appropriate security measures to protect your data from unauthorized access, alteration, disclosure, or destruction. However, no security system is entirely foolproof, and we cannot guarantee the absolute security of your information.
 
-6. **Your Choices**
+7. **Advertising Preferences and Controls**
+   - **Limit Ad Tracking**: Use your device settings to limit ad personalization
+   - **Reset Advertising ID**: Reset your advertising identifier through device settings
+   - **Opt-Out**: Some advertising features can be controlled through device privacy settings
+   - **Ad Choices**: Visit [Google's Ad Settings](https://adssettings.google.com) to manage your advertising preferences
+
+8. **Data Retention**
+   - **Advertising Data**: Retained according to Google AdMob's retention policies
+   - **Performance Data**: Retained for app optimization and support purposes
+   - **Device Identifiers**: Retained for advertising and analytics purposes
+
+9. **Children's Privacy (Under 13)**
+
+   Our app does not knowingly collect personal information from children under 13 without parental consent. Advertising shown to users under 13 is limited and does not use personal information for targeting. Parents or guardians may contact us at support@jkstudioo.com to review or request deletion of their child’s information.
+
+10. **Your Choices**
 
    You have the right to:
 
@@ -130,19 +168,19 @@ Your privacy is important to us. This Privacy Policy outlines how MathGenie AI c
    - Opt out of receiving notifications or reminders by adjusting your device or app settings.
    - Request the deletion of your account and all associated data through the app’s settings. Once deleted, your data will be permanently removed, except where retention is required by law.
 
-7. **Data Retention**
+11. **Data Retention**
 
    We retain your information only as long as necessary to provide our services or comply with legal obligations. Upon account deletion, all associated data will be permanently erased from our systems.
 
-8. **Children's Privacy**
+12. **Children's Privacy**
 
    MathGenie AI is intended for students of all educational levels. For users under the age of 18, parental or legal guardian consent is required. We do not knowingly collect personal information from children under 13 without parental consent. Parents or guardians may contact us at support@jkstudioo.com to review or request deletion of their child’s information.
 
-9. **Changes to This Privacy Policy**
+13. **Changes to This Privacy Policy**
 
    We may update this Privacy Policy from time to time. Any changes will be posted within the app, and we encourage you to review this policy periodically.
 
-10. **Contact Us**
+14. **Contact Us**
 
    If you have any questions or concerns about this Privacy Policy or how your data is handled, please reach out to us at support@jkstudioo.com.
 
@@ -237,7 +275,7 @@ Bienvenue sur MathGenie AI ! En utilisant l'application MathGenie AI, vous accep
 
 ### Politique de confidentialité de MathGenie AI
 
-_Dernière mise à jour : 16/05/25_
+_Dernière mise à jour : 30/10/25_
 
 Votre confidentialité est importante pour nous. Cette Politique de confidentialité décrit comment MathGenie AI collecte, utilise et protège vos informations lorsque vous utilisez l'application.
 
@@ -246,37 +284,75 @@ Votre confidentialité est importante pour nous. Cette Politique de confidential
    Lorsque vous utilisez MathGenie AI, nous pouvons collecter les informations suivantes :
 
    - **Informations personnelles** : Telles que votre nom, adresse e-mail, et toute autre information que vous fournissez lors de l'inscription ou lors de la configuration de votre profil.
-   - **Données d'utilisation** : Cela inclut des informations sur la façon dont vous utilisez l'application, telles que vos interactions avec les fonctionnalités, horaires d'étude, devoirs, et contenu généré par l'IA.
+   - **Données d'utilisation** : Cela inclut des informations sur la façon dont vous utilisez l'application, telles que les problèmes mathématiques que vous résolvez, les quiz que vous passez, les matériaux d'étude que vous téléchargez, et les solutions générées par l'IA.
    - **Informations sur l'appareil** : Nous pouvons collecter des informations sur l'appareil que vous utilisez pour accéder à MathGenie AI, y compris le modèle matériel, le système d'exploitation, et les identifiants uniques de l'appareil.
 
+   ### Données publicitaires
+   Lorsque vous interagissez avec les publicités dans notre application, nous et nos partenaires publicitaires pouvons collecter :
+   - **Identifiants d'appareil** : ID publicitaire (Android) ou Identifiant pour les annonceurs (IDFA) sur iOS
+   - **Données d'interaction produit** : Comment vous interagissez avec l'application (touches, défilements, lancements d'application, temps passé)
+   - **Données de performance publicitaire** : Informations sur les publicités qui vous sont montrées, y compris les impressions, clics et interactions
+   - **Métriques de performance** : Données de performance de l'application qui peuvent affecter la diffusion d'annonces
+   - **Données de crash et de diagnostic** : Informations techniques pour assurer une performance publicitaire optimale
+
 2. **Comment nous utilisons vos informations**
-
-   Nous utilisons les informations que nous collectons pour :
-
-   - Fournir et améliorer la fonctionnalité de l'application MathGenie AI.
-   - Personnaliser votre expérience, comme fournir des solutions mathématiques, générer des quiz d'entraînement, et suivre votre progression.
-   - Vous aider à organiser et gérer vos matériaux d'étude mathématiques et collections de problèmes.
-   - Analyser les modèles d'utilisation pour améliorer les performances de l'application et la satisfaction des utilisateurs.
-
-   Nous ne vendons ni ne partageons vos informations personnelles avec des tiers à des fins de marketing.
+  - **Fonctionnalité de l'application** : Authentification, fonctionnalités principales, support client
+  - **Personnalisation du produit** : Personnaliser votre expérience d'apprentissage
+  - **Analyses** : Améliorer les performances de l'application et comprendre le comportement des utilisateurs
+  - **Publicité** : Afficher des publicités pertinentes via Google AdMob
+  - **Surveillance des performances** : Assurer une performance optimale de l'application et des publicités
 
 3. **Données d'interaction IA**
 
-   Lorsque vous interagissez avec Gemini Pro, l'IA peut traiter et stocker vos requêtes pour améliorer ses réponses et fournir une meilleure expérience. Cependant, l'IA n'accède à aucune de vos données personnelles sauf si explicitement fournies dans une requête ou invite.
+   Lorsque vous interagissez avec Google Gemini AI, l'IA peut traiter et stocker vos requêtes pour améliorer ses réponses et fournir une meilleure expérience. Cependant, l'IA n'accède à aucune de vos données personnelles sauf si explicitement fournies dans une requête ou invite.
 
-4. **Partage de données**
+4. **Services tiers**
 
-   Nous pouvons partager vos données dans les circonstances suivantes :
+   ### Google AdMob
+   Nous utilisons Google AdMob pour afficher des publicités dans notre application. AdMob peut collecter et utiliser :
+   - Identifiants publicitaires d'appareil
+   - Modèles d'interaction et d'utilisation de l'application
+   - Données de performance et d'interaction publicitaire
+   - Informations d'appareil et de réseau
 
-   - Avec votre consentement, comme lorsque vous choisissez de vous connecter avec un MathGenie AI.
-   - Pour se conformer aux obligations légales, comme répondre aux demandes légitimes des autorités publiques.
-   - Pour protéger les droits, la sécurité ou la sûreté de MathGenie AI, ses utilisateurs, ou d'autres.
+   **Partage de données** : Ces informations sont partagées avec Google à des fins publicitaires et peuvent être combinées avec des données d'autres applications et sites web pour fournir des publicités ciblées.
 
-5. **Sécurité des données**
+   **Suivi inter-plateformes** : Google peut utiliser ces données pour vous montrer des publicités pertinentes dans d'autres applications et sites web de leur réseau publicitaire.
+
+   **Contrôles de confidentialité** : Vous pouvez limiter le suivi publicitaire via les paramètres de votre appareil :
+   - **iOS** : Réglages > Confidentialité et sécurité > Suivi, ou Réglages > Confidentialité et sécurité > Publicité Apple
+   - **Android** : Paramètres > Confidentialité > Publicités, ou Paramètres > Google > Publicités
+
+   En savoir plus : [Politique de confidentialité Google AdMob](https://support.google.com/admob/answer/6128543)
+
+5. **Partage de données**
+
+   Nous ne vendons pas vos informations personnelles. Cependant, nous pouvons partager certaines données :
+   - **Partenaires publicitaires** : Identifiants d'appareil et données d'utilisation avec Google AdMob à des fins publicitaires
+   - **Fournisseurs de services** : Données techniques avec nos fournisseurs de services (Firebase, Google Gemini AI)
+   - **Exigences légales** : Lorsque requis par la loi ou pour protéger nos droits
+   - **Avec votre consentement** : Comme lorsque vous choisissez de partager votre progression ou vos réalisations
+
+6. **Sécurité des données**
 
    Nous prenons des mesures de sécurité appropriées pour protéger vos données contre l'accès non autorisé, l'altération, la divulgation ou la destruction. Cependant, aucun système de sécurité n'est entièrement infaillible, et nous ne pouvons pas garantir la sécurité absolue de vos informations.
 
-6. **Vos choix**
+7. **Préférences publicitaires et contrôles**
+   - **Limiter le suivi publicitaire** : Utilisez les paramètres de votre appareil pour limiter la personnalisation des publicités
+   - **Réinitialiser l'ID publicitaire** : Réinitialisez votre identifiant publicitaire via les paramètres de l'appareil
+   - **Désactiver** : Certaines fonctionnalités publicitaires peuvent être contrôlées via les paramètres de confidentialité de l'appareil
+   - **Choix publicitaires** : Visitez [Paramètres publicitaires de Google](https://adssettings.google.com) pour gérer vos préférences publicitaires
+
+8. **Rétention des données**
+   - **Données publicitaires** : Conservées selon les politiques de rétention de Google AdMob
+   - **Données de performance** : Conservées à des fins d'optimisation de l'application et de support
+   - **Identifiants d'appareil** : Conservés à des fins publicitaires et d'analyse
+
+9. **Confidentialité des enfants (moins de 13 ans)**
+
+   Notre application ne collecte pas sciemment d'informations personnelles d'enfants de moins de 13 ans sans le consentement des parents. Les publicités montrées aux utilisateurs de moins de 13 ans sont limitées et n'utilisent pas d'informations personnelles pour le ciblage. Les parents ou tuteurs peuvent nous contacter à support@jkstudioo.com pour examiner ou demander la suppression des informations de leur enfant.
+
+10. **Vos choix**
 
    Vous avez le droit de :
 
@@ -284,19 +360,19 @@ Votre confidentialité est importante pour nous. Cette Politique de confidential
    - Désactiver la réception de notifications ou rappels en ajustant vos paramètres d'appareil ou d'application.
    - Demander la suppression de votre compte et de toutes les données associées via les paramètres de l'application. Une fois supprimées, vos données seront définitivement supprimées, sauf là où la rétention est requise par la loi.
 
-7. **Rétention des données**
+11. **Rétention des données**
 
    Nous conservons vos informations seulement aussi longtemps que nécessaire pour fournir nos services ou nous conformer aux obligations légales. Lors de la suppression du compte, toutes les données associées seront définitivement effacées de nos systèmes.
 
-8. **Confidentialité des enfants**
+12. **Confidentialité des enfants**
 
-   MathGenie AI est destiné aux utilisateurs de tous âges. Pour les utilisateurs de moins de 18 ans, le consentement parental ou d'un tuteur légal est requis. Nous ne collectons pas sciemment d'informations personnelles d'enfants de moins de 13 ans sans consentement parental. Les parents ou tuteurs peuvent nous contacter à support@jkstudioo.com pour examiner ou demander la suppression des informations de leur enfant.
+   MathGenie AI est destiné aux étudiants de tous les niveaux d'éducation. Pour les utilisateurs de moins de 18 ans, le consentement parental ou d'un tuteur légal est requis. Nous ne collectons pas sciemment d'informations personnelles d'enfants de moins de 13 ans sans le consentement des parents. Les parents ou tuteurs peuvent nous contacter à support@jkstudioo.com pour examiner ou demander la suppression des informations de leur enfant.
 
-9. **Modifications de cette Politique de confidentialité**
+13. **Modifications de cette Politique de confidentialité**
 
    Nous pouvons mettre à jour cette Politique de confidentialité de temps à autre. Tout changement sera publié dans l'application, et nous vous encourageons à réviser cette politique périodiquement.
 
-10. **Nous contacter**
+14. **Nous contacter**
 
    Si vous avez des questions ou préoccupations concernant cette Politique de confidentialité ou la façon dont vos données sont traitées, veuillez nous contacter à support@jkstudioo.com.
 
@@ -322,19 +398,19 @@ _Última actualización: 13/08/25_
 
 2. **Elegibilidad**
 
-   MathGenie AI está diseñado para estudiantes de todos los niveles educativos. Sin embargo, si tienes menos de 13 años, debes tener el consentimiento de tus padres o tutor legal para usar la aplicación. Al usar la aplicación, confirmas que tienes dicho consentimiento si es necesario.
+   MathGenie AI está diseñado para estudiantes de todos los niveles educativos. Sin embargo, si tienes menos de 13 años, debes tener el consentimiento de los padres o tutor legal para usar la aplicación. Al usar la aplicación, confirmas que tienes dicho consentimiento si es requerido.
 
 3. **Responsabilidades del Usuario**
 
    Al usar MathGenie AI, aceptas:
 
    - Proporcionar información precisa al registrarte o usar la aplicación.
-   - Mantener tu cuenta segura protegiendo tus credenciales de acceso.
-   - Usar MathGenie AI solo para fines legales y abstenerte de compartir contenido ofensivo, dañino o inapropiado.
+   - Mantener tu cuenta segura salvaguardando tus credenciales de inicio de sesión.
+   - Usar MathGenie AI solo para propósitos legales y abstenerte de compartir contenido ofensivo, dañino o inapropiado.
 
 4. **Servicios de IA y Limitaciones**
 
-   MathGenie AI integra Google Gemini AI, una herramienta avanzada de IA diseñada para resolver problemas matemáticos y ayudar con el aprendizaje de las matemáticas. Aunque la IA se esfuerza por proporcionar soluciones matemáticas precisas y explicaciones, es una herramienta destinada a ayudar al aprendizaje, no a reemplazar el asesoramiento profesional o la instrucción educativa. MathGenie AI no es responsable de las decisiones o acciones tomadas en base al contenido generado por IA.
+   MathGenie AI integra Google Gemini AI, una herramienta de IA avanzada diseñada para resolver problemas matemáticos y ayudar con el aprendizaje de matemáticas. Aunque la IA se esfuerza por proporcionar soluciones matemáticas precisas y explicaciones, es una herramienta destinada a ayudar al aprendizaje, no a reemplazar el consejo profesional o la instrucción educativa. MathGenie AI no es responsable de ninguna decisión o acción tomada basada en contenido generado por IA.
 
 5. **Contenido Generado por el Usuario**
 
@@ -391,7 +467,7 @@ _Última actualización: 13/08/25_
 
 ### Política de Privacidad de MathGenie AI
 
-_Última actualización: 13/08/25_
+_Última actualización: 30/10/25_
 
 Tu privacidad es importante para nosotros. Esta Política de Privacidad describe cómo MathGenie AI recopila, usa y protege tu información cuando usas la aplicación.
 
@@ -403,34 +479,72 @@ Tu privacidad es importante para nosotros. Esta Política de Privacidad describe
    - **Datos de Uso**: Esto incluye información sobre cómo usas la aplicación, como los problemas matemáticos que resuelves, los quiz que tomas, los materiales de estudio que subes y las soluciones generadas por IA.
    - **Información del Dispositivo**: Podemos recopilar información sobre el dispositivo que usas para acceder a MathGenie AI, incluyendo el modelo de hardware, el sistema operativo y los identificadores únicos del dispositivo.
 
+   ### Datos Publicitarios
+   Cuando interactúas con anuncios en nuestra aplicación, nosotros y nuestros socios publicitarios podemos recopilar:
+   - **Identificadores de Dispositivo**: ID publicitario (Android) o Identificador para Anunciantes (IDFA) en iOS
+   - **Datos de Interacción del Producto**: Cómo interactúas con la aplicación (toques, desplazamientos, lanzamientos de aplicación, tiempo transcurrido)
+   - **Datos de Rendimiento Publicitario**: Información sobre anuncios mostrados a ti, incluyendo impresiones, clics e interacciones
+   - **Métricas de Rendimiento**: Datos de rendimiento de la aplicación que pueden afectar la entrega de anuncios
+   - **Datos de Fallos y Diagnóstico**: Información técnica para asegurar un rendimiento publicitario óptimo
+
 2. **Cómo Usamos Tu Información**
-
-   Usamos la información que recopilamos para:
-
-   - Proporcionar y mejorar la funcionalidad de la aplicación MathGenie AI.
-   - Personalizar tu experiencia, como proporcionar soluciones a problemas matemáticos, generar quiz de práctica y seguir tu progreso de aprendizaje.
-   - Ayudarte a organizar y gestionar tus materiales de estudio matemático y colecciones de problemas.
-   - Analizar patrones de uso para mejorar el rendimiento de la aplicación y la satisfacción del usuario.
-
-   No vendemos ni compartimos tu información personal con terceros para sus propósitos de marketing.
+  - **Funcionalidad de la Aplicación**: Autenticación, características principales, soporte al cliente
+  - **Personalización del Producto**: Personalizar tu experiencia de aprendizaje
+  - **Análisis**: Mejorar el rendimiento de la aplicación y entender el comportamiento del usuario
+  - **Publicidad**: Mostrar anuncios relevantes a través de Google AdMob
+  - **Monitoreo de Rendimiento**: Asegurar un rendimiento óptimo de la aplicación y los anuncios
 
 3. **Datos de Interacción con IA**
 
    Cuando interactúas con Google Gemini AI, la IA puede procesar y almacenar tus consultas para mejorar sus respuestas y proporcionar una mejor experiencia. Sin embargo, la IA no accede a ninguno de tus datos personales a menos que se proporcionen explícitamente en una consulta o solicitud.
 
-4. **Compartir Datos**
+4. **Servicios de Terceros**
 
-   Podemos compartir tus datos en las siguientes circunstancias:
+   ### Google AdMob
+   Usamos Google AdMob para mostrar anuncios en nuestra aplicación. AdMob puede recopilar y usar:
+   - Identificadores publicitarios de dispositivo
+   - Patrones de interacción y uso de la aplicación
+   - Datos de rendimiento e interacción de anuncios
+   - Información de dispositivo y red
 
-   - Con tu consentimiento, como cuando optas por conectarte con un MathGenie AI.
-   - Para cumplir con obligaciones legales, como responder a solicitudes legítimas de las autoridades públicas.
-   - Para proteger los derechos, la seguridad o la protección de MathGenie AI, sus usuarios u otros.
+   **Compartir Datos**: Esta información se comparte con Google para propósitos publicitarios y puede combinarse con datos de otras aplicaciones y sitios web para proporcionar anuncios dirigidos.
 
-5. **Seguridad de Datos**
+   **Seguimiento Multiplataforma**: Google puede usar estos datos para mostrarte anuncios relevantes en otras aplicaciones y sitios web en su red publicitaria.
+
+   **Controles de Privacidad**: Puedes limitar el seguimiento de anuncios a través de la configuración de tu dispositivo:
+   - **iOS**: Configuración > Privacidad y Seguridad > Seguimiento, o Configuración > Privacidad y Seguridad > Publicidad de Apple
+   - **Android**: Configuración > Privacidad > Anuncios, o Configuración > Google > Anuncios
+
+   Más información: [Política de Privacidad de Google AdMob](https://support.google.com/admob/answer/6128543)
+
+5. **Compartir Datos**
+
+   No vendemos tu información personal. Sin embargo, podemos compartir ciertos datos:
+   - **Socios Publicitarios**: Identificadores de dispositivo y datos de uso con Google AdMob para propósitos publicitarios
+   - **Proveedores de Servicios**: Datos técnicos con nuestros proveedores de servicios (Firebase, Google Gemini AI)
+   - **Requisitos Legales**: Cuando sea requerido por ley o para proteger nuestros derechos
+   - **Con tu consentimiento**: Como cuando eliges compartir tu progreso o logros
+
+6. **Seguridad de Datos**
 
    Tomamos medidas de seguridad apropiadas para proteger tus datos del acceso no autorizado, alteración, divulgación o destrucción. Sin embargo, ningún sistema de seguridad es completamente infalible, y no podemos garantizar la seguridad absoluta de tu información.
 
-6. **Tus Opciones**
+7. **Preferencias Publicitarias y Controles**
+   - **Limitar Seguimiento de Anuncios**: Usa la configuración de tu dispositivo para limitar la personalización de anuncios
+   - **Restablecer ID Publicitario**: Restablece tu identificador publicitario a través de la configuración del dispositivo
+   - **Optar por No Participar**: Algunas funciones publicitarias pueden controlarse a través de la configuración de privacidad del dispositivo
+   - **Opciones de Anuncios**: Visita [Configuración de Anuncios de Google](https://adssettings.google.com) para gestionar tus preferencias publicitarias
+
+8. **Retención de Datos**
+   - **Datos Publicitarios**: Retenidos según las políticas de retención de Google AdMob
+   - **Datos de Rendimiento**: Retenidos para propósitos de optimización y soporte de la aplicación
+   - **Identificadores de Dispositivo**: Retenidos para propósitos publicitarios y de análisis
+
+9. **Privacidad de los Niños (Menores de 13 años)**
+
+   Nuestra aplicación no recopila conscientemente información personal de niños menores de 13 años sin el consentimiento de los padres. Los anuncios mostrados a usuarios menores de 13 años son limitados y no usan información personal para segmentación. Los padres o tutores pueden contactarnos en support@jkstudioo.com para revisar o solicitar la eliminación de la información de su hijo.
+
+10. **Tus Opciones**
 
    Tienes derecho a:
 
@@ -438,19 +552,19 @@ Tu privacidad es importante para nosotros. Esta Política de Privacidad describe
    - Optar por no recibir notificaciones o recordatorios ajustando la configuración de tu dispositivo o aplicación.
    - Solicitar la eliminación de tu cuenta y todos los datos asociados a través de la configuración de la aplicación. Una vez eliminados, tus datos se eliminarán permanentemente, excepto cuando la retención sea requerida por ley.
 
-7. **Retención de Datos**
+11. **Retención de Datos**
 
    Retenemos tu información solo el tiempo necesario para proporcionar nuestros servicios o cumplir con las obligaciones legales. Al eliminar la cuenta, todos los datos asociados se borrarán permanentemente de nuestros sistemas.
 
-8. **Privacidad de los Niños**
+12. **Privacidad de los Niños**
 
    MathGenie AI está destinado a estudiantes de todos los niveles educativos. Para usuarios menores de 18 años, se requiere el consentimiento de los padres o tutor legal. No recopilamos conscientemente información personal de niños menores de 13 años sin el consentimiento de los padres. Los padres o tutores pueden contactarnos en support@jkstudioo.com para revisar o solicitar la eliminación de la información de su hijo.
 
-9. **Cambios a esta Política de Privacidad**
+13. **Cambios a esta Política de Privacidad**
 
    Podemos actualizar esta Política de Privacidad de vez en cuando. Cualquier cambio se publicará dentro de la aplicación, y te animamos a revisar esta política periódicamente.
 
-10. **Contáctanos**
+14. **Contáctanos**
 
    Si tienes alguna pregunta o inquietud sobre esta Política de Privacidad o cómo se manejan tus datos, por favor contáctanos en support@jkstudioo.com.
 
