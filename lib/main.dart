@@ -11,6 +11,7 @@ import 'package:math_ai/l10n/app_localizations.dart';
 import 'package:math_ai/core/services/analytics_service.dart';
 import 'package:math_ai/core/services/app_review_service.dart';
 import 'package:math_ai/core/services/ad_service.dart';
+import 'package:math_ai/core/services/ad_config_service.dart';
 import 'package:math_ai/features/ads/presentation/ad_cubit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -60,7 +61,8 @@ void main() async {
   final subscriptionRepository = RevenueCatRepository();
   await subscriptionRepository.initialize();
 
-  // Initialize AdService
+  // Initialize AdService and AdConfigService
+  await AdConfigService.initialize();
   final adService = AdService.instance;
   await AdService.initialize();
 

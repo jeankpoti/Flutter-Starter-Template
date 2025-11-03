@@ -36,26 +36,28 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
       appBar: AppBarWidget(
         title: AppLocalizations.of(context)!.premiumSubscription,
       ),
-      body: BlocConsumer<SubscriptionCubit, SubscriptionState>(
-        listener: (context, state) {
-          if (state.status == SubscriptionStatus.error &&
-              state.errorMessage != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: BodyMediumText(state.errorMessage!)),
-            );
-          }
-        },
-        builder: (context, state) {
-          if (state.status == SubscriptionStatus.loading) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      body: SafeArea(
+        child: BlocConsumer<SubscriptionCubit, SubscriptionState>(
+          listener: (context, state) {
+            if (state.status == SubscriptionStatus.error &&
+                state.errorMessage != null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: BodyMediumText(state.errorMessage!)),
+              );
+            }
+          },
+          builder: (context, state) {
+            if (state.status == SubscriptionStatus.loading) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-          if (state.isSubscribed) {
-            return _buildActiveSubscription(context, state);
-          }
+            if (state.isSubscribed) {
+              return _buildActiveSubscription(context, state);
+            }
 
-          return _buildSubscriptionOptions(context, state);
-        },
+            return _buildSubscriptionOptions(context, state);
+          },
+        ),
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'ad_config_service.dart';
 
 class AdService {
   static AdService? _instance;
@@ -9,19 +10,17 @@ class AdService {
 
   AdService._();
 
-  // Test Ad Unit IDs (replace with actual IDs for production)
-  static const String _rewardedAdUnitIdAndroid =
+  // Test Ad Unit IDs
+  static const String _testRewardedAdUnitIdAndroid =
       'ca-app-pub-3940256099942544/5224354917';
+  static const String _testRewardedAdUnitIdIOS =
+      'ca-app-pub-3940256099942544/1712485313';
 
-  // static const String _rewardedAdUnitIdIOS =
-  //     'ca-app-pub-3940256099942544/1712485313';
-
-  // Real Ad Unit IDs
-  static const String _rewardedAdUnitIdIOS =
+  // Production Ad Unit IDs
+  static const String _prodRewardedAdUnitIdAndroid =
+      'ca-app-pub-9068204541773057/5566109912';
+  static const String _prodRewardedAdUnitIdIOS =
       'ca-app-pub-9068204541773057/3523897368';
-
-  // static const String _rewardedAdUnitIdAndroid =
-  //     'ca-app-pub-9068204541773057/5566109912';
 
   RewardedAd? _rewardedAd;
   bool _isRewardedAdLoading = false;
@@ -33,7 +32,13 @@ class AdService {
 
   // Get the appropriate rewarded ad unit ID for the platform
   String get _rewardedAdUnitId {
-    return Platform.isAndroid ? _rewardedAdUnitIdAndroid : _rewardedAdUnitIdIOS;
+    final useTestAds = AdConfigService.shouldUseTestAds();
+    
+    if (Platform.isAndroid) {
+      return useTestAds ? _testRewardedAdUnitIdAndroid : _prodRewardedAdUnitIdAndroid;
+    } else {
+      return useTestAds ? _testRewardedAdUnitIdIOS : _prodRewardedAdUnitIdIOS;
+    }
   }
 
   // Load a rewarded ad
@@ -94,8 +99,18 @@ class AdService {
     }
   }
 
+  // Check if ads should be shown for current user
+  bool shouldShowAds([String? userEmail]) {
+    return AdConfigService.shouldShowAds(userEmail);
+  }
+
   // Show rewarded ad and return whether user earned reward
-  Future<bool> showRewardedAd() async {
+  Future<bool> showRewardedAd([String? userEmail]) async {
+    // Check if ads should be shown for this user
+    if (!shouldShowAds(userEmail)) {
+      return true; // Grant reward without showing ad
+    }
+
     if (_rewardedAd == null) {
       return false; // No ad available
     }

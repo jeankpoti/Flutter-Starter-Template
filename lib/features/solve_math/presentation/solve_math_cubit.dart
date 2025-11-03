@@ -20,6 +20,11 @@ class SolveMathCubit extends Cubit<SolveMathState> {
 
   // Show ad before solving math for free users
   Future<bool> showAdForFreeUser() async {
+    // Check if ads should be shown for current user via Remote Config
+    if (!adService.shouldShowAds()) {
+      return true; // Grant access without showing ad
+    }
+
     emit(state.copyWith(isShowingAd: true, errorMsg: null));
     try {
       // Check if ad is ready
