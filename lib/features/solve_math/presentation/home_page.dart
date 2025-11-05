@@ -475,21 +475,17 @@ class _HomePageState extends State<HomePage>
                             ),
                           ),
 
-                          // Text Tab with its own scroll
-                          SingleChildScrollView(
+                          // Text Tab with fixed keyboard
+                          Padding(
                             padding: const EdgeInsets.all(_spacing4),
-                            child: Column(
-                              children: [
-                                TextTabWidget(
-                                  textController: _textController,
-                                  isTablet: isTablet,
-                                  onSolvePressed:
-                                      () => _solveMath(
-                                        textInput: _textController.text.trim(),
-                                      ),
-                                  showSnackBarMessage: _showSnackBarMessage,
-                                ),
-                              ],
+                            child: TextTabWidget(
+                              textController: _textController,
+                              isTablet: isTablet,
+                              onSolvePressed:
+                                  () => _solveMath(
+                                    textInput: _textController.text.trim(),
+                                  ),
+                              showSnackBarMessage: _showSnackBarMessage,
                             ),
                           ),
 

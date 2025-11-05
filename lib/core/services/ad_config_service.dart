@@ -23,7 +23,7 @@ class AdConfigService {
       // Configure Remote Config settings
       await _remoteConfig.setConfigSettings(RemoteConfigSettings(
         fetchTimeout: const Duration(minutes: 1),
-        minimumFetchInterval: const Duration(minutes: 1), // Faster refresh for testing
+        minimumFetchInterval: const Duration(hours: 1), // Production setting
       ));
 
       // Set default values for fallback scenarios

@@ -808,6 +808,11 @@ class StudyCubit extends Cubit<StudyState> {
 
   Future<void> showAdForFreeUser() async {
     try {
+      // Check if ads should be shown for current user via Remote Config
+      if (!_adService.shouldShowAds()) {
+        return; // Skip ad, allow proceeding
+      }
+
       emit(state.copyWith(isShowingAd: true));
       
       final adResult = await _adService.showRewardedAd();
