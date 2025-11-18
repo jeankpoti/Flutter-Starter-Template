@@ -373,6 +373,8 @@ class StudyCubit extends Cubit<StudyState> {
         title: title,
       );
 
+      // TODO: Temporarily disabled Firebase Storage uploads for study materials
+      /*
       // Handle file upload to Firebase Storage if needed
       StudyMaterial finalMaterial = studyMaterial;
       if (file != null &&
@@ -389,6 +391,10 @@ class StudyCubit extends Cubit<StudyState> {
           // Continue without Firebase Storage URL
         }
       }
+      */
+
+      // Use the material without Firebase Storage path
+      StudyMaterial finalMaterial = studyMaterial;
 
       // Save material to database
       await _materialRepository.saveMaterial(finalMaterial);
