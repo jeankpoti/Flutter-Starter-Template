@@ -317,14 +317,14 @@ class _HomePageState extends State<HomePage>
                     isRefresh: true,
                   );
                   _showResultDialog(isTablet, state.result);
-                  
+
                   // Check for app review after successful solve
                   AppReviewService.checkAndRequestReview(
                     context: context,
                     triggerPoint: 'problem_solved',
                     afterPositiveAction: true,
                   );
-                  
+
                   // Clear the selected image after successful solving
                   context.read<ImageCaptureCubit>().clearImage();
                   // Clear the text input as well

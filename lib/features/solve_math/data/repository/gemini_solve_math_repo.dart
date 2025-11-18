@@ -4,9 +4,9 @@ import 'dart:typed_data';
 import 'dart:async';
 
 import '../../domain/respository/solve_math_repo.dart';
+import '../../domain/models/math_solution.dart';
 import '../../../settings/data/preferences_service.dart';
 import '../../../settings/domain/models/math_level.dart';
-import '../../../settings/domain/models/response_length.dart';
 import 'prompt_localizer.dart';
 
 class GeminiSolveMathRepo implements SolveMathRepo {
@@ -26,16 +26,16 @@ class GeminiSolveMathRepo implements SolveMathRepo {
   Future<void> initialize() async {
     if (!_isInitialized) {
       try {
-        // Get user's response length preference
-        final prefs = await PreferencesService.getInstance();
-        final responseLength = prefs.getResponseLength();
-        
         _model = FirebaseAI.googleAI().generativeModel(
-          model: 'gemini-2.5-flash-lite',
+          model: 'gemini-2.5-flash-image',
           generationConfig: GenerationConfig(
-            maxOutputTokens: responseLength.maxTokens,
+            maxOutputTokens: 2048,
             temperature: 0.7,
             topP: 0.9,
+            responseModalities: [
+              ResponseModalities.text,
+              ResponseModalities.image,
+            ],
           ),
         );
         _isInitialized = true;
@@ -92,7 +92,7 @@ class GeminiSolveMathRepo implements SolveMathRepo {
 
   // Method to solve math problems from text input
   @override
-  Future<String> solveMathWithText(String textInput) async {
+  Future<MathSolution> solveMathWithText(String textInput) async {
     if (!_isInitialized || _model == null) {
       throw Exception(
         'GeminiService not initialized. Call initialize() first.',
@@ -103,50 +103,72 @@ class GeminiSolveMathRepo implements SolveMathRepo {
       // Get user's math level preference and locale
       final prefs = await PreferencesService.getInstance();
       final mathLevel = prefs.getMathLevel();
-      final responseLength = prefs.getResponseLength();
       final locale = prefs.getLocale();
 
       final prompt = _buildAgeAppropriatePrompt(
         textInput.trim(),
         mathLevel,
-        responseLength,
         locale,
       );
 
       final response = await generateTextContent(prompt);
-      return response.text ?? 'Unable to solve the math problem';
+      final images = _extractImages(response);
+
+      return MathSolution(
+        text: response.text ?? 'Unable to solve the math problem',
+        images: images,
+      );
     } catch (e) {
-      return 'Error: Failed to solve the math problem. Please try again.';
+      return MathSolution(
+        text: 'Error: Failed to solve the math problem. Please try again.',
+        images: [],
+      );
     }
+  }
+
+  // Method to extract images from Gemini response
+  List<Uint8List> _extractImages(GenerateContentResponse response) {
+    final images = <Uint8List>[];
+
+    for (final candidate in response.candidates) {
+      if (candidate.content.parts.isNotEmpty) {
+        for (final part in candidate.content.parts) {
+          if (part is InlineDataPart) {
+            images.add(part.bytes);
+          }
+        }
+      }
+    }
+
+    return images;
   }
 
   String _buildAgeAppropriatePrompt(
     String mathProblem,
     MathLevel level,
-    ResponseLength responseLength,
     String locale,
   ) {
-    final combinedContext = '${level.toPromptContext()}\n\n${responseLength.toPromptContext()}';
+    final context = level.toPromptContext();
     return PromptLocalizer.getMathSolvingPrompt(
       locale,
       mathProblem,
-      combinedContext,
+      context,
       level.displayName,
     );
   }
 
-  String _buildImagePrompt(MathLevel level, ResponseLength responseLength, String locale) {
-    final combinedContext = '${level.toPromptContext()}\n\n${responseLength.toPromptContext()}';
+  String _buildImagePrompt(MathLevel level, String locale) {
+    final context = level.toPromptContext();
     return PromptLocalizer.getImageAnalysisPrompt(
       locale,
-      combinedContext,
+      context,
       level.displayName,
     );
   }
 
   // Method to solve math from image
   @override
-  Future<String> solveMath(dynamic imageInput) async {
+  Future<MathSolution> solveMath(dynamic imageInput) async {
     if (!_isInitialized || _model == null) {
       throw Exception(
         'GeminiService not initialized. Call initialize() first.',
@@ -175,15 +197,12 @@ class GeminiSolveMathRepo implements SolveMathRepo {
       // Get user's math level preference and locale for image solving
       final prefs = await PreferencesService.getInstance();
       final mathLevel = prefs.getMathLevel();
-      final responseLength = prefs.getResponseLength();
       final locale = prefs.getLocale();
 
       // Create the image part with the bytes
       final imagePart = InlineDataPart('image/jpeg', imageBytes);
-      final prompt = TextPart(_buildImagePrompt(mathLevel, responseLength, locale));
+      final prompt = TextPart(_buildImagePrompt(mathLevel, locale));
 
-      // Convert file to bytes first
-      // final imageBytes = await imageFile!.readAsBytes(); I
       // Create a content item with the image
       final content = [
         Content.multi([prompt, imagePart]),
@@ -191,9 +210,19 @@ class GeminiSolveMathRepo implements SolveMathRepo {
 
       // Generate content
       final response = await _model!.generateContent(content);
-      return response.text ?? 'Unable to solve the math problem';
+      final images = _extractImages(response);
+
+      return MathSolution(
+        text: response.text ?? 'Unable to solve the math problem',
+        images: images,
+      );
     } catch (e) {
-      return 'Error: Failed to solve the math problem. Please try again with a clearer image.';
+      print('Error in solveMath: $e');
+      return MathSolution(
+        text:
+            'Error: Failed to solve the math problem. Please try again with a clearer image.',
+        images: [],
+      );
     }
   }
 }

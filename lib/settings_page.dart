@@ -19,8 +19,6 @@ import 'features/account/presentation/reset_password_page.dart';
 import 'features/locale/presentation/locale_cubit.dart';
 import 'features/settings/data/preferences_service.dart';
 import 'features/settings/domain/models/math_level.dart';
-import 'features/settings/domain/models/response_length.dart';
-import 'features/solve_math/data/repository/gemini_solve_math_repo.dart';
 import 'features/subscription/presentation/subscription_page.dart';
 import 'l10n/app_localizations.dart';
 import 'main.dart';
@@ -39,14 +37,11 @@ class _SettingsPageState extends State<SettingsPage> {
   bool _isDarkMode = false;
   MathLevel _selectedLevel = MathLevel.highSchool;
   bool _isLoadingMathLevel = true;
-  ResponseLength _selectedResponseLength = ResponseLength.short;
-  bool _isLoadingResponseLength = true;
 
   @override
   void initState() {
     super.initState();
     _loadCurrentMathLevel();
-    _loadCurrentResponseLength();
   }
 
   Future<void> _loadCurrentMathLevel() async {
@@ -88,45 +83,6 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
-  Future<void> _loadCurrentResponseLength() async {
-    final prefs = await PreferencesService.getInstance();
-    setState(() {
-      _selectedResponseLength = prefs.getResponseLength();
-      _isLoadingResponseLength = false;
-    });
-  }
-
-  Future<void> _saveResponseLength(ResponseLength length) async {
-    final prefs = await PreferencesService.getInstance();
-    await prefs.setResponseLength(length);
-    setState(() {
-      _selectedResponseLength = length;
-    });
-
-    // Reinitialize the Gemini model with new settings
-    final geminiRepo = GeminiSolveMathRepo();
-    await geminiRepo.reinitialize();
-
-    if (mounted) {
-      final localizations = AppLocalizations.of(context)!;
-      String lengthName;
-      switch (length) {
-        case ResponseLength.short:
-          lengthName = localizations.responseLengthShort;
-          break;
-        case ResponseLength.medium:
-          lengthName = localizations.responseLengthMedium;
-          break;
-        case ResponseLength.long:
-          lengthName = localizations.responseLengthLong;
-          break;
-      }
-      AppSnackBar.showSuccess(
-        context,
-        'Response length updated to $lengthName',
-      );
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -183,12 +139,6 @@ class _SettingsPageState extends State<SettingsPage> {
                       selectedLevel: _selectedLevel,
                       isLoading: _isLoadingMathLevel,
                       onChanged: _saveMathLevel,
-                    ),
-                    const SizedBox(height: 8),
-                    ResponseLengthDropdown(
-                      selectedLength: _selectedResponseLength,
-                      isLoading: _isLoadingResponseLength,
-                      onChanged: _saveResponseLength,
                     ),
 
                     // App Preferences Section

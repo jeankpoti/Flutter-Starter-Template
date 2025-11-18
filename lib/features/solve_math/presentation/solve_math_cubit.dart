@@ -6,6 +6,7 @@ import 'package:math_ai/core/services/app_review_service.dart';
 import 'package:math_ai/core/services/ad_service.dart';
 
 import '../domain/models/collection.dart';
+import '../domain/models/math_solution.dart';
 import '../domain/respository/firebase_collection_repo.dart';
 import '../domain/respository/solve_math_repo.dart';
 import 'solve_math_state.dart';
@@ -61,26 +62,27 @@ class SolveMathCubit extends Cubit<SolveMathState> {
 
     emit(state.copyWith(isIdentifying: true, resultShown: false, errorMsg: null));
     try {
-      String result;
+      MathSolution solution;
 
       // Check if input is text (String) and call appropriate method
       if (input is String && input.trim().isNotEmpty) {
-        result = await solveMathRepo.solveMathWithText(input.trim());
+        solution = await solveMathRepo.solveMathWithText(input.trim());
       } else {
-        result = await solveMathRepo.solveMath(input);
+        solution = await solveMathRepo.solveMath(input);
       }
 
       final collection = Collection(
         imagePath: input is File ? input.path : '',
         imageUrl: '',
-        solution: result,
+        solution: solution.text,
       );
 
       await firebaseCollectionRepo.saveCollection(collection);
 
       emit(
         state.copyWith(
-          result: result, 
+          result: solution.text,
+          generatedImages: solution.images,
           isIdentifying: false, 
           isSuccess: true, 
           resultShown: false,
@@ -95,6 +97,7 @@ class SolveMathCubit extends Cubit<SolveMathState> {
         state.copyWith(
           result:
               'Error solving math problem. Please check your internet connection and try again.',
+          generatedImages: [],
           isIdentifying: false,
           isError: true,
         ),
@@ -115,7 +118,8 @@ class SolveMathCubit extends Cubit<SolveMathState> {
 
   Future<void> emptyResult() async {
     emit(state.copyWith(
-      result: '', 
+      result: '',
+      generatedImages: [],
       isIdentifying: false, 
       resultShown: false,
       resultTimestamp: null,

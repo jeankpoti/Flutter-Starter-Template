@@ -6,7 +6,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 /// Service for managing ad configuration through Firebase Remote Config
 /// Provides flexible control over ad display for testing and production environments
 class AdConfigService {
-  static FirebaseRemoteConfig get _remoteConfig => FirebaseRemoteConfig.instance;
+  static FirebaseRemoteConfig get _remoteConfig =>
+      FirebaseRemoteConfig.instance;
   static bool _isInitialized = false;
 
   // Remote Config keys
@@ -21,10 +22,12 @@ class AdConfigService {
 
     try {
       // Configure Remote Config settings
-      await _remoteConfig.setConfigSettings(RemoteConfigSettings(
-        fetchTimeout: const Duration(minutes: 1),
-        minimumFetchInterval: const Duration(hours: 1), // Production setting
-      ));
+      await _remoteConfig.setConfigSettings(
+        RemoteConfigSettings(
+          fetchTimeout: const Duration(minutes: 1),
+          minimumFetchInterval: const Duration(hours: 1), // Production setting
+        ),
+      );
 
       // Set default values for fallback scenarios
       await _remoteConfig.setDefaults(_getDefaultValues());
@@ -67,12 +70,12 @@ class AdConfigService {
       // Check if user is in test email list
       final testEmailsJson = _remoteConfig.getString(_testUserEmailsKey);
       final testEmails = List<String>.from(jsonDecode(testEmailsJson));
-      
+
       // Check if "*" is in the list (means all users)
       if (testEmails.contains("*")) {
         return true;
       }
-      
+
       return testEmails.contains(email);
     } catch (e) {
       // Safe fallback - don't show ads if config fails

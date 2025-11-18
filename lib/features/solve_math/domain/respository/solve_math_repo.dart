@@ -1,12 +1,14 @@
 /*
-TodoRepo is an abstract class that defines the methods that the TodoRepository class must implement.
+SolveMathRepo is an abstract class that defines the methods that the SolveMathRepository class must implement.
 
 Here we define what the app can do
 */
 
+import '../models/math_solution.dart';
+
 abstract class SolveMathRepo {
-  Future<String> solveMath(dynamic imageInput);
-  Future<String> solveMathWithText(String textInput);
+  Future<MathSolution> solveMath(dynamic imageInput);
+  Future<MathSolution> solveMathWithText(String textInput);
 }
 
 /*

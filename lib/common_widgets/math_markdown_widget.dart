@@ -1,469 +1,229 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 
 class MathMarkdownWidget extends StatelessWidget {
   final String data;
+  final TextStyle? textStyle;
+  final double? fontSize;
+  final Color? textColor;
+  final EdgeInsetsGeometry? padding;
+  final bool selectable;
 
-  const MathMarkdownWidget({super.key, required this.data});
+  const MathMarkdownWidget({
+    super.key,
+    required this.data,
+    this.textStyle,
+    this.fontSize,
+    this.textColor,
+    this.padding,
+    this.selectable = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
-          width: 1,
-        ),
-      ),
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: _parseContent(data, context),
-        ),
-      ),
+      padding: padding ?? const EdgeInsets.all(16.0),
+      child: _buildContent(context),
     );
   }
 
-  List<Widget> _parseContent(String text, BuildContext context) {
-    final List<Widget> widgets = [];
-    final lines = text.split('\n');
+  Widget _buildContent(BuildContext context) {
+    // Split content into lines for analysis
+    final lines = data.split('\n');
+    List<Widget> widgets = [];
 
     for (int i = 0; i < lines.length; i++) {
       final line = lines[i];
+      final isHighlighted = _shouldHighlightLine(line, i, lines);
+      
       if (line.trim().isEmpty) {
-        widgets.add(const SizedBox(height: 12));
+        widgets.add(const SizedBox(height: 8.0));
         continue;
       }
 
-      // Check for LaTeX math expressions
-      if (line.contains(r'$') && line.contains(r'\boxed')) {
-        // Handle boxed math expressions
-        final regex = RegExp(r'\$([^$]+)\$', multiLine: true);
-        if (regex.hasMatch(line)) {
-          try {
-            final match = regex.firstMatch(line)!;
-            final mathExpression = match.group(1)!;
+      final widget = _buildLineWidget(context, line, isHighlighted);
+      widgets.add(widget);
+      
+      // Add spacing between lines
+      if (i < lines.length - 1) {
+        widgets.add(const SizedBox(height: 4.0));
+      }
+    }
 
-            widgets.add(
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12.0),
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(
-                      minHeight: 30.0,
-                      minWidth: 20.0,
-                    ),
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      child: Math.tex(
-                        mathExpression,
-                        textStyle: Theme.of(
-                          context,
-                        ).textTheme.headlineSmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurface,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            );
-          } catch (e) {
-            // If LaTeX parsing fails, show the expression without dollar signs
-            final cleanLine = line.replaceAll(r'$', '');
-            widgets.add(
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: Text(
-                  cleanLine,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontFamily: 'monospace',
-                    color: Theme.of(context).colorScheme.error,
-                  ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: widgets,
+    );
+  }
+
+  bool _shouldHighlightLine(String line, int index, List<String> allLines) {
+    final trimmedLine = line.trim();
+    
+    // Don't highlight empty lines
+    if (trimmedLine.isEmpty) return false;
+    
+    // Check for final answer patterns
+    final finalAnswerPatterns = [
+      RegExp(r'^\s*\$\\frac\{.+\}\{.+\}\s*$', multiLine: true), // Final fraction like $\frac{1}{2\pi}$
+      RegExp(r'^\s*\$.*=.*\$\s*$', multiLine: true), // Math equation ending like $dh/dt = \frac{1}{2\pi}$
+      RegExp(r'^\s*Therefore,?\s+.+', caseSensitive: false),
+      RegExp(r'^\s*Thus,?\s+.+', caseSensitive: false),
+      RegExp(r'^\s*So,?\s+.+', caseSensitive: false),
+      RegExp(r'^\s*Answer:?\s+.+', caseSensitive: false),
+      RegExp(r'^\s*Final answer:?\s+.+', caseSensitive: false),
+      RegExp(r'^\s*Result:?\s+.+', caseSensitive: false),
+      RegExp(r'^\s*Solution:?\s+.+', caseSensitive: false),
+    ];
+    
+    // Check if this line matches any final answer pattern
+    for (final pattern in finalAnswerPatterns) {
+      if (pattern.hasMatch(trimmedLine)) {
+        return true;
+      }
+    }
+    
+    // Check if it's the last meaningful line with math content
+    if (index >= allLines.length - 3) { // Check last 3 lines
+      final hasmath = RegExp(r'\$[^$]+\$').hasMatch(trimmedLine);
+      final hasEquation = trimmedLine.contains('=');
+      if (hasmath && hasEquation) {
+        return true;
+      }
+    }
+    
+    return false;
+  }
+
+  Widget _buildLineWidget(BuildContext context, String line, bool isHighlighted) {
+    // Check if the line contains LaTeX math expressions
+    final mathRegex = RegExp(r'\$\$([^$]+)\$\$|\$([^$]+)\$');
+    final matches = mathRegex.allMatches(line);
+    
+    Widget contentWidget;
+    
+    if (matches.isEmpty) {
+      // No math expressions, use regular markdown
+      contentWidget = MarkdownBody(
+        data: line,
+        styleSheet: MarkdownStyleSheet(
+          p: textStyle?.copyWith(
+            fontSize: fontSize,
+            color: textColor ?? Theme.of(context).colorScheme.onSurface,
+          ) ?? TextStyle(
+            fontSize: fontSize,
+            color: textColor ?? Theme.of(context).colorScheme.onSurface,
+          ),
+        ),
+        selectable: selectable,
+      );
+    } else {
+      // Line contains math expressions, build mixed content
+      List<Widget> lineWidgets = [];
+      int lastMatchEnd = 0;
+
+      for (final match in matches) {
+        // Add text before the math expression
+        if (match.start > lastMatchEnd) {
+          final textContent = line.substring(lastMatchEnd, match.start);
+          if (textContent.trim().isNotEmpty) {
+            lineWidgets.add(
+              Text(
+                textContent,
+                style: textStyle?.copyWith(
+                  fontSize: fontSize,
+                  color: textColor ?? Theme.of(context).colorScheme.onSurface,
+                ) ?? TextStyle(
+                  fontSize: fontSize,
+                  color: textColor ?? Theme.of(context).colorScheme.onSurface,
                 ),
               ),
             );
           }
         }
-      } else if (line.contains(r'$')) {
-        // Handle inline math expressions
-        try {
-          final regex = RegExp(r'\$([^$]+)\$', multiLine: true);
-          final matches = regex.allMatches(line).toList();
 
-          if (matches.isNotEmpty) {
-            widgets.add(
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: RichText(
-                  text: TextSpan(
-                    style: Theme.of(context).textTheme.bodyMedium,
-                    children: _buildInlineSpans(line, matches, context),
-                  ),
-                ),
+        // Add the math expression
+        final mathExpression = match.group(1) ?? match.group(2) ?? '';
+        final isDisplayMath = match.group(0)?.startsWith('\$\$') ?? false;
+        
+        try {
+          lineWidgets.add(
+            Math.tex(
+              mathExpression,
+              textStyle: textStyle?.copyWith(
+                fontSize: fontSize,
+                color: textColor ?? Theme.of(context).colorScheme.onSurface,
+              ) ?? TextStyle(
+                fontSize: fontSize,
+                color: textColor ?? Theme.of(context).colorScheme.onSurface,
               ),
-            );
-          } else {
-            widgets.add(
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: Text(
-                  line,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-              ),
-            );
-          }
+              mathStyle: isDisplayMath ? MathStyle.display : MathStyle.text,
+            ),
+          );
         } catch (e) {
-          // If parsing fails, show line without dollar signs
-          final cleanLine = line.replaceAll(r'$', '');
-          widgets.add(
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4.0),
-              child: Text(
-                cleanLine,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontFamily: 'monospace',
-                  color: Theme.of(context).colorScheme.error,
-                ),
+          // If math parsing fails, show the original text
+          lineWidgets.add(
+            Text(
+              match.group(0) ?? '',
+              style: textStyle?.copyWith(
+                fontSize: fontSize,
+                color: textColor ?? Theme.of(context).colorScheme.onSurface,
+              ) ?? TextStyle(
+                fontSize: fontSize,
+                color: textColor ?? Theme.of(context).colorScheme.onSurface,
               ),
             ),
           );
         }
-      } else {
-        // Regular text with markdown formatting
-        widgets.add(
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4.0),
-            child: _buildFormattedText(line, context),
-          ),
-        );
+
+        lastMatchEnd = match.end;
       }
+
+      // Add remaining text after the last math expression
+      if (lastMatchEnd < line.length) {
+        final remainingText = line.substring(lastMatchEnd);
+        if (remainingText.trim().isNotEmpty) {
+          lineWidgets.add(
+            Text(
+              remainingText,
+              style: textStyle?.copyWith(
+                fontSize: fontSize,
+                color: textColor ?? Theme.of(context).colorScheme.onSurface,
+              ) ?? TextStyle(
+                fontSize: fontSize,
+                color: textColor ?? Theme.of(context).colorScheme.onSurface,
+              ),
+            ),
+          );
+        }
+      }
+
+      contentWidget = Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: lineWidgets,
+      );
     }
 
-    return widgets;
-  }
-
-  Widget _buildFormattedText(String line, BuildContext context) {
-    // Handle different markdown formats
-
-    // Check for full line bold titles like "**Problem:**" or "**Solution Steps:**"
-    if (line.startsWith('**') && line.endsWith('**') && line.contains(':')) {
-      final titleText = line.substring(2, line.length - 2);
+    // Apply highlighting if needed
+    if (isHighlighted) {
       return Container(
-        margin: const EdgeInsets.only(top: 16.0, bottom: 8.0),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
         decoration: BoxDecoration(
-          color: Theme.of(
-            context,
-          ).colorScheme.secondaryContainer.withValues(alpha: 0.3),
-          borderRadius: BorderRadius.circular(8),
+          color: Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.3),
+          borderRadius: BorderRadius.circular(8.0),
           border: Border.all(
-            color: Theme.of(
-              context,
-            ).colorScheme.secondary.withValues(alpha: 0.3),
-            width: 1,
+            color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.2),
+            width: 1.0,
           ),
         ),
-        child: Row(
-          children: [
-            Icon(
-              _getIconForTitle(titleText),
-              color: Theme.of(context).colorScheme.secondary,
-              size: 20,
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                titleText,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.secondary,
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
-    } else if (line.startsWith('# ')) {
-      // Header 1 (fallback)
-      return Text(
-        line.substring(2),
-        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-          fontWeight: FontWeight.bold,
-          color: Theme.of(context).colorScheme.onSurface,
-        ),
-      );
-    } else if (line.startsWith('## ')) {
-      // Header 2 (fallback)
-      return Text(
-        line.substring(3),
-        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-          fontWeight: FontWeight.bold,
-          color: Theme.of(context).colorScheme.onSurface,
-        ),
-      );
-    } else if (line.startsWith('### ')) {
-      // Header 3 (fallback)
-      return Text(
-        line.substring(4),
-        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-          fontWeight: FontWeight.bold,
-          color: Theme.of(context).colorScheme.onSurface,
-        ),
-      );
-    } else if (line.contains('**')) {
-      // Handle bold text within line
-      return RichText(
-        text: TextSpan(
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
-          children: _buildBoldSpans(line, context),
-        ),
-      );
-    } else if (line.startsWith('- ') || line.startsWith('* ')) {
-      // Bullet points
-      return Container(
-        margin: const EdgeInsets.symmetric(vertical: 4),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: Theme.of(
-            context,
-          ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              margin: const EdgeInsets.only(top: 6),
-              width: 6,
-              height: 6,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.secondary,
-                shape: BoxShape.circle,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                line.substring(2),
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface,
-                  height: 1.5,
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
-    } else if (RegExp(r'^\d+\.').hasMatch(line)) {
-      // Numbered lists
-      final match = RegExp(r'^(\d+)\. (.*)').firstMatch(line);
-      if (match != null) {
-        final number = match.group(1)!;
-        final content = match.group(2)!;
-        return Container(
-          margin: const EdgeInsets.symmetric(vertical: 6),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          decoration: BoxDecoration(
-            color: Theme.of(
-              context,
-            ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.2),
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: Theme.of(
-                context,
-              ).colorScheme.outline.withValues(alpha: 0.2),
-              width: 1,
-            ),
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 24,
-                height: 24,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.secondary,
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: Text(
-                    number,
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onPrimary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  content,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface,
-                    height: 1.5,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      }
-      return Text(
-        line,
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-          color: Theme.of(context).colorScheme.onSurface,
-        ),
-      );
-    } else {
-      // Regular text
-      return Text(
-        line,
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-          color: Theme.of(context).colorScheme.onSurface,
-        ),
+        child: contentWidget,
       );
     }
-  }
 
-  List<InlineSpan> _buildBoldSpans(String text, BuildContext context) {
-    final List<InlineSpan> spans = [];
-    final boldRegex = RegExp(r'\*\*(.*?)\*\*');
-    final matches = boldRegex.allMatches(text).toList();
-
-    if (matches.isEmpty) {
-      spans.add(TextSpan(text: text));
-      return spans;
-    }
-
-    int currentIndex = 0;
-
-    for (final match in matches) {
-      // Add text before bold
-      if (match.start > currentIndex) {
-        spans.add(TextSpan(text: text.substring(currentIndex, match.start)));
-      }
-
-      // Add bold text
-      spans.add(
-        TextSpan(
-          text: match.group(1)!,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-      );
-
-      currentIndex = match.end;
-    }
-
-    // Add remaining text
-    if (currentIndex < text.length) {
-      spans.add(TextSpan(text: text.substring(currentIndex)));
-    }
-
-    return spans;
-  }
-
-  List<InlineSpan> _buildInlineSpans(
-    String text,
-    List<RegExpMatch> mathMatches,
-    BuildContext context,
-  ) {
-    final List<InlineSpan> spans = [];
-    int currentIndex = 0;
-
-    for (final match in mathMatches) {
-      // Add text before math
-      if (match.start > currentIndex) {
-        spans.add(TextSpan(text: text.substring(currentIndex, match.start)));
-      }
-
-      // Add math widget
-      try {
-        final mathExpression = match.group(1)!;
-        spans.add(
-          WidgetSpan(
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 6.0,
-                vertical: 2.0,
-              ),
-              decoration: BoxDecoration(
-                color: Theme.of(
-                  context,
-                ).colorScheme.secondaryContainer.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(4.0),
-              ),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(
-                  minHeight: 20.0,
-                  minWidth: 10.0,
-                ),
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Math.tex(
-                    mathExpression,
-                    textStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        );
-      } catch (e) {
-        // If math parsing fails, add the expression without dollar signs
-        spans.add(
-          TextSpan(
-            text: match.group(1)!,
-            style: TextStyle(
-              fontFamily: 'monospace',
-              color: Theme.of(context).colorScheme.error,
-              backgroundColor: Theme.of(context).colorScheme.errorContainer.withValues(alpha: 0.2),
-            ),
-          ),
-        );
-      }
-
-      currentIndex = match.end;
-    }
-
-    // Add remaining text
-    if (currentIndex < text.length) {
-      spans.add(TextSpan(text: text.substring(currentIndex)));
-    }
-
-    return spans;
-  }
-
-  IconData _getIconForTitle(String title) {
-    final titleLower = title.toLowerCase();
-    if (titleLower.contains('problem')) {
-      return Icons.quiz_outlined;
-    } else if (titleLower.contains('solution') ||
-        titleLower.contains('steps')) {
-      return Icons.auto_fix_high;
-    } else if (titleLower.contains('answer') || titleLower.contains('final')) {
-      return Icons.check_circle_outline;
-    } else if (titleLower.contains('given') ||
-        titleLower.contains('information')) {
-      return Icons.info_outline;
-    } else if (titleLower.contains('approach') ||
-        titleLower.contains('method')) {
-      return Icons.lightbulb_outline;
-    } else {
-      return Icons.arrow_forward_ios;
-    }
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2.0),
+      child: contentWidget,
+    );
   }
 }

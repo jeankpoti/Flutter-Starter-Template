@@ -200,8 +200,9 @@ class AppReviewService {
     if (rating >= 4) {
       await _requestAppStoreReview(triggerPoint, rating);
     } else {
-      if (context.mounted)
+      if (context.mounted) {
         await _showFeedbackDialog(context, rating, triggerPoint);
+      }
     }
   }
 
@@ -330,8 +331,9 @@ class AppReviewService {
     String bodyText =
         'Hi MathGenie Team,\n\n${feedbackMessages[feedbackType] ?? feedbackMessages['general']}\n\n';
     bodyText += '[Please describe your feedback here]\n\n';
-    if (additionalInfo != null)
+    if (additionalInfo != null) {
       bodyText += 'Additional Info: $additionalInfo\n\n';
+    }
     bodyText += 'Thanks!\n\n---\nSent from MathGenie AI';
 
     final uri = Uri.parse(

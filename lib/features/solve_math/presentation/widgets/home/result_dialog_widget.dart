@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../l10n/app_localizations.dart';
@@ -7,6 +8,8 @@ import '../../../../../common_widgets/text_widgets.dart';
 import '../../../../../common_widgets/report_content_dialog_widget.dart';
 import '../../../../common/domain/models/content_report.dart';
 import '../../image_capture_cubit.dart';
+import '../../solve_math_cubit.dart';
+import '../../solve_math_state.dart';
 
 class ResultDialogWidget extends StatelessWidget {
   final bool isTablet;
@@ -43,7 +46,8 @@ class ResultDialogWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<ImageCaptureCubit, ImageCaptureState>(
-      builder: (context, imageCaptureState) => Scaffold(
+      builder: (context, imageCaptureState) => BlocBuilder<SolveMathCubit, SolveMathState>(
+        builder: (context, solveMathState) => Scaffold(
         backgroundColor: Theme.of(context).colorScheme.surface,
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.surface,
@@ -97,6 +101,33 @@ class ResultDialogWidget extends StatelessWidget {
                       ),
                     ),
                   ],
+                  // Generated images section
+                  if (solveMathState.generatedImages.isNotEmpty) ...[
+                    for (int i = 0; i < solveMathState.generatedImages.length; i++)
+                      Container(
+                        width: double.infinity,
+                        margin: const EdgeInsets.only(bottom: _spacing4),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12.0),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.1),
+                              offset: const Offset(0, 2),
+                              blurRadius: 8.0,
+                            ),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12.0),
+                          child: Image.memory(
+                            solveMathState.generatedImages[i],
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
+                  ],
+                  
+                  // Solution text section
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(_spacing4),
@@ -164,6 +195,7 @@ class ResultDialogWidget extends StatelessWidget {
           ),
         ),
       ),
+    ),
     );
   }
 }

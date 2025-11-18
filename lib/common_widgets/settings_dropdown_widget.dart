@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'text_widgets.dart';
 import '../features/settings/domain/models/math_level.dart';
-import '../features/settings/domain/models/response_length.dart';
 import '../l10n/app_localizations.dart';
 
 class SettingsDropdown<T> extends StatelessWidget {
@@ -231,49 +230,6 @@ class LanguageDropdown extends StatelessWidget {
   }
 }
 
-class ResponseLengthDropdown extends StatelessWidget {
-  final ResponseLength selectedLength;
-  final bool isLoading;
-  final void Function(ResponseLength) onChanged;
-
-  const ResponseLengthDropdown({
-    super.key,
-    required this.selectedLength,
-    required this.isLoading,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    if (isLoading) {
-      return Container(
-        height: 120,
-        margin: const EdgeInsets.symmetric(horizontal: 16),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainer,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: const Center(child: CircularProgressIndicator()),
-      );
-    }
-
-    return SettingsDropdown<ResponseLength>(
-      title: AppLocalizations.of(context)!.responseLength,
-      subtitle: AppLocalizations.of(context)!.responseLengthDescription,
-      selectedValue: selectedLength,
-      options: ResponseLength.values,
-      getDisplayText: (length) => _getResponseLengthDisplayName(context, length),
-      getSubtitle: (length) => _getResponseLengthDescription(context, length),
-      onChanged: onChanged,
-      icon: Icon(
-        Icons.text_fields,
-        color: Theme.of(context).colorScheme.secondary,
-        size: 24,
-      ),
-    );
-  }
-}
 
 // Helper functions for MathLevel translations
 String _getMathLevelDisplayName(BuildContext context, MathLevel level) {
@@ -346,27 +302,3 @@ String _getLanguageNativeName(String languageCode) {
   }
 }
 
-// Helper functions for ResponseLength translations
-String _getResponseLengthDisplayName(BuildContext context, ResponseLength length) {
-  final localizations = AppLocalizations.of(context)!;
-  switch (length) {
-    case ResponseLength.short:
-      return localizations.responseLengthShort;
-    case ResponseLength.medium:
-      return localizations.responseLengthMedium;
-    case ResponseLength.long:
-      return localizations.responseLengthLong;
-  }
-}
-
-String _getResponseLengthDescription(BuildContext context, ResponseLength length) {
-  final localizations = AppLocalizations.of(context)!;
-  switch (length) {
-    case ResponseLength.short:
-      return localizations.responseLengthShortDesc;
-    case ResponseLength.medium:
-      return localizations.responseLengthMediumDesc;
-    case ResponseLength.long:
-      return localizations.responseLengthLongDesc;
-  }
-}

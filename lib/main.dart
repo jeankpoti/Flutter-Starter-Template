@@ -48,6 +48,7 @@ void main() async {
   // Initialize Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
+
   // Initialize Analytics Service (will check for permission internally)
   await AnalyticsService.initialize();
   

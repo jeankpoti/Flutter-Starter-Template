@@ -57,14 +57,6 @@
   "changeTheme": "Change theme",
   "mathLevel": "Math Level",
   "mathLevelDescription": "Choose your education level for personalized explanations",
-  "responseLength": "Response Length",
-  "responseLengthDescription": "Choose how detailed you want the AI explanations",
-  "responseLengthShort": "Short",
-  "responseLengthMedium": "Medium", 
-  "responseLengthLong": "Long",
-  "responseLengthShortDesc": "Quick explanations with essential steps",
-  "responseLengthMediumDesc": "Balanced explanations with good detail",
-  "responseLengthLongDesc": "Comprehensive explanations with full context",
   "language": "Language",
   "englishLanguage": "English",
   "frenchLanguage": "French",
@@ -756,5 +748,10 @@
   "premium": "Premium",
   "supportAndFeedback": "Support & Feedback",
   "legal": "Legal",
-  "account": "Account"
+  "account": "Account",
+  "numbers": "Numbers",
+  "algebra": "Algebra",
+  "calculus": "Calculus",
+  "symbols": "Symbols",
+  "hide": "Hide"
 }

@@ -1,7 +1,9 @@
 import 'package:equatable/equatable.dart';
+import 'dart:typed_data';
 
 class SolveMathState extends Equatable {
   final String result;
+  final List<Uint8List> generatedImages;
   final bool isLoading;
   final bool isIdentifying;
   final bool isSuccess;
@@ -13,6 +15,7 @@ class SolveMathState extends Equatable {
 
   const SolveMathState({
     this.result = '',
+    this.generatedImages = const [],
     this.isLoading = false,
     this.isIdentifying = false,
     this.isSuccess = false,
@@ -25,6 +28,7 @@ class SolveMathState extends Equatable {
 
   SolveMathState copyWith({
     String? result,
+    List<Uint8List>? generatedImages,
     bool? isLoading,
     bool? isIdentifying,
     bool? isSuccess,
@@ -36,6 +40,7 @@ class SolveMathState extends Equatable {
   }) {
     return SolveMathState(
       result: result ?? this.result,
+      generatedImages: generatedImages ?? this.generatedImages,
       isLoading: isLoading ?? this.isLoading,
       isIdentifying: isIdentifying ?? this.isIdentifying,
       isSuccess: isSuccess ?? this.isSuccess,
@@ -50,6 +55,7 @@ class SolveMathState extends Equatable {
   @override
   List<Object?> get props => [
     result,
+    generatedImages,
     isLoading,
     isIdentifying,
     isSuccess,
