@@ -15,9 +15,7 @@ async function testFunction() {
   const checkAppleUserExists = httpsCallable(functions, 'checkAppleUserExists');
   
   try {
-    console.log('Calling function with data:', { appleId: 'test123' });
     const result = await checkAppleUserExists({ appleId: 'test123' });
-    console.log('Result:', result.data);
   } catch (error) {
     console.error('Error:', error.code, error.message);
   }

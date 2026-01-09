@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:math_ai/features/common/presentation/permission_cubit.dart';
 import 'package:math_ai/features/solve_math/presentation/home_page.dart';
 import 'package:math_ai/features/ads/presentation/ad_cubit.dart';
+import 'package:math_ai/core/services/version_check_service.dart';
+import 'package:math_ai/common_widgets/force_update_dialog.dart';
 
 class StartupWidget extends StatefulWidget {
   const StartupWidget({super.key});
@@ -17,6 +19,19 @@ class _StartupWidgetState extends State<StartupWidget> {
     super.initState();
     _initializePermissions();
     _initializeAds();
+    _checkVersion();
+  }
+
+  Future<void> _checkVersion() async {
+    final needsForceUpdate =
+        await VersionCheckService().isForceUpdateRequired();
+    if (needsForceUpdate && mounted) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const ForceUpdateDialog(),
+      );
+    }
   }
 
   Future<void> _initializePermissions() async {

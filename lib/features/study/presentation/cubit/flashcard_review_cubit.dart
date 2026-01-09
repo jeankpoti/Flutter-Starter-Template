@@ -11,8 +11,8 @@ class FlashcardReviewCubit extends Cubit<FlashcardReviewState> {
   final FlashcardRepositoryInterface _flashcardRepository;
 
   FlashcardReviewCubit({FlashcardRepositoryInterface? flashcardRepository})
-      : _flashcardRepository = flashcardRepository ?? FlashcardRepositoryImpl(),
-        super(const FlashcardReviewState());
+    : _flashcardRepository = flashcardRepository ?? FlashcardRepositoryImpl(),
+      super(const FlashcardReviewState());
 
   Future<void> initialize() async {
     try {
@@ -20,7 +20,6 @@ class FlashcardReviewCubit extends Cubit<FlashcardReviewState> {
       await _flashcardRepository.initialize();
       emit(state.copyWith(isLoading: false));
     } catch (e) {
-      dev.log('FlashcardReviewCubit: Error initializing: $e', name: 'FlashcardReviewCubit', error: e);
       emit(state.copyWith(isLoading: false, errorMsg: e.toString()));
     }
   }
@@ -28,44 +27,45 @@ class FlashcardReviewCubit extends Cubit<FlashcardReviewState> {
   Future<void> startReviewSession(String deckId) async {
     try {
       emit(state.copyWith(isLoading: true, errorMsg: null));
-      
+
       // First try to get due cards
-      final dueCards = await _flashcardRepository.getDueCards(deckId, limit: 20);
-      dev.log('FlashcardReviewCubit: Found ${dueCards.length} due cards', name: 'FlashcardReviewCubit');
+      final dueCards = await _flashcardRepository.getDueCards(
+        deckId,
+        limit: 20,
+      );
 
       List<FlashCard> cards = dueCards;
 
       // If no due cards, get all cards in the deck for review
       if (cards.isEmpty) {
-        dev.log('FlashcardReviewCubit: No due cards, getting all cards in deck', name: 'FlashcardReviewCubit');
         final allCards = await _flashcardRepository.getAllCardsInDeck(deckId);
         cards = allCards.take(20).toList(); // Limit to 20 cards
-        dev.log('FlashcardReviewCubit: Found ${cards.length} total cards in deck', name: 'FlashcardReviewCubit');
       }
 
       if (cards.isEmpty) {
-        dev.log('FlashcardReviewCubit: No cards found in deck at all', name: 'FlashcardReviewCubit');
-        emit(state.copyWith(
-          isLoading: false,
-          errorMsg: 'No cards found in this deck',
-        ));
+        emit(
+          state.copyWith(
+            isLoading: false,
+            errorMsg: 'No cards found in this deck',
+          ),
+        );
         return;
       }
 
       final session = await _flashcardRepository.startReviewSession(deckId);
-      dev.log('FlashcardReviewCubit: Started review session ${session.id}', name: 'FlashcardReviewCubit');
 
-      emit(state.copyWith(
-        isLoading: false,
-        cards: cards,
-        currentSession: session,
-        currentCardIndex: 0,
-        sessionCorrectAnswers: 0,
-        sessionResults: {},
-        isSuccess: true,
-      ));
+      emit(
+        state.copyWith(
+          isLoading: false,
+          cards: cards,
+          currentSession: session,
+          currentCardIndex: 0,
+          sessionCorrectAnswers: 0,
+          sessionResults: {},
+          isSuccess: true,
+        ),
+      );
     } catch (e) {
-      dev.log('FlashcardReviewCubit: Error starting review session: $e', name: 'FlashcardReviewCubit', error: e);
       emit(state.copyWith(isLoading: false, errorMsg: e.toString()));
     }
   }
@@ -90,30 +90,35 @@ class FlashcardReviewCubit extends Cubit<FlashcardReviewState> {
       // Handle "again" result - show the same card again
       if (result == ReviewResult.again) {
         // Stay on the same card, just update stats
-        emit(state.copyWith(
-          sessionCorrectAnswers: correctAnswers,
-          sessionResults: updatedResults,
-        ));
+        emit(
+          state.copyWith(
+            sessionCorrectAnswers: correctAnswers,
+            sessionResults: updatedResults,
+          ),
+        );
         return;
       }
 
       // Move to next card or finish session for other results
       if (state.currentCardIndex < state.cards.length - 1) {
-        emit(state.copyWith(
-          currentCardIndex: state.currentCardIndex + 1,
-          sessionCorrectAnswers: correctAnswers,
-          sessionResults: updatedResults,
-        ));
+        emit(
+          state.copyWith(
+            currentCardIndex: state.currentCardIndex + 1,
+            sessionCorrectAnswers: correctAnswers,
+            sessionResults: updatedResults,
+          ),
+        );
       } else {
         // Session completed
-        emit(state.copyWith(
-          sessionCorrectAnswers: correctAnswers,
-          sessionResults: updatedResults,
-          isSessionCompleted: true,
-        ));
+        emit(
+          state.copyWith(
+            sessionCorrectAnswers: correctAnswers,
+            sessionResults: updatedResults,
+            isSessionCompleted: true,
+          ),
+        );
       }
     } catch (e) {
-      dev.log('FlashcardReviewCubit: Error reviewing card: $e', name: 'FlashcardReviewCubit', error: e);
       emit(state.copyWith(errorMsg: 'Error reviewing card: ${e.toString()}'));
     }
   }
@@ -130,7 +135,6 @@ class FlashcardReviewCubit extends Cubit<FlashcardReviewState> {
       );
       emit(state.copyWith(isSuccess: true));
     } catch (e) {
-      dev.log('FlashcardReviewCubit: Error completing session: $e', name: 'FlashcardReviewCubit', error: e);
       emit(state.copyWith(errorMsg: 'Error saving session: ${e.toString()}'));
     }
   }

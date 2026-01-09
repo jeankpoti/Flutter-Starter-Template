@@ -25,6 +25,8 @@ import 'widgets/home/text_tab_widget.dart';
 import 'widgets/home/voice_tab_widget.dart';
 import 'widgets/home/result_dialog_widget.dart';
 import 'widgets/home/modern_tab_bar_widget.dart';
+import '../../../core/services/version_check_service.dart';
+import '../../../common_widgets/update_banner_widget.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -40,6 +42,7 @@ class _HomePageState extends State<HomePage>
         PermissionLifecycleMixin {
   final TextEditingController _textController = TextEditingController();
   late TabController _tabController;
+  bool _isUpdateAvailable = false;
 
   // Design system spacing constants
   static const double _spacing4 = 16.0;
@@ -51,6 +54,16 @@ class _HomePageState extends State<HomePage>
     _tabController = TabController(length: 3, vsync: this);
     // Initialize permissions
     context.read<PermissionCubit>().initializePermissions();
+    _checkUpdate();
+  }
+
+  Future<void> _checkUpdate() async {
+    final available = await VersionCheckService().isUpdateAvailable();
+    if (mounted) {
+      setState(() {
+        _isUpdateAvailable = available;
+      });
+    }
   }
 
   @override
@@ -371,6 +384,16 @@ class _HomePageState extends State<HomePage>
               builder: (context, state) {
                 return Column(
                   children: [
+                    if (_isUpdateAvailable)
+                      const Padding(
+                        padding: EdgeInsets.only(
+                          left: _spacing4,
+                          right: _spacing4,
+                          top: _spacing4,
+                        ),
+                        child: UpdateBannerWidget(),
+                      ),
+
                     // Tab Bar at the top
                     Container(
                       padding: const EdgeInsets.only(

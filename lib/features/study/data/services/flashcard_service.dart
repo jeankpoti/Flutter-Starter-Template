@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_ai/firebase_ai.dart';
+import '../../../../core/services/ad_config_service.dart';
 import '../../../settings/data/preferences_service.dart';
 import '../../../settings/domain/models/math_level.dart';
 import '../../domain/models/flashcard.dart';
@@ -24,9 +25,9 @@ class FlashcardService {
 
   Future<void> initialize() async {
     if (!_isInitialized) {
-      // Flashcard generation only needs text, use cost-effective lite model
+      // Flashcard generation only needs text, use cost-effective model from remote config
       _liteModel = FirebaseAI.googleAI().generativeModel(
-        model: 'gemini-2.5-flash-lite',
+        model: AdConfigService.getStudyModelName(),
       );
       _flashcardRepository ??= FlashcardRepository();
 

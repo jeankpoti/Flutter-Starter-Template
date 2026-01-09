@@ -11,8 +11,8 @@ class FlashcardDeckCubit extends Cubit<FlashcardDeckState> {
   final FlashcardRepositoryInterface _flashcardRepository;
 
   FlashcardDeckCubit({FlashcardRepositoryInterface? flashcardRepository})
-      : _flashcardRepository = flashcardRepository ?? FlashcardRepositoryImpl(),
-        super(const FlashcardDeckState());
+    : _flashcardRepository = flashcardRepository ?? FlashcardRepositoryImpl(),
+      super(const FlashcardDeckState());
 
   Future<void> initialize() async {
     try {
@@ -20,7 +20,6 @@ class FlashcardDeckCubit extends Cubit<FlashcardDeckState> {
       await _flashcardRepository.initialize();
       emit(state.copyWith(isLoading: false));
     } catch (e) {
-      dev.log('FlashcardDeckCubit: Error initializing: $e', name: 'FlashcardDeckCubit', error: e);
       emit(state.copyWith(isLoading: false, errorMsg: e.toString()));
     }
   }
@@ -29,14 +28,8 @@ class FlashcardDeckCubit extends Cubit<FlashcardDeckState> {
     try {
       emit(state.copyWith(isLoading: true, errorMsg: null));
       final cards = await _flashcardRepository.getAllCardsInDeck(deckId);
-      dev.log('FlashcardDeckCubit: Loaded ${cards.length} cards', name: 'FlashcardDeckCubit');
-      emit(state.copyWith(
-        isLoading: false,
-        cards: cards,
-        isSuccess: true,
-      ));
+      emit(state.copyWith(isLoading: false, cards: cards, isSuccess: true));
     } catch (e) {
-      dev.log('FlashcardDeckCubit: Error loading cards: $e', name: 'FlashcardDeckCubit', error: e);
       emit(state.copyWith(isLoading: false, errorMsg: e.toString()));
     }
   }
@@ -61,8 +54,12 @@ class FlashcardDeckCubit extends Cubit<FlashcardDeckState> {
       await loadCards(deckId);
       emit(state.copyWith(isSuccess: true));
     } catch (e) {
-      dev.log('FlashcardDeckCubit: Error adding card: $e', name: 'FlashcardDeckCubit', error: e);
-      emit(state.copyWith(isLoading: false, errorMsg: 'Failed to add card: ${e.toString()}'));
+      emit(
+        state.copyWith(
+          isLoading: false,
+          errorMsg: 'Failed to add card: ${e.toString()}',
+        ),
+      );
     }
   }
 
@@ -74,8 +71,12 @@ class FlashcardDeckCubit extends Cubit<FlashcardDeckState> {
       await loadCards(card.deckId);
       emit(state.copyWith(isSuccess: true));
     } catch (e) {
-      dev.log('FlashcardDeckCubit: Error updating card: $e', name: 'FlashcardDeckCubit', error: e);
-      emit(state.copyWith(isLoading: false, errorMsg: 'Failed to update card: ${e.toString()}'));
+      emit(
+        state.copyWith(
+          isLoading: false,
+          errorMsg: 'Failed to update card: ${e.toString()}',
+        ),
+      );
     }
   }
 
@@ -87,7 +88,6 @@ class FlashcardDeckCubit extends Cubit<FlashcardDeckState> {
       await loadCards(deckId);
       emit(state.copyWith(isSuccess: true));
     } catch (e) {
-      dev.log('FlashcardDeckCubit: Error deleting card: $e', name: 'FlashcardDeckCubit', error: e);
       emit(state.copyWith(isLoading: false, errorMsg: 'Failed to delete card'));
     }
   }

@@ -46,7 +46,6 @@ class AccountCubit extends Cubit<AccountState> {
         );
       }
     } catch (e) {
-      log('Apple sign in error: ${e.toString()}');
       // On unexpected error in cubit -> isLoading: false, error message, isSuccess: false
       emit(state.copyWith(isLoading: false, isSuccess: false, errorMsg: null));
     }
@@ -96,10 +95,14 @@ class AccountCubit extends Cubit<AccountState> {
       if (signUpSuccess) {
         //  On success -> isLoading: false, no error message
         // Note: isSuccess should be false because user needs to verify email first
-        emit(state.copyWith(isLoading: false, isSuccess: false, errorMsg: null));
+        emit(
+          state.copyWith(isLoading: false, isSuccess: false, errorMsg: null),
+        );
       } else {
         // On failure -> isLoading: false, isSuccess: false
-        emit(state.copyWith(isLoading: false, isSuccess: false, errorMsg: null));
+        emit(
+          state.copyWith(isLoading: false, isSuccess: false, errorMsg: null),
+        );
       }
     } catch (e) {
       // On error -> isLoading: false, error message
@@ -132,7 +135,6 @@ class AccountCubit extends Cubit<AccountState> {
         );
       }
     } catch (e) {
-      log('Email sign in error: ${e.toString()}');
       // On error -> isLoading: false, error message
       emit(state.copyWith(isLoading: false, errorMsg: null));
     }
@@ -173,13 +175,17 @@ class AccountCubit extends Cubit<AccountState> {
       //Show loading
       emit(state.copyWith(isLoading: true));
 
-      final UserCredential userCredential = await accountRepo.signUpWithGoogle(context);
+      final UserCredential userCredential = await accountRepo.signUpWithGoogle(
+        context,
+      );
 
       if (userCredential.user != null) {
         //  On success -> isLoading: false, no error message
         emit(state.copyWith(isLoading: false, isSuccess: true, errorMsg: null));
       } else {
-        emit(state.copyWith(isLoading: false, isSuccess: false, errorMsg: null));
+        emit(
+          state.copyWith(isLoading: false, isSuccess: false, errorMsg: null),
+        );
       }
     } catch (e) {
       log(e.toString());

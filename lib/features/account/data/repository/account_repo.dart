@@ -91,7 +91,6 @@ class FirebaseRepo implements AccountRepo {
 
       // Check if user exists using Cloud Function BEFORE authenticating
       final appleId = appleCredential.userIdentifier;
-      log('Apple ID received: $appleId');
 
       if (appleId != null) {
         try {
@@ -108,10 +107,8 @@ class FirebaseRepo implements AccountRepo {
           if (response.statusCode == 200) {
             final data = json.decode(response.body);
             final bool userExists = data['exists'] ?? false;
-            log('User exists check result: $userExists');
 
             if (!userExists) {
-              log('Account not found for Apple ID: $appleId');
               if (context.mounted) {
                 AppSnackBar.showError(
                   context,
@@ -155,8 +152,6 @@ class FirebaseRepo implements AccountRepo {
         return false;
       }
     } on SignInWithAppleAuthorizationException catch (e) {
-      log('SignInWithAppleAuthorizationException: ${e.code} - ${e.message}');
-
       String displayMessage = "Sign in with Apple failed.";
       if (e.code == AuthorizationErrorCode.canceled) {
         displayMessage = "Sign in with Apple was cancelled.";
@@ -184,8 +179,6 @@ class FirebaseRepo implements AccountRepo {
       }
       return false;
     } catch (e) {
-      log('Unexpected error in signInWithApple: $e');
-      log('Error type: ${e.runtimeType}');
       if (context.mounted) {
         AppSnackBar.showError(
           context,
@@ -296,7 +289,6 @@ class FirebaseRepo implements AccountRepo {
           }
         }
       } catch (error) {
-        log('Error checking if user exists: $error');
         // Continue with sign up if check fails
       }
 
@@ -386,7 +378,6 @@ class FirebaseRepo implements AccountRepo {
             }
           }
         } catch (error) {
-          log('Error checking if user exists: $error');
           // Continue with sign up if check fails
         }
       }

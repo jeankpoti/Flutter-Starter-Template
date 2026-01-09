@@ -15,6 +15,10 @@ class AdConfigService {
   static const String _testUserEmailsKey = 'test_user_emails';
   static const String _forceTestAdsKey = 'force_test_ads';
   static const String _adsCompletelyDisabledKey = 'ads_completely_disabled';
+  static const String _mathAiModelNameKey = 'math_ai_model_name';
+  static const String _studyAiModelNameKey = 'study_ai_model_name';
+  static const String _minRequiredVersionKey = 'min_required_version';
+  static const String _forceUpdateEnabledKey = 'force_update_enabled';
 
   /// Initialize Remote Config with default values and settings
   static Future<void> initialize() async {
@@ -48,6 +52,10 @@ class AdConfigService {
       _testUserEmailsKey: '[]', // Empty test user list
       _forceTestAdsKey: true, // Use test ads by default
       _adsCompletelyDisabledKey: false, // Allow ads in general
+      _mathAiModelNameKey: 'gemini-2.5-flash-lite',
+      _studyAiModelNameKey: 'gemini-2.5-flash-lite',
+      _minRequiredVersionKey: '1.0.0+7',
+      _forceUpdateEnabledKey: false,
     };
   }
 
@@ -138,6 +146,42 @@ class AdConfigService {
       await _remoteConfig.activate();
     } catch (e) {
       // Ignore errors - continue with cached config
+    }
+  }
+
+  /// Get the AI model name for math solving
+  static String getMathModelName() {
+    try {
+      return _remoteConfig.getString(_mathAiModelNameKey);
+    } catch (e) {
+      return 'gemini-2.5-flash-lite';
+    }
+  }
+
+  /// Get the AI model name for study features (quizzes, plans, etc)
+  static String getStudyModelName() {
+    try {
+      return _remoteConfig.getString(_studyAiModelNameKey);
+    } catch (e) {
+      return 'gemini-2.5-flash-lite';
+    }
+  }
+
+  /// Get the minimum required version of the app
+  static String getMinRequiredVersion() {
+    try {
+      return _remoteConfig.getString(_minRequiredVersionKey);
+    } catch (e) {
+      return '1.0.0+7';
+    }
+  }
+
+  /// Check if force update is enabled
+  static bool isForceUpdateEnabled() {
+    try {
+      return _remoteConfig.getBool(_forceUpdateEnabledKey);
+    } catch (e) {
+      return false;
     }
   }
 }

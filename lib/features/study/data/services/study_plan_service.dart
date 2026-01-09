@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_ai/firebase_ai.dart';
 import 'package:flutter/foundation.dart';
+import '../../../../core/services/ad_config_service.dart';
 import '../../../settings/data/preferences_service.dart';
 import '../../../settings/domain/models/math_level.dart';
 import '../../../solve_math/data/repository/prompt_localizer.dart';
@@ -25,9 +26,9 @@ class StudyPlanService {
 
   Future<void> initialize() async {
     if (!_isInitialized) {
-      // Study plan analysis only needs text, use cost-effective lite model
+      // Study plan analysis only needs text, use cost-effective model from remote config
       _liteModel = FirebaseAI.googleAI().generativeModel(
-        model: 'gemini-2.5-flash-lite',
+        model: AdConfigService.getStudyModelName(),
       );
       _isInitialized = true;
     }

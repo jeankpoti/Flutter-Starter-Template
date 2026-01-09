@@ -8,6 +8,7 @@ import '../../domain/models/math_solution.dart';
 import '../../../settings/data/preferences_service.dart';
 import '../../../settings/domain/models/math_level.dart';
 import 'prompt_localizer.dart';
+import '../../../../core/services/ad_config_service.dart';
 
 class GeminiSolveMathRepo implements SolveMathRepo {
   static final GeminiSolveMathRepo _instance = GeminiSolveMathRepo._internal();
@@ -27,10 +28,11 @@ class GeminiSolveMathRepo implements SolveMathRepo {
   Future<void> initialize() async {
     if (!_isInitialized) {
       try {
-        // Use gemini-2.5-flash-lite for all problems (cost-effective)
-        _model = FirebaseAI.googleAI().generativeModel(
-          model: 'gemini-2.5-flash-lite',
-        );
+        // Fetch model name from Remote Config (god-mode controlled)
+        final modelName = AdConfigService.getMathModelName();
+
+        // Use the configured model (default: gemini-2.5-flash-lite)
+        _model = FirebaseAI.googleAI().generativeModel(model: modelName);
 
         _isInitialized = true;
       } catch (e) {

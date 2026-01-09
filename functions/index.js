@@ -33,7 +33,6 @@ exports.checkAppleUserExists = functions.https.onRequest(async (req, res) => {
       });
     }
 
-    console.log('Checking for Apple ID:', appleId);
 
     // Query Firestore for user with this Apple ID
     const usersRef = admin.firestore().collection('users');
@@ -84,7 +83,6 @@ exports.checkGoogleUserExists = functions.https.onRequest(async (req, res) => {
       });
     }
 
-    console.log('Checking for email:', email);
 
     // Query Firestore for user with this email
     const usersRef = admin.firestore().collection('users');
