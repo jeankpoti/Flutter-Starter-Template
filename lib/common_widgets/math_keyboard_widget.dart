@@ -40,7 +40,7 @@ class _MathKeyboardWidgetState extends State<MathKeyboardWidget>
       'symbols': [
         ['x', 'y', 'z', 'a', 'b'],
         ['c', 'd', 'n', 'm', 't'],
-        ['√', 'x²', 'x³', '^', '²'],
+        ['√', '∛', 'x²', 'x³', '^'],
         ['(', ')', '[', ']', '|'],
       ],
     },

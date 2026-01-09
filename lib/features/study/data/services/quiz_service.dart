@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../../../solve_math/data/repository/gemini_solve_math_repo.dart';
+import 'package:firebase_ai/firebase_ai.dart';
 import '../../../settings/data/preferences_service.dart';
 import '../../../settings/domain/models/math_level.dart';
 import '../../../solve_math/data/repository/prompt_localizer.dart';
@@ -11,9 +11,12 @@ import '../repository/quiz_repository.dart';
 
 class QuizService {
   static final QuizService _instance = QuizService._internal();
-  GeminiSolveMathRepo? _geminiService;
+
+  // Use lite model directly for quiz generation (no image generation needed)
+  GenerativeModel? _liteModel;
   QuizRepository? _quizRepository;
   final Random _random = Random();
+  bool _isInitialized = false;
 
   factory QuizService() {
     return _instance;
@@ -22,13 +25,13 @@ class QuizService {
   QuizService._internal();
 
   Future<void> initialize() async {
-    // Only assign if not already assigned
-    _geminiService ??= GeminiSolveMathRepo();
-    _quizRepository ??= QuizRepository();
-
-    // Only initialize if not already initialized
-    if (!_geminiService!.isInitialized) {
-      await _geminiService!.initialize();
+    if (!_isInitialized) {
+      // Quiz generation only needs text, use cost-effective lite model
+      _liteModel = FirebaseAI.googleAI().generativeModel(
+        model: 'gemini-2.5-flash-lite',
+      );
+      _quizRepository ??= QuizRepository();
+      _isInitialized = true;
     }
   }
 
@@ -131,7 +134,8 @@ class QuizService {
       questionCount,
     );
 
-    final response = await _geminiService!.generateTextContent(prompt);
+    // Use lite model for quiz generation (text-only, cost-effective)
+    final response = await _liteModel!.generateContent([Content.text(prompt)]);
     final questionText = response.text ?? '';
 
     return _parseQuestionsFromAIResponse(questionText, locale);

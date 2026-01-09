@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../../../solve_math/data/repository/gemini_solve_math_repo.dart';
+import 'package:firebase_ai/firebase_ai.dart';
 import '../../../settings/data/preferences_service.dart';
 import '../../../settings/domain/models/math_level.dart';
 import '../../domain/models/flashcard.dart';
@@ -9,9 +9,12 @@ import '../repository/flashcard_repository.dart';
 
 class FlashcardService {
   static final FlashcardService _instance = FlashcardService._internal();
-  GeminiSolveMathRepo? _geminiService;
+
+  // Use lite model directly for flashcard generation (no image generation needed)
+  GenerativeModel? _liteModel;
   FlashcardRepository? _flashcardRepository;
   final Random _random = Random();
+  bool _isInitialized = false;
 
   factory FlashcardService() {
     return _instance;
@@ -20,18 +23,21 @@ class FlashcardService {
   FlashcardService._internal();
 
   Future<void> initialize() async {
-    _geminiService ??= GeminiSolveMathRepo();
-    _flashcardRepository ??= FlashcardRepository();
+    if (!_isInitialized) {
+      // Flashcard generation only needs text, use cost-effective lite model
+      _liteModel = FirebaseAI.googleAI().generativeModel(
+        model: 'gemini-2.5-flash-lite',
+      );
+      _flashcardRepository ??= FlashcardRepository();
 
-    // Check authentication
-    final currentUser = FirebaseAuth.instance.currentUser;
+      // Check authentication
+      final currentUser = FirebaseAuth.instance.currentUser;
 
-    if (currentUser == null) {
-      throw Exception('User must be authenticated to use flashcard service');
-    }
+      if (currentUser == null) {
+        throw Exception('User must be authenticated to use flashcard service');
+      }
 
-    if (!_geminiService!.isInitialized) {
-      await _geminiService!.initialize();
+      _isInitialized = true;
     }
   }
 
@@ -100,7 +106,8 @@ class FlashcardService {
       cardCount,
     );
 
-    final response = await _geminiService!.generateTextContent(prompt);
+    // Use lite model for flashcard generation (text-only, cost-effective)
+    final response = await _liteModel!.generateContent([Content.text(prompt)]);
     final flashcardText = response.text ?? '';
 
     final cards = _parseFlashcardsFromAIResponse(flashcardText);

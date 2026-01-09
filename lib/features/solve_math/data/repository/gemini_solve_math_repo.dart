@@ -11,6 +11,7 @@ import 'prompt_localizer.dart';
 
 class GeminiSolveMathRepo implements SolveMathRepo {
   static final GeminiSolveMathRepo _instance = GeminiSolveMathRepo._internal();
+
   GenerativeModel? _model;
   bool _isInitialized = false;
 
@@ -22,22 +23,15 @@ class GeminiSolveMathRepo implements SolveMathRepo {
   // Private constructor
   GeminiSolveMathRepo._internal();
 
-  // Initialize the service
+  // Initialize the model
   Future<void> initialize() async {
     if (!_isInitialized) {
       try {
+        // Use gemini-2.5-flash-lite for all problems (cost-effective)
         _model = FirebaseAI.googleAI().generativeModel(
-          model: 'gemini-2.5-flash-image',
-          generationConfig: GenerationConfig(
-            maxOutputTokens: 2048,
-            temperature: 0.7,
-            topP: 0.9,
-            responseModalities: [
-              ResponseModalities.text,
-              ResponseModalities.image,
-            ],
-          ),
+          model: 'gemini-2.5-flash-lite',
         );
+
         _isInitialized = true;
       } catch (e) {
         rethrow;
@@ -111,6 +105,7 @@ class GeminiSolveMathRepo implements SolveMathRepo {
         locale,
       );
 
+      // Solve using text prompt
       final response = await generateTextContent(prompt);
       final images = _extractImages(response);
 
@@ -199,16 +194,18 @@ class GeminiSolveMathRepo implements SolveMathRepo {
       final mathLevel = prefs.getMathLevel();
       final locale = prefs.getLocale();
 
+      final promptText = _buildImagePrompt(mathLevel, locale);
+
       // Create the image part with the bytes
       final imagePart = InlineDataPart('image/jpeg', imageBytes);
-      final prompt = TextPart(_buildImagePrompt(mathLevel, locale));
+      final prompt = TextPart(promptText);
 
       // Create a content item with the image
       final content = [
         Content.multi([prompt, imagePart]),
       ];
 
-      // Generate content
+      // Generate content with model
       final response = await _model!.generateContent(content);
       final images = _extractImages(response);
 
@@ -217,7 +214,6 @@ class GeminiSolveMathRepo implements SolveMathRepo {
         images: images,
       );
     } catch (e) {
-      print('Error in solveMath: $e');
       return MathSolution(
         text:
             'Error: Failed to solve the math problem. Please try again with a clearer image.',

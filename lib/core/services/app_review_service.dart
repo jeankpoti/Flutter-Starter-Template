@@ -89,15 +89,15 @@ class AppReviewService {
     final problemsSolved = prefs.getInt(_problemsSolvedKey) ?? 0;
     final quizzesCompleted = prefs.getInt(_quizzesCompletedKey) ?? 0;
 
-    final isFirstProblemSolved =
-        triggerPoint == 'problem_solved' && problemsSolved == 1;
+    final isThirdProblemSolved =
+        triggerPoint == 'problem_solved' && problemsSolved == 3;
     final isFirstEligibleQuiz =
         triggerPoint == 'quiz_completion' &&
         quizzesCompleted >= _minQuizzesCompleted;
 
     // Only show review on specific milestones, not every action
     final shouldRequest =
-        afterPositiveAction && (isFirstProblemSolved || isFirstEligibleQuiz);
+        afterPositiveAction && (isThirdProblemSolved || isFirstEligibleQuiz);
 
     if (shouldRequest) {
       await AnalyticsService.logEvent(

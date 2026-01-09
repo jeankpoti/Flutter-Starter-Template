@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_ai/firebase_ai.dart';
 import 'package:flutter/foundation.dart';
-import '../../../solve_math/data/repository/gemini_solve_math_repo.dart';
 import '../../../settings/data/preferences_service.dart';
 import '../../../settings/domain/models/math_level.dart';
 import '../../../solve_math/data/repository/prompt_localizer.dart';
@@ -11,8 +11,11 @@ import '../../domain/models/study_plan.dart';
 
 class StudyPlanService {
   static final StudyPlanService _instance = StudyPlanService._internal();
-  GeminiSolveMathRepo? _geminiService;
+
+  // Use lite model directly for study plan analysis (no image generation needed)
+  GenerativeModel? _liteModel;
   final Random _random = Random();
+  bool _isInitialized = false;
 
   factory StudyPlanService() {
     return _instance;
@@ -21,12 +24,12 @@ class StudyPlanService {
   StudyPlanService._internal();
 
   Future<void> initialize() async {
-    // Only assign if not already assigned
-    _geminiService ??= GeminiSolveMathRepo();
-    
-    // Only initialize if not already initialized
-    if (!_geminiService!.isInitialized) {
-      await _geminiService!.initialize();
+    if (!_isInitialized) {
+      // Study plan analysis only needs text, use cost-effective lite model
+      _liteModel = FirebaseAI.googleAI().generativeModel(
+        model: 'gemini-2.5-flash-lite',
+      );
+      _isInitialized = true;
     }
   }
 
@@ -53,24 +56,29 @@ class StudyPlanService {
       } else if (type == MaterialType.image && imageFile != null) {
         aiAnalysis = await _analyzeImageContent(imageFile, mathLevel, locale);
       } else if (type == MaterialType.document && documentBytes != null) {
-        aiAnalysis = await _analyzeDocumentContent(documentBytes, mathLevel, locale);
+        aiAnalysis = await _analyzeDocumentContent(
+          documentBytes,
+          mathLevel,
+          locale,
+        );
       }
 
       // Extract topics from AI analysis
       extractedTopics = _extractTopicsFromAnalysis(aiAnalysis);
     } catch (e) {
       // Handle error silently
-      
+
       // Check if it's a non-math content error and re-throw it
       if (e.toString().contains('does not contain mathematical material') ||
           e.toString().contains('ne contient pas de matériel mathématique') ||
           e.toString().contains('no contiene material matemático')) {
-        rethrow;  // Re-throw to let the calling code handle it
+        rethrow; // Re-throw to let the calling code handle it
       }
-      
+
       // For other errors, set error message but continue
       if (locale == 'fr') {
-        aiAnalysis = 'Erreur lors de l\'analyse du contenu. Veuillez réessayer.';
+        aiAnalysis =
+            'Erreur lors de l\'analyse du contenu. Veuillez réessayer.';
       } else if (locale == 'es') {
         aiAnalysis = 'Error al analizar contenido. Por favor intenta de nuevo.';
       } else {
@@ -141,7 +149,7 @@ class StudyPlanService {
     return studyPlan;
   }
 
-  /// Analyze text content using Gemini AI
+  /// Analyze text content using AI
   Future<String> _analyzeTextContent(
     String content,
     MathLevel mathLevel,
@@ -155,18 +163,21 @@ class StudyPlanService {
         mathLevel.displayName,
       );
 
-      final response = await _geminiService!.generateTextContent(prompt);
+      // Use lite model for text analysis (cost-effective)
+      final response = await _liteModel!.generateContent([
+        Content.text(prompt),
+      ]);
       final analysisText = response.text ?? '';
-      
+
       // AI response received
-      
+
       // Check if the response indicates no math content
       if (analysisText.contains('NO_MATH_CONTENT:')) {
         // Extract the error message after NO_MATH_CONTENT:
         final errorMessage = analysisText.split('NO_MATH_CONTENT:')[1].trim();
         throw Exception(errorMessage);
       }
-      
+
       return analysisText;
     } catch (e) {
       // Re-throw if it's already a no-math-content error
@@ -175,7 +186,7 @@ class StudyPlanService {
           e.toString().contains('no contiene material matemático')) {
         rethrow;
       }
-      
+
       // Other errors
       if (locale == 'fr') {
         return 'Impossible d\'analyser le contenu : $e';
@@ -187,7 +198,7 @@ class StudyPlanService {
     }
   }
 
-  /// Analyze image content using Gemini AI
+  /// Analyze image content using AI
   Future<String> _analyzeImageContent(
     File imageFile,
     MathLevel mathLevel,
@@ -200,27 +211,28 @@ class StudyPlanService {
         mathLevel.toPromptContext(),
         mathLevel.displayName,
       );
-      
+
       // Read image bytes
       final imageBytes = await imageFile.readAsBytes();
-      
-      // Create the content with the prompt and image
-      final response = await _geminiService!.generateContentWithImage(
-        prompt,
-        imageBytes,
-      );
-      
+
+      // Use lite model for image analysis (no diagram generation needed)
+      final imagePart = InlineDataPart('image/jpeg', imageBytes);
+      final promptPart = TextPart(prompt);
+      final response = await _liteModel!.generateContent([
+        Content.multi([promptPart, imagePart]),
+      ]);
+
       final analysisText = response.text ?? '';
-      
+
       // AI response received
-      
+
       // Check if the response indicates no math content
       if (analysisText.contains('NO_MATH_CONTENT:')) {
         // Extract the error message after NO_MATH_CONTENT:
         final errorMessage = analysisText.split('NO_MATH_CONTENT:')[1].trim();
         throw Exception(errorMessage);
       }
-      
+
       return analysisText;
     } catch (e) {
       // Re-throw if it's already a no-math-content error
@@ -229,7 +241,7 @@ class StudyPlanService {
           e.toString().contains('no contiene material matemático')) {
         rethrow;
       }
-      
+
       // Other errors
       if (locale == 'fr') {
         return 'Impossible d\'analyser le contenu de l\'image : $e';
@@ -241,7 +253,7 @@ class StudyPlanService {
     }
   }
 
-  /// Analyze PDF document content using Gemini AI
+  /// Analyze PDF document content using AI
   Future<String> _analyzeDocumentContent(
     Uint8List documentBytes,
     MathLevel mathLevel,
@@ -254,45 +266,61 @@ class StudyPlanService {
         mathLevel.toPromptContext(),
         mathLevel.displayName,
       );
-      
+
       // Starting document analysis
-      
-      // Send PDF with proper MIME type
-      final response = await _geminiService!.generateContentWithImage(
-        prompt,
-        documentBytes,
-        mimeType: 'application/pdf',
-      );
-      
+
+      // Use lite model for PDF analysis (no diagram generation needed)
+      final documentPart = InlineDataPart('application/pdf', documentBytes);
+      final promptPart = TextPart(prompt);
+      final response = await _liteModel!.generateContent([
+        Content.multi([promptPart, documentPart]),
+      ]);
+
       final analysisText = response.text ?? '';
-      
+
       // AI response received
-      
+
       // Check if the response starts with NO_MATH_CONTENT (more strict check)
       if (analysisText.trim().startsWith('NO_MATH_CONTENT:')) {
         // Extract the error message after NO_MATH_CONTENT:
         final errorMessage = analysisText.split('NO_MATH_CONTENT:')[1].trim();
         throw Exception(errorMessage);
       }
-      
+
       // Check if the response indicates no math content anywhere
       if (analysisText.contains('NO_MATH_CONTENT:')) {
         // Extract the error message after NO_MATH_CONTENT:
         final errorMessage = analysisText.split('NO_MATH_CONTENT:')[1].trim();
         throw Exception(errorMessage);
       }
-      
+
       // Additional check: If the response mentions HTML, programming, or doesn't start with expected format
       final lowerAnalysis = analysisText.toLowerCase();
-      
+
       // Check for programming/web development content
       final programmingKeywords = [
-        'html', 'css', 'javascript', 'programming', 'coding',
-        'web development', 'website', 'frontend', 'backend',
-        'python', 'java', 'c++', 'react', 'angular', 'vue',
-        'database', 'sql', 'api', 'framework', 'software development'
+        'html',
+        'css',
+        'javascript',
+        'programming',
+        'coding',
+        'web development',
+        'website',
+        'frontend',
+        'backend',
+        'python',
+        'java',
+        'c++',
+        'react',
+        'angular',
+        'vue',
+        'database',
+        'sql',
+        'api',
+        'framework',
+        'software development',
       ];
-      
+
       // Count how many programming keywords are found
       int programmingKeywordCount = 0;
       for (final keyword in programmingKeywords) {
@@ -300,48 +328,64 @@ class StudyPlanService {
           programmingKeywordCount++;
         }
       }
-      
+
       // If we find multiple programming keywords and no math keywords, it's likely not math content
       final mathKeywords = [
-        'equation', 'theorem', 'proof', 'derivative', 'integral',
-        'algebra', 'geometry', 'calculus', 'trigonometry', 'statistics',
-        'mathematical', 'formula', 'function', 'graph', 'polynomial'
+        'equation',
+        'theorem',
+        'proof',
+        'derivative',
+        'integral',
+        'algebra',
+        'geometry',
+        'calculus',
+        'trigonometry',
+        'statistics',
+        'mathematical',
+        'formula',
+        'function',
+        'graph',
+        'polynomial',
       ];
-      
+
       int mathKeywordCount = 0;
       for (final keyword in mathKeywords) {
         if (lowerAnalysis.contains(keyword)) {
           mathKeywordCount++;
         }
       }
-      
+
       // Keyword analysis completed
-      
+
       if (programmingKeywordCount >= 3 && mathKeywordCount < 2) {
-        throw Exception('This document does not contain mathematical material. Please upload a PDF with math problems, equations, or mathematical concepts.');
+        throw Exception(
+          'This document does not contain mathematical material. Please upload a PDF with math problems, equations, or mathematical concepts.',
+        );
       }
-      
+
       // Check if response doesn't contain expected math analysis sections
-      if (!analysisText.contains('DOCUMENT OVERVIEW:') && 
+      if (!analysisText.contains('DOCUMENT OVERVIEW:') &&
           !analysisText.contains('TOPICS COVERED:') &&
           !analysisText.contains('APERÇU DU DOCUMENT:') &&
           !analysisText.contains('SUJETS COUVERTS:') &&
           !analysisText.contains('RESUMEN DEL DOCUMENTO:') &&
           !analysisText.contains('TEMAS CUBIERTOS:')) {
-        throw Exception('This document does not contain mathematical material. Please upload a PDF with math problems, equations, or mathematical concepts.');
+        throw Exception(
+          'This document does not contain mathematical material. Please upload a PDF with math problems, equations, or mathematical concepts.',
+        );
       }
-      
+
       return analysisText;
     } catch (e) {
       // Error handling
-      
+
       // Re-throw if it's already a no-math-content error
       if (e.toString().contains('does not contain mathematical material') ||
           e.toString().contains('ne contient pas de matériel mathématique') ||
           e.toString().contains('no contiene material matemático')) {
         rethrow;
       }
-      
+
       // Other errors
       if (locale == 'fr') {
         return 'Impossible d\'analyser le contenu du document : $e';
@@ -490,7 +534,7 @@ Haz esto apropiado para estudiantes de nivel ${mathLevel.displayName} con progre
 ''';
     }
 
-    final response = await _geminiService!.generateTextContent(prompt);
+    final response = await _liteModel!.generateContent([Content.text(prompt)]);
     if (locale == 'fr') {
       return response.text ?? 'Impossible de générer le plan d\'étude';
     } else if (locale == 'es') {
@@ -771,7 +815,9 @@ Haz esto apropiado para estudiantes de nivel ${mathLevel.displayName} con progre
 
     // Generate localized practice problems based on topic title and key concepts
     if (locale == 'fr') {
-      problems.add('Réviser et comprendre les concepts principaux de $topicTitle');
+      problems.add(
+        'Réviser et comprendre les concepts principaux de $topicTitle',
+      );
 
       if (keyConcepts.isNotEmpty) {
         problems.add(
@@ -790,7 +836,9 @@ Haz esto apropiado para estudiantes de nivel ${mathLevel.displayName} con progre
       );
       problems.add('Passer un quiz ou une auto-évaluation sur ce sujet');
     } else if (locale == 'es') {
-      problems.add('Revisar y comprender los conceptos principales de $topicTitle');
+      problems.add(
+        'Revisar y comprender los conceptos principales de $topicTitle',
+      );
 
       if (keyConcepts.isNotEmpty) {
         problems.add(

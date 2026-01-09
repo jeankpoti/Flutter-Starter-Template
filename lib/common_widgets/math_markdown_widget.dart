@@ -59,14 +59,20 @@ class MathMarkdownWidget extends StatelessWidget {
 
   bool _shouldHighlightLine(String line, int index, List<String> allLines) {
     final trimmedLine = line.trim();
-    
+
     // Don't highlight empty lines
     if (trimmedLine.isEmpty) return false;
-    
+
     // Check for final answer patterns
     final finalAnswerPatterns = [
-      RegExp(r'^\s*\$\\frac\{.+\}\{.+\}\s*$', multiLine: true), // Final fraction like $\frac{1}{2\pi}$
-      RegExp(r'^\s*\$.*=.*\$\s*$', multiLine: true), // Math equation ending like $dh/dt = \frac{1}{2\pi}$
+      RegExp(
+        r'^\s*\$\\frac\{.+\}\{.+\}\s*$',
+        multiLine: true,
+      ), // Final fraction like $\frac{1}{2\pi}$
+      RegExp(
+        r'^\s*\$.*=.*\$\s*$',
+        multiLine: true,
+      ), // Math equation ending like $dh/dt = \frac{1}{2\pi}$
       RegExp(r'^\s*Therefore,?\s+.+', caseSensitive: false),
       RegExp(r'^\s*Thus,?\s+.+', caseSensitive: false),
       RegExp(r'^\s*So,?\s+.+', caseSensitive: false),
@@ -75,45 +81,52 @@ class MathMarkdownWidget extends StatelessWidget {
       RegExp(r'^\s*Result:?\s+.+', caseSensitive: false),
       RegExp(r'^\s*Solution:?\s+.+', caseSensitive: false),
     ];
-    
+
     // Check if this line matches any final answer pattern
     for (final pattern in finalAnswerPatterns) {
       if (pattern.hasMatch(trimmedLine)) {
         return true;
       }
     }
-    
+
     // Check if it's the last meaningful line with math content
-    if (index >= allLines.length - 3) { // Check last 3 lines
+    if (index >= allLines.length - 3) {
+      // Check last 3 lines
       final hasmath = RegExp(r'\$[^$]+\$').hasMatch(trimmedLine);
       final hasEquation = trimmedLine.contains('=');
       if (hasmath && hasEquation) {
         return true;
       }
     }
-    
+
     return false;
   }
 
-  Widget _buildLineWidget(BuildContext context, String line, bool isHighlighted) {
+  Widget _buildLineWidget(
+    BuildContext context,
+    String line,
+    bool isHighlighted,
+  ) {
     // Check if the line contains LaTeX math expressions
     final mathRegex = RegExp(r'\$\$([^$]+)\$\$|\$([^$]+)\$');
     final matches = mathRegex.allMatches(line);
-    
+
     Widget contentWidget;
-    
+
     if (matches.isEmpty) {
       // No math expressions, use regular markdown
       contentWidget = MarkdownBody(
         data: line,
         styleSheet: MarkdownStyleSheet(
-          p: textStyle?.copyWith(
-            fontSize: fontSize,
-            color: textColor ?? Theme.of(context).colorScheme.onSurface,
-          ) ?? TextStyle(
-            fontSize: fontSize,
-            color: textColor ?? Theme.of(context).colorScheme.onSurface,
-          ),
+          p:
+              textStyle?.copyWith(
+                fontSize: fontSize,
+                color: textColor ?? Theme.of(context).colorScheme.onSurface,
+              ) ??
+              TextStyle(
+                fontSize: fontSize,
+                color: textColor ?? Theme.of(context).colorScheme.onSurface,
+              ),
         ),
         selectable: selectable,
       );
@@ -130,13 +143,19 @@ class MathMarkdownWidget extends StatelessWidget {
             lineWidgets.add(
               Text(
                 textContent,
-                style: textStyle?.copyWith(
-                  fontSize: fontSize,
-                  color: textColor ?? Theme.of(context).colorScheme.onSurface,
-                ) ?? TextStyle(
-                  fontSize: fontSize,
-                  color: textColor ?? Theme.of(context).colorScheme.onSurface,
-                ),
+                style:
+                    textStyle?.copyWith(
+                      fontSize: fontSize,
+                      color:
+                          textColor ??
+                          Theme.of(context).colorScheme.onSurface,
+                    ) ??
+                    TextStyle(
+                      fontSize: fontSize,
+                      color:
+                          textColor ??
+                          Theme.of(context).colorScheme.onSurface,
+                    ),
               ),
             );
           }
@@ -148,29 +167,40 @@ class MathMarkdownWidget extends StatelessWidget {
         
         try {
           lineWidgets.add(
-            Math.tex(
-              mathExpression,
-              textStyle: textStyle?.copyWith(
-                fontSize: fontSize,
-                color: textColor ?? Theme.of(context).colorScheme.onSurface,
-              ) ?? TextStyle(
-                fontSize: fontSize,
-                color: textColor ?? Theme.of(context).colorScheme.onSurface,
+            ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.8,
               ),
-              mathStyle: isDisplayMath ? MathStyle.display : MathStyle.text,
+              child: Math.tex(
+                mathExpression,
+                textStyle: textStyle?.copyWith(
+                  fontSize: fontSize,
+                  color: textColor ?? Theme.of(context).colorScheme.onSurface,
+                ) ?? TextStyle(
+                  fontSize: fontSize,
+                  color: textColor ?? Theme.of(context).colorScheme.onSurface,
+                ),
+                mathStyle: isDisplayMath ? MathStyle.display : MathStyle.text,
+              ),
             ),
           );
         } catch (e) {
           // If math parsing fails, show the original text
           lineWidgets.add(
-            Text(
-              match.group(0) ?? '',
-              style: textStyle?.copyWith(
-                fontSize: fontSize,
-                color: textColor ?? Theme.of(context).colorScheme.onSurface,
-              ) ?? TextStyle(
-                fontSize: fontSize,
-                color: textColor ?? Theme.of(context).colorScheme.onSurface,
+            ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.8,
+              ),
+              child: Text(
+                match.group(0) ?? '',
+                style: textStyle?.copyWith(
+                  fontSize: fontSize,
+                  color: textColor ?? Theme.of(context).colorScheme.onSurface,
+                ) ?? TextStyle(
+                  fontSize: fontSize,
+                  color: textColor ?? Theme.of(context).colorScheme.onSurface,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           );
@@ -186,21 +216,34 @@ class MathMarkdownWidget extends StatelessWidget {
           lineWidgets.add(
             Text(
               remainingText,
-              style: textStyle?.copyWith(
-                fontSize: fontSize,
-                color: textColor ?? Theme.of(context).colorScheme.onSurface,
-              ) ?? TextStyle(
-                fontSize: fontSize,
-                color: textColor ?? Theme.of(context).colorScheme.onSurface,
-              ),
+              style:
+                  textStyle?.copyWith(
+                    fontSize: fontSize,
+                    color:
+                        textColor ?? Theme.of(context).colorScheme.onSurface,
+                  ) ??
+                  TextStyle(
+                    fontSize: fontSize,
+                    color:
+                        textColor ?? Theme.of(context).colorScheme.onSurface,
+                  ),
             ),
           );
         }
       }
 
-      contentWidget = Wrap(
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: lineWidgets,
+      contentWidget = SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: lineWidgets.map((widget) {
+            return Padding(
+              padding: const EdgeInsets.only(right: 4.0),
+              child: widget,
+            );
+          }).toList(),
+        ),
       );
     }
 
@@ -220,7 +263,7 @@ class MathMarkdownWidget extends StatelessWidget {
         child: contentWidget,
       );
     }
-
+    
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2.0),
       child: contentWidget,
