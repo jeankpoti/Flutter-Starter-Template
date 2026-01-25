@@ -340,7 +340,7 @@
   "deleteConfirmationError": "Veuillez taper SUPPRIMER pour confirmer",
   "choosePreferredLanguage": "Choisissez votre langue préférée",
   "languageChangedTo": "Langue changée vers {language}",
-  "shareAppText": "Découvrez cette application incroyable : https://apps.apple.com/app/id6739957932",
+  "shareAppText": "Découvrez cette application incroyable : {url}",
   "generatePlan": "Générer un plan",
   "generateQuizWithAllMaterials": "Générer un quiz avec tous les matériaux",
   "camera": "Appareil photo",

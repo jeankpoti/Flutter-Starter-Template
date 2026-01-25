@@ -19,6 +19,7 @@ class AdConfigService {
   static const String _studyAiModelNameKey = 'study_ai_model_name';
   static const String _minRequiredVersionKey = 'min_required_version';
   static const String _forceUpdateEnabledKey = 'force_update_enabled';
+  static const String _premiumOnlyModeKey = 'premium_only_mode';
 
   /// Initialize Remote Config with default values and settings
   static Future<void> initialize() async {
@@ -56,12 +57,18 @@ class AdConfigService {
       _studyAiModelNameKey: 'gemini-2.5-flash-lite',
       _minRequiredVersionKey: '1.0.0+7',
       _forceUpdateEnabledKey: false,
+      _premiumOnlyModeKey: false, // Safe default - allow all users
     };
   }
 
   /// Check if ads should be shown for the current user
   static bool shouldShowAds([String? userEmail]) {
     try {
+      // If premium-only mode is enabled, disable ads completely
+      if (_remoteConfig.getBool(_premiumOnlyModeKey)) {
+        return false;
+      }
+
       // If ads are completely disabled, return false
       if (_remoteConfig.getBool(_adsCompletelyDisabledKey)) {
         return false;
@@ -133,6 +140,7 @@ class AdConfigService {
       'testUserEmails': getTestUserEmails(),
       'forceTestAds': shouldUseTestAds(),
       'adsCompletelyDisabled': areAdsCompletelyDisabled(),
+      'premiumOnlyMode': isPremiumOnlyModeEnabled(),
       'currentUserEmail': FirebaseAuth.instance.currentUser?.email,
       'currentUserIsTestUser': isCurrentUserTestUser(),
       'shouldShowAdsForCurrentUser': shouldShowAds(),
@@ -182,6 +190,16 @@ class AdConfigService {
       return _remoteConfig.getBool(_forceUpdateEnabledKey);
     } catch (e) {
       return false;
+    }
+  }
+
+  /// Check if premium-only mode is enabled
+  /// When enabled, only premium subscribers can access the app
+  static bool isPremiumOnlyModeEnabled() {
+    try {
+      return _remoteConfig.getBool(_premiumOnlyModeKey);
+    } catch (e) {
+      return false; // Safe default - allow all users
     }
   }
 }

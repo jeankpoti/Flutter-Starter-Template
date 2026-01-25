@@ -7,6 +7,7 @@ import '../../../common_widgets/permission_denied_dialog_widget.dart';
 import '../../../l10n/app_localizations.dart';
 import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
 import '../../../core/services/app_review_service.dart';
+import '../../../core/services/ad_config_service.dart';
 
 import '../../../common_widgets/app_bar_widget.dart';
 import '../data/services/image_cropper_service.dart';
@@ -167,10 +168,37 @@ class _HomePageState extends State<HomePage>
     }
   }
 
-  void _solveMath({File? imageFile, String? textInput}) {
+  Future<void> _solveMath({File? imageFile, String? textInput}) async {
     // Check subscription status
-    final isSubscribed = context.read<SubscriptionCubit>().state.isSubscribed;
+    final subscriptionCubit = context.read<SubscriptionCubit>();
+    var isSubscribed = subscriptionCubit.state.isSubscribed;
 
+    // Check if premium-only mode is enabled via Remote Config
+    final isPremiumOnlyMode = AdConfigService.isPremiumOnlyModeEnabled();
+
+    // If premium-only mode is enabled and user is not subscribed, show paywall
+    if (isPremiumOnlyMode && !isSubscribed) {
+      try {
+        // Show RevenueCat paywall
+        await RevenueCatUI.presentPaywall();
+
+        // Reload subscription status after paywall
+        if (mounted) {
+          await subscriptionCubit.loadSubscriptionStatus();
+          isSubscribed = subscriptionCubit.state.isSubscribed;
+
+          // If user still not subscribed, don't proceed
+          if (!isSubscribed) {
+            return;
+          }
+        }
+      } catch (e) {
+        // User dismissed paywall without subscribing
+        return;
+      }
+    }
+
+    // Proceed with solving math (will show ad if not subscribed and premium mode is off)
     if (imageFile != null) {
       context.read<SolveMathCubit>().solveMath(
         imageFile,

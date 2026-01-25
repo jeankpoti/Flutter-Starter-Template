@@ -8,11 +8,9 @@ class UpdateBannerWidget extends StatelessWidget {
   Future<void> _launchStore() async {
     final url =
         Platform.isIOS
-            ? Uri.parse(
-              'https://apps.apple.com/app/mathgenie-ai/idYOUR_ID',
-            ) // TODO: Update with real ID
+            ? Uri.parse('https://apps.apple.com/app/id6746733499')
             : Uri.parse(
-              'https://play.google.com/store/apps/details?id=com.math.ai',
+              'https://play.google.com/store/apps/details?id=com.jeankpoti.mathai.math_ai',
             );
 
     if (await canLaunchUrl(url)) {

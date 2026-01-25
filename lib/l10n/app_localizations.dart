@@ -2089,8 +2089,8 @@ abstract class AppLocalizations {
   /// No description provided for @shareAppText.
   ///
   /// In en, this message translates to:
-  /// **'Check out this amazing app: https://apps.apple.com/app/id6746733499'**
-  String get shareAppText;
+  /// **'Check out this amazing app: {url}'**
+  String shareAppText(Object url);
 
   /// No description provided for @generatePlan.
   ///

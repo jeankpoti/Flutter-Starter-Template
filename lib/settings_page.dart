@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -82,7 +83,6 @@ class _SettingsPageState extends State<SettingsPage> {
       );
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -228,18 +228,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         color: Theme.of(context).colorScheme.secondary,
                       ),
                       onTap: () async {
-                        const url =
-                            "https://itunes.apple.com/app/id6746733499?action=write-review";
-                        if (await canLaunchUrl(Uri.parse(url))) {
-                          await launchUrl(Uri.parse(url));
-                        } else {
-                          if (context.mounted) {
-                            AppSnackBar.showError(
-                              context,
-                              AppLocalizations.of(context)!.somethingWentWrong,
-                            );
-                          }
-                        }
+                        await AppReviewService.openStoreListing();
                       },
                     ),
                     SettingsListTile(
@@ -249,7 +238,13 @@ class _SettingsPageState extends State<SettingsPage> {
                         color: Theme.of(context).colorScheme.secondary,
                       ),
                       onTap: () {
-                        Share.share(AppLocalizations.of(context)!.shareAppText);
+                        final storeUrl =
+                            Platform.isAndroid
+                                ? 'https://play.google.com/store/apps/details?id=com.jeankpoti.mathai.math_ai'
+                                : 'https://apps.apple.com/app/id6746733499';
+                        Share.share(
+                          AppLocalizations.of(context)!.shareAppText(storeUrl),
+                        );
                       },
                     ),
                     SettingsListTile(
@@ -301,8 +296,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         color: Theme.of(context).colorScheme.secondary,
                       ),
                       onTap: () async {
-                        const url =
-                            "https://mathgenieai.jkstudioo.com/privacy-policy";
+                        const url = "https://mathgenieai.jkstudioo.com/privacy";
                         if (await canLaunchUrl(Uri.parse(url))) {
                           await launchUrl(
                             Uri.parse(url),

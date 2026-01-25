@@ -340,7 +340,7 @@
   "deleteConfirmationError": "Por favor escribe ELIMINAR para confirmar",
   "choosePreferredLanguage": "Elige tu idioma preferido",
   "languageChangedTo": "Idioma cambiado a {language}",
-  "shareAppText": "Mira esta aplicación increíble: https://apps.apple.com/app/id6739957932",
+  "shareAppText": "Mira esta increíble aplicación: {url}",
   "generatePlan": "Generar plan",
   "generateQuizWithAllMaterials": "Generar cuestionario con todos los materiales",
   "camera": "Cámara",

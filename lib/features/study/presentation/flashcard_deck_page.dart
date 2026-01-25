@@ -18,6 +18,8 @@ import '../data/repository/flashcard_generation_repository_impl.dart';
 import '../data/services/flashcard_generation_service.dart';
 import '../../subscription/presentation/subscription_cubit.dart';
 import '../../../core/services/ad_service.dart';
+import '../../../core/services/ad_config_service.dart';
+import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
 
 class FlashcardDeckPage extends StatelessWidget {
   final FlashCardDeck deck;
@@ -328,22 +330,91 @@ class _FlashcardDeckPageViewState extends State<_FlashcardDeckPageView> {
     );
   }
 
+  /// Check if premium-only mode is enabled and show paywall if user is not subscribed
+  /// Returns true if user can proceed (either subscribed or premium mode disabled)
+  /// Returns false if user needs to subscribe and didn't
+  Future<bool> _checkPremiumAccessAndShowPaywall() async {
+    // Check subscription status
+    final subscriptionCubit = context.read<SubscriptionCubit>();
+    var isSubscribed = subscriptionCubit.state.isSubscribed;
+
+    // Check if premium-only mode is enabled via Remote Config
+    final isPremiumOnlyMode = AdConfigService.isPremiumOnlyModeEnabled();
+
+    // If premium-only mode is enabled and user is not subscribed, show paywall
+    if (isPremiumOnlyMode && !isSubscribed) {
+      try {
+        // Show RevenueCat paywall
+        await RevenueCatUI.presentPaywall();
+
+        // Reload subscription status after paywall
+        if (mounted) {
+          await subscriptionCubit.loadSubscriptionStatus();
+          isSubscribed = subscriptionCubit.state.isSubscribed;
+
+          // If user still not subscribed, don't proceed
+          if (!isSubscribed) {
+            return false;
+          }
+        }
+      } catch (e) {
+        // User dismissed paywall without subscribing
+        return false;
+      }
+    }
+
+    // User can proceed (either subscribed or premium mode disabled)
+    return true;
+  }
+
   void _showAddCardOptions() {
     FlashcardOptionsModalWidget.show(
       context,
       onManual: _showManualCardDialog,
-      onCamera: () => _generationCubit?.generateFromCamera(),
-      onGallery: () => _generationCubit?.generateFromGallery(),
-      onFile: () => _generationCubit?.generateFromFile(),
+      onCamera: _generateFromCamera,
+      onGallery: _generateFromGallery,
+      onFile: _generateFromFile,
     );
   }
 
-  void _showManualCardDialog() {
+  Future<void> _showManualCardDialog() async {
+    // Check premium access first
+    if (!await _checkPremiumAccessAndShowPaywall()) {
+      return; // User needs to subscribe
+    }
+
     CardEditDialogWidget.show(
       context,
       deckId: widget.deck.id,
       onSaved: () => _flashcardDeckCubit?.loadCards(widget.deck.id),
     );
+  }
+
+  Future<void> _generateFromCamera() async {
+    // Check premium access first
+    if (!await _checkPremiumAccessAndShowPaywall()) {
+      return; // User needs to subscribe
+    }
+
+    _generationCubit?.generateFromCamera();
+  }
+
+  Future<void> _generateFromGallery() async {
+    // Check premium access first
+    if (!await _checkPremiumAccessAndShowPaywall()) {
+      return; // User needs to subscribe
+    }
+
+    _generationCubit?.generateFromGallery();
+  }
+
+  Future<void> _generateFromFile() async {
+    // Check premium access first
+    if (!await _checkPremiumAccessAndShowPaywall()) {
+      return; // User needs to subscribe
+    }
+
+    _generationCubit?.generateFromFile();
   }
 
   void _showEditCardDialog(FlashCard card) {

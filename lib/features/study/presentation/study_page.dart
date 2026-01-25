@@ -11,6 +11,7 @@ import '../../common/presentation/mixins/permission_lifecycle_mixin.dart';
 import '../../subscription/presentation/subscription_cubit.dart';
 import '../../subscription/presentation/subscription_state.dart';
 import '../../../core/services/ad_service.dart';
+import '../../../core/services/ad_config_service.dart';
 import '../data/services/study_plan_service.dart';
 import '../data/services/quiz_service.dart';
 import '../data/repository/study_material_repository.dart';
@@ -366,7 +367,49 @@ class _StudyPageViewState extends State<_StudyPageView>
     );
   }
 
+  /// Check if premium-only mode is enabled and show paywall if user is not subscribed
+  /// Returns true if user can proceed (either subscribed or premium mode disabled)
+  /// Returns false if user needs to subscribe and didn't
+  Future<bool> _checkPremiumAccessAndShowPaywall() async {
+    // Check subscription status
+    final subscriptionCubit = context.read<SubscriptionCubit>();
+    var isSubscribed = subscriptionCubit.state.isSubscribed;
+
+    // Check if premium-only mode is enabled via Remote Config
+    final isPremiumOnlyMode = AdConfigService.isPremiumOnlyModeEnabled();
+
+    // If premium-only mode is enabled and user is not subscribed, show paywall
+    if (isPremiumOnlyMode && !isSubscribed) {
+      try {
+        // Show RevenueCat paywall
+        await RevenueCatUI.presentPaywall();
+
+        // Reload subscription status after paywall
+        if (mounted) {
+          await subscriptionCubit.loadSubscriptionStatus();
+          isSubscribed = subscriptionCubit.state.isSubscribed;
+
+          // If user still not subscribed, don't proceed
+          if (!isSubscribed) {
+            return false;
+          }
+        }
+      } catch (e) {
+        // User dismissed paywall without subscribing
+        return false;
+      }
+    }
+
+    // User can proceed (either subscribed or premium mode disabled)
+    return true;
+  }
+
   Future<void> _handlePhotoUpload() async {
+    // Check premium access first
+    if (!await _checkPremiumAccessAndShowPaywall()) {
+      return; // User needs to subscribe
+    }
+
     final isSubscribed = context.read<SubscriptionCubit>().state.isSubscribed;
     final handled = await context.read<StudyCubit>().handlePhotoUpload(
       isSubscribed: isSubscribed,
@@ -386,6 +429,11 @@ class _StudyPageViewState extends State<_StudyPageView>
   }
 
   Future<void> _handleGalleryUpload() async {
+    // Check premium access first
+    if (!await _checkPremiumAccessAndShowPaywall()) {
+      return; // User needs to subscribe
+    }
+
     final isSubscribed = context.read<SubscriptionCubit>().state.isSubscribed;
     final handled = await context.read<StudyCubit>().handleGalleryUpload(
       isSubscribed: isSubscribed,
@@ -405,6 +453,11 @@ class _StudyPageViewState extends State<_StudyPageView>
   }
 
   void _handleTextInput() async {
+    // Check premium access first
+    if (!await _checkPremiumAccessAndShowPaywall()) {
+      return; // User needs to subscribe
+    }
+
     final studyCubit = context.read<StudyCubit>();
     final isSubscribed = context.read<SubscriptionCubit>().state.isSubscribed;
     final result = await showDialog<String>(
@@ -422,6 +475,11 @@ class _StudyPageViewState extends State<_StudyPageView>
   }
 
   Future<void> _handleDocumentUpload() async {
+    // Check premium access first
+    if (!await _checkPremiumAccessAndShowPaywall()) {
+      return; // User needs to subscribe
+    }
+
     final isSubscribed = context.read<SubscriptionCubit>().state.isSubscribed;
     final handled = await context.read<StudyCubit>().handleDocumentUpload(
       isSubscribed: isSubscribed,
@@ -446,6 +504,11 @@ class _StudyPageViewState extends State<_StudyPageView>
     required int timeLimit,
   }) async {
     try {
+      // Check premium access first
+      if (!await _checkPremiumAccessAndShowPaywall()) {
+        return; // User needs to subscribe
+      }
+
       final studyCubit = context.read<StudyCubit>();
       final isSubscribed = context.read<SubscriptionCubit>().state.isSubscribed;
 
@@ -501,6 +564,11 @@ class _StudyPageViewState extends State<_StudyPageView>
 
   Future<void> _generateQuizFromAllMaterials() async {
     try {
+      // Check premium access first
+      if (!await _checkPremiumAccessAndShowPaywall()) {
+        return; // User needs to subscribe
+      }
+
       final isSubscribed = context.read<SubscriptionCubit>().state.isSubscribed;
       final quiz = await context.read<StudyCubit>().generateAllMaterialsQuiz(
         isSubscribed: isSubscribed,
@@ -518,6 +586,11 @@ class _StudyPageViewState extends State<_StudyPageView>
 
   Future<void> _startQuizFromPlan(StudyPlan plan) async {
     try {
+      // Check premium access first
+      if (!await _checkPremiumAccessAndShowPaywall()) {
+        return; // User needs to subscribe
+      }
+
       final isSubscribed = context.read<SubscriptionCubit>().state.isSubscribed;
       final quiz = await context.read<StudyCubit>().generateQuizFromPlan(
         plan,
@@ -676,6 +749,11 @@ class _StudyPageViewState extends State<_StudyPageView>
     String deckName,
     String? deckDescription,
   ) async {
+    // Check premium access first
+    if (!await _checkPremiumAccessAndShowPaywall()) {
+      return; // User needs to subscribe
+    }
+
     await context.read<FlashcardCubit>().generateFlashcardsFromMaterials(
       materials: materials,
       deckName: deckName,

@@ -1090,8 +1090,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get shareAppText =>
-      'Check out this amazing app: https://apps.apple.com/app/id6746733499';
+  String shareAppText(Object url) {
+    return 'Check out this amazing app: $url';
+  }
 
   @override
   String get generatePlan => 'Generate Plan';

@@ -340,7 +340,7 @@
   "deleteConfirmationError": "Please type DELETE to confirm",
   "choosePreferredLanguage": "Choose your preferred language",
   "languageChangedTo": "Language changed to {language}",
-  "shareAppText": "Check out this amazing app: https://apps.apple.com/app/id6746733499",
+  "shareAppText": "Check out this amazing app: {url}",
   "generatePlan": "Generate Plan",
   "generateQuizWithAllMaterials": "Generate Quiz with All Materials",
   "camera": "Camera",

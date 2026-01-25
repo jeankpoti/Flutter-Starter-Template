@@ -418,6 +418,9 @@ class AppReviewService {
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
 
+      // Mark as rated so we don't ask again after they went to the store
+      await markAsRated();
+
       await AnalyticsService.logEvent(
         name: 'store_listing_opened',
         parameters: {'platform': Platform.isAndroid ? 'android' : 'ios'},
