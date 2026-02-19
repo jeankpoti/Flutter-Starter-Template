@@ -1,28 +1,35 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:math_ai/core/config/posthog_config.dart';
+import 'package:math_ai/core/services/posthog_service.dart';
 
 class AnalyticsService {
   static FirebaseAnalytics? _analytics;
   static FirebaseAnalyticsObserver? _observer;
-  
+
   static FirebaseAnalytics? get analytics => _analytics;
   static FirebaseAnalyticsObserver? get observer => _observer;
-  
-  /// Initialize analytics without tracking permission
+
+  /// Initialize analytics (Firebase + PostHog)
   static Future<void> initialize() async {
+    // Initialize Firebase Analytics
     _analytics = FirebaseAnalytics.instance;
     _observer = FirebaseAnalyticsObserver(analytics: _analytics!);
-    
-    // Enable analytics collection
     await _analytics!.setAnalyticsCollectionEnabled(true);
+
+    // Initialize PostHog Analytics
+    await PostHogService.initialize(
+      apiKey: PostHogConfig.apiKey,
+      host: PostHogConfig.host,
+    );
   }
-  
-  /// Log an event (only if analytics is enabled)
+
+  /// Log an event to both Firebase and PostHog
   static Future<void> logEvent({
     required String name,
     Map<String, Object?>? parameters,
   }) async {
+    // Firebase Analytics
     if (_analytics != null) {
-      // Filter out null values to match Firebase Analytics requirements
       final Map<String, Object>? filteredParameters = parameters != null
           ? Map.fromEntries(
               parameters.entries
@@ -30,47 +37,71 @@ class AnalyticsService {
                   .map((entry) => MapEntry(entry.key, entry.value!)),
             )
           : null;
-      
+
       await _analytics!.logEvent(
         name: name,
         parameters: filteredParameters,
       );
     }
+
+    // PostHog Analytics
+    await PostHogService.capture(name: name, properties: parameters);
   }
-  
-  /// Log screen view
+
+  /// Log screen view to both services
   static Future<void> logScreenView({
     required String screenName,
     String? screenClass,
   }) async {
+    // Firebase Analytics
     if (_analytics != null) {
       await _analytics!.logScreenView(
         screenName: screenName,
         screenClass: screenClass,
       );
     }
+
+    // PostHog Analytics
+    await PostHogService.screen(
+      screenName: screenName,
+      properties: screenClass != null ? {'screen_class': screenClass} : null,
+    );
   }
-  
-  /// Set user ID (only if analytics is enabled)
+
+  /// Set user ID in both services
   static Future<void> setUserId(String? userId) async {
+    // Firebase Analytics
     if (_analytics != null) {
       await _analytics!.setUserId(id: userId);
     }
+
+    // PostHog Analytics
+    if (userId != null) {
+      await PostHogService.identify(userId);
+    } else {
+      await PostHogService.reset();
+    }
   }
-  
-  /// Set user property
+
+  /// Set user property in both services
   static Future<void> setUserProperty({
     required String name,
     required String? value,
   }) async {
+    // Firebase Analytics
     if (_analytics != null) {
       await _analytics!.setUserProperty(
         name: name,
         value: value,
       );
     }
+
+    // PostHog Analytics
+    if (value != null) {
+      await PostHogService.setUserProperties({name: value});
+    }
   }
-  
+
   /// Common events
   static Future<void> logSignUp({required String method}) async {
     await logEvent(
@@ -78,14 +109,14 @@ class AnalyticsService {
       parameters: {'method': method},
     );
   }
-  
+
   static Future<void> logLogin({required String method}) async {
     await logEvent(
       name: 'login',
       parameters: {'method': method},
     );
   }
-  
+
   static Future<void> logMathProblemSolved({
     required String method,
     bool? savedToCollection,
@@ -98,7 +129,7 @@ class AnalyticsService {
       },
     );
   }
-  
+
   static Future<void> logStudyMaterialUploaded({
     required String type,
     required int topicCount,
@@ -111,7 +142,7 @@ class AnalyticsService {
       },
     );
   }
-  
+
   static Future<void> logQuizCompleted({
     required String studyPlanId,
     required double score,
@@ -126,7 +157,7 @@ class AnalyticsService {
       },
     );
   }
-  
+
   static Future<void> logSubscriptionStarted({
     required String plan,
     required String source,
@@ -138,5 +169,15 @@ class AnalyticsService {
         'source': source,
       },
     );
+  }
+
+  /// Reset PostHog identity (call on logout)
+  static Future<void> resetPostHogIdentity() async {
+    await PostHogService.reset();
+  }
+
+  /// Flush PostHog events (call before app close if needed)
+  static Future<void> flushPostHog() async {
+    await PostHogService.flush();
   }
 }

@@ -50,3 +50,6 @@ app.*.map.json
 
 # RevenueCat related
 /lib/constants/subscription.dart
+
+# PostHog related
+/lib/core/config/posthog_config.dart
