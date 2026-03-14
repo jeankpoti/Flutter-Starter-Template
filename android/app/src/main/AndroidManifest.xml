@@ -16,6 +16,10 @@
         android:label="MathGenie AI"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <!-- Disable PostHog auto-init for manual Flutter configuration with session replay -->
+        <meta-data
+            android:name="com.posthog.posthog.AUTO_INIT"
+            android:value="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

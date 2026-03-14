@@ -29,6 +29,13 @@ class PostHogService {
       config.captureApplicationLifecycleEvents = true;
       config.debug = false;
 
+      // Enable Session Replay
+      config.sessionReplay = true;
+      config.sessionReplayConfig.maskAllTexts = false;
+      config.sessionReplayConfig.maskAllImages = false;
+      config.sessionReplayConfig.throttleDelay =
+          const Duration(milliseconds: 1000);
+
       await Posthog().setup(config);
       _posthog = Posthog();
       _isInitialized = true;

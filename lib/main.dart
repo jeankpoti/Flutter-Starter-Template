@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
+import 'package:posthog_flutter/posthog_flutter.dart';
 // import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:math_ai/features/account/presentation/sign_up_page.dart';
 import 'package:math_ai/features/solve_math/data/repository/gemini_solve_math_repo.dart';
@@ -78,40 +79,42 @@ void main() async {
   final isDarkMode = prefs.getBool('isDarkMode') ?? false;
 
   runApp(
-    MultiBlocProvider(
-      providers: [
-        BlocProvider<ThemeCubit>(create: (context) => ThemeCubit(isDarkMode)),
-        BlocProvider<LocaleCubit>(create: (context) => LocaleCubit()),
-        BlocProvider<AccountCubit>(
-          create: (context) => AccountCubit(accountRepo),
-        ),
+    PostHogWidget(
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider<ThemeCubit>(create: (context) => ThemeCubit(isDarkMode)),
+          BlocProvider<LocaleCubit>(create: (context) => LocaleCubit()),
+          BlocProvider<AccountCubit>(
+            create: (context) => AccountCubit(accountRepo),
+          ),
 
-        BlocProvider<SolveMathCubit>(
-          create: (context) => SolveMathCubit(geminiService, firebaseMathRepo, adService),
-        ),
+          BlocProvider<SolveMathCubit>(
+            create: (context) =>
+                SolveMathCubit(geminiService, firebaseMathRepo, adService),
+          ),
 
-        BlocProvider<AdCubit>(
-          create: (context) => AdCubit(adService),
-        ),
+          BlocProvider<AdCubit>(
+            create: (context) => AdCubit(adService),
+          ),
 
-        BlocProvider<FirebaseCollectionCubit>(
-          create: (context) => FirebaseCollectionCubit(firebaseMathRepo),
-        ),
+          BlocProvider<FirebaseCollectionCubit>(
+            create: (context) => FirebaseCollectionCubit(firebaseMathRepo),
+          ),
 
-        BlocProvider<SubscriptionCubit>(
-          create: (context) => SubscriptionCubit(subscriptionRepository),
-        ),
+          BlocProvider<SubscriptionCubit>(
+            create: (context) => SubscriptionCubit(subscriptionRepository),
+          ),
 
-        BlocProvider<PermissionCubit>(create: (context) => PermissionCubit()),
+          BlocProvider<PermissionCubit>(create: (context) => PermissionCubit()),
 
-        BlocProvider<ImageCaptureCubit>(
-          create:
-              (context) => ImageCaptureCubit(
-                permissionCubit: context.read<PermissionCubit>(),
-              ),
-        ),
-      ],
-      child: const MyApp(),
+          BlocProvider<ImageCaptureCubit>(
+            create: (context) => ImageCaptureCubit(
+              permissionCubit: context.read<PermissionCubit>(),
+            ),
+          ),
+        ],
+        child: const MyApp(),
+      ),
     ),
   );
 }
@@ -180,6 +183,7 @@ final _shellNavigatorKey = GlobalKey<NavigatorState>();
 final GoRouter _router = GoRouter(
   navigatorKey: _rootNavigatorKey,
   initialLocation: '/',
+  observers: [PosthogObserver()],
 
   routes: [
     // Authentication routes (outside of shell)
