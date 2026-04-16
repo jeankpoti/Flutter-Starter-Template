@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:math_ai/core/services/analytics_service.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
 import '../domain/models/subscription_model.dart';
@@ -79,6 +80,13 @@ class SubscriptionCubit extends Cubit<SubscriptionState> {
       );
 
       if (subscription != null) {
+        // Track the purchase event with revenue data
+        await AnalyticsService.logPurchaseCompleted(
+          productName: package.storeProduct.identifier,
+          amount: package.storeProduct.price,
+          currency: package.storeProduct.currencyCode,
+        );
+
         emit(
           state.copyWith(
             status: SubscriptionStatus.loaded,

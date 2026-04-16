@@ -171,6 +171,21 @@ class AnalyticsService {
     );
   }
 
+  static Future<void> logPurchaseCompleted({
+    required String productName,
+    required double amount,
+    required String currency,
+  }) async {
+    await logEvent(
+      name: 'purchase_completed',
+      parameters: {
+        'product_name': productName,
+        'amount': amount,
+        'currency': currency,
+      },
+    );
+  }
+
   /// Reset PostHog identity (call on logout)
   static Future<void> resetPostHogIdentity() async {
     await PostHogService.reset();
