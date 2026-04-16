@@ -325,6 +325,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signOutSuccess => 'Sign out successfully!';
 
   @override
+  String get accountCreatedSuccess =>
+      'Account created successfully! Please sign in.';
+
+  @override
   String get couldNotOpenPrivacyPolicy => 'Could not open Privacy Policy';
 
   @override

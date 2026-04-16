@@ -331,6 +331,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get signOutSuccess => '¡Cierre de sesión exitoso!';
 
   @override
+  String get accountCreatedSuccess =>
+      '¡Cuenta creada exitosamente! Por favor inicia sesión.';
+
+  @override
   String get couldNotOpenPrivacyPolicy =>
       'No se pudo abrir la Política de Privacidad';
 

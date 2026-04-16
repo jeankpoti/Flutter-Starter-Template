@@ -718,6 +718,12 @@ abstract class AppLocalizations {
   /// **'Sign out successfully!'**
   String get signOutSuccess;
 
+  /// No description provided for @accountCreatedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Account created successfully! Please sign in.'**
+  String get accountCreatedSuccess;
+
   /// No description provided for @couldNotOpenPrivacyPolicy.
   ///
   /// In en, this message translates to:

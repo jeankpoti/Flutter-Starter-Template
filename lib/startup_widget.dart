@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:math_ai/core/services/analytics_service.dart';
 import 'package:math_ai/features/common/presentation/permission_cubit.dart';
 import 'package:math_ai/features/solve_math/presentation/home_page.dart';
 import 'package:math_ai/features/ads/presentation/ad_cubit.dart';
@@ -17,9 +19,17 @@ class _StartupWidgetState extends State<StartupWidget> {
   @override
   void initState() {
     super.initState();
+    _identifyUser();
     _initializePermissions();
     _initializeAds();
     _checkVersion();
+  }
+
+  Future<void> _identifyUser() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      await AnalyticsService.setUserId(user.uid);
+    }
   }
 
   Future<void> _checkVersion() async {

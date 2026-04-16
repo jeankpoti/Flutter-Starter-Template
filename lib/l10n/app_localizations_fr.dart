@@ -333,6 +333,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get signOutSuccess => 'Déconnexion réussie !';
 
   @override
+  String get accountCreatedSuccess =>
+      'Compte créé avec succès ! Veuillez vous connecter.';
+
+  @override
   String get couldNotOpenPrivacyPolicy =>
       'Impossible d\'ouvrir la politique de confidentialité';
 

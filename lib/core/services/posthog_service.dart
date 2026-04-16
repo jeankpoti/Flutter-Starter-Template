@@ -33,8 +33,9 @@ class PostHogService {
       config.sessionReplay = true;
       config.sessionReplayConfig.maskAllTexts = false;
       config.sessionReplayConfig.maskAllImages = false;
-      config.sessionReplayConfig.throttleDelay =
-          const Duration(milliseconds: 1000);
+      config.sessionReplayConfig.throttleDelay = const Duration(
+        milliseconds: 1000,
+      );
 
       await Posthog().setup(config);
       _posthog = Posthog();
@@ -54,18 +55,16 @@ class PostHogService {
 
     try {
       // Filter out null values
-      final Map<String, Object>? filteredProperties = properties != null
-          ? Map.fromEntries(
-              properties.entries
-                  .where((entry) => entry.value != null)
-                  .map((entry) => MapEntry(entry.key, entry.value!)),
-            )
-          : null;
+      final Map<String, Object>? filteredProperties =
+          properties != null
+              ? Map.fromEntries(
+                properties.entries
+                    .where((entry) => entry.value != null)
+                    .map((entry) => MapEntry(entry.key, entry.value!)),
+              )
+              : null;
 
-      await _posthog!.capture(
-        eventName: name,
-        properties: filteredProperties,
-      );
+      await _posthog!.capture(eventName: name, properties: filteredProperties);
     } catch (e) {
       // Silently fail - don't interrupt app flow for analytics
     }
@@ -79,10 +78,7 @@ class PostHogService {
     if (!_isInitialized || _posthog == null) return;
 
     try {
-      await _posthog!.screen(
-        screenName: screenName,
-        properties: properties,
-      );
+      await _posthog!.screen(screenName: screenName, properties: properties);
     } catch (e) {
       // Silently fail
     }

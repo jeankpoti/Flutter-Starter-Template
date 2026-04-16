@@ -103,6 +103,7 @@
   "confirmPasswordRequired": "Por favor confirma tu contraseña",
   "somethingWentWrong": "¡Algo salió mal!",
   "signOutSuccess": "¡Cierre de sesión exitoso!",
+  "accountCreatedSuccess": "¡Cuenta creada exitosamente! Por favor inicia sesión.",
   "couldNotOpenPrivacyPolicy": "No se pudo abrir la Política de Privacidad",
   "couldNotOpenTerms": "No se pudieron abrir los Términos de Uso",
   "failedToLoadProblems": "Error al cargar más problemas",
