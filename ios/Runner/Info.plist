@@ -58,6 +58,8 @@
 	<string>This app needs photos access to let you upload math problems for solving</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>This app uses speech recognition to convert your spoken math problems into text for AI solving</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>This allows us to provide you with a better ads experience and measure how our ads perform.</string>
 	<key>PHPhotoLibraryPreventAutomaticLimitedAccessAlert</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>

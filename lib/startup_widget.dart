@@ -23,6 +23,15 @@ class _StartupWidgetState extends State<StartupWidget> {
     _initializePermissions();
     _initializeAds();
     _checkVersion();
+    _requestTrackingAndLogAppOpen();
+  }
+
+  Future<void> _requestTrackingAndLogAppOpen() async {
+    // Request App Tracking Transparency (iOS 14+) for ad attribution
+    await AnalyticsService.requestTrackingAuthorization();
+
+    // Log app open for engagement tracking
+    await AnalyticsService.logAppOpen();
   }
 
   Future<void> _identifyUser() async {

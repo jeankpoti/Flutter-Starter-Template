@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:math_ai/core/config/posthog_config.dart';
 import 'package:math_ai/core/services/meta_analytics_service.dart';
@@ -25,6 +28,39 @@ class AnalyticsService {
 
     // Initialize Meta Analytics
     await MetaAnalyticsService.initialize();
+  }
+
+  /// Request App Tracking Transparency authorization (iOS 14+)
+  /// Call this after app launch to enable ad attribution tracking
+  static Future<TrackingStatus> requestTrackingAuthorization() async {
+    // Only request on iOS
+    if (!Platform.isIOS) {
+      return TrackingStatus.notSupported;
+    }
+
+    try {
+      // Check and request tracking authorization
+      final status =
+          await AppTrackingTransparency.requestTrackingAuthorization();
+
+      // Log the authorization status for analytics
+      await logEvent(
+        name: 'tracking_authorization_status',
+        parameters: {'status': status.name},
+      );
+
+      return status;
+    } catch (e) {
+      return TrackingStatus.notDetermined;
+    }
+  }
+
+  /// Get current tracking authorization status without prompting
+  static Future<TrackingStatus> getTrackingStatus() async {
+    if (!Platform.isIOS) {
+      return TrackingStatus.notSupported;
+    }
+    return await AppTrackingTransparency.trackingAuthorizationStatus;
   }
 
   /// Log an event to Firebase, PostHog, and Meta
@@ -211,6 +247,108 @@ class AnalyticsService {
       currency: currency,
       parameters: {'product_name': productName},
     );
+  }
+
+  /// Log purchase using Google's standard event (for Google Ads conversion tracking)
+  /// Use this for subscription purchases to enable revenue attribution
+  static Future<void> logPurchase({
+    required String transactionId,
+    required double value,
+    required String currency,
+    String? itemName,
+    String? itemCategory,
+  }) async {
+    // Firebase standard purchase event (recognized by Google Ads)
+    if (_analytics != null) {
+      await _analytics!.logPurchase(
+        transactionId: transactionId,
+        value: value,
+        currency: currency,
+        items: itemName != null
+            ? [
+                AnalyticsEventItem(
+                  itemName: itemName,
+                  itemCategory: itemCategory,
+                  price: value,
+                  quantity: 1,
+                ),
+              ]
+            : null,
+      );
+    }
+
+    // PostHog
+    await PostHogService.capture(
+      name: 'purchase',
+      properties: {
+        'transaction_id': transactionId,
+        'value': value,
+        'currency': currency,
+        if (itemName != null) 'item_name': itemName,
+      },
+    );
+
+    // Meta
+    await MetaAnalyticsService.logPurchase(
+      amount: value,
+      currency: currency,
+      parameters: {
+        'transaction_id': transactionId,
+        if (itemName != null) 'item_name': itemName,
+      },
+    );
+  }
+
+  /// Log begin checkout using Google's standard event (for Google Ads funnel tracking)
+  /// Call this when user views the paywall/subscription screen
+  static Future<void> logBeginCheckout({
+    required double value,
+    required String currency,
+    String? itemName,
+  }) async {
+    // Firebase standard begin_checkout event
+    if (_analytics != null) {
+      await _analytics!.logBeginCheckout(
+        value: value,
+        currency: currency,
+        items: itemName != null
+            ? [
+                AnalyticsEventItem(
+                  itemName: itemName,
+                  price: value,
+                  quantity: 1,
+                ),
+              ]
+            : null,
+      );
+    }
+
+    // PostHog
+    await PostHogService.capture(
+      name: 'begin_checkout',
+      properties: {
+        'value': value,
+        'currency': currency,
+        if (itemName != null) 'item_name': itemName,
+      },
+    );
+
+    // Meta
+    await MetaAnalyticsService.logInitiatedCheckout(
+      totalPrice: value,
+      currency: currency,
+      contentId: itemName,
+    );
+  }
+
+  /// Log app open event (for Google Ads engagement tracking)
+  static Future<void> logAppOpen() async {
+    if (_analytics != null) {
+      await _analytics!.logAppOpen();
+    }
+
+    await PostHogService.capture(name: 'app_open');
+    await MetaAnalyticsService.logEvent(name: 'app_open');
   }
 
   /// Log paywall/subscription screen viewed (for audience building)
