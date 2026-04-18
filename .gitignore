@@ -56,3 +56,6 @@ app.*.map.json
 
 # Meta related
 /lib/core/config/meta_config.dart
+
+# TikTok related
+/lib/core/config/tiktok_config.dart

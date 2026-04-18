@@ -5,6 +5,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:math_ai/core/config/posthog_config.dart';
 import 'package:math_ai/core/services/meta_analytics_service.dart';
 import 'package:math_ai/core/services/posthog_service.dart';
+import 'package:math_ai/core/services/tiktok_analytics_service.dart';
 
 class AnalyticsService {
   static FirebaseAnalytics? _analytics;
@@ -13,7 +14,7 @@ class AnalyticsService {
   static FirebaseAnalytics? get analytics => _analytics;
   static FirebaseAnalyticsObserver? get observer => _observer;
 
-  /// Initialize analytics (Firebase + PostHog + Meta)
+  /// Initialize analytics (Firebase + PostHog + Meta + TikTok)
   static Future<void> initialize() async {
     // Initialize Firebase Analytics
     _analytics = FirebaseAnalytics.instance;
@@ -28,6 +29,9 @@ class AnalyticsService {
 
     // Initialize Meta Analytics
     await MetaAnalyticsService.initialize();
+
+    // Initialize TikTok Analytics
+    await TikTokAnalyticsService.initialize();
   }
 
   /// Request App Tracking Transparency authorization (iOS 14+)
@@ -92,6 +96,9 @@ class AnalyticsService {
       (key, value) => MapEntry(key, value),
     );
     await MetaAnalyticsService.logEvent(name: name, parameters: metaParameters);
+
+    // TikTok Analytics
+    await TikTokAnalyticsService.logEvent(name: name, parameters: metaParameters);
   }
 
   /// Log screen view to both services
@@ -134,6 +141,13 @@ class AnalyticsService {
     } else {
       await MetaAnalyticsService.clearUserId();
     }
+
+    // TikTok Analytics
+    if (userId != null) {
+      await TikTokAnalyticsService.identify(userId);
+    } else {
+      await TikTokAnalyticsService.logout();
+    }
   }
 
   /// Set user property in both services
@@ -164,6 +178,9 @@ class AnalyticsService {
 
     // Meta standard event for registration
     await MetaAnalyticsService.logCompletedRegistration(method: method);
+
+    // TikTok standard event for registration
+    await TikTokAnalyticsService.logCompleteRegistration(method: method);
   }
 
   static Future<void> logLogin({required String method}) async {
@@ -297,6 +314,13 @@ class AnalyticsService {
         if (itemName != null) 'item_name': itemName,
       },
     );
+
+    // TikTok
+    await TikTokAnalyticsService.logPurchase(
+      value: value,
+      currency: currency,
+      contentId: itemName,
+    );
   }
 
   /// Log begin checkout using Google's standard event (for Google Ads funnel tracking)
@@ -339,6 +363,13 @@ class AnalyticsService {
       currency: currency,
       contentId: itemName,
     );
+
+    // TikTok (AddToCart = checkout intent)
+    await TikTokAnalyticsService.logAddToCart(
+      value: value,
+      currency: currency,
+      contentId: itemName,
+    );
   }
 
   /// Log app open event (for Google Ads engagement tracking)
@@ -373,6 +404,13 @@ class AnalyticsService {
       currency: currency,
       contentId: source,
     );
+
+    // TikTok standard event (AddToCart for paywall = checkout intent)
+    await TikTokAnalyticsService.logAddToCart(
+      value: price,
+      currency: currency,
+      contentId: source,
+    );
   }
 
   /// Log content view (for audience segmentation)
@@ -393,6 +431,12 @@ class AnalyticsService {
       contentType: contentType,
       contentId: contentId,
     );
+
+    // TikTok standard event
+    await TikTokAnalyticsService.logViewContent(
+      contentType: contentType,
+      contentId: contentId,
+    );
   }
 
   /// Reset all analytics identity (call on logout)
@@ -400,6 +444,7 @@ class AnalyticsService {
     await PostHogService.reset();
     await MetaAnalyticsService.clearUserId();
     await MetaAnalyticsService.clearUserData();
+    await TikTokAnalyticsService.logout();
   }
 
   /// Flush all analytics events (call before app close if needed)

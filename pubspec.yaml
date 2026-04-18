@@ -63,6 +63,7 @@ dependencies:
   posthog_flutter: ^5.20.0
   facebook_app_events: ^0.19.2
   app_tracking_transparency: ^2.0.6
+  tiktok_events_sdk: ^0.0.3
 
 dev_dependencies:
   flutter_lints: ^6.0.0
