@@ -53,3 +53,6 @@ app.*.map.json
 
 # PostHog related
 /lib/core/config/posthog_config.dart
+
+# Meta related
+/lib/core/config/meta_config.dart
