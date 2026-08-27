@@ -69,10 +69,10 @@ packages:
     dependency: transitive
     description:
       name: characters
-      sha256: f71061c654a3380576a52b451dd5532377954cf9dbd272a78fc8479606670803
+      sha256: faf38497bda5ead2a8c7615f4f7939df04333478bf32e4173fcb06d428b5716b
       url: "https://pub.dev"
     source: hosted
-    version: "1.4.0"
+    version: "1.4.1"
   clock:
     dependency: transitive
     description:
@@ -489,10 +489,10 @@ packages:
     dependency: "direct main"
     description:
       name: font_awesome_flutter
-      sha256: b738e35f8bb4957896c34957baf922f99c5d415b38ddc8b070d14b7fa95715d4
+      sha256: "09dcde8ab90ffae1a7d65ff2ef96fc62a17ad9d0ce7c127b317ded676b0d5935"
       url: "https://pub.dev"
     source: hosted
-    version: "10.9.1"
+    version: "11.0.0"
   freezed_annotation:
     dependency: "direct main"
     description:
@@ -537,10 +537,10 @@ packages:
     dependency: "direct main"
     description:
       name: google_mobile_ads
-      sha256: "0d4a3744b5e8ed1b8be6a1b452d309f811688855a497c6113fc4400f922db603"
+      sha256: "8094e1ace8b0da33fe79027ca6959763c96a28855025cb7c8ec60838e1d56ed8"
       url: "https://pub.dev"
     source: hosted
-    version: "5.3.1"
+    version: "9.1.0"
   google_sign_in:
     dependency: "direct main"
     description:
@@ -793,26 +793,26 @@ packages:
     dependency: transitive
     description:
       name: matcher
-      sha256: dc58c723c3c24bf8d3e2d3ad3f2f9d7bd9cf43ec6feaa64181775e60190153f2
+      sha256: dc0b7dc7651697ea4ff3e69ef44b0407ea32c487a39fff6a4004fa585e901861
       url: "https://pub.dev"
     source: hosted
-    version: "0.12.17"
+    version: "0.12.19"
   material_color_utilities:
     dependency: transitive
     description:
       name: material_color_utilities
-      sha256: f7142bb1154231d7ea5f96bc7bde4bda2a0945d2806bb11670e30b850d56bdec
+      sha256: "9c337007e82b1889149c82ed242ed1cb24a66044e30979c44912381e9be4c48b"
       url: "https://pub.dev"
     source: hosted
-    version: "0.11.1"
+    version: "0.13.0"
   meta:
     dependency: transitive
     description:
       name: meta
-      sha256: "23f08335362185a5ea2ad3a4e597f1375e78bce8a040df5c600c8d3552ef2394"
+      sha256: "1741988757a65eb6b36abe716829688cf01910bbf91c34354ff7ec1c3de2b349"
       url: "https://pub.dev"
     source: hosted
-    version: "1.17.0"
+    version: "1.18.0"
   mime:
     dependency: transitive
     description:
@@ -1025,18 +1025,18 @@ packages:
     dependency: "direct main"
     description:
       name: purchases_flutter
-      sha256: "8d34712aa3201f675eeccaacf45c0b7b025575fc9d0378b2619bb61246e76064"
+      sha256: "40723bd949d58a005e3e3eeb0739d3ad664ad478e3e29697692e0d657f103c6e"
       url: "https://pub.dev"
     source: hosted
-    version: "8.11.0"
+    version: "10.0.1"
   purchases_ui_flutter:
     dependency: "direct main"
     description:
       name: purchases_ui_flutter
-      sha256: "883caecc6065d3e079d2cf62c2b72c54b909668bd4c95ea51691f9708dea0dc6"
+      sha256: "53350c889a8f35dba6e0090469a0e92bd7a0181bedeb84f3daff82bd59041edd"
       url: "https://pub.dev"
     source: hosted
-    version: "8.11.0"
+    version: "10.0.1"
   share_plus:
     dependency: "direct main"
     description:
@@ -1202,6 +1202,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.4.1"
+  tenjin_plugin:
+    dependency: "direct main"
+    description:
+      name: tenjin_plugin
+      sha256: c74ca8c8a4325ef50abcaf3959586d6047200f335e877be022b7fe35c93911c0
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.4.0"
   term_glyph:
     dependency: transitive
     description:
@@ -1214,10 +1222,10 @@ packages:
     dependency: transitive
     description:
       name: test_api
-      sha256: ab2726c1a94d3176a45960b6234466ec367179b87dd74f1611adb1f3b5fb9d55
+      sha256: "949a932224383300f01be9221c39180316445ecb8e7547f70a41a35bf421fb9e"
       url: "https://pub.dev"
     source: hosted
-    version: "0.7.7"
+    version: "0.7.11"
   tiktok_events_sdk:
     dependency: "direct main"
     description:
@@ -1398,10 +1406,10 @@ packages:
     dependency: transitive
     description:
       name: webview_flutter_android
-      sha256: "9a25f6b4313978ba1c2cda03a242eea17848174912cfb4d2d8ee84a556f248e3"
+      sha256: f560f57d0f529c1dcdaf4edc3a3217b099560622f9f4a10b6bdbb566553c61ea
       url: "https://pub.dev"
     source: hosted
-    version: "4.10.1"
+    version: "4.11.0"
   webview_flutter_platform_interface:
     dependency: transitive
     description:
@@ -1414,10 +1422,10 @@ packages:
     dependency: transitive
     description:
       name: webview_flutter_wkwebview
-      sha256: fb46db8216131a3e55bcf44040ca808423539bc6732e7ed34fb6d8044e3d512f
+      sha256: a68868ac4828a5f012bf81e8bd25d879f3cec5bd5301575466caafbf9a320a65
       url: "https://pub.dev"
     source: hosted
-    version: "3.23.0"
+    version: "3.24.5"
   win32:
     dependency: transitive
     description:
@@ -1451,5 +1459,5 @@ packages:
     source: hosted
     version: "3.1.3"
 sdks:
-  dart: ">=3.8.0 <4.0.0"
-  flutter: ">=3.29.0"
+  dart: ">=3.10.0 <4.0.0"
+  flutter: ">=3.38.1"

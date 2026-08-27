@@ -5,6 +5,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:math_ai/core/config/posthog_config.dart';
 import 'package:math_ai/core/services/meta_analytics_service.dart';
 import 'package:math_ai/core/services/posthog_service.dart';
+import 'package:math_ai/core/services/tenjin_analytics_service.dart';
 import 'package:math_ai/core/services/tiktok_analytics_service.dart';
 
 class AnalyticsService {
@@ -14,7 +15,7 @@ class AnalyticsService {
   static FirebaseAnalytics? get analytics => _analytics;
   static FirebaseAnalyticsObserver? get observer => _observer;
 
-  /// Initialize analytics (Firebase + PostHog + Meta + TikTok)
+  /// Initialize analytics (Firebase + PostHog + Meta + TikTok + Tenjin)
   static Future<void> initialize() async {
     // Initialize Firebase Analytics
     _analytics = FirebaseAnalytics.instance;
@@ -32,6 +33,9 @@ class AnalyticsService {
 
     // Initialize TikTok Analytics
     await TikTokAnalyticsService.initialize();
+
+    // Initialize Tenjin Analytics
+    await TenjinAnalyticsService.initialize();
   }
 
   /// Request App Tracking Transparency authorization (iOS 14+)
@@ -181,6 +185,9 @@ class AnalyticsService {
 
     // TikTok standard event for registration
     await TikTokAnalyticsService.logCompleteRegistration(method: method);
+
+    // Tenjin standard event for registration
+    await TenjinAnalyticsService.logCompleteRegistration(method: method);
   }
 
   static Future<void> logLogin({required String method}) async {
@@ -188,6 +195,9 @@ class AnalyticsService {
       name: 'login',
       parameters: {'method': method},
     );
+
+    // Tenjin login event
+    await TenjinAnalyticsService.logLogin(method: method);
   }
 
   static Future<void> logMathProblemSolved({
@@ -321,6 +331,13 @@ class AnalyticsService {
       currency: currency,
       contentId: itemName,
     );
+
+    // Tenjin
+    await TenjinAnalyticsService.logPurchase(
+      value: value,
+      currency: currency,
+      productId: itemName,
+    );
   }
 
   /// Log begin checkout using Google's standard event (for Google Ads funnel tracking)
@@ -370,6 +387,12 @@ class AnalyticsService {
       currency: currency,
       contentId: itemName,
     );
+
+    // Tenjin
+    await TenjinAnalyticsService.logBeginCheckout(
+      value: value,
+      currency: currency,
+    );
   }
 
   /// Log app open event (for Google Ads engagement tracking)
@@ -380,6 +403,51 @@ class AnalyticsService {
 
     await PostHogService.capture(name: 'app_open');
     await MetaAnalyticsService.logEvent(name: 'app_open');
+    await TenjinAnalyticsService.logAppOpen();
+  }
+
+  /// Log subscription cancellation or refund request
+  static Future<void> logSubscriptionCancellation({
+    String? productId,
+    String? refundStatus,
+  }) async {
+    await logEvent(
+      name: 'subscription_cancellation',
+      parameters: {
+        if (productId != null) 'product_id': productId,
+        if (refundStatus != null) 'refund_status': refundStatus,
+      },
+    );
+    await TenjinAnalyticsService.logSubscriptionCancel(productId: productId);
+  }
+
+  /// Log cancellation survey response (why user is cancelling)
+  static Future<void> logCancellationReason({
+    required String reason,
+  }) async {
+    await logEvent(
+      name: 'cancellation_reason',
+      parameters: {'reason': reason},
+    );
+  }
+
+  /// Log when user accepts a win-back offer
+  static Future<void> logWinbackOfferAccepted({
+    required String offerId,
+    String? productId,
+  }) async {
+    await logEvent(
+      name: 'winback_offer_accepted',
+      parameters: {
+        'offer_id': offerId,
+        if (productId != null) 'product_id': productId,
+      },
+    );
+  }
+
+  /// Log Customer Center opened (for tracking engagement with subscription management)
+  static Future<void> logCustomerCenterOpened() async {
+    await logEvent(name: 'customer_center_opened');
   }
 
   /// Log paywall/subscription screen viewed (for audience building)
@@ -411,6 +479,9 @@ class AnalyticsService {
       currency: currency,
       contentId: source,
     );
+
+    // Tenjin
+    await TenjinAnalyticsService.logPaywallViewed(source: source);
   }
 
   /// Log content view (for audience segmentation)
@@ -463,5 +534,286 @@ class AnalyticsService {
   @Deprecated('Use flushAll() instead')
   static Future<void> flushPostHog() async {
     await PostHogService.flush();
+  }
+
+  // ============================================================
+  // Google Ads Conversion Tracking Events
+  // ============================================================
+
+  /// Log app_first_launch event for new user acquisition tracking
+  /// This should be called ONCE per device installation
+  /// Note: Firebase automatically tracks 'first_open' - we use 'app_first_launch' for custom tracking
+  /// Google Ads can import Firebase's automatic first_open event
+  static Future<void> logFirstOpen() async {
+    // Firebase automatically tracks 'first_open' - no manual logging needed
+    // We log a custom event for our own tracking purposes
+    if (_analytics != null) {
+      await _analytics!.logEvent(
+        name: 'app_first_launch',
+        parameters: {'engagement_time_msec': 1},
+      );
+    }
+
+    await PostHogService.capture(name: 'app_first_launch');
+    await MetaAnalyticsService.logEvent(name: 'fb_first_open');
+    await TikTokAnalyticsService.logEvent(name: 'first_open');
+    await TenjinAnalyticsService.logFirstOpen();
+  }
+
+  /// Log in_app_purchase event (Google Ads standard event for subscriptions)
+  /// This complements the purchase event with subscription-specific data
+  static Future<void> logInAppPurchase({
+    required String productId,
+    required double price,
+    required String currency,
+    required String subscriptionPeriod,
+    String? transactionId,
+    bool? isTrialConversion,
+    bool? isFirstPurchase,
+  }) async {
+    final parameters = <String, Object>{
+      'product_id': productId,
+      'price': price,
+      'currency': currency,
+      'subscription_period': subscriptionPeriod,
+      'quantity': 1,
+      if (transactionId != null) 'transaction_id': transactionId,
+      if (isTrialConversion != null) 'is_trial_conversion': isTrialConversion,
+      if (isFirstPurchase != null) 'is_first_purchase': isFirstPurchase,
+    };
+
+    if (_analytics != null) {
+      await _analytics!.logEvent(
+        name: 'in_app_purchase',
+        parameters: parameters,
+      );
+    }
+
+    await PostHogService.capture(name: 'in_app_purchase', properties: parameters);
+  }
+
+  /// Log when user starts a free trial
+  /// Critical for Google Ads to optimize for high-intent users
+  static Future<void> logTrialStart({
+    required String productId,
+    required int trialDurationDays,
+    String? source,
+  }) async {
+    final parameters = <String, Object>{
+      'product_id': productId,
+      'trial_duration_days': trialDurationDays,
+      if (source != null) 'source': source,
+    };
+
+    if (_analytics != null) {
+      await _analytics!.logEvent(
+        name: 'start_trial',
+        parameters: parameters,
+      );
+    }
+
+    await PostHogService.capture(name: 'start_trial', properties: parameters);
+    await MetaAnalyticsService.logEvent(
+      name: 'StartTrial',
+      parameters: parameters.cast<String, dynamic>(),
+    );
+    await TikTokAnalyticsService.logEvent(
+      name: 'StartTrial',
+      parameters: parameters.cast<String, dynamic>(),
+    );
+    await TenjinAnalyticsService.logTrialStart(productId: productId);
+  }
+
+  /// Log when user converts from trial to paid subscription
+  static Future<void> logTrialConversion({
+    required String productId,
+    required double value,
+    required String currency,
+    String? transactionId,
+  }) async {
+    final parameters = <String, Object>{
+      'product_id': productId,
+      'value': value,
+      'currency': currency,
+      if (transactionId != null) 'transaction_id': transactionId,
+    };
+
+    if (_analytics != null) {
+      await _analytics!.logEvent(
+        name: 'trial_conversion',
+        parameters: parameters,
+      );
+    }
+
+    await PostHogService.capture(name: 'trial_conversion', properties: parameters);
+    await TenjinAnalyticsService.logTrialConversion(
+      value: value,
+      currency: currency,
+    );
+  }
+
+  /// Set user properties for Google Ads audience building
+  /// Call after user signs up or subscription status changes
+  static Future<void> setSubscriptionUserProperties({
+    required bool isSubscribed,
+    String? subscriptionType,
+    bool? isInTrial,
+  }) async {
+    if (_analytics != null) {
+      await _analytics!.setUserProperty(
+        name: 'subscription_status',
+        value: isSubscribed ? 'subscribed' : 'free',
+      );
+
+      if (subscriptionType != null) {
+        await _analytics!.setUserProperty(
+          name: 'subscription_type',
+          value: subscriptionType,
+        );
+      }
+
+      if (isInTrial != null) {
+        await _analytics!.setUserProperty(
+          name: 'is_trial_user',
+          value: isInTrial.toString(),
+        );
+      }
+    }
+
+    // PostHog
+    final properties = <String, Object>{
+      'subscription_status': isSubscribed ? 'subscribed' : 'free',
+      if (subscriptionType != null) 'subscription_type': subscriptionType,
+      if (isInTrial != null) 'is_trial_user': isInTrial,
+    };
+    await PostHogService.setUserProperties(properties);
+  }
+
+  /// Log subscription renewal event
+  /// Important for LTV calculation and Google Ads optimization
+  static Future<void> logSubscriptionRenewal({
+    required String productId,
+    required double value,
+    required String currency,
+    required int renewalCount,
+  }) async {
+    final parameters = <String, Object>{
+      'product_id': productId,
+      'value': value,
+      'currency': currency,
+      'renewal_count': renewalCount,
+    };
+
+    if (_analytics != null) {
+      await _analytics!.logEvent(
+        name: 'subscription_renewal',
+        parameters: parameters,
+      );
+    }
+
+    await PostHogService.capture(name: 'subscription_renewal', properties: parameters);
+    await TenjinAnalyticsService.logSubscriptionRenewal(
+      value: value,
+      productId: productId,
+    );
+  }
+
+  // ==========================================================================
+  // ADDITIONAL SUBSCRIPTION LIFECYCLE EVENTS
+  // ==========================================================================
+
+  /// Log subscription product change
+  static Future<void> logSubscriptionChange({
+    String? fromProductId,
+    String? toProductId,
+  }) async {
+    await logEvent(
+      name: 'subscription_change',
+      parameters: {
+        if (fromProductId != null) 'from_product_id': fromProductId,
+        if (toProductId != null) 'to_product_id': toProductId,
+      },
+    );
+    await TenjinAnalyticsService.logSubscriptionChange(
+      fromProduct: fromProductId,
+      toProduct: toProductId,
+    );
+  }
+
+  /// Log billing issue
+  static Future<void> logBillingIssue({String? productId}) async {
+    await logEvent(
+      name: 'billing_issue',
+      parameters: {if (productId != null) 'product_id': productId},
+    );
+    await TenjinAnalyticsService.logBillingIssue(productId: productId);
+  }
+
+  /// Log subscription reactivation (uncancellation)
+  static Future<void> logSubscriptionReactivate({String? productId}) async {
+    await logEvent(
+      name: 'subscription_reactivate',
+      parameters: {if (productId != null) 'product_id': productId},
+    );
+    await TenjinAnalyticsService.logSubscriptionReactivate(productId: productId);
+  }
+
+  /// Log subscription pause
+  static Future<void> logSubscriptionPause({String? productId}) async {
+    await logEvent(
+      name: 'subscription_pause',
+      parameters: {if (productId != null) 'product_id': productId},
+    );
+    await TenjinAnalyticsService.logSubscriptionPause(productId: productId);
+  }
+
+  /// Log subscription expiration
+  static Future<void> logSubscriptionExpire({String? productId}) async {
+    await logEvent(
+      name: 'subscription_expire',
+      parameters: {if (productId != null) 'product_id': productId},
+    );
+    await TenjinAnalyticsService.logSubscriptionExpire(productId: productId);
+  }
+
+  /// Log subscription extension
+  static Future<void> logSubscriptionExtend({String? productId}) async {
+    await logEvent(
+      name: 'subscription_extend',
+      parameters: {if (productId != null) 'product_id': productId},
+    );
+    await TenjinAnalyticsService.logSubscriptionExtend(productId: productId);
+  }
+
+  /// Log refund
+  static Future<void> logRefund({double? value, String? productId}) async {
+    await logEvent(
+      name: 'refund',
+      parameters: {
+        if (value != null) 'value': value,
+        if (productId != null) 'product_id': productId,
+      },
+    );
+    await TenjinAnalyticsService.logRefund(value: value, productId: productId);
+  }
+
+  /// Log one-time (non-renewing) purchase
+  static Future<void> logOneTimePurchase({
+    required double value,
+    required String currency,
+    String? productId,
+  }) async {
+    await logEvent(
+      name: 'one_time_purchase',
+      parameters: {
+        'value': value,
+        'currency': currency,
+        if (productId != null) 'product_id': productId,
+      },
+    );
+    await TenjinAnalyticsService.logOneTimePurchase(
+      value: value,
+      productId: productId,
+    );
   }
 }

@@ -38,14 +38,14 @@ dependencies:
   cloud_firestore: ^6.1.0
   google_sign_in: ^6.2.2
   sign_in_with_apple: ^6.1.1
-  font_awesome_flutter: ^10.8.0
+  font_awesome_flutter: ^11.0.0
   url_launcher: ^6.3.1
   intl: ^0.20.2
   firebase_storage: ^13.0.4
   firebase_analytics: ^12.0.4
   persistent_bottom_nav_bar: ^6.2.1
-  purchases_flutter: ^8.8.1
-  purchases_ui_flutter: ^8.8.1
+  purchases_flutter: ^10.0.1
+  purchases_ui_flutter: ^10.0.1
   smooth_page_indicator: ^1.1.0
   flutter_native_splash: ^2.4.6
   get_it: ^8.0.2
@@ -56,7 +56,7 @@ dependencies:
   flutter_math_fork: ^0.7.2
   # math_keyboard:
   #   path: packages/math_keyboard
-  google_mobile_ads: ^5.2.0
+  google_mobile_ads: ^9.1.0
   speech_to_text: ^7.0.0
   firebase_remote_config: ^6.1.1
   package_info_plus: ^8.2.1
@@ -64,6 +64,7 @@ dependencies:
   facebook_app_events: ^0.19.2
   app_tracking_transparency: ^2.0.6
   tiktok_events_sdk: ^0.0.3
+  tenjin_plugin: ^1.0.0
 
 dev_dependencies:
   flutter_lints: ^6.0.0
