@@ -18,7 +18,9 @@ import 'widgets/quiz_history/quiz_sort_dialog_widget.dart';
 import 'helpers/quiz_labels_helper.dart';
 
 class QuizHistoryPage extends StatefulWidget {
-  const QuizHistoryPage({super.key});
+  final int initialTabIndex;
+
+  const QuizHistoryPage({super.key, this.initialTabIndex = 0});
 
   @override
   State<QuizHistoryPage> createState() => _QuizHistoryPageState();
@@ -47,7 +49,11 @@ class _QuizHistoryPageState extends State<QuizHistoryPage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(
+      length: 3,
+      vsync: this,
+      initialIndex: widget.initialTabIndex,
+    );
     _searchController.addListener(_onSearchChanged);
     _initializeAndLoadData();
   }

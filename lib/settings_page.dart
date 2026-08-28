@@ -20,6 +20,7 @@ import 'features/account/presentation/reset_password_page.dart';
 import 'features/locale/presentation/locale_cubit.dart';
 import 'features/settings/data/preferences_service.dart';
 import 'features/settings/domain/models/math_level.dart';
+import 'features/study/presentation/quiz_history_page.dart';
 import 'features/subscription/presentation/subscription_page.dart';
 import 'l10n/app_localizations.dart';
 import 'main.dart';
@@ -188,6 +189,20 @@ class _SettingsPageState extends State<SettingsPage> {
                           });
                           context.read<ThemeCubit>().toggleTheme();
                         },
+                      ),
+                    ),
+                    SettingsListTile(
+                      text: AppLocalizations.of(context)!.statistics,
+                      icon: Icon(
+                        Icons.bar_chart_rounded,
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              const QuizHistoryPage(initialTabIndex: 1),
+                        ),
                       ),
                     ),
 
