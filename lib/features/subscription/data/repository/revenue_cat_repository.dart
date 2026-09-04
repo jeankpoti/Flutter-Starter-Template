@@ -1,6 +1,7 @@
 import 'dart:io';
 
-import 'package:math_ai/core/services/analytics_service.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_starter/core/services/analytics_service.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -38,7 +39,9 @@ class RevenueCatRepository implements SubscriptionRepository {
       // Store initial customer info for comparison
       _previousCustomerInfo = await Purchases.getCustomerInfo();
     } catch (e) {
-      rethrow;
+      debugPrint('RevenueCat not configured: $e');
+      debugPrint('Update API keys in lib/constants/subscription.dart');
+      // Don't rethrow - allow app to run without RevenueCat
     }
   }
 
