@@ -34,9 +34,14 @@ import 'theme/theme_cubit.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase
+  // Initialize Firebase (optional - will skip if not configured)
   // Note: Run 'flutterfire configure' to generate firebase_options.dart
-  await Firebase.initializeApp();
+  try {
+    await Firebase.initializeApp();
+  } catch (e) {
+    debugPrint('Firebase not configured: $e');
+    debugPrint('Run "flutterfire configure" to set up Firebase');
+  }
 
   // Initialize SharedPreferences early (needed for first_open tracking)
   final prefs = await SharedPreferences.getInstance();

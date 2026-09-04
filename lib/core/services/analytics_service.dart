@@ -1,12 +1,13 @@
 import 'dart:io';
 
 import 'package:app_tracking_transparency/app_tracking_transparency.dart';
+import 'package:flutter/foundation.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:math_ai/core/config/posthog_config.dart';
-import 'package:math_ai/core/services/meta_analytics_service.dart';
-import 'package:math_ai/core/services/posthog_service.dart';
-import 'package:math_ai/core/services/tenjin_analytics_service.dart';
-import 'package:math_ai/core/services/tiktok_analytics_service.dart';
+import 'package:flutter_starter/core/config/posthog_config.dart';
+import 'package:flutter_starter/core/services/meta_analytics_service.dart';
+import 'package:flutter_starter/core/services/posthog_service.dart';
+import 'package:flutter_starter/core/services/tenjin_analytics_service.dart';
+import 'package:flutter_starter/core/services/tiktok_analytics_service.dart';
 
 class AnalyticsService {
   static FirebaseAnalytics? _analytics;
@@ -17,10 +18,14 @@ class AnalyticsService {
 
   /// Initialize analytics (Firebase + PostHog + Meta + TikTok + Tenjin)
   static Future<void> initialize() async {
-    // Initialize Firebase Analytics
-    _analytics = FirebaseAnalytics.instance;
-    _observer = FirebaseAnalyticsObserver(analytics: _analytics!);
-    await _analytics!.setAnalyticsCollectionEnabled(true);
+    // Initialize Firebase Analytics (skip if Firebase not configured)
+    try {
+      _analytics = FirebaseAnalytics.instance;
+      _observer = FirebaseAnalyticsObserver(analytics: _analytics!);
+      await _analytics?.setAnalyticsCollectionEnabled(true);
+    } catch (e) {
+      debugPrint('Firebase Analytics not available: $e');
+    }
 
     // Initialize PostHog Analytics
     await PostHogService.initialize(
@@ -86,7 +91,7 @@ class AnalyticsService {
             )
           : null;
 
-      await _analytics!.logEvent(
+      await _analytics?.logEvent(
         name: name,
         parameters: filteredParameters,
       );
@@ -112,7 +117,7 @@ class AnalyticsService {
   }) async {
     // Firebase Analytics
     if (_analytics != null) {
-      await _analytics!.logScreenView(
+      await _analytics?.logScreenView(
         screenName: screenName,
         screenClass: screenClass,
       );
@@ -129,7 +134,7 @@ class AnalyticsService {
   static Future<void> setUserId(String? userId) async {
     // Firebase Analytics
     if (_analytics != null) {
-      await _analytics!.setUserId(id: userId);
+      await _analytics?.setUserId(id: userId);
     }
 
     // PostHog Analytics
@@ -161,7 +166,7 @@ class AnalyticsService {
   }) async {
     // Firebase Analytics
     if (_analytics != null) {
-      await _analytics!.setUserProperty(
+      await _analytics?.setUserProperty(
         name: name,
         value: value,
       );
@@ -200,43 +205,30 @@ class AnalyticsService {
     await TenjinAnalyticsService.logLogin(method: method);
   }
 
-  static Future<void> logMathProblemSolved({
-    required String method,
-    bool? savedToCollection,
+  /// Log feature usage event
+  static Future<void> logFeatureUsed({
+    required String featureName,
+    Map<String, Object?>? parameters,
   }) async {
     await logEvent(
-      name: 'math_problem_solved',
+      name: 'feature_used',
       parameters: {
-        'method': method, // 'camera' or 'text'
-        if (savedToCollection != null) 'saved_to_collection': savedToCollection,
+        'feature_name': featureName,
+        ...?parameters,
       },
     );
   }
 
-  static Future<void> logStudyMaterialUploaded({
-    required String type,
-    required int topicCount,
+  /// Log generic user action
+  static Future<void> logAction({
+    required String actionName,
+    Map<String, Object?>? parameters,
   }) async {
     await logEvent(
-      name: 'study_material_uploaded',
+      name: 'user_action',
       parameters: {
-        'type': type, // 'pdf' or 'image'
-        'topic_count': topicCount,
-      },
-    );
-  }
-
-  static Future<void> logQuizCompleted({
-    required String studyPlanId,
-    required double score,
-    required int questionCount,
-  }) async {
-    await logEvent(
-      name: 'quiz_completed',
-      parameters: {
-        'study_plan_id': studyPlanId,
-        'score': score,
-        'question_count': questionCount,
+        'action_name': actionName,
+        ...?parameters,
       },
     );
   }
@@ -287,7 +279,7 @@ class AnalyticsService {
   }) async {
     // Firebase standard purchase event (recognized by Google Ads)
     if (_analytics != null) {
-      await _analytics!.logPurchase(
+      await _analytics?.logPurchase(
         transactionId: transactionId,
         value: value,
         currency: currency,
@@ -349,7 +341,7 @@ class AnalyticsService {
   }) async {
     // Firebase standard begin_checkout event
     if (_analytics != null) {
-      await _analytics!.logBeginCheckout(
+      await _analytics?.logBeginCheckout(
         value: value,
         currency: currency,
         items: itemName != null
@@ -398,7 +390,7 @@ class AnalyticsService {
   /// Log app open event (for Google Ads engagement tracking)
   static Future<void> logAppOpen() async {
     if (_analytics != null) {
-      await _analytics!.logAppOpen();
+      await _analytics?.logAppOpen();
     }
 
     await PostHogService.capture(name: 'app_open');
@@ -548,7 +540,7 @@ class AnalyticsService {
     // Firebase automatically tracks 'first_open' - no manual logging needed
     // We log a custom event for our own tracking purposes
     if (_analytics != null) {
-      await _analytics!.logEvent(
+      await _analytics?.logEvent(
         name: 'app_first_launch',
         parameters: {'engagement_time_msec': 1},
       );
@@ -583,7 +575,7 @@ class AnalyticsService {
     };
 
     if (_analytics != null) {
-      await _analytics!.logEvent(
+      await _analytics?.logEvent(
         name: 'in_app_purchase',
         parameters: parameters,
       );
@@ -606,7 +598,7 @@ class AnalyticsService {
     };
 
     if (_analytics != null) {
-      await _analytics!.logEvent(
+      await _analytics?.logEvent(
         name: 'start_trial',
         parameters: parameters,
       );
@@ -639,7 +631,7 @@ class AnalyticsService {
     };
 
     if (_analytics != null) {
-      await _analytics!.logEvent(
+      await _analytics?.logEvent(
         name: 'trial_conversion',
         parameters: parameters,
       );
@@ -660,20 +652,20 @@ class AnalyticsService {
     bool? isInTrial,
   }) async {
     if (_analytics != null) {
-      await _analytics!.setUserProperty(
+      await _analytics?.setUserProperty(
         name: 'subscription_status',
         value: isSubscribed ? 'subscribed' : 'free',
       );
 
       if (subscriptionType != null) {
-        await _analytics!.setUserProperty(
+        await _analytics?.setUserProperty(
           name: 'subscription_type',
           value: subscriptionType,
         );
       }
 
       if (isInTrial != null) {
-        await _analytics!.setUserProperty(
+        await _analytics?.setUserProperty(
           name: 'is_trial_user',
           value: isInTrial.toString(),
         );
@@ -705,7 +697,7 @@ class AnalyticsService {
     };
 
     if (_analytics != null) {
-      await _analytics!.logEvent(
+      await _analytics?.logEvent(
         name: 'subscription_renewal',
         parameters: parameters,
       );
