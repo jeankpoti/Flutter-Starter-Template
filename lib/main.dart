@@ -1,5 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_starter/core/config/firebase_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -36,12 +36,7 @@ void main() async {
 
   // Initialize Firebase (optional - will skip if not configured)
   // Note: Run 'flutterfire configure' to generate firebase_options.dart
-  try {
-    await Firebase.initializeApp();
-  } catch (e) {
-    debugPrint('Firebase not configured: $e');
-    debugPrint('Run "flutterfire configure" to set up Firebase');
-  }
+  await FirebaseConfig.initialize();
 
   // Initialize SharedPreferences early (needed for first_open tracking)
   final prefs = await SharedPreferences.getInstance();

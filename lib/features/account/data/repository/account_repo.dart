@@ -1,20 +1,57 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_starter/core/config/firebase_config.dart';
+import 'package:flutter_starter/core/services/analytics_service.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import '../../../../common_widgets/app_snackbar_widget.dart';
+import '../../../../core/config/api_config.dart';
 import '../../domain/repository/account_repo.dart';
 
 class FirebaseRepo implements AccountRepo {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  // Lazy initialization to avoid crashes when Firebase isn't configured
+  FirebaseAuth? _authInstance;
+  FirebaseFirestore? _firestoreInstance;
+
+  FirebaseAuth? get _auth {
+    if (!FirebaseConfig.isInitialized) return null;
+    _authInstance ??= FirebaseAuth.instance;
+    return _authInstance;
+  }
+
+  FirebaseFirestore? get _firestore {
+    if (!FirebaseConfig.isInitialized) return null;
+    _firestoreInstance ??= FirebaseFirestore.instance;
+    return _firestoreInstance;
+  }
+
   final GoogleSignIn _googleSignIn = GoogleSignIn();
+
+  /// Check if Firebase is available, show error if not
+  bool _checkFirebaseAvailable(BuildContext context) {
+    if (!FirebaseConfig.isInitialized) {
+      if (context.mounted) {
+        AppSnackBar.showError(
+          context,
+          'Firebase not configured. Run "flutterfire configure" to set up.',
+        );
+      }
+      return false;
+    }
+    return true;
+  }
+
+  /// Throw if Firebase is not available
+  void _requireFirebase() {
+    if (!FirebaseConfig.isInitialized) {
+      throw Exception('Firebase not configured. Run "flutterfire configure" to set up.');
+    }
+  }
 
   @override
   Future<bool> signInWithEmailAndPassword(
@@ -22,18 +59,23 @@ class FirebaseRepo implements AccountRepo {
     String password,
     BuildContext context,
   ) async {
+    if (!_checkFirebaseAvailable(context)) return false;
+
     try {
-      final userCredential = await _auth.signInWithEmailAndPassword(
+      final userCredential = await _auth!.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
 
       // Check if email is verified
       if (userCredential.user != null && userCredential.user!.emailVerified) {
+        // Track login for Google Ads conversion
+        await AnalyticsService.logLogin(method: 'email');
+        await AnalyticsService.setUserId(userCredential.user!.uid);
         return true;
       } else {
         // If email is not verified, sign out the user and show an error message
-        await _auth.signOut();
+        await _auth!.signOut();
         if (context.mounted) {
           AppSnackBar.showError(
             context,
@@ -80,6 +122,8 @@ class FirebaseRepo implements AccountRepo {
 
   @override
   Future<bool> signInWithApple(BuildContext context) async {
+    if (!_checkFirebaseAvailable(context)) return false;
+
     try {
       // Request an Apple ID Credential
       final appleCredential = await SignInWithApple.getAppleIDCredential(
@@ -95,8 +139,7 @@ class FirebaseRepo implements AccountRepo {
       if (appleId != null) {
         try {
           // Call the Cloud Function via HTTP to check if user exists
-          const functionUrl =
-              'https://us-central1-math-homework-ai.cloudfunctions.net/checkAppleUserExists';
+          const functionUrl = ApiConfig.checkAppleUserExistsUrl;
 
           final response = await http.post(
             Uri.parse(functionUrl),
@@ -140,6 +183,9 @@ class FirebaseRepo implements AccountRepo {
       final user = authResult.user;
 
       if (user != null) {
+        // Track login for Google Ads conversion
+        await AnalyticsService.logLogin(method: 'apple');
+        await AnalyticsService.setUserId(user.uid);
         // User exists and signed in successfully
         return true;
       } else {
@@ -210,14 +256,14 @@ class FirebaseRepo implements AccountRepo {
       );
 
       // Sign in with Firebase
-      final UserCredential userCredential = await _auth.signInWithCredential(
+      final UserCredential userCredential = await _auth!.signInWithCredential(
         credential,
       );
 
       // Check if this is a new user (not in our database)
       if (userCredential.additionalUserInfo?.isNewUser == true) {
         // This is a new user trying to sign in - they should sign up first
-        await _auth.signOut();
+        await _auth!.signOut();
         await _googleSignIn.signOut();
         if (context.mounted) {
           AppSnackBar.showError(
@@ -230,6 +276,9 @@ class FirebaseRepo implements AccountRepo {
       final User? user = userCredential.user;
 
       if (user != null) {
+        // Track login for Google Ads conversion
+        await AnalyticsService.logLogin(method: 'google');
+        await AnalyticsService.setUserId(user.uid);
         return true;
       } else {
         return false;
@@ -249,6 +298,8 @@ class FirebaseRepo implements AccountRepo {
 
   @override
   Future<UserCredential> signUpWithGoogle(BuildContext context) async {
+    _requireFirebase();
+
     try {
       // Trigger the Google Sign In flow
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
@@ -261,8 +312,7 @@ class FirebaseRepo implements AccountRepo {
       final email = googleUser.email;
       try {
         // Call the Cloud Function via HTTP to check if user exists
-        const functionUrl =
-            'https://us-central1-math-homework-ai.cloudfunctions.net/checkGoogleUserExists';
+        const functionUrl = ApiConfig.checkGoogleUserExistsUrl;
 
         final response = await http.post(
           Uri.parse(functionUrl),
@@ -304,13 +354,13 @@ class FirebaseRepo implements AccountRepo {
         );
 
         // Sign in with credential first
-        UserCredential userCredential = await _auth.signInWithCredential(
+        UserCredential userCredential = await _auth!.signInWithCredential(
           credential,
         );
 
         // Save the user's information to Firestore
         try {
-          await _firestore
+          await _firestore!
               .collection('users')
               .doc(userCredential.user?.uid)
               .set({
@@ -323,6 +373,12 @@ class FirebaseRepo implements AccountRepo {
           // You might want to delete the Firebase Auth user if Firestore save fails
           await userCredential.user?.delete();
           throw Exception('Failed to save user data: $firestoreError');
+        }
+
+        // Track sign-up for Google Ads conversion
+        await AnalyticsService.logSignUp(method: 'google');
+        if (userCredential.user != null) {
+          await AnalyticsService.setUserId(userCredential.user!.uid);
         }
 
         return userCredential;
@@ -338,6 +394,8 @@ class FirebaseRepo implements AccountRepo {
 
   @override
   Future<UserCredential> signUpWithApple(BuildContext context) async {
+    _requireFirebase();
+
     try {
       final appleCredential = await SignInWithApple.getAppleIDCredential(
         scopes: [
@@ -351,8 +409,7 @@ class FirebaseRepo implements AccountRepo {
       if (appleId != null) {
         try {
           // Call the Cloud Function via HTTP to check if user exists
-          const functionUrl =
-              'https://us-central1-math-homework-ai.cloudfunctions.net/checkAppleUserExists';
+          const functionUrl = ApiConfig.checkAppleUserExistsUrl;
 
           final response = await http.post(
             Uri.parse(functionUrl),
@@ -389,12 +446,12 @@ class FirebaseRepo implements AccountRepo {
       );
 
       // Once signed in, return the UserCredential
-      UserCredential userCredential = await _auth.signInWithCredential(
+      UserCredential userCredential = await _auth!.signInWithCredential(
         credential,
       );
 
       // Save the user's information to Firestore
-      await _firestore.collection('users').doc(userCredential.user?.uid).set({
+      await _firestore!.collection('users').doc(userCredential.user?.uid).set({
         'fullName':
             '${appleCredential.familyName} ${appleCredential.givenName}',
         'email': appleCredential.email,
@@ -404,6 +461,12 @@ class FirebaseRepo implements AccountRepo {
         'isSubscribed': false, // Free subscription
         'createdAt': DateTime.now(),
       });
+
+      // Track sign-up for Google Ads conversion
+      await AnalyticsService.logSignUp(method: 'apple');
+      if (userCredential.user != null) {
+        await AnalyticsService.setUserId(userCredential.user!.uid);
+      }
 
       return userCredential;
     } catch (e) {
@@ -462,15 +525,17 @@ class FirebaseRepo implements AccountRepo {
     String password,
     BuildContext context,
   ) async {
+    if (!_checkFirebaseAvailable(context)) return false;
+
     try {
-      UserCredential userCredential = await _auth
+      UserCredential userCredential = await _auth!
           .createUserWithEmailAndPassword(email: email, password: password);
 
       // After the user is created, we can add the username to the displayName field
       await userCredential.user?.updateProfile(displayName: fullName);
 
       // Create a new document for the user with the uid
-      await _firestore.collection('users').doc(userCredential.user?.uid).set({
+      await _firestore!.collection('users').doc(userCredential.user?.uid).set({
         'fullName': fullName,
         'email': email,
         'isSubscribed': false, // Free subscription
@@ -480,11 +545,15 @@ class FirebaseRepo implements AccountRepo {
       // Check if the user is not null
       User? user = userCredential.user;
       if (user != null && !user.emailVerified) {
+        // Track sign-up for Google Ads conversion (track before sign out)
+        await AnalyticsService.logSignUp(method: 'email');
+        await AnalyticsService.setUserId(user.uid);
+
         // Send an email verification if the user is created successfully and email is not verified
         await user.sendEmailVerification();
 
         // Sign out the user so they can't access the app until email is verified
-        await _auth.signOut();
+        await _auth!.signOut();
 
         // Show a message to inform the user
         if (context.mounted) {
