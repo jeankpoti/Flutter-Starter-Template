@@ -59,3 +59,23 @@ app.*.map.json
 
 # TikTok related
 /lib/core/config/tiktok_config.dart
+
+# Environment files with secrets
+.env
+.env.local
+.env.*.local
+dashboard/.env
+
+# Firebase config (regenerated via flutterfire configure)
+google-services.json
+GoogleService-Info.plist
+lib/firebase_options.dart
+
+# Certificate files
+*.pem
+*.p12
+*.key
+*.certSigningRequest
+
+# Tenjin
+/lib/core/config/tenjin_config.dart

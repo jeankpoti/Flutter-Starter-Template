@@ -1,51 +1,5 @@
 {
-  "firestore": {
-    "rules": "firestore.rules",
-    "indexes": "firestore.indexes.json"
-  },
-  "storage": {
-    "rules": "storage.rules"
-  },
   "functions": {
     "source": "functions"
-  },
-  "flutter": {
-    "platforms": {
-      "android": {
-        "default": {
-          "projectId": "math-homework-ai",
-          "appId": "1:872759243030:android:bfec95c28e14fd2cb0e037",
-          "fileOutput": "android/app/google-services.json"
-        }
-      },
-      "ios": {
-        "default": {
-          "projectId": "math-homework-ai",
-          "appId": "1:872759243030:ios:7dff6c555db9e7a2b0e037",
-          "uploadDebugSymbols": false,
-          "fileOutput": "ios/Runner/GoogleService-Info.plist"
-        }
-      },
-      "macos": {
-        "default": {
-          "projectId": "math-homework-ai",
-          "appId": "1:872759243030:ios:7dff6c555db9e7a2b0e037",
-          "uploadDebugSymbols": false,
-          "fileOutput": "macos/Runner/GoogleService-Info.plist"
-        }
-      },
-      "dart": {
-        "lib/firebase_options.dart": {
-          "projectId": "math-homework-ai",
-          "configurations": {
-            "android": "1:872759243030:android:bfec95c28e14fd2cb0e037",
-            "ios": "1:872759243030:ios:7dff6c555db9e7a2b0e037",
-            "macos": "1:872759243030:ios:7dff6c555db9e7a2b0e037",
-            "web": "1:872759243030:web:9840937ab8633f21b0e037",
-            "windows": "1:872759243030:web:acb6a98b69734fa6b0e037"
-          }
-        }
-      }
-    }
   }
 }

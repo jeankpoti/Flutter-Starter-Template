@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a **Flutter mobile application** called "math_ai" that helps users solve math problems using AI. The app uses Firebase for backend services, Google Gemini AI for math problem solving, and RevenueCat for subscription management.
+This is a **Flutter Starter Template** - a production-ready mobile application that demonstrates AI-powered features. The app uses Firebase for backend services, Google Gemini AI for core functionality, and RevenueCat for subscription management.
 
 ## Architecture
 
@@ -119,7 +119,7 @@ Feature-specific reusable components organized by functionality:
 
 ## Development Notes
 
-- Uses Firebase project ID: "math-homework-ai"
+- Configure your own Firebase project via `flutterfire configure`
 - App supports all platforms (mobile, web, desktop)
 - RevenueCat integration for subscription management
 - Theme persistence via SharedPreferences

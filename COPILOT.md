@@ -1,10 +1,10 @@
 # GitHub Copilot Instructions
 
-This file contains specific instructions and context for GitHub Copilot when working on the Math AI Flutter application.
+This file contains specific instructions and context for GitHub Copilot when working on this Flutter starter template.
 
 ## Project Overview
 
-This is a **Flutter mobile application** called "math_ai" that helps users solve math problems using AI. The app uses Firebase for backend services, Google Gemini AI for math problem solving, and RevenueCat for subscription management.
+This is a **Flutter Starter Template** - a production-ready mobile application that demonstrates AI-powered features. The app uses Firebase for backend services, Google Gemini AI for core functionality, and RevenueCat for subscription management.
 
 ## Architecture
 
@@ -124,7 +124,7 @@ Reusable UI components following consistent naming:
 
 ## Development Notes
 
-- Uses Firebase project ID: "math-homework-ai"
+- Configure your own Firebase project via `flutterfire configure`
 - App supports all platforms (mobile, web, desktop)
 - RevenueCat integration for subscription management
 - Theme persistence via SharedPreferences
