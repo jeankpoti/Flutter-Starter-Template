@@ -5,20 +5,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:posthog_flutter/posthog_flutter.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 // import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:math_ai/features/account/presentation/sign_up_page.dart';
-import 'package:math_ai/features/solve_math/data/repository/gemini_solve_math_repo.dart';
-import 'package:math_ai/l10n/app_localizations.dart';
-import 'package:math_ai/core/services/analytics_service.dart';
-import 'package:math_ai/core/services/app_review_service.dart';
-import 'package:math_ai/core/services/ad_service.dart';
-import 'package:math_ai/core/services/ad_config_service.dart';
-import 'package:math_ai/features/ads/presentation/ad_cubit.dart';
+import 'package:flutter_starter/features/account/presentation/sign_up_page.dart';
+import 'package:flutter_starter/l10n/app_localizations.dart';
+import 'package:flutter_starter/core/services/analytics_service.dart';
+import 'package:flutter_starter/core/services/app_review_service.dart';
+import 'package:flutter_starter/constants/subscription.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'features/study/presentation/study_page.dart';
-import 'features/settings/data/preferences_service.dart';
-import 'common_widgets/math_level_onboarding_dialog.dart';
 import 'startup_widget.dart';
 
 import 'features/account/data/repository/account_repo.dart';
@@ -26,18 +21,11 @@ import 'features/account/presentation/account_cubit.dart';
 import 'features/account/presentation/reset_password_page.dart';
 import 'features/account/presentation/sign_in_page.dart';
 import 'features/locale/presentation/locale_cubit.dart';
-import 'features/solve_math/data/repository/firebase_math_repo.dart';
-import 'features/solve_math/domain/models/collection.dart';
-import 'features/solve_math/presentation/collections_details_page.dart';
-import 'features/solve_math/presentation/collections_page.dart';
-import 'features/solve_math/presentation/firebase_collection_cubit.dart';
-import 'features/solve_math/presentation/solve_math_cubit.dart';
-import 'features/solve_math/presentation/image_capture_cubit.dart';
+import 'features/explore/presentation/explore_page.dart';
 import 'features/subscription/data/repository/revenue_cat_repository.dart';
 import 'features/subscription/presentation/subscription_cubit.dart';
 import 'features/subscription/presentation/subscription_page.dart';
 import 'features/common/presentation/permission_cubit.dart';
-import 'firebase_options.dart';
 import 'main_page.dart';
 import 'onboarding_page.dart';
 import 'settings_page.dart';
@@ -47,35 +35,37 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Initialize Firebase
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  // Note: Run 'flutterfire configure' to generate firebase_options.dart
+  await Firebase.initializeApp();
 
+  // Initialize SharedPreferences early (needed for first_open tracking)
+  final prefs = await SharedPreferences.getInstance();
 
   // Initialize Analytics Service (will check for permission internally)
   await AnalyticsService.initialize();
-  
+
+  // Track first_open for new user acquisition (Google Ads)
+  final hasTrackedFirstOpen = prefs.getBool('has_tracked_first_open') ?? false;
+  if (!hasTrackedFirstOpen) {
+    await AnalyticsService.logFirstOpen();
+    await prefs.setBool('has_tracked_first_open', true);
+  }
+
   // Initialize App Review Service (increments launch count)
   await AppReviewService.initialize();
-
-  // Initialize Gemini Service
-  final geminiService = GeminiSolveMathRepo();
 
   // Initialize RevenueCat
   final subscriptionRepository = RevenueCatRepository();
   await subscriptionRepository.initialize();
 
-  // Initialize AdService and AdConfigService
-  await AdConfigService.initialize();
-  final adService = AdService.instance;
-  await AdService.initialize();
-
-  // Initialize repositories in parallel
-  await Future.wait([geminiService.initialize()]);
+  // Set up RevenueCat purchase listener for paywall purchases
+  // This captures purchases made via RevenueCatUI.presentPaywall()
+  Purchases.addCustomerInfoUpdateListener((customerInfo) async {
+    await _trackPurchaseFromRevenueCat(customerInfo, prefs);
+  });
 
   final accountRepo = FirebaseRepo();
 
-  final firebaseMathRepo = FirebaseMathRepo();
-
-  final prefs = await SharedPreferences.getInstance();
   final isDarkMode = prefs.getBool('isDarkMode') ?? false;
 
   runApp(
@@ -88,30 +78,11 @@ void main() async {
             create: (context) => AccountCubit(accountRepo),
           ),
 
-          BlocProvider<SolveMathCubit>(
-            create: (context) =>
-                SolveMathCubit(geminiService, firebaseMathRepo, adService),
-          ),
-
-          BlocProvider<AdCubit>(
-            create: (context) => AdCubit(adService),
-          ),
-
-          BlocProvider<FirebaseCollectionCubit>(
-            create: (context) => FirebaseCollectionCubit(firebaseMathRepo),
-          ),
-
           BlocProvider<SubscriptionCubit>(
             create: (context) => SubscriptionCubit(subscriptionRepository),
           ),
 
           BlocProvider<PermissionCubit>(create: (context) => PermissionCubit()),
-
-          BlocProvider<ImageCaptureCubit>(
-            create: (context) => ImageCaptureCubit(
-              permissionCubit: context.read<PermissionCubit>(),
-            ),
-          ),
         ],
         child: const MyApp(),
       ),
@@ -130,7 +101,7 @@ class MyApp extends StatelessWidget {
           builder: (context, currentLocale) {
             return MaterialApp.router(
               debugShowCheckedModeBanner: false,
-              title: 'MathGenie AI',
+              title: 'My App',
               theme: currentTheme,
               locale: currentLocale,
               routerConfig: _router,
@@ -156,17 +127,13 @@ class MyApp extends StatelessWidget {
 }
 
 enum AppRoute {
-  // splashPage,
   mainPage,
   homePage,
-  studyPage,
+  explorePage,
 
   signInPage,
   signUpPage,
   resetPasswordPage,
-
-  collectionsPage,
-  collectionsDetailsPage,
 
   subscriptionPage,
 
@@ -257,36 +224,7 @@ final GoRouter _router = GoRouter(
                       }
 
                       if (snapshot.hasData) {
-                        // Check if it's first time to show math level dialog
-                        return FutureBuilder<bool>(
-                          future: PreferencesService.getInstance().then(
-                            (prefs) => prefs.isFirstTime(),
-                          ),
-                          builder: (context, firstTimeSnapshot) {
-                            if (firstTimeSnapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const Scaffold(
-                                body: Center(
-                                  child: CircularProgressIndicator(),
-                                ),
-                              );
-                            }
-
-                            if (firstTimeSnapshot.data == true) {
-                              WidgetsBinding.instance.addPostFrameCallback((_) {
-                                showDialog(
-                                  context: context,
-                                  barrierDismissible: false,
-                                  builder:
-                                      (context) =>
-                                          const MathLevelOnboardingDialog(),
-                                );
-                              });
-                            }
-
-                            return const StartupWidget();
-                          },
-                        );
+                        return const StartupWidget();
                       } else {
                         WidgetsBinding.instance.addPostFrameCallback((_) {
                           context.goNamed(AppRoute.signInPage.name);
@@ -303,17 +241,10 @@ final GoRouter _router = GoRouter(
           },
         ),
         GoRoute(
-          path: '/study',
-          name: AppRoute.studyPage.name,
+          path: '/explore',
+          name: AppRoute.explorePage.name,
           pageBuilder:
-              (context, state) => const NoTransitionPage(child: StudyPage()),
-        ),
-        GoRoute(
-          path: '/collections',
-          name: AppRoute.collectionsPage.name,
-          pageBuilder:
-              (context, state) =>
-                  const NoTransitionPage(child: CollectionsPage()),
+              (context, state) => const NoTransitionPage(child: ExplorePage()),
         ),
         GoRoute(
           path: '/settings',
@@ -326,16 +257,6 @@ final GoRouter _router = GoRouter(
 
     // Routes that break out of the shell (no bottom navigation)
     GoRoute(
-      path: '/collectionsDetails',
-      name: AppRoute.collectionsDetailsPage.name,
-      parentNavigatorKey: _rootNavigatorKey,
-      builder: (context, state) {
-        Collection collection =
-            state.extra as Collection; // -> casting is important
-        return CollectionsDetailsPage(collection: collection);
-      },
-    ),
-    GoRoute(
       path: '/subscription',
       name: AppRoute.subscriptionPage.name,
       parentNavigatorKey: _rootNavigatorKey,
@@ -343,3 +264,121 @@ final GoRouter _router = GoRouter(
     ),
   ],
 );
+
+/// Track purchases from RevenueCat paywall (handles purchases that bypass SubscriptionCubit)
+/// This ensures all purchases are tracked for Google Ads conversion attribution
+Future<void> _trackPurchaseFromRevenueCat(
+  CustomerInfo customerInfo,
+  SharedPreferences prefs,
+) async {
+  try {
+    final entitlement =
+        customerInfo.entitlements.active[Subscription.entitlementID];
+    if (entitlement == null) {
+      // No active subscription, update user properties as free user
+      await AnalyticsService.setSubscriptionUserProperties(isSubscribed: false);
+      return;
+    }
+
+    // Check if this is a new purchase we haven't tracked yet
+    final lastTrackedPurchaseDate = prefs.getString(
+      'last_tracked_purchase_date',
+    );
+    final currentPurchaseDate = entitlement.latestPurchaseDate;
+
+    if (currentPurchaseDate != lastTrackedPurchaseDate) {
+      // Get product details for tracking
+      final offerings = await Purchases.getOfferings();
+      Package? package;
+
+      if (offerings.current != null) {
+        for (final pkg in offerings.current!.availablePackages) {
+          if (pkg.storeProduct.identifier == entitlement.productIdentifier) {
+            package = pkg;
+            break;
+          }
+        }
+      }
+
+      final price = package?.storeProduct.price ?? 0.0;
+      final currency = package?.storeProduct.currencyCode ?? 'USD';
+      final productId = entitlement.productIdentifier;
+      final subscriptionPeriod = _getSubscriptionPeriod(productId);
+
+      // Check if user was in trial before this purchase
+      final wasInTrial = prefs.getBool('was_in_trial') ?? false;
+      final isTrialConversion =
+          wasInTrial && entitlement.periodType == PeriodType.normal;
+      final isFirstPurchase = customerInfo.allPurchaseDates.length <= 1;
+
+      // Log purchase event (Google Ads standard event)
+      await AnalyticsService.logPurchase(
+        transactionId: entitlement.originalPurchaseDate,
+        value: price,
+        currency: currency,
+        itemName: productId,
+        itemCategory: subscriptionPeriod,
+      );
+
+      // Log in_app_purchase event (subscription-specific)
+      await AnalyticsService.logInAppPurchase(
+        productId: productId,
+        price: price,
+        currency: currency,
+        subscriptionPeriod: subscriptionPeriod,
+        isTrialConversion: isTrialConversion,
+        isFirstPurchase: isFirstPurchase,
+      );
+
+      // Track trial conversion if applicable
+      if (isTrialConversion) {
+        await AnalyticsService.logTrialConversion(
+          productId: productId,
+          value: price,
+          currency: currency,
+        );
+      }
+
+      // Track trial start if user is in trial
+      if (entitlement.periodType == PeriodType.trial) {
+        await AnalyticsService.logTrialStart(
+          productId: productId,
+          trialDurationDays: 7, // Default trial duration, adjust as needed
+        );
+      }
+
+      // Save tracking state to prevent duplicate tracking
+      await prefs.setString('last_tracked_purchase_date', currentPurchaseDate);
+      await prefs.setBool(
+        'was_in_trial',
+        entitlement.periodType == PeriodType.trial,
+      );
+    }
+
+    // Update user properties for audience segmentation
+    await AnalyticsService.setSubscriptionUserProperties(
+      isSubscribed: true,
+      subscriptionType: _getSubscriptionPeriod(entitlement.productIdentifier),
+      isInTrial: entitlement.periodType == PeriodType.trial,
+    );
+  } catch (e) {
+    // Silently fail - analytics errors should not interrupt app flow
+  }
+}
+
+/// Helper to determine subscription period from product ID
+String _getSubscriptionPeriod(String productId) {
+  final lowerProductId = productId.toLowerCase();
+  if (lowerProductId.contains('weekly') || lowerProductId.contains('week')) {
+    return 'weekly';
+  }
+  if (lowerProductId.contains('monthly') || lowerProductId.contains('month')) {
+    return 'monthly';
+  }
+  if (lowerProductId.contains('yearly') ||
+      lowerProductId.contains('year') ||
+      lowerProductId.contains('annual')) {
+    return 'yearly';
+  }
+  return 'unknown';
+}

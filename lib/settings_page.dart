@@ -18,9 +18,6 @@ import 'features/account/presentation/account_cubit.dart';
 import 'features/account/presentation/account_state.dart';
 import 'features/account/presentation/reset_password_page.dart';
 import 'features/locale/presentation/locale_cubit.dart';
-import 'features/settings/data/preferences_service.dart';
-import 'features/settings/domain/models/math_level.dart';
-import 'features/study/presentation/quiz_history_page.dart';
 import 'features/subscription/presentation/subscription_page.dart';
 import 'l10n/app_localizations.dart';
 import 'main.dart';
@@ -37,52 +34,10 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   // Keep local UI-only state for the theme switch
   bool _isDarkMode = false;
-  MathLevel _selectedLevel = MathLevel.highSchool;
-  bool _isLoadingMathLevel = true;
 
   @override
   void initState() {
     super.initState();
-    _loadCurrentMathLevel();
-  }
-
-  Future<void> _loadCurrentMathLevel() async {
-    final prefs = await PreferencesService.getInstance();
-    setState(() {
-      _selectedLevel = prefs.getMathLevel();
-      _isLoadingMathLevel = false;
-    });
-  }
-
-  Future<void> _saveMathLevel(MathLevel level) async {
-    final prefs = await PreferencesService.getInstance();
-    await prefs.setMathLevel(level);
-    setState(() {
-      _selectedLevel = level;
-    });
-
-    if (mounted) {
-      final localizations = AppLocalizations.of(context)!;
-      String levelName;
-      switch (level) {
-        case MathLevel.elementary:
-          levelName = localizations.elementary;
-          break;
-        case MathLevel.middleSchool:
-          levelName = localizations.middleSchool;
-          break;
-        case MathLevel.highSchool:
-          levelName = localizations.highSchool;
-          break;
-        case MathLevel.college:
-          levelName = localizations.college;
-          break;
-      }
-      AppSnackBar.showSuccess(
-        context,
-        localizations.mathLevelUpdated(levelName),
-      );
-    }
   }
 
   @override
@@ -109,7 +64,6 @@ class _SettingsPageState extends State<SettingsPage> {
                 context,
                 AppLocalizations.of(context)!.signOutSuccess,
               );
-              // accountCubit.resetSignOut();
 
               context.goNamed(AppRoute.signInPage.name);
 
@@ -129,43 +83,32 @@ class _SettingsPageState extends State<SettingsPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // AI Preferences Section
-                    SettingsSectionHeaderWidget(
-                      isDeco: false,
-                      title: AppLocalizations.of(context)!.aiPreferences,
-                      icon: Icons.psychology,
-                      margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                    ),
-                    MathLevelDropdown(
-                      selectedLevel: _selectedLevel,
-                      isLoading: _isLoadingMathLevel,
-                      onChanged: _saveMathLevel,
-                    ),
-
                     // App Preferences Section
                     SettingsSectionHeaderWidget(
-                      isDeco: true,
+                      isDeco: false,
                       title: AppLocalizations.of(context)!.appPreferences,
                       icon: Icons.settings,
+                      margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                     ),
                     BlocBuilder<LocaleCubit, Locale>(
                       builder: (context, currentLocale) {
                         return LanguageDropdown(
                           selectedLocale: currentLocale,
                           onChanged: (languageCode) async {
-                            await context.read<LocaleCubit>().changeLocale(
-                              languageCode,
-                            );
-
+                            // Capture language name and localization before async gap
                             final languageName = _getLanguageName(
                               context,
                               languageCode,
                             );
+                            final localeCubit = context.read<LocaleCubit>();
+
+                            await localeCubit.changeLocale(languageCode);
+
                             if (mounted) {
                               AppSnackBar.showSuccess(
-                                context,
+                                this.context,
                                 AppLocalizations.of(
-                                  context,
+                                  this.context,
                                 )!.languageChangedTo(languageName),
                                 duration: const Duration(seconds: 2),
                               );
@@ -191,25 +134,10 @@ class _SettingsPageState extends State<SettingsPage> {
                         },
                       ),
                     ),
-                    SettingsListTile(
-                      text: AppLocalizations.of(context)!.statistics,
-                      icon: Icon(
-                        Icons.bar_chart_rounded,
-                        color: Theme.of(context).colorScheme.secondary,
-                      ),
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              const QuizHistoryPage(initialTabIndex: 1),
-                        ),
-                      ),
-                    ),
 
                     // Premium Section
                     SettingsSectionHeaderWidget(
                       isDeco: true,
-
                       title: AppLocalizations.of(context)!.premium,
                       icon: Icons.star,
                     ),
@@ -232,7 +160,6 @@ class _SettingsPageState extends State<SettingsPage> {
                     // Support & Feedback Section
                     SettingsSectionHeaderWidget(
                       isDeco: true,
-
                       title: AppLocalizations.of(context)!.supportAndFeedback,
                       icon: Icons.help_outline,
                     ),
@@ -255,10 +182,12 @@ class _SettingsPageState extends State<SettingsPage> {
                       onTap: () {
                         final storeUrl =
                             Platform.isAndroid
-                                ? 'https://play.google.com/store/apps/details?id=com.jeankpoti.mathai.math_ai'
-                                : 'https://apps.apple.com/app/id6746733499';
-                        Share.share(
-                          AppLocalizations.of(context)!.shareAppText(storeUrl),
+                                ? 'https://play.google.com/store/apps/details?id=com.example.app'
+                                : 'https://apps.apple.com/app/idYOUR_APP_ID';
+                        SharePlus.instance.share(
+                          ShareParams(
+                            text: AppLocalizations.of(context)!.shareAppText(storeUrl),
+                          ),
                         );
                       },
                     ),
@@ -282,7 +211,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         color: Theme.of(context).colorScheme.secondary,
                       ),
                       onTap: () async {
-                        const url = "https://mathgenieai.jkstudioo.com/support";
+                        const url = "https://example.com/support";
                         if (await canLaunchUrl(Uri.parse(url))) {
                           await launchUrl(
                             Uri.parse(url),
@@ -300,10 +229,6 @@ class _SettingsPageState extends State<SettingsPage> {
                     ),
 
                     // Legal Section
-                    // SettingsSectionHeaderWidget(
-                    //   title: AppLocalizations.of(context)!.legal,
-                    //   icon: Icons.gavel,
-                    // ),
                     SettingsListTile(
                       text: AppLocalizations.of(context)!.privacyPolicyTerms,
                       icon: Icon(
@@ -311,7 +236,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         color: Theme.of(context).colorScheme.secondary,
                       ),
                       onTap: () async {
-                        const url = "https://mathgenieai.jkstudioo.com/privacy";
+                        const url = "https://example.com/privacy";
                         if (await canLaunchUrl(Uri.parse(url))) {
                           await launchUrl(
                             Uri.parse(url),

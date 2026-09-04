@@ -297,9 +297,12 @@ class _ReportContentDialogWidgetState extends State<ReportContentDialogWidget> {
                   ),
                 ),
 
+              // ignore: deprecated_member_use - RadioGroup API is still evolving
               ...ReportType.values.map((type) => RadioListTile<ReportType>(
                     value: type,
+                    // ignore: deprecated_member_use
                     groupValue: _selectedReportType,
+                    // ignore: deprecated_member_use
                     onChanged: _hasAlreadyReported ? null : (value) {
                       setState(() {
                         _selectedReportType = value;

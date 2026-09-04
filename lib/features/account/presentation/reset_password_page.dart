@@ -30,7 +30,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     super.dispose();
   }
 
-  void validateAndSend(buildContext) {
+  void validateAndSend(BuildContext buildContext) {
     final FormState form = _formKey.currentState!;
     if (form.validate()) {
       // final accountCubit = context.read<AccountCubit>();
