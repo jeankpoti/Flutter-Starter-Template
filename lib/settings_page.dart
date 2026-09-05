@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_starter/core/config/firebase_config.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
@@ -44,10 +45,13 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     final accountCubit = context.read<AccountCubit>();
 
-    FirebaseAuth.instance.authStateChanges().listen((User? user) {
-      if (user == null) {
-      } else {}
-    });
+    // Only listen to auth changes if Firebase is configured
+    if (FirebaseConfig.isInitialized) {
+      FirebaseAuth.instance.authStateChanges().listen((User? user) {
+        if (user == null) {
+        } else {}
+      });
+    }
 
     return Scaffold(
       appBar: AppBarWidget(title: AppLocalizations.of(context)!.settings),
@@ -77,7 +81,9 @@ class _SettingsPageState extends State<SettingsPage> {
                 return const Center(child: LoaderWidget());
               }
 
-              final user = FirebaseAuth.instance.currentUser;
+              final user = FirebaseConfig.isInitialized
+                  ? FirebaseAuth.instance.currentUser
+                  : null;
 
               return SingleChildScrollView(
                 child: Column(
