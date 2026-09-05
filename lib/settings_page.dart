@@ -185,14 +185,18 @@ class _SettingsPageState extends State<SettingsPage> {
                         Icons.share,
                         color: Theme.of(context).colorScheme.secondary,
                       ),
-                      onTap: () {
+                      onTap: () async {
+                        final box = context.findRenderObject() as RenderBox?;
                         final storeUrl =
                             Platform.isAndroid
                                 ? 'https://play.google.com/store/apps/details?id=com.example.app'
                                 : 'https://apps.apple.com/app/idYOUR_APP_ID';
-                        SharePlus.instance.share(
+                        await SharePlus.instance.share(
                           ShareParams(
                             text: AppLocalizations.of(context)!.shareAppText(storeUrl),
+                            sharePositionOrigin: box != null
+                                ? box.localToGlobal(Offset.zero) & box.size
+                                : null,
                           ),
                         );
                       },
