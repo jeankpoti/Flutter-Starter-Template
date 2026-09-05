@@ -175,7 +175,7 @@ class FirebaseRepo implements AccountRepo {
       );
 
       // Use the credential to sign in with Firebase
-      final authResult = await FirebaseAuth.instance.signInWithCredential(
+      final authResult = await _auth!.signInWithCredential(
         oauthCredential,
       );
 
@@ -592,13 +592,16 @@ class FirebaseRepo implements AccountRepo {
 
   @override
   Future<void> signOut() async {
-    await FirebaseAuth.instance.signOut();
+    if (_auth == null) return;
+    await _auth!.signOut();
   }
 
   @override
   Future<void> resetPassword(BuildContext context, String email) async {
+    if (!_checkFirebaseAvailable(context)) return;
+
     try {
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+      await _auth!.sendPasswordResetEmail(email: email);
 
       if (context.mounted) {
         AppSnackBar.showInfo(
@@ -625,8 +628,10 @@ class FirebaseRepo implements AccountRepo {
 
   @override
   Future<void> deleteUserWithHisData(BuildContext context) async {
+    if (!_checkFirebaseAvailable(context)) return;
+
     try {
-      final user = FirebaseAuth.instance.currentUser;
+      final user = _auth!.currentUser;
 
       if (user != null) {
         // Delete data from all collections
@@ -634,7 +639,7 @@ class FirebaseRepo implements AccountRepo {
 
         for (String collection in collections) {
           final querySnapshot =
-              await FirebaseFirestore.instance
+              await _firestore!
                   .collection(collection)
                   .where('userId', isEqualTo: user.uid)
                   .get();
@@ -645,7 +650,7 @@ class FirebaseRepo implements AccountRepo {
         }
 
         // Explicitly delete the user document from Firestore
-        await FirebaseFirestore.instance
+        await _firestore!
             .collection('users')
             .doc(user.uid)
             .delete();
