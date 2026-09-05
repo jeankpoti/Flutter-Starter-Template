@@ -43,6 +43,9 @@ class _StartupWidgetState extends State<StartupWidget> {
   }
 
   Future<void> _checkVersion() async {
+    // Skip version check if Firebase isn't configured (uses Remote Config)
+    if (!FirebaseConfig.isInitialized) return;
+
     final needsForceUpdate =
         await VersionCheckService().isForceUpdateRequired();
     if (needsForceUpdate && mounted) {
