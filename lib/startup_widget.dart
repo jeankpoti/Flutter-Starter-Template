@@ -1,12 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:math_ai/core/services/analytics_service.dart';
-import 'package:math_ai/features/common/presentation/permission_cubit.dart';
-import 'package:math_ai/features/solve_math/presentation/home_page.dart';
-import 'package:math_ai/features/ads/presentation/ad_cubit.dart';
-import 'package:math_ai/core/services/version_check_service.dart';
-import 'package:math_ai/common_widgets/force_update_dialog.dart';
+import 'package:flutter_starter/core/config/firebase_config.dart';
+import 'package:flutter_starter/core/services/analytics_service.dart';
+import 'package:flutter_starter/features/common/presentation/permission_cubit.dart';
+import 'package:flutter_starter/features/home/presentation/home_page.dart';
+import 'package:flutter_starter/core/services/version_check_service.dart';
+import 'package:flutter_starter/common_widgets/force_update_dialog.dart';
 
 class StartupWidget extends StatefulWidget {
   const StartupWidget({super.key});
@@ -21,7 +21,6 @@ class _StartupWidgetState extends State<StartupWidget> {
     super.initState();
     _identifyUser();
     _initializePermissions();
-    _initializeAds();
     _checkVersion();
     _requestTrackingAndLogAppOpen();
   }
@@ -35,6 +34,8 @@ class _StartupWidgetState extends State<StartupWidget> {
   }
 
   Future<void> _identifyUser() async {
+    if (!FirebaseConfig.isInitialized) return;
+
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       await AnalyticsService.setUserId(user.uid);
@@ -57,12 +58,6 @@ class _StartupWidgetState extends State<StartupWidget> {
     // Initialize permissions (camera and gallery state)
     final permissionCubit = context.read<PermissionCubit>();
     await permissionCubit.initializePermissions();
-  }
-
-  Future<void> _initializeAds() async {
-    // Initialize ads for free users
-    final adCubit = context.read<AdCubit>();
-    await adCubit.initializeAds();
   }
 
   @override
