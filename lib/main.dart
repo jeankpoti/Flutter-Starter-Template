@@ -214,6 +214,11 @@ final GoRouter _router = GoRouter(
                   }
 
                   // After onboarding is seen, check auth state
+                  // Skip auth check if Firebase isn't configured (demo mode)
+                  if (!FirebaseConfig.isInitialized) {
+                    return const StartupWidget();
+                  }
+
                   return StreamBuilder<User?>(
                     stream: FirebaseAuth.instance.authStateChanges(),
                     builder: (context, snapshot) {
