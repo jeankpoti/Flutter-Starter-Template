@@ -48,17 +48,6 @@ app.*.map.json
 /android/key.properties
 /android/app-release-key.jks
 
-# RevenueCat related
-/lib/constants/subscription.dart
-
-# PostHog related
-/lib/core/config/posthog_config.dart
-
-# Meta related
-/lib/core/config/meta_config.dart
-
-# TikTok related
-/lib/core/config/tiktok_config.dart
 
 # Environment files with secrets
 .env
@@ -76,9 +65,6 @@ lib/firebase_options.dart
 *.p12
 *.key
 *.certSigningRequest
-
-# Tenjin
-/lib/core/config/tenjin_config.dart
 
 # Node modules
 node_modules/
