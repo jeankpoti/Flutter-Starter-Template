@@ -1,6 +1,6 @@
 # Firebase Security Rules Documentation
 
-This document explains the security rules implemented for the Math AI application.
+This document explains the security rules implemented for the Flutter Starter Template.
 
 ## Overview
 
@@ -15,24 +15,16 @@ The security rules enforce the following principles:
 
 ### Collections Protected
 
-1. **homework** - Math problems and solutions
-   - Users can only read, create, update, and delete their own homework
+1. **collections** - User-generated content
+   - Users can only read, create, update, and delete their own content
    - Creation timestamp is immutable
    - User ID cannot be changed after creation
 
-2. **studyMaterials** - Study documents and materials
-   - Users can only access their own study materials
+2. **documents** - User documents and materials
+   - Users can only access their own documents
    - Required fields: userId, createdAt, title
 
-3. **studyPlans** - AI-generated study plans
-   - Linked to study materials via studyMaterialId
-   - Users can only access their own plans
-
-4. **quizzes** - AI-generated quizzes
-   - Linked to study materials via studyMaterialId
-   - Users can only access their own quizzes
-
-5. **content_reports** - For reporting inappropriate content
+3. **content_reports** - For reporting inappropriate content
    - Any authenticated user can create reports
    - Reports cannot be modified or deleted by users
    - Only the reporter can view their own reports
@@ -48,26 +40,21 @@ The security rules enforce the following principles:
 
 ### Storage Paths Protected
 
-1. **homework_images/{userId}/{fileName}**
+1. **images/{userId}/{fileName}**
    - Max file size: 10MB
    - Only image files allowed
    - Users can only access their own images
 
-2. **study_materials/{userId}/{fileName}**
+2. **documents/{userId}/{fileName}**
    - Max file size: 50MB
    - Images and PDFs allowed
-   - Users can only access their own materials
+   - Users can only access their own documents
 
-3. **profile_pictures/{userId}/{fileName}** (Future feature)
+3. **profile_pictures/{userId}/{fileName}** (Optional)
    - Max file size: 5MB
    - Only image files allowed
    - Read access for all authenticated users
    - Write access only for the owner
-
-4. **temp/{userId}/{fileName}** (Optional)
-   - Max file size: 100MB
-   - For temporary uploads
-   - Cannot be updated (only create/delete)
 
 ### File Validation
 
@@ -88,11 +75,11 @@ The security rules enforce the following principles:
 
 **Creating a document (Dart/Flutter):**
 ```dart
-await firestore.collection('homework').add({
+await firestore.collection('collections').add({
   'userId': FirebaseAuth.instance.currentUser!.uid,
   'createdAt': FieldValue.serverTimestamp(),
-  'problem': problemText,
-  'solution': solutionText,
+  'title': titleText,
+  'content': contentText,
   // other fields...
 });
 ```
@@ -102,7 +89,7 @@ await firestore.collection('homework').add({
 final userId = FirebaseAuth.instance.currentUser!.uid;
 final ref = FirebaseStorage.instance
     .ref()
-    .child('homework_images/$userId/$fileName');
+    .child('images/$userId/$fileName');
 await ref.putFile(imageFile);
 ```
 

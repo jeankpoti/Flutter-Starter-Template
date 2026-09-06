@@ -5,15 +5,15 @@ This guide explains how to migrate from field-based user isolation to path-based
 ## Current Structure (Field-based)
 
 ```
-/homework/{documentId}
-  - userId: "user123"
-  - problem: "..."
-  - solution: "..."
-
-/studyMaterials/{documentId}
+/documents/{documentId}
   - userId: "user123"
   - title: "..."
   - content: "..."
+
+/collections/{documentId}
+  - userId: "user123"
+  - title: "..."
+  - items: [...]
 ```
 
 **Security**: Rules check that `request.auth.uid == resource.data.userId`
@@ -21,13 +21,13 @@ This guide explains how to migrate from field-based user isolation to path-based
 ## Proposed Structure (Path-based)
 
 ```
-/users/{userId}/homework/{documentId}
-  - problem: "..."
-  - solution: "..."
-
-/users/{userId}/studyMaterials/{documentId}
+/users/{userId}/documents/{documentId}
   - title: "..."
   - content: "..."
+
+/users/{userId}/collections/{documentId}
+  - title: "..."
+  - items: [...]
 ```
 
 **Security**: Rules check that `request.auth.uid == userId` (from path)
@@ -36,28 +36,28 @@ This guide explains how to migrate from field-based user isolation to path-based
 
 ### Current Structure (Field-based)
 **Pros:**
-- ✅ Simpler queries across all users (for admin features)
-- ✅ Already implemented and working
-- ✅ No migration needed
-- ✅ Security rules are already deployed and secure
+- Simpler queries across all users (for admin features)
+- Already implemented and working
+- No migration needed
+- Security rules are already deployed and secure
 
 **Cons:**
-- ❌ Slightly less efficient security rule evaluation
-- ❌ Potential for accidentally querying without userId filter
-- ❌ All user data in same collection (scaling considerations)
+- Slightly less efficient security rule evaluation
+- Potential for accidentally querying without userId filter
+- All user data in same collection (scaling considerations)
 
 ### Path-based Structure
 **Pros:**
-- ✅ Stronger isolation at the database level
-- ✅ More efficient security rules (path-based checks)
-- ✅ Better for very large scale (millions of users)
-- ✅ Impossible to accidentally query other users' data
+- Stronger isolation at the database level
+- More efficient security rules (path-based checks)
+- Better for very large scale (millions of users)
+- Impossible to accidentally query other users' data
 
 **Cons:**
-- ❌ Requires data migration
-- ❌ More complex admin queries (need to query across all users)
-- ❌ Breaking change requiring app update
-- ❌ Risk during migration
+- Requires data migration
+- More complex admin queries (need to query across all users)
+- Breaking change requiring app update
+- Risk during migration
 
 ## Migration Decision Matrix
 
@@ -79,22 +79,22 @@ Stay with current structure if:
 
 ```javascript
 // Add new path-based rules alongside existing ones
-match /users/{userId}/homework/{document} {
+match /users/{userId}/documents/{document} {
   allow read, write: if request.auth != null && request.auth.uid == userId;
 }
 ```
 
 ### 2. Update Repository Code
 
-Example for FirebaseMathRepo:
+Example for a generic repository:
 
 ```dart
 // Change from:
-CollectionReference get _collection => firestore.collection('homework');
+CollectionReference get _collection => firestore.collection('documents');
 
 // To:
-CollectionReference _getUserCollection(String userId) => 
-  firestore.collection('users').doc(userId).collection('homework');
+CollectionReference _getUserCollection(String userId) =>
+  firestore.collection('users').doc(userId).collection('documents');
 
 // Update queries:
 Query query = _getUserCollection(userId)
@@ -106,27 +106,27 @@ Query query = _getUserCollection(userId)
 ```dart
 Future<void> migrateUserData() async {
   final batch = firestore.batch();
-  
+
   // Get all documents from old structure
-  final oldDocs = await firestore.collection('homework').get();
-  
+  final oldDocs = await firestore.collection('documents').get();
+
   for (final doc in oldDocs.docs) {
     final data = doc.data();
     final userId = data['userId'];
-    
+
     // Create in new structure
     final newRef = firestore
         .collection('users')
         .doc(userId)
-        .collection('homework')
+        .collection('documents')
         .doc(doc.id);
-    
+
     // Remove userId field as it's now in the path
     data.remove('userId');
-    
+
     batch.set(newRef, data);
   }
-  
+
   await batch.commit();
 }
 ```
@@ -147,12 +147,11 @@ Future<void> migrateUserData() async {
 
 ## Recommendation
 
-**For your current situation**: The field-based approach with proper security rules is sufficient and secure. The effort and risk of migration outweigh the benefits unless you're experiencing specific issues or compliance requirements.
+**For most use cases**: The field-based approach with proper security rules is sufficient and secure. The effort and risk of migration outweigh the benefits unless you're experiencing specific issues or compliance requirements.
 
 The current implementation:
-- ✅ Is secure with the deployed rules
-- ✅ Works well for your use case
-- ✅ Is already in production
-- ✅ Has proper authentication checks
+- Is secure with the deployed rules
+- Works well for typical use cases
+- Has proper authentication checks
 
 Consider migration only if you encounter scaling issues or have new compliance requirements in the future.
