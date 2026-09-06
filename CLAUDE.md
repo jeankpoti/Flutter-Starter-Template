@@ -16,25 +16,24 @@ The project follows a **feature-based structure** with traditional Flutter archi
 
 ### Key Features
 - **Account Management**: Sign in/up with Google/Apple, password reset
-- **Math Problem Solving**: Camera capture + AI-powered math problem solving using Google Gemini
-- **Collections**: Store and manage solved math problems via Firebase Firestore
-- **Study Materials**: Upload and manage study materials with AI-powered quiz generation
+- **AI Integration**: Firebase AI (Gemini) ready for your AI features
+- **Collections**: Store and manage user content via Firebase Firestore
 - **Subscription**: Premium features managed through RevenueCat
 - **Theme Management**: Dark/light mode with persistence
+- **Analytics**: Multi-platform tracking (Firebase, PostHog, Meta, TikTok, Tenjin)
 
 ### State Management
 Uses **flutter_bloc** with separate Cubits for each feature:
 - `AccountCubit`: Authentication state
-- `SolveMathCubit`: Math solving functionality
-- `FirebaseCollectionCubit`: Collections management
 - `SubscriptionCubit`: Subscription state
 - `ThemeCubit`: Theme management
+- Add your own Cubits for new features
 
 ### Firebase Integration
 - **Authentication**: Google Sign-In, Apple Sign-In, email/password
-- **Firestore**: Collections and study materials storage
-- **Storage**: Image storage for math problems and study materials
-- **AI**: Uses Firebase AI (Gemini) for math problem solving and quiz generation
+- **Firestore**: User data and collections storage
+- **Storage**: Image and file storage
+- **AI**: Firebase AI (Gemini) integration ready
 
 ## Development Commands
 
@@ -93,17 +92,6 @@ Reusable UI components following consistent naming:
 - `*_widget.dart` - All custom widgets end with "widget"
 - Organized by component type (buttons, text, form fields, etc.)
 
-### lib/features/study/presentation/widgets/
-Feature-specific reusable components organized by functionality:
-- `review/` - Flashcard review components (refactored from large review page)
-  - `flashcard_display_widget.dart` - Card display with flip animations and math rendering
-  - `flashcard_completion_dialog.dart` - Review completion statistics dialog  
-  - `flashcard_review_buttons.dart` - Spaced repetition rating buttons
-- `deck/` - Flashcard deck management components (refactored from large deck page)
-  - `deck_stats_header_widget.dart` - Statistics header with card counts
-  - `flashcard_item_widget.dart` - Individual card display in lists
-  - `card_edit_dialog_widget.dart` - Card creation/editing dialog
-
 ### Platform-specific Files
 - `android/` - Android configuration and native code
 - `ios/` - iOS configuration and native code  
@@ -124,7 +112,7 @@ Feature-specific reusable components organized by functionality:
 - RevenueCat integration for subscription management
 - Theme persistence via SharedPreferences
 - Navigation handled through go_router with named routes
-- Image picking functionality for math problem capture
+- Image picking functionality ready for your use cases
 
 ## Internationalization and Translation Guidelines
 
@@ -216,16 +204,16 @@ Text(AppLocalizations.of(context)!.itemCount(items.length)),
 **Examples:**
 ```json
 {
-  "mathLevel": "Math Level",
-  "mathLevelDescription": "Choose your education level",
-  "mathLevelElementary": "Elementary",
-  "mathLevelHighSchool": "High School",
-  "mathLevelCollege": "College",
-  
-  "quiz": "Quiz",
-  "quizCompleted": "Quiz Completed!",
-  "quizScore": "Score: {score}%",
-  "quizRetake": "Retake Quiz"
+  "settingsTitle": "Settings",
+  "settingsTheme": "Theme",
+  "settingsThemeLight": "Light",
+  "settingsThemeDark": "Dark",
+  "settingsThemeSystem": "System",
+
+  "itemList": "Items",
+  "itemCreated": "Item Created!",
+  "itemCount": "{count} items",
+  "itemDelete": "Delete Item"
 }
 ```
 
@@ -234,8 +222,8 @@ Text(AppLocalizations.of(context)!.itemCount(items.length)),
 #### Dropdown/Picker Options
 ```dart
 // ✅ Always translate dropdown options
-SettingsDropdown<MathLevel>(
-  getDisplayText: (level) => _getMathLevelDisplayName(context, level),
+SettingsDropdown<ThemeMode>(
+  getDisplayText: (mode) => _getThemeModeDisplayName(context, mode),
   // Helper function uses AppLocalizations
 )
 ```
@@ -295,8 +283,8 @@ TextFormField(
 ### **Existing Translation Keys**
 Key categories already available:
 - **Authentication**: signIn, signUp, email, password, etc.
-- **Navigation**: solve, study, history, settings, etc.
-- **Math Levels**: elementary, highSchool, college + descriptions
+- **Navigation**: home, explore, history, settings, etc.
+- **Settings**: theme, language, notifications, etc.
 - **Languages**: englishLanguage, frenchLanguage, spanishLanguage
 - **UI Actions**: save, cancel, delete, retry, loading, etc.
 - **Messages**: success, error, somethingWentWrong, etc.
@@ -649,21 +637,17 @@ lib/common_widgets/
 - Supports Google, Apple, and email/password authentication
 - State includes `isLoading`, `isSuccess`, `errorMsg` properties
 
-### Solve Math Feature
-- Uses `SolveMathCubit` for math problem solving
-- Integrates with Firebase AI (Gemini) for problem analysis
-- `FirebaseCollectionCubit` manages saved problems
-- Supports both image and text input
-
-### Study Feature
-- Uses traditional repository pattern with services
-- `StudyPlanService` and `QuizService` for business logic
-- Models include `StudyMaterial`, `StudyPlan`, and `Quiz`
-
 ### Subscription Feature
 - Uses `SubscriptionCubit` with RevenueCat integration
 - Manages premium feature access
 - Handles subscription status and purchases
+
+### Adding New Features
+When adding new features, follow the established patterns:
+- Create a dedicated Cubit for state management
+- Use the repository pattern for data access
+- Integrate Firebase AI (Gemini) for AI-powered functionality
+- Store user data in Firestore with proper security rules
 
 ## Development Guidelines
 
@@ -774,22 +758,21 @@ allow create: if isAuthenticated()
 - Users can only CRUD their own collections
 - Timestamp validation on `createdAt`
 
-**Quiz Results** (`/quizResults/{document}`)  
-- Required fields: `userId`, `studyPlanId`, `questions`, `score`, `completedAt`
-- Score must be between 0-100
-- Questions must be a list
-- Users can only access their own results
+**Documents** (`/documents/{document}`)
+- Required fields: `userId`, `createdAt`, `title`
+- Users can only CRUD their own documents
+- Timestamp validation on `createdAt`
 
-**Study Materials** (`/studyMaterials/{document}`)
-- Required fields: `userId`, `createdAt`, `title`, `topics`
-- Topics must be a list
-- Users can only CRUD their own materials
+**Content Reports** (`/content_reports/{document}`)
+- Any authenticated user can create reports
+- Reports cannot be modified or deleted by users
+- Only the reporter can view their own reports
 
-**Study Plans** (`/studyPlans/{document}`)
-- Required fields: `userId`, `createdAt`, `title`, `topics`, `totalTopics`
-- Topics must be a list
-- totalTopics must be a number
-- Users can only CRUD their own plans
+**Custom Collections**
+When adding new collections, ensure they follow the same patterns:
+- Include `userId` field for ownership
+- Include `createdAt` timestamp
+- Validate required fields in security rules
 
 #### Storage Rules (`storage.rules`)
 ```javascript

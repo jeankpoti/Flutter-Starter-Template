@@ -17,28 +17,27 @@ The project follows a **feature-based structure** with traditional Flutter archi
 ### Key Features
 
 - **Account Management**: Sign in/up with Google/Apple, password reset
-- **Math Problem Solving**: Camera capture + AI-powered math problem solving using Google Gemini
-- **Collections**: Store and manage solved math problems via Firebase Firestore
-- **Study Materials**: Upload and manage study materials with AI-powered quiz generation
+- **AI Integration**: Firebase AI (Gemini) ready for your AI features
+- **Collections**: Store and manage user content via Firebase Firestore
 - **Subscription**: Premium features managed through RevenueCat
 - **Theme Management**: Dark/light mode with persistence
+- **Analytics**: Multi-platform tracking (Firebase, PostHog, Meta, TikTok, Tenjin)
 
 ### State Management
 
 Uses **flutter_bloc** with separate Cubits for each feature:
 
 - `AccountCubit`: Authentication state
-- `SolveMathCubit`: Math solving functionality
-- `FirebaseCollectionCubit`: Collections management
 - `SubscriptionCubit`: Subscription state
 - `ThemeCubit`: Theme management
+- Add your own Cubits for new features
 
 ### Firebase Integration
 
 - **Authentication**: Google Sign-In, Apple Sign-In, email/password
-- **Firestore**: Collections and study materials storage
-- **Storage**: Image storage for math problems and study materials
-- **AI**: Uses Firebase AI (Gemini) for math problem solving and quiz generation
+- **Firestore**: User data and collections storage
+- **Storage**: Image and file storage
+- **AI**: Firebase AI (Gemini) integration ready
 
 ## Development Commands
 
@@ -129,7 +128,7 @@ Reusable UI components following consistent naming:
 - RevenueCat integration for subscription management
 - Theme persistence via SharedPreferences
 - Navigation handled through go_router with named routes
-- Image picking functionality for math problem capture
+- Image picking functionality ready for your use cases
 
 ## Internationalization and Translation Guidelines
 
@@ -235,16 +234,16 @@ Text(AppLocalizations.of(context)!.itemCount(items.length)),
 
 ```json
 {
-  "mathLevel": "Math Level",
-  "mathLevelDescription": "Choose your education level",
-  "mathLevelElementary": "Elementary",
-  "mathLevelHighSchool": "High School",
-  "mathLevelCollege": "College",
+  "settingsTitle": "Settings",
+  "settingsTheme": "Theme",
+  "settingsThemeLight": "Light",
+  "settingsThemeDark": "Dark",
+  "settingsThemeSystem": "System",
 
-  "quiz": "Quiz",
-  "quizCompleted": "Quiz Completed!",
-  "quizScore": "Score: {score}%",
-  "quizRetake": "Retake Quiz"
+  "itemList": "Items",
+  "itemCreated": "Item Created!",
+  "itemCount": "{count} items",
+  "itemDelete": "Delete Item"
 }
 ```
 
@@ -254,8 +253,8 @@ Text(AppLocalizations.of(context)!.itemCount(items.length)),
 
 ```dart
 // ✅ Always translate dropdown options
-SettingsDropdown<MathLevel>(
-  getDisplayText: (level) => _getMathLevelDisplayName(context, level),
+SettingsDropdown<ThemeMode>(
+  getDisplayText: (mode) => _getThemeModeDisplayName(context, mode),
   // Helper function uses AppLocalizations
 )
 ```
@@ -322,8 +321,8 @@ TextFormField(
 Key categories already available:
 
 - **Authentication**: signIn, signUp, email, password, etc.
-- **Navigation**: solve, study, history, settings, etc.
-- **Math Levels**: elementary, highSchool, college + descriptions
+- **Navigation**: home, explore, history, settings, etc.
+- **Settings**: theme, language, notifications, etc.
 - **Languages**: englishLanguage, frenchLanguage, spanishLanguage
 - **UI Actions**: save, cancel, delete, retry, loading, etc.
 - **Messages**: success, error, somethingWentWrong, etc.
@@ -654,24 +653,20 @@ lib/common_widgets/
 - Supports Google, Apple, and email/password authentication
 - State includes `isLoading`, `isSuccess`, `errorMsg` properties
 
-### Solve Math Feature
-
-- Uses `SolveMathCubit` for math problem solving
-- Integrates with Firebase AI (Gemini) for problem analysis
-- `FirebaseCollectionCubit` manages saved problems
-- Supports both image and text input
-
-### Study Feature
-
-- Uses traditional repository pattern with services
-- `StudyPlanService` and `QuizService` for business logic
-- Models include `StudyMaterial`, `StudyPlan`, and `Quiz`
-
 ### Subscription Feature
 
 - Uses `SubscriptionCubit` with RevenueCat integration
 - Manages premium feature access
 - Handles subscription status and purchases
+
+### Adding New Features
+
+When adding new features, follow the established patterns:
+
+- Create a dedicated Cubit for state management
+- Use the repository pattern for data access
+- Integrate Firebase AI (Gemini) for AI-powered functionality
+- Store user data in Firestore with proper security rules
 
 ## Development Guidelines
 
