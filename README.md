@@ -46,7 +46,7 @@ A production-ready Flutter starter template with Firebase, RevenueCat subscripti
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/flutter-starter.git my_app
+git clone https://github.com/jeankpoti/Flutter-Starter-Template.git my_app
 cd my_app
 
 # Install dependencies
