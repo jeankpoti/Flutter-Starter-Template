@@ -79,3 +79,7 @@ lib/firebase_options.dart
 
 # Tenjin
 /lib/core/config/tenjin_config.dart
+
+# Node modules
+node_modules/
+functions/node_modules/
