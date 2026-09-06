@@ -9,8 +9,8 @@ class Subscription {
 Read more about this here: https://www.revenuecat.com/blog/schedule-2-section-3-8-b""";
 
   //TO DO: add the Apple API key for your app from the RevenueCat dashboard: https://app.revenuecat.com
-  static const appleApiKey = 'appl_shwJQPpdtBaTUOyQsIFuqnxeyOA';
+  static const appleApiKey = 'YOUR_REVENUECAT_APPLE_KEY';
 
   //TO DO: add the Google API key for your app from the RevenueCat dashboard: https://app.revenuecat.com
-  static const googleApiKey = 'goog_eLABGmSfHDaswzyYyxIIIqABXPg';
+  static const googleApiKey = 'YOUR_REVENUECAT_GOOGLE_KEY';
 }

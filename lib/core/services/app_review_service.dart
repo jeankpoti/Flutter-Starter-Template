@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:math_ai/core/services/analytics_service.dart';
-import 'package:math_ai/l10n/app_localizations.dart';
-import 'package:math_ai/common_widgets/text_widgets.dart';
+import 'package:flutter_starter/core/services/analytics_service.dart';
+import 'package:flutter_starter/l10n/app_localizations.dart';
+import 'package:flutter_starter/common_widgets/text_widgets.dart';
 
 class AppReviewService {
   static const String _appLaunchCountKey = 'app_launch_count';
@@ -131,7 +131,7 @@ class AppReviewService {
             title: _buildDialogTitle(
               context,
               Icons.star_rate,
-              AppLocalizations.of(context)!.enjoyingMathGenie,
+              AppLocalizations.of(context)!.enjoyingApp,
             ),
             content: Column(
               mainAxisSize: MainAxisSize.min,
@@ -318,8 +318,9 @@ class AppReviewService {
     String feedbackType = 'general',
     String? additionalInfo,
   }) async {
-    const email = 'support@jkstudioo.com';
-    final subject = Uri.encodeComponent('MathGenie AI Feedback');
+    // TODO: Update with your support email
+    const email = 'support@example.com';
+    final subject = Uri.encodeComponent('App Feedback');
 
     final feedbackMessages = {
       'low_rating': 'I have some feedback to help improve the app:',
@@ -329,12 +330,12 @@ class AppReviewService {
     };
 
     String bodyText =
-        'Hi MathGenie Team,\n\n${feedbackMessages[feedbackType] ?? feedbackMessages['general']}\n\n';
+        'Hi Team,\n\n${feedbackMessages[feedbackType] ?? feedbackMessages['general']}\n\n';
     bodyText += '[Please describe your feedback here]\n\n';
     if (additionalInfo != null) {
       bodyText += 'Additional Info: $additionalInfo\n\n';
     }
-    bodyText += 'Thanks!\n\n---\nSent from MathGenie AI';
+    bodyText += 'Thanks!\n\n---\nSent from the App';
 
     final uri = Uri.parse(
       'mailto:$email?subject=$subject&body=${Uri.encodeComponent(bodyText)}',
@@ -386,7 +387,7 @@ class AppReviewService {
               () => ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
-                    '${AppLocalizations.of(context)!.supportEmail}: support@jkstudioo.com',
+                    '${AppLocalizations.of(context)!.supportEmail}: support@example.com',
                   ),
                   duration: const Duration(seconds: 5),
                 ),
@@ -406,8 +407,9 @@ class AppReviewService {
 
   /// Open store listing directly (fallback option)
   static Future<void> openStoreListing() async {
-    const androidAppId = 'com.jeankpoti.mathai.math_ai';
-    const iosAppId = '6746733499'; // Your iOS app ID
+    // TODO: Update with your actual app IDs
+    const androidAppId = 'com.example.flutter_starter';
+    const iosAppId = 'YOUR_IOS_APP_ID';
 
     final url =
         Platform.isAndroid

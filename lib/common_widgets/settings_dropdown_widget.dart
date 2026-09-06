@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'text_widgets.dart';
-import '../features/settings/domain/models/math_level.dart';
 import '../l10n/app_localizations.dart';
 
 class SettingsDropdown<T> extends StatelessWidget {
@@ -117,16 +116,6 @@ class SettingsDropdown<T> extends StatelessWidget {
                                 overflow: TextOverflow.ellipsis,
                                 softWrap: true,
                               ),
-                              // AppTextWidget(
-                              //   subtitle,
-                              //   style: Theme.of(context).textTheme.bodySmall,
-                              //   color: Theme.of(
-                              //     context,
-                              //   ).colorScheme.onSurface.withValues(alpha: 0.6),
-                              //   maxLines: 5,
-                              //   overflow: TextOverflow.ellipsis,
-                              //   softWrap: true,
-                              // ),
                             ],
                           ],
                         ),
@@ -141,52 +130,6 @@ class SettingsDropdown<T> extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class MathLevelDropdown extends StatelessWidget {
-  final MathLevel selectedLevel;
-  final bool isLoading;
-  final void Function(MathLevel) onChanged;
-
-  const MathLevelDropdown({
-    super.key,
-    required this.selectedLevel,
-    required this.isLoading,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    if (isLoading) {
-      return Container(
-        height: 150,
-        margin: const EdgeInsets.symmetric(horizontal: 16),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainer,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: const Center(child: CircularProgressIndicator()),
-      );
-    }
-
-    return SettingsDropdown<MathLevel>(
-      title: AppLocalizations.of(context)!.mathLevel,
-      subtitle: AppLocalizations.of(context)!.mathLevelDescription,
-      selectedValue: selectedLevel,
-      options: MathLevel.values,
-      getDisplayText: (level) => _getMathLevelDisplayName(context, level),
-      getSubtitle:
-          (level) =>
-              '${_getMathLevelAgeRange(context, level)} - ${_getMathLevelDescription(context, level)}',
-      onChanged: onChanged,
-      icon: Icon(
-        Icons.school,
-        color: Theme.of(context).colorScheme.secondary,
-        size: 24,
       ),
     );
   }
@@ -230,50 +173,6 @@ class LanguageDropdown extends StatelessWidget {
   }
 }
 
-
-// Helper functions for MathLevel translations
-String _getMathLevelDisplayName(BuildContext context, MathLevel level) {
-  final localizations = AppLocalizations.of(context)!;
-  switch (level) {
-    case MathLevel.elementary:
-      return localizations.elementary;
-    case MathLevel.middleSchool:
-      return localizations.middleSchool;
-    case MathLevel.highSchool:
-      return localizations.highSchool;
-    case MathLevel.college:
-      return localizations.college;
-  }
-}
-
-String _getMathLevelAgeRange(BuildContext context, MathLevel level) {
-  final localizations = AppLocalizations.of(context)!;
-  switch (level) {
-    case MathLevel.elementary:
-      return localizations.elementaryAgeRange;
-    case MathLevel.middleSchool:
-      return localizations.middleSchoolAgeRange;
-    case MathLevel.highSchool:
-      return localizations.highSchoolAgeRange;
-    case MathLevel.college:
-      return localizations.collegeAgeRange;
-  }
-}
-
-String _getMathLevelDescription(BuildContext context, MathLevel level) {
-  final localizations = AppLocalizations.of(context)!;
-  switch (level) {
-    case MathLevel.elementary:
-      return localizations.elementaryDescription;
-    case MathLevel.middleSchool:
-      return localizations.middleSchoolDescription;
-    case MathLevel.highSchool:
-      return localizations.highSchoolDescription;
-    case MathLevel.college:
-      return localizations.collegeDescription;
-  }
-}
-
 // Helper functions for Language translations
 String _getLanguageName(BuildContext context, String languageCode) {
   final localizations = AppLocalizations.of(context)!;
@@ -301,4 +200,3 @@ String _getLanguageNativeName(String languageCode) {
       return languageCode.toUpperCase(); // Fallback
   }
 }
-

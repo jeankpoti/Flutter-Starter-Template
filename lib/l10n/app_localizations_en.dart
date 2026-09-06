@@ -90,6 +90,92 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings => 'Settings';
 
   @override
+  String get home => 'Home';
+
+  @override
+  String get explore => 'Explore';
+
+  @override
+  String get welcomeHome => 'Welcome!';
+
+  @override
+  String get homeDescription =>
+      'This is your home screen. Customize it to showcase your app\'s main features.';
+
+  @override
+  String get welcomeToApp => 'Welcome to the App!';
+
+  @override
+  String get discoverFeatures => 'Discover Features';
+
+  @override
+  String get featureOne => 'Feature One';
+
+  @override
+  String get featureOneDescription =>
+      'Description of your first feature goes here.';
+
+  @override
+  String get featureTwo => 'Feature Two';
+
+  @override
+  String get featureTwoDescription =>
+      'Description of your second feature goes here.';
+
+  @override
+  String get featureThree => 'Feature Three';
+
+  @override
+  String get featureThreeDescription =>
+      'Description of your third feature goes here.';
+
+  @override
+  String get getStarted => 'Get Started';
+
+  @override
+  String get searchPlaceholder => 'Search...';
+
+  @override
+  String get categories => 'Categories';
+
+  @override
+  String get all => 'All';
+
+  @override
+  String get popular => 'Popular';
+
+  @override
+  String get newCategory => 'New';
+
+  @override
+  String get saved => 'Saved';
+
+  @override
+  String get featuredContent => 'Featured Content';
+
+  @override
+  String get contentItemOne => 'Getting Started Guide';
+
+  @override
+  String get contentItemOneDescription => 'Learn the basics of using this app.';
+
+  @override
+  String get contentItemTwo => 'Video Tutorials';
+
+  @override
+  String get contentItemTwoDescription => 'Watch step-by-step video guides.';
+
+  @override
+  String get contentItemThree => 'Quick Tips';
+
+  @override
+  String get contentItemThreeDescription =>
+      'Helpful tips to get the most out of the app.';
+
+  @override
+  String get exploreDescription => 'Discover new features and content here.';
+
+  @override
   String get recentProblems => 'Recent Problems';
 
   @override
@@ -237,7 +323,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get getPremium => 'Get Premium';
 
   @override
-  String get rateUs => 'Love MathGenie AI? Rate us on the App Store!';
+  String get rateUs => 'Love the app? Rate us on the App Store!';
 
   @override
   String get shareWithFriends => 'Share with Friends';
@@ -255,8 +341,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get activeSubscription => 'You have an active subscription!';
 
   @override
-  String get enjoyPremiumFeatures =>
-      'Enjoy all premium features of MathGenie AI';
+  String get enjoyPremiumFeatures => 'Enjoy all premium features';
 
   @override
   String get restore => 'Restore';
@@ -1706,7 +1791,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get adFreeExperience => 'Ad-free experience';
 
   @override
-  String get studentsImprovedGrades => 'Join the MathGenie AI Community';
+  String get studentsImprovedGrades => 'Join the Community';
 
   @override
   String get testimonialCalculus =>
@@ -2044,7 +2129,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reviewEasy => 'Easy';
 
   @override
-  String get enjoyingMathGenie => 'Enjoying MathGenie AI?';
+  String get enjoyingApp => 'Enjoying the App?';
 
   @override
   String get rateYourExperience => 'How many stars would you give us?';

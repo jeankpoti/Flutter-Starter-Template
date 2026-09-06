@@ -262,6 +262,168 @@ abstract class AppLocalizations {
   /// **'Settings'**
   String get settings;
 
+  /// No description provided for @home.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get home;
+
+  /// No description provided for @explore.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore'**
+  String get explore;
+
+  /// No description provided for @welcomeHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome!'**
+  String get welcomeHome;
+
+  /// No description provided for @homeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'This is your home screen. Customize it to showcase your app\'s main features.'**
+  String get homeDescription;
+
+  /// No description provided for @welcomeToApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to the App!'**
+  String get welcomeToApp;
+
+  /// No description provided for @discoverFeatures.
+  ///
+  /// In en, this message translates to:
+  /// **'Discover Features'**
+  String get discoverFeatures;
+
+  /// No description provided for @featureOne.
+  ///
+  /// In en, this message translates to:
+  /// **'Feature One'**
+  String get featureOne;
+
+  /// No description provided for @featureOneDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description of your first feature goes here.'**
+  String get featureOneDescription;
+
+  /// No description provided for @featureTwo.
+  ///
+  /// In en, this message translates to:
+  /// **'Feature Two'**
+  String get featureTwo;
+
+  /// No description provided for @featureTwoDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description of your second feature goes here.'**
+  String get featureTwoDescription;
+
+  /// No description provided for @featureThree.
+  ///
+  /// In en, this message translates to:
+  /// **'Feature Three'**
+  String get featureThree;
+
+  /// No description provided for @featureThreeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description of your third feature goes here.'**
+  String get featureThreeDescription;
+
+  /// No description provided for @getStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Get Started'**
+  String get getStarted;
+
+  /// No description provided for @searchPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Search...'**
+  String get searchPlaceholder;
+
+  /// No description provided for @categories.
+  ///
+  /// In en, this message translates to:
+  /// **'Categories'**
+  String get categories;
+
+  /// No description provided for @all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get all;
+
+  /// No description provided for @popular.
+  ///
+  /// In en, this message translates to:
+  /// **'Popular'**
+  String get popular;
+
+  /// No description provided for @newCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get newCategory;
+
+  /// No description provided for @saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get saved;
+
+  /// No description provided for @featuredContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Featured Content'**
+  String get featuredContent;
+
+  /// No description provided for @contentItemOne.
+  ///
+  /// In en, this message translates to:
+  /// **'Getting Started Guide'**
+  String get contentItemOne;
+
+  /// No description provided for @contentItemOneDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Learn the basics of using this app.'**
+  String get contentItemOneDescription;
+
+  /// No description provided for @contentItemTwo.
+  ///
+  /// In en, this message translates to:
+  /// **'Video Tutorials'**
+  String get contentItemTwo;
+
+  /// No description provided for @contentItemTwoDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Watch step-by-step video guides.'**
+  String get contentItemTwoDescription;
+
+  /// No description provided for @contentItemThree.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Tips'**
+  String get contentItemThree;
+
+  /// No description provided for @contentItemThreeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Helpful tips to get the most out of the app.'**
+  String get contentItemThreeDescription;
+
+  /// No description provided for @exploreDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Discover new features and content here.'**
+  String get exploreDescription;
+
   /// No description provided for @recentProblems.
   ///
   /// In en, this message translates to:
@@ -547,7 +709,7 @@ abstract class AppLocalizations {
   /// No description provided for @rateUs.
   ///
   /// In en, this message translates to:
-  /// **'Love MathGenie AI? Rate us on the App Store!'**
+  /// **'Love the app? Rate us on the App Store!'**
   String get rateUs;
 
   /// No description provided for @shareWithFriends.
@@ -583,7 +745,7 @@ abstract class AppLocalizations {
   /// No description provided for @enjoyPremiumFeatures.
   ///
   /// In en, this message translates to:
-  /// **'Enjoy all premium features of MathGenie AI'**
+  /// **'Enjoy all premium features'**
   String get enjoyPremiumFeatures;
 
   /// No description provided for @restore.
@@ -3133,7 +3295,7 @@ abstract class AppLocalizations {
   /// No description provided for @studentsImprovedGrades.
   ///
   /// In en, this message translates to:
-  /// **'Join the MathGenie AI Community'**
+  /// **'Join the Community'**
   String get studentsImprovedGrades;
 
   /// No description provided for @testimonialCalculus.
@@ -3748,11 +3910,11 @@ abstract class AppLocalizations {
   /// **'Easy'**
   String get reviewEasy;
 
-  /// No description provided for @enjoyingMathGenie.
+  /// No description provided for @enjoyingApp.
   ///
   /// In en, this message translates to:
-  /// **'Enjoying MathGenie AI?'**
-  String get enjoyingMathGenie;
+  /// **'Enjoying the App?'**
+  String get enjoyingApp;
 
   /// No description provided for @rateYourExperience.
   ///

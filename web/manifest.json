@@ -1,11 +1,11 @@
 {
-    "name": "MathGenie AI",
-    "short_name": "MathGenie AI",
+    "name": "Flutter Starter",
+    "short_name": "Starter",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "AI-powered math problem solver and learning assistant.",
+    "description": "A production-ready Flutter starter template.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

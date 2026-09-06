@@ -1,5 +1,5 @@
 import 'package:tiktok_events_sdk/tiktok_events_sdk.dart';
-import 'package:math_ai/core/config/tiktok_config.dart';
+import 'package:flutter_starter/core/config/tiktok_config.dart';
 
 /// TikTok Events SDK analytics service for conversion tracking and audience building
 ///

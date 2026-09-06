@@ -6,11 +6,12 @@ class ForceUpdateDialog extends StatelessWidget {
   const ForceUpdateDialog({super.key});
 
   Future<void> _launchStore() async {
+    // TODO: Update with your actual App Store and Play Store URLs
     final url =
         Platform.isIOS
-            ? Uri.parse('https://apps.apple.com/app/id6746733499')
+            ? Uri.parse('https://apps.apple.com/app/idYOUR_APP_ID')
             : Uri.parse(
-              'https://play.google.com/store/apps/details?id=com.jeankpoti.mathai.math_ai',
+              'https://play.google.com/store/apps/details?id=com.example.flutter_starter',
             );
 
     if (await canLaunchUrl(url)) {
@@ -53,7 +54,7 @@ class ForceUpdateDialog extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               Text(
-                'A newer version of MathGenie AI is required to continue. Please update to the latest version to enjoy enhanced AI performance and accuracy.',
+                'A newer version of the app is required to continue. Please update to the latest version to enjoy the latest features and improvements.',
                 style: Theme.of(context).textTheme.bodyMedium,
                 textAlign: TextAlign.center,
               ),

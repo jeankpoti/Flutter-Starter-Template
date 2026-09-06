@@ -6,11 +6,12 @@ class UpdateBannerWidget extends StatelessWidget {
   const UpdateBannerWidget({super.key});
 
   Future<void> _launchStore() async {
+    // TODO: Update with your actual App Store and Play Store URLs
     final url =
         Platform.isIOS
-            ? Uri.parse('https://apps.apple.com/app/id6746733499')
+            ? Uri.parse('https://apps.apple.com/app/idYOUR_APP_ID')
             : Uri.parse(
-              'https://play.google.com/store/apps/details?id=com.jeankpoti.mathai.math_ai',
+              'https://play.google.com/store/apps/details?id=com.example.flutter_starter',
             );
 
     if (await canLaunchUrl(url)) {

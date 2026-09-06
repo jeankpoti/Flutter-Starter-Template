@@ -36,29 +36,21 @@ class _MainPageState extends State<MainPage> {
     items = [];
     railItems = [];
 
-    // Bottom Navigation Bar Items
+    // Bottom Navigation Bar Items - 3 tabs: Home, Explore, Settings
     items.add(
       BottomNavigationBarItem(
         backgroundColor: Theme.of(context).colorScheme.surface,
-        icon: Icon(CupertinoIcons.function),
-        label: AppLocalizations.of(context)!.solve,
+        icon: Icon(CupertinoIcons.home),
+        label: AppLocalizations.of(context)!.home,
       ),
     );
     items.add(
       BottomNavigationBarItem(
         backgroundColor: Theme.of(context).colorScheme.surface,
-        icon: Icon(CupertinoIcons.book),
-        label: AppLocalizations.of(context)!.study,
+        icon: Icon(CupertinoIcons.compass),
+        label: AppLocalizations.of(context)!.explore,
       ),
     );
-    items.add(
-      BottomNavigationBarItem(
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        icon: Icon(CupertinoIcons.time),
-        label: AppLocalizations.of(context)!.history,
-      ),
-    );
-
     items.add(
       BottomNavigationBarItem(
         backgroundColor: Theme.of(context).colorScheme.surface,
@@ -70,31 +62,22 @@ class _MainPageState extends State<MainPage> {
     // Navigation Rail Items - ensure they match the same number as bottom nav items
     railItems.add(
       NavigationRailDestination(
-        icon: Icon(CupertinoIcons.function),
-        selectedIcon: Icon(CupertinoIcons.function),
-        label: LabelSmallText(AppLocalizations.of(context)!.solve),
+        icon: Icon(CupertinoIcons.home),
+        selectedIcon: Icon(CupertinoIcons.home),
+        label: LabelSmallText(AppLocalizations.of(context)!.home),
       ),
     );
     railItems.add(
       NavigationRailDestination(
-        icon: Icon(CupertinoIcons.book),
-        selectedIcon: Icon(CupertinoIcons.book),
-        label: LabelSmallText(AppLocalizations.of(context)!.study),
+        icon: Icon(CupertinoIcons.compass),
+        selectedIcon: Icon(CupertinoIcons.compass),
+        label: LabelSmallText(AppLocalizations.of(context)!.explore),
       ),
     );
-    railItems.add(
-      NavigationRailDestination(
-        icon: Icon(CupertinoIcons.time),
-        selectedIcon: Icon(CupertinoIcons.time),
-        label: LabelSmallText(AppLocalizations.of(context)!.history),
-      ),
-    );
-
     railItems.add(
       NavigationRailDestination(
         icon: Icon(CupertinoIcons.settings),
         selectedIcon: Icon(CupertinoIcons.settings),
-        // indicatorColor: Colors.amber,
         label: LabelSmallText(AppLocalizations.of(context)!.settings),
       ),
     );
@@ -102,14 +85,11 @@ class _MainPageState extends State<MainPage> {
 
   int _calculateSelectedIndex(BuildContext context) {
     final String location = GoRouterState.of(context).uri.toString();
-    if (location.startsWith('/study')) {
+    if (location.startsWith('/explore')) {
       return 1;
     }
-    if (location.startsWith('/collections')) {
-      return 2;
-    }
     if (location.startsWith('/settings')) {
-      return 3;
+      return 2;
     }
     return 0;
   }
@@ -120,12 +100,9 @@ class _MainPageState extends State<MainPage> {
         context.go('/');
         break;
       case 1:
-        context.go('/study');
+        context.go('/explore');
         break;
       case 2:
-        context.go('/collections');
-        break;
-      case 3:
         context.go('/settings');
         break;
     }
@@ -173,7 +150,7 @@ class _MainPageState extends State<MainPage> {
                             Brightness.dark
                         ? Theme.of(context).colorScheme.tertiary
                         : Theme.of(context).colorScheme.secondary,
-                type: BottomNavigationBarType.fixed, // Add this line
+                type: BottomNavigationBarType.fixed,
                 showUnselectedLabels: true,
                 currentIndex: selectedIndex,
                 onTap: (int index) => _onItemTapped(index, context),

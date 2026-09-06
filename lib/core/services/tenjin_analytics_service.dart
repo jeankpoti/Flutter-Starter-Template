@@ -1,5 +1,5 @@
 import 'package:tenjin_plugin/tenjin_sdk.dart';
-import 'package:math_ai/core/config/tenjin_config.dart';
+import 'package:flutter_starter/core/config/tenjin_config.dart';
 
 /// Tenjin SDK analytics service for mobile attribution and conversion tracking
 ///

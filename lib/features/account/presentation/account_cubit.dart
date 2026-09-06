@@ -4,8 +4,6 @@
  Each cubit is a list of todos
 */
 
-import 'dart:developer';
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
@@ -188,7 +186,6 @@ class AccountCubit extends Cubit<AccountState> {
         );
       }
     } catch (e) {
-      log(e.toString());
       // On error -> isLoading: false, no error message (repository already shows error)
       emit(state.copyWith(isLoading: false, isSuccess: false, errorMsg: null));
     }
@@ -232,7 +229,6 @@ class AccountCubit extends Cubit<AccountState> {
       //  On success -> isLoading: false, no error message
       emit(state.copyWith(isLoading: false, isSuccess: true, errorMsg: null));
     } catch (e) {
-      log(e.toString());
       // On error -> isLoading: false, error message
       emit(state.copyWith(isLoading: false, errorMsg: 'Something went wrong'));
     }
@@ -248,7 +244,6 @@ class AccountCubit extends Cubit<AccountState> {
       //  On success -> isLoading: false, no error message
       emit(state.copyWith(isLoading: false, isSuccess: true, errorMsg: null));
     } catch (e) {
-      log(e.toString());
       // On error -> isLoading: false, error message
       emit(state.copyWith(isLoading: false, errorMsg: 'Something went wrong'));
     }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:math_ai/common_widgets/app_snackbar_widget.dart';
+import 'package:flutter_starter/common_widgets/app_snackbar_widget.dart';
 import 'package:purchases_ui_flutter/purchases_ui_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -8,7 +8,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'main.dart';
 import 'common_widgets/text_widgets.dart';
-import 'common_widgets/ai_demo_animation_widget.dart';
 import 'l10n/app_localizations.dart';
 
 class OnboardingPage extends StatefulWidget {
@@ -26,91 +25,61 @@ class _OnboardingPageState extends State<OnboardingPage> {
     final l10n = AppLocalizations.of(context)!;
     return [
       OnboardingItem(
-        title: l10n.solveAnyMathProblemInstantly,
-        subtitle: l10n.seeAiMagicInAction,
-        description: l10n.aiDemoDescription,
-        animationAsset: '',
-        icon: FontAwesomeIcons.robot,
-        showDemo: true,
-      ),
-      OnboardingItem(
-        title: l10n.smartStudyMaterials,
-        subtitle: l10n.organizeAnalyzeContent,
-        description: l10n.uploadStudyDescription,
-        animationAsset: '',
-        icon: FontAwesomeIcons.bookOpen,
+        title: l10n.welcomeToApp,
+        subtitle: l10n.getStarted,
+        description: l10n.homeDescription,
+        icon: FontAwesomeIcons.rocket,
         features: [
           FeatureItem(
-            icon: FontAwesomeIcons.upload,
-            title: l10n.easyUpload,
-            description: l10n.imagesNotesUpload,
+            icon: FontAwesomeIcons.star,
+            title: l10n.featureOne,
+            description: l10n.featureOneDescription,
           ),
           FeatureItem(
-            icon: FontAwesomeIcons.brain,
-            title: l10n.aiAnalysis,
-            description: l10n.autoTopicExtraction,
+            icon: FontAwesomeIcons.bolt,
+            title: l10n.featureTwo,
+            description: l10n.featureTwoDescription,
+          ),
+          FeatureItem(
+            icon: FontAwesomeIcons.heart,
+            title: l10n.featureThree,
+            description: l10n.featureThreeDescription,
+          ),
+        ],
+      ),
+      OnboardingItem(
+        title: l10n.discoverFeatures,
+        subtitle: l10n.explore,
+        description: l10n.exploreDescription,
+        icon: FontAwesomeIcons.compass,
+        features: [
+          FeatureItem(
+            icon: FontAwesomeIcons.magnifyingGlass,
+            title: l10n.searchPlaceholder,
+            description: l10n.contentItemOneDescription,
+          ),
+          FeatureItem(
+            icon: FontAwesomeIcons.bookmark,
+            title: l10n.saved,
+            description: l10n.contentItemTwoDescription,
           ),
           FeatureItem(
             icon: FontAwesomeIcons.chartLine,
-            title: l10n.progressTracking,
-            description: l10n.monitorImprovement,
+            title: l10n.popular,
+            description: l10n.contentItemThreeDescription,
           ),
         ],
       ),
       OnboardingItem(
-        title: l10n.aiGeneratedQuizzes,
-        subtitle: l10n.testKnowledgeEffectively,
-        description: l10n.generatePersonalizedQuizzes,
-        animationAsset: '',
-        icon: FontAwesomeIcons.graduationCap,
-        features: [
-          FeatureItem(
-            icon: FontAwesomeIcons.circleQuestion,
-            title: l10n.smartQuestions,
-            description: l10n.aiCreatesTests,
-          ),
-          FeatureItem(
-            icon: FontAwesomeIcons.chartBar,
-            title: l10n.performanceAnalytics,
-            description: l10n.detailedProgressInsights,
-          ),
-          FeatureItem(
-            icon: FontAwesomeIcons.bullseye,
-            title: l10n.adaptiveLearning,
-            description: l10n.questionsMatchLevel,
-          ),
-        ],
-      ),
-      OnboardingItem(
-        title: l10n.unlockMathPotential,
+        title: l10n.unlockPotential,
         subtitle: l10n.premiumFeaturesAwait,
         description: l10n.joinThousandsStudents,
-        animationAsset: '',
         icon: FontAwesomeIcons.crown,
         isPremium: true,
-        features: [
-          // FeatureItem(
-          //   icon: FontAwesomeIcons.infinity,
-          //   title: l10n.unlimitedProblems,
-          //   description: l10n.solveAsMany,
-          // ),
-          // FeatureItem(
-          //   icon: FontAwesomeIcons.cloud,
-          //   title: l10n.cloudSync,
-          //   description: l10n.accessAnywhere,
-          // ),
-          // FeatureItem(
-          //   icon: FontAwesomeIcons.chartLine,
-          //   title: l10n.advancedAnalytics,
-          //   description: l10n.detailedLearningInsights,
-          // ),
-        ],
         premiumBenefits: [
-          l10n.unlimitedMathProblemSolving,
-          l10n.aiGeneratedQuizzesFromMaterials,
-          l10n.advancedStudyOrganization,
-          l10n.detailedPerformanceAnalytics,
-          l10n.crossDeviceSynchronization,
+          l10n.unlimitedProblems,
+          l10n.cloudSync,
+          l10n.advancedAnalytics,
           l10n.priorityCustomerSupport,
           l10n.adFreeExperience,
         ],
@@ -166,16 +135,6 @@ class _OnboardingPageState extends State<OnboardingPage> {
       }
     }
   }
-
-  // void _navigateToSubscriptionPage() {
-  //   Navigator.of(
-  //     context,
-  //   ).push(MaterialPageRoute(builder: (context) => const SubscriptionPage()));
-  // }
-
-  // void _skipOnboarding() {
-  //   context.goNamed(AppRoute.mainPage.name);
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -284,7 +243,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       children: [
                         if (_currentPage ==
                             _getOnboardingItems(context).length - 1) ...[
-                          Icon(
+                          FaIcon(
                             FontAwesomeIcons.crown,
                             size: 20,
                             color: Theme.of(context).colorScheme.onSecondary,
@@ -292,16 +251,11 @@ class _OnboardingPageState extends State<OnboardingPage> {
                           const SizedBox(width: 8),
                         ],
                         TitleMediumText(
-                          // _currentPage == 0
-                          //     ? AppLocalizations.of(
-                          //       context,
-                          //     )!.tryYourFirstProblemFree
-                          //     :
                           _currentPage < _getOnboardingItems(context).length - 1
                               ? AppLocalizations.of(context)!.continueText
                               : AppLocalizations.of(
                                 context,
-                              )!.tryYourFirstProblemFree,
+                              )!.getStarted,
                           color: Theme.of(context).colorScheme.onSecondary,
                           fontWeight: FontWeight.bold,
                         ),
@@ -356,14 +310,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
             children: [
               // Hero Section
               _buildHeroSection(item),
-              // AI Demo Animation (only for first page)
-              if (item.showDemo) ...[
-                const SizedBox(height: 16),
-                const AIDemoAnimationWidget(),
-                const SizedBox(height: 16),
-              ] else ...[
-                const SizedBox(height: 24),
-              ],
+              const SizedBox(height: 24),
 
               // Features Grid
               if (item.features.isNotEmpty) ...[
@@ -397,6 +344,22 @@ class _OnboardingPageState extends State<OnboardingPage> {
       children: [
         const SizedBox(height: 50),
 
+        // Icon
+        Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.3),
+            borderRadius: BorderRadius.circular(24),
+          ),
+          child: FaIcon(
+            item.icon,
+            size: 48,
+            color: Theme.of(context).colorScheme.secondary,
+          ),
+        ),
+
+        const SizedBox(height: 24),
+
         // Title
         TitleMediumText(
           item.title,
@@ -405,6 +368,13 @@ class _OnboardingPageState extends State<OnboardingPage> {
         ),
 
         const SizedBox(height: 8),
+
+        // Subtitle
+        BodyMediumText(
+          item.subtitle,
+          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+          textAlign: TextAlign.center,
+        ),
       ],
     );
   }
@@ -446,7 +416,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                               .withValues(alpha: 0.3),
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: Icon(
+                        child: FaIcon(
                           feature.icon,
                           color: Theme.of(context).colorScheme.secondary,
                           size: 24,
@@ -498,7 +468,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
         children: [
           Row(
             children: [
-              Icon(
+              FaIcon(
                 FontAwesomeIcons.crown,
                 color: Theme.of(context).colorScheme.secondary,
                 size: 20,
@@ -598,10 +568,8 @@ class OnboardingItem {
   final String title;
   final String subtitle;
   final String description;
-  final String animationAsset;
-  final IconData icon;
+  final FaIconData icon;
   final bool isPremium;
-  final bool showDemo;
   final List<FeatureItem> features;
   final List<String>? premiumBenefits;
 
@@ -609,17 +577,15 @@ class OnboardingItem {
     required this.title,
     required this.subtitle,
     required this.description,
-    required this.animationAsset,
     required this.icon,
     this.isPremium = false,
-    this.showDemo = false,
     this.features = const [],
     this.premiumBenefits,
   });
 }
 
 class FeatureItem {
-  final IconData icon;
+  final FaIconData icon;
   final String title;
   final String description;
 

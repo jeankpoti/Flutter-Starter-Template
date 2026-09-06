@@ -7,16 +7,10 @@ import '../constants/terms_conditions.dart';
 import '../l10n/app_localizations.dart';
 
 class TermsConditionsWidget {
+  // TODO: Add localized terms and conditions for each language
+  // For now, using the same English template for all languages
   static String _getLocalizedTerms(BuildContext context) {
-    final locale = AppLocalizations.of(context)!.localeName;
-    switch (locale) {
-      case 'fr':
-        return TermsConditions().termsConditionsFr;
-      case 'es':
-        return TermsConditions().termsConditionsEs;
-      default:
-        return TermsConditions().termsConditions;
-    }
+    return TermsConditions().termsConditions;
   }
 
   static void termsConditionsWidget({required BuildContext context}) {
@@ -44,7 +38,7 @@ class TermsConditionsWidget {
               ),
               actions: [
                 TextButton.icon(
-                  icon: Icon(
+                  icon: FaIcon(
                     FontAwesomeIcons.xmark,
                     color: Theme.of(context).colorScheme.secondary,
                   ),

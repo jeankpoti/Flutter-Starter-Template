@@ -1,5 +1,5 @@
 import 'package:facebook_app_events/facebook_app_events.dart';
-import 'package:math_ai/core/config/meta_config.dart';
+import 'package:flutter_starter/core/config/meta_config.dart';
 
 /// Meta (Facebook) analytics service for conversion tracking and audience building
 ///
