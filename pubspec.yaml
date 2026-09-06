@@ -53,10 +53,6 @@ dependencies:
   image_cropper: ^8.0.2
   file_picker: ^8.1.6
   in_app_review: ^2.0.9
-  flutter_math_fork: ^0.7.2
-  # math_keyboard:
-  #   path: packages/math_keyboard
-  speech_to_text: ^7.0.0
   firebase_remote_config: ^6.1.1
   package_info_plus: ^8.2.1
   posthog_flutter: ^5.20.0
