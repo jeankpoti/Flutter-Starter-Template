@@ -1,6 +1,6 @@
 # Flutter Starter Project
 
-A production-ready Flutter starter template with Firebase, RevenueCat subscriptions, multi-platform analytics, and more. Build your next app faster.
+A production-ready Flutter starter template with Firebase, RevenueCat subscriptions, multi-platform analytics; a React admin panel for managing users, subscriptions, and content reports and more. Build your next app faster.
 
 ## Features
 
