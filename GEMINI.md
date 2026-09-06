@@ -703,6 +703,13 @@ lib/common_widgets/
 - Use const constructors where possible for performance
 - Avoid deep widget nesting - break complex widgets into smaller components
 
+## Security Documentation
+
+For detailed security implementation guides, see:
+- **[FIREBASE_SECURITY_RULES.md](FIREBASE_SECURITY_RULES.md)** - Comprehensive security rules documentation
+- **[SECURITY_RULES_IMPLEMENTATION.md](SECURITY_RULES_IMPLEMENTATION.md)** - Implementation summary and status
+- **[FIRESTORE_MIGRATION_GUIDE.md](FIRESTORE_MIGRATION_GUIDE.md)** - Guide for migrating document structures
+
 ## Essential Resources
 
 - **[Flutter Documentation](https://docs.flutter.dev/)** - Official Flutter documentation

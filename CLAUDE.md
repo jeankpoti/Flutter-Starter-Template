@@ -865,6 +865,13 @@ Future<void> _validateFileSize(File file) async {
 - Monitor Firebase Authentication and Firestore usage for anomalies
 - Keep Firebase Admin SDK usage minimal and secure
 
+### Security Documentation
+
+For detailed security implementation guides, see:
+- **[FIREBASE_SECURITY_RULES.md](FIREBASE_SECURITY_RULES.md)** - Comprehensive security rules documentation
+- **[SECURITY_RULES_IMPLEMENTATION.md](SECURITY_RULES_IMPLEMENTATION.md)** - Implementation summary and status
+- **[FIRESTORE_MIGRATION_GUIDE.md](FIRESTORE_MIGRATION_GUIDE.md)** - Guide for migrating document structures
+
 ## Essential Resources
 - **[Flutter Documentation](https://docs.flutter.dev/)** - Official Flutter documentation
 - **[Material Design 3](https://m3.material.io/)** - Design system guidelines
