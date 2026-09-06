@@ -213,15 +213,6 @@ class _SignInPageState extends State<SignInPage> {
                                                   context,
                                                 ).colorScheme.primary,
                                           ),
-
-                                      // ElevatedButtonWidget(
-                                      //   height: 50,
-                                      //   width: 375,
-
-                                      //   onPressed:
-                                      //       () => validateAndSave(context),
-                                      //   text: ' Sign In',
-                                      // ),
                                       const SizedBox(height: 25),
                                       Row(
                                         mainAxisAlignment:

@@ -78,22 +78,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accountSettings => 'Account Settings';
 
   @override
-  String get solve => 'Solve';
+  String get home => 'Home';
 
   @override
-  String get study => 'Study';
+  String get explore => 'Explore';
 
   @override
   String get history => 'History';
 
   @override
   String get settings => 'Settings';
-
-  @override
-  String get home => 'Home';
-
-  @override
-  String get explore => 'Explore';
 
   @override
   String get welcomeHome => 'Welcome!';
@@ -176,22 +170,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exploreDescription => 'Discover new features and content here.';
 
   @override
-  String get recentProblems => 'Recent Problems';
-
-  @override
-  String get studyMaterials => 'Study Materials';
-
-  @override
-  String get solveMathProblem => 'Solve Math Problem';
-
-  @override
-  String get aiMathSolver => 'AI-Powered Math Solver';
-
-  @override
-  String get mathSolverDescription =>
-      'Capture or type any math problem and get instant solutions with step-by-step explanations';
-
-  @override
   String get photo => 'Photo';
 
   @override
@@ -204,13 +182,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get uploadPhoto => 'Upload Photo';
 
   @override
-  String get solveProblem => 'Solve Problem';
-
-  @override
   String get reset => 'Reset';
-
-  @override
-  String get mathSolution => 'Math Solution';
 
   @override
   String get close => 'Close';
@@ -222,53 +194,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noImageSelected => 'No image selected';
 
   @override
-  String get captureOrUpload => 'Capture or upload a math problem';
-
-  @override
   String get processingImage => 'Processing image...';
-
-  @override
-  String get analyzingProblem => 'Analyzing problem...';
-
-  @override
-  String get typeMathProblem => 'Type your math problem';
-
-  @override
-  String get enterMathProblem => 'Enter your math problem here...';
-
-  @override
-  String get solving => 'Solving...';
-
-  @override
-  String get aiDisclaimer =>
-      'AI can make mistakes, so double check the solution!';
 
   @override
   String get upload => 'Upload';
 
   @override
-  String get materials => 'Materials';
-
-  @override
-  String get refreshData => 'Refresh Data';
-
-  @override
-  String get studyMaterialsDescription =>
-      'Upload study materials and let AI extract key topics';
-
-  @override
-  String get generateQuizzes =>
-      'Generate personalized quizzes from your study materials';
+  String get aiDisclaimer =>
+      'AI can make mistakes, so double check the results!';
 
   @override
   String get changeTheme => 'Change theme';
-
-  @override
-  String get mathLevel => 'Math Level';
-
-  @override
-  String get mathLevelDescription =>
-      'Choose your education level for personalized explanations';
 
   @override
   String get language => 'Language';
@@ -281,43 +217,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get spanishLanguage => 'Spanish';
-
-  @override
-  String get elementary => 'Elementary';
-
-  @override
-  String get elementaryAgeRange => 'Ages 6-11';
-
-  @override
-  String get elementaryDescription => 'Simple explanations with easy words';
-
-  @override
-  String get middleSchool => 'Middle School';
-
-  @override
-  String get middleSchoolAgeRange => 'Ages 12-14';
-
-  @override
-  String get middleSchoolDescription =>
-      'Clear explanations with guided reasoning';
-
-  @override
-  String get highSchool => 'High School';
-
-  @override
-  String get highSchoolAgeRange => 'Ages 14-18';
-
-  @override
-  String get highSchoolDescription => 'Standard mathematical explanations';
-
-  @override
-  String get college => 'College';
-
-  @override
-  String get collegeAgeRange => 'Ages 18+';
-
-  @override
-  String get collegeDescription => 'Advanced mathematical concepts';
 
   @override
   String get getPremium => 'Get Premium';
@@ -365,10 +264,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get subscribe => 'Subscribe';
 
   @override
-  String get unlimitedProblems => 'Unlimited Problems';
+  String get unlimitedAccess => 'Unlimited Access';
 
   @override
-  String get unlimitedProblemsDesc => 'Solve as many as you need';
+  String get unlimitedAccessDesc => 'Use all features without limits';
 
   @override
   String get cloudSync => 'Cloud Sync';
@@ -377,10 +276,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cloudSyncDesc => 'Access anywhere, anytime';
 
   @override
-  String get advancedAnalytics => 'Advanced Analytics';
+  String get advancedFeatures => 'Advanced Features';
 
   @override
-  String get advancedAnalyticsDesc => 'Detailed learning insights';
+  String get advancedFeaturesDesc => 'Unlock premium capabilities';
 
   @override
   String get invalidEmail => 'Please enter a valid email address';
@@ -420,25 +319,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get couldNotOpenTerms => 'Could not open Terms of Use';
 
   @override
-  String get failedToLoadProblems => 'Failed to load more problems';
-
-  @override
-  String get mathSolvingError =>
-      'Error solving math problem. Please try again.';
-
-  @override
-  String get enterMathProblemError => 'Please enter a math problem to solve.';
-
-  @override
-  String get nonMathContentError =>
-      'This image does not contain mathematical material. Please upload an image with math problems, equations, or mathematical concepts.';
-
-  @override
-  String get nonMathTextError =>
-      'This text does not contain mathematical material. Please submit text with math problems, equations, or mathematical concepts.';
-
-  @override
-  String get subscriptionError => 'Subscription Error';
+  String get subscriptionError =>
+      'Error showing subscription options. Please try again.';
 
   @override
   String get takePictureError => 'Failed to take picture. Please try again.';
@@ -448,7 +330,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Failed to upload picture. Please try again.';
 
   @override
-  String get shareError => 'Failed to share result. Please try again.';
+  String get shareError => 'Failed to share. Please try again.';
 
   @override
   String get permissionRequired => 'Permission Required';
@@ -494,373 +376,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get error => 'Error';
 
   @override
-  String get personalAiTutor => 'Your Personal AI Math Tutor';
-
-  @override
-  String get solveInstantly => 'Solve any math problem instantly';
-
-  @override
-  String get smartStudyMaterials => 'Smart Study Materials';
-
-  @override
-  String get organizeContent => 'Organize & analyze your content';
-
-  @override
-  String get aiGeneratedQuizzes => 'AI-Generated Quizzes';
-
-  @override
-  String get testKnowledge => 'Test your knowledge effectively';
-
-  @override
-  String get unlockPotential => 'Unlock Your Math Potential';
-
-  @override
-  String get premiumFeaturesAwait => 'Premium features await';
-
-  @override
-  String get welcomeToMathAi => 'Welcome to Math AI!';
-
-  @override
-  String get selectEducationLevel =>
-      'Please select your education level for personalized explanations';
-
-  @override
-  String get changeAnytime => 'You can change this anytime in Settings';
-
-  @override
-  String get noSolvedProblems =>
-      'No solved problems yet! Solve your first math problem to see it here.';
-
-  @override
-  String get noMoreProblems => 'No more problems to load';
+  String get tryAgain => 'Try Again';
 
   @override
   String get noMoreItems => 'No more items';
-
-  @override
-  String get questionsReview => 'Questions Review';
-
-  @override
-  String get correct => 'Correct';
-
-  @override
-  String get incorrect => 'Incorrect';
-
-  @override
-  String get unanswered => 'Unanswered';
-
-  @override
-  String get explanation => 'Explanation';
-
-  @override
-  String get shareResults => 'Share Results';
-
-  @override
-  String get tipsForBetterResults => 'Tips for better results';
-
-  @override
-  String get beSpecificTip =>
-      'Be specific with your question (e.g., \"Solve for x\")';
-
-  @override
-  String get useProperNotationTip => 'Use proper mathematical notation';
-
-  @override
-  String get includeNecessaryInfoTip => 'Include all necessary information';
-
-  @override
-  String get exampleProblem => 'Example:\n2x + 5 = 15\nSolve for x';
-
-  @override
-  String get studyMaterialsTitle => 'Study Materials';
-
-  @override
-  String get uploadTab => 'Upload';
-
-  @override
-  String get myMaterialsTab => 'My Materials';
-
-  @override
-  String get flashcardsTab => 'Flashcards';
-
-  @override
-  String get uploadYourStudyMaterial => 'Upload Your Study Material';
-
-  @override
-  String get uploadDescription =>
-      'Upload textbook pages, class notes, homework, or any math material. Our AI will create a personalized study plan just for you!';
-
-  @override
-  String get takePhotoSubtitle =>
-      'Capture textbook pages, notes, or worksheets';
-
-  @override
-  String get uploadFromGallery => 'Upload from Gallery';
-
-  @override
-  String get uploadFromGallerySubtitle =>
-      'Select images from your photo library';
-
-  @override
-  String get typeMaterial => 'Type Material';
-
-  @override
-  String get typeMaterialSubtitle =>
-      'Enter text directly or paste from clipboard';
-
-  @override
-  String get recentUploads => 'Recent Uploads';
-
-  @override
-  String get noMaterialsUploaded => 'No materials uploaded yet';
-
-  @override
-  String get uploadFirstMaterial =>
-      'Upload your first study material to get started!';
-
-  @override
-  String get topics => 'Topics';
-
-  @override
-  String get myStudyMaterials => 'My Study Materials';
-
-  @override
-  String get noStudyMaterials => 'No Study Materials';
-
-  @override
-  String get noStudyMaterialsDescription =>
-      'Upload your first material to see it here and start building your personalized study plan.';
-
-  @override
-  String get myStudyPlans => 'My Study Plans';
-
-  @override
-  String get deletePlan => 'Delete Plan';
-
-  @override
-  String get viewTopics => 'View Topics';
-
-  @override
-  String get takeQuiz => 'Take Quiz';
-
-  @override
-  String get processingYourMaterial => 'Processing Your Material';
-
-  @override
-  String get processingDescription =>
-      'AI is analyzing your content and creating a personalized study plan...';
-
-  @override
-  String get uploadStep => 'Upload';
-
-  @override
-  String get analyzeStep => 'Analyze';
-
-  @override
-  String get practiceQuizzes => 'Practice Quizzes';
-
-  @override
-  String get testYourKnowledge => 'Test Your Knowledge';
-
-  @override
-  String get testKnowledgeDescription =>
-      'Generate AI-powered quizzes based on your study materials to test your understanding and identify areas for improvement.';
-
-  @override
-  String get quickQuiz => 'Quick Quiz';
-
-  @override
-  String get quickQuizSubtitle => '5 questions • 10 min';
-
-  @override
-  String get practiceTest => 'Practice Test';
-
-  @override
-  String get practiceTestSubtitle => '10 questions • 20 min';
-
-  @override
-  String get challengeMode => 'Challenge Mode';
-
-  @override
-  String get challengeModeSubtitle =>
-      '15 questions • 30 min • Based on study plan';
-
-  @override
-  String get errorLoadingStudyData => 'Error loading your study data';
-
-  @override
-  String get quizHistory => 'Quiz History';
-
-  @override
-  String get searchQuizzes => 'Search quizzes...';
-
-  @override
-  String get filterQuizzes => 'Filter Quizzes';
-
-  @override
-  String get sortQuizzes => 'Sort Quizzes';
-
-  @override
-  String get noQuizHistory => 'No Quiz History';
-
-  @override
-  String get noQuizHistorySubtitle => 'Take your first quiz to see it here!';
-
-  @override
-  String get noResultsFound => 'No Results Found';
-
-  @override
-  String get noResultsFoundSubtitle =>
-      'Try adjusting your search or filter criteria.';
-
-  @override
-  String get loadingQuizHistory => 'Loading quiz history...';
-
-  @override
-  String get errorInitializingQuizService => 'Error initializing quiz service';
-
-  @override
-  String get errorLoadingQuizData => 'Error loading quiz data';
-
-  @override
-  String get questions => 'questions';
-
-  @override
-  String get attempts => 'attempts';
-
-  @override
-  String completedOn(Object date) {
-    return 'Completed on $date';
-  }
-
-  @override
-  String get quizStatistics => 'Quiz Statistics';
-
-  @override
-  String get totalQuizzes => 'Total Quizzes';
-
-  @override
-  String get averageScore => 'Average Score';
-
-  @override
-  String get bestScore => 'Best Score';
-
-  @override
-  String get currentStreak => 'Current Streak';
-
-  @override
-  String get days => 'days';
-
-  @override
-  String get detailedStatistics => 'Detailed Statistics';
-
-  @override
-  String get questionsAnswered => 'Questions Answered';
-
-  @override
-  String get totalQuestionsAttempted => 'Total questions attempted';
-
-  @override
-  String get correctAnswers => 'Correct Answers';
-
-  @override
-  String get questionsAnsweredCorrectly => 'Questions answered correctly';
-
-  @override
-  String get recentActivity => 'Recent Activity';
-
-  @override
-  String get performanceTrends => 'Performance Trends (Last 30 Days)';
-
-  @override
-  String get daysWithActivity => 'days with activity';
-
-  @override
-  String get averageScoreTrend => 'Average Score Trend';
-
-  @override
-  String get progressInsights => 'Progress Insights';
-
-  @override
-  String get recentPerformance => 'Recent Performance';
-
-  @override
-  String get activityPattern => 'Activity Pattern';
-
-  @override
-  String activityPatternDescription(Object count) {
-    return 'You completed quizzes on $count different days this month.';
-  }
-
-  @override
-  String get noProgressData => 'No Progress Data';
-
-  @override
-  String get noProgressDataSubtitle =>
-      'Take more quizzes to see your progress trends!';
-
-  @override
-  String get performanceImprovement =>
-      'Great improvement! Your scores are trending upward.';
-
-  @override
-  String get performanceDecline =>
-      'Your recent scores have dipped. Keep practicing to improve!';
-
-  @override
-  String get performanceConsistent =>
-      'Your performance is consistent. Keep up the good work!';
-
-  @override
-  String get noRecentActivity => 'No recent activity';
-
-  @override
-  String get takeMoreQuizzes => 'Take more quizzes to see performance trends.';
-
-  @override
-  String get allFilter => 'All';
-
-  @override
-  String get completedFilter => 'Completed';
-
-  @override
-  String get inProgressFilter => 'In Progress';
-
-  @override
-  String get easyFilter => 'Easy';
-
-  @override
-  String get mediumFilter => 'Medium';
-
-  @override
-  String get hardFilter => 'Hard';
-
-  @override
-  String get newestSort => 'Newest';
-
-  @override
-  String get oldestSort => 'Oldest';
-
-  @override
-  String get highScoreSort => 'High Score';
-
-  @override
-  String get lowScoreSort => 'Low Score';
-
-  @override
-  String get azSort => 'A-Z';
-
-  @override
-  String get zaSort => 'Z-A';
-
-  @override
-  String get statistics => 'Statistics';
-
-  @override
-  String get progress => 'Progress';
-
-  @override
-  String get quiz => 'Quiz';
 
   @override
   String get today => 'Today';
@@ -869,292 +388,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get yesterday => 'Yesterday';
 
   @override
-  String daysAgo(Object count) {
+  String daysAgo(int count) {
     return '$count days ago';
-  }
-
-  @override
-  String resultsCount(Object count) {
-    return '$count result';
-  }
-
-  @override
-  String resultsCountPlural(Object count) {
-    return '$count results';
-  }
-
-  @override
-  String quizReviewTitle(Object title) {
-    return 'Quiz Review: $title';
-  }
-
-  @override
-  String score(Object score) {
-    return 'Score: $score%';
-  }
-
-  @override
-  String completed(Object date) {
-    return 'Completed: $date';
-  }
-
-  @override
-  String questionsCount(Object count) {
-    return '$count questions';
-  }
-
-  @override
-  String pointsValue(Object points) {
-    return '$points pts';
-  }
-
-  @override
-  String get yourAnswer => 'Your answer';
-
-  @override
-  String get correctAnswer => 'Correct answer';
-
-  @override
-  String get yourAnswerLabel => 'Your Answer:';
-
-  @override
-  String get correctAnswerLabel => 'Correct Answer:';
-
-  @override
-  String get questionNotAnswered => 'Question was not answered';
-
-  @override
-  String todayAt(Object time) {
-    return 'Today at $time';
-  }
-
-  @override
-  String yesterdayAt(Object time) {
-    return 'Yesterday at $time';
-  }
-
-  @override
-  String get am => 'AM';
-
-  @override
-  String get pm => 'PM';
-
-  @override
-  String quizResultsShare(Object title) {
-    return 'Quiz Results: $title';
-  }
-
-  @override
-  String shareScore(Object score) {
-    return 'Score: $score%';
-  }
-
-  @override
-  String shareCorrect(Object count) {
-    return '✅ Correct: $count';
-  }
-
-  @override
-  String shareIncorrect(Object count) {
-    return '❌ Incorrect: $count';
-  }
-
-  @override
-  String shareUnanswered(Object count) {
-    return '⚪ Unanswered: $count';
-  }
-
-  @override
-  String totalQuestions(Object count) {
-    return 'Total Questions: $count';
-  }
-
-  @override
-  String shareFunctionality(Object shareText) {
-    return 'Share functionality would open here\n\n$shareText';
-  }
-
-  @override
-  String get noQuestionsAvailable => 'No questions available';
-
-  @override
-  String questionProgress(Object current, Object total) {
-    return 'Question $current of $total';
-  }
-
-  @override
-  String get point => 'point';
-
-  @override
-  String get points => 'points';
-
-  @override
-  String get minute => 'minute';
-
-  @override
-  String get minutes => 'minutes';
-
-  @override
-  String get concept => 'concept';
-
-  @override
-  String get concepts => 'concepts';
-
-  @override
-  String get problem => 'problem';
-
-  @override
-  String get problems => 'problems';
-
-  @override
-  String pointsDisplay(Object count, Object points) {
-    return '$count $points';
-  }
-
-  @override
-  String hintLabel(Object hint) {
-    return 'Hint: $hint';
-  }
-
-  @override
-  String get selectCorrectAnswer => 'Select the correct answer:';
-
-  @override
-  String get selectTrueFalse => 'Select True or False:';
-
-  @override
-  String get enterYourAnswer => 'Enter your answer:';
-
-  @override
-  String get typeAnswerHere => 'Type your answer here...';
-
-  @override
-  String get fillInBlank => 'Fill in the blank:';
-
-  @override
-  String get enterMissingWord => 'Enter the missing word or expression...';
-
-  @override
-  String get previous => 'Previous';
-
-  @override
-  String get next => 'Next';
-
-  @override
-  String get finishQuiz => 'Finish Quiz';
-
-  @override
-  String get quizCompleted => 'Quiz Completed!';
-
-  @override
-  String get backToStudy => 'Back to Study';
-
-  @override
-  String get retakeQuiz => 'Retake Quiz';
-
-  @override
-  String get performanceBreakdown => 'Performance Breakdown';
-
-  @override
-  String get viewDetailedReview => 'View Detailed Review';
-
-  @override
-  String get multipleChoice => 'Multiple Choice';
-
-  @override
-  String get shortAnswer => 'Short Answer';
-
-  @override
-  String get trueFalse => 'True/False';
-
-  @override
-  String get fillInTheBlank => 'Fill in the Blank';
-
-  @override
-  String get excellentWork =>
-      'Excellent work! You have mastered this material.';
-
-  @override
-  String get greatJob => 'Great job! You have a solid understanding.';
-
-  @override
-  String get goodWork => 'Good work! Consider reviewing some topics.';
-
-  @override
-  String get fairPerformance =>
-      'Fair performance. Some additional study recommended.';
-
-  @override
-  String get reviewMaterial =>
-      'Consider reviewing the material and retaking the quiz.';
-
-  @override
-  String get exitQuiz => 'Exit Quiz?';
-
-  @override
-  String get exitQuizConfirmation =>
-      'Are you sure you want to exit? Your progress will be lost.';
-
-  @override
-  String get exit => 'Exit';
-
-  @override
-  String get quizResultsSaved => 'Quiz results saved to history';
-
-  @override
-  String failedToSaveResults(Object error) {
-    return 'Failed to save quiz results: $error';
-  }
-
-  @override
-  String get problemsDetails => 'Problems Details';
-
-  @override
-  String get couldNotLoadMoreProblems => 'Could not load more problems.';
-
-  @override
-  String get tryAgain => 'Try Again';
-
-  @override
-  String get failedToLoadMoreProblems => 'Failed to load more problems';
-
-  @override
-  String get noSolvedProblemsYet =>
-      'No solved problems yet! Solve your first math problem to see it here.';
-
-  @override
-  String get noMoreProblemsToLoad => 'No more problems to load';
-
-  @override
-  String get copySolution => 'Copy Solution';
-
-  @override
-  String get shareSolution => 'Share Solution';
-
-  @override
-  String get solutionCopiedToClipboard => 'Solution copied to clipboard!';
-
-  @override
-  String get unableToCopySolution => 'Unable to copy solution';
-
-  @override
-  String get unableToShareSolution => 'Unable to share solution';
-
-  @override
-  String get mathProblemSolution => 'Math Problem Solution';
-
-  @override
-  String shareText(Object solution) {
-    return 'Math Problem Solution:\n\n$solution';
-  }
-
-  @override
-  String get mathAiDisclaimer =>
-      'Math AI can make mistakes, so double check the solution!';
-
-  @override
-  String mathLevelUpdated(Object level) {
-    return 'Math level updated to $level';
   }
 
   @override
@@ -1174,398 +409,120 @@ class AppLocalizationsEn extends AppLocalizations {
   String get choosePreferredLanguage => 'Choose your preferred language';
 
   @override
-  String languageChangedTo(Object language) {
+  String languageChangedTo(String language) {
     return 'Language changed to $language';
   }
 
   @override
-  String shareAppText(Object url) {
+  String shareAppText(String url) {
     return 'Check out this amazing app: $url';
   }
 
   @override
-  String get generatePlan => 'Generate Plan';
+  String get trackingPermissionTitle => 'Help Us Improve Your Experience';
 
   @override
-  String get generateQuizWithAllMaterials => 'Generate Quiz with All Materials';
+  String get trackingPermissionDescription =>
+      'Allow us to collect app usage data to understand how you use the app and make it better for you.';
 
   @override
-  String get addStudyMaterial => 'Add Study Material';
+  String get allow => 'Allow';
 
   @override
-  String get addMaterial => 'Add Material';
+  String get notNow => 'Not Now';
 
   @override
-  String studyPlanCreated(Object title) {
-    return 'Study plan \"$title\" created!';
+  String get premiumFeature => 'Premium Feature';
+
+  @override
+  String get premiumFeatureDescription =>
+      'This feature is only available to premium subscribers. Would you like to upgrade to premium?';
+
+  @override
+  String get upgrade => 'Upgrade';
+
+  @override
+  String get unlockAllFeatures => 'Unlock all features and remove ads';
+
+  @override
+  String get startWithFreeTrial => 'Start with a 3-day free trial';
+
+  @override
+  String expiresOn(String date) {
+    return 'Expires on $date';
   }
 
   @override
-  String get noStudyMaterialsForQuiz =>
-      'No study materials or plans available for quiz generation';
+  String get premiumBenefits => 'Premium Benefits';
 
   @override
-  String get noStudyMaterialsAvailable =>
-      'No study materials available to generate quiz from';
+  String get adFreeExperience => 'Ad-free experience';
 
   @override
-  String get selectStudyPlan => 'Select Study Plan';
+  String get crossDeviceSynchronization => 'Cross-device synchronization';
 
   @override
-  String generatingQuizFromPlan(Object count, Object title) {
-    return 'Generating quiz from \"$title\" with $count questions...';
-  }
+  String get priorityCustomerSupport => 'Priority customer support';
 
   @override
-  String get studyPlanDeleted => 'Study plan deleted';
+  String get skip => 'Skip';
 
   @override
-  String errorDeletingStudyPlan(Object error) {
-    return 'Error deleting study plan: $error';
-  }
+  String get startFreeTrial => 'Start Free Trial';
 
   @override
-  String errorGeneratingStudyPlan(Object error) {
-    return 'Error generating study plan: $error';
-  }
+  String get continueWithFreeVersion => 'Continue with Free Version';
 
   @override
-  String get totalTopics => 'Total Topics';
+  String get enjoyingApp => 'Enjoying the App?';
 
   @override
-  String get completedStatus => 'Completed';
+  String get rateYourExperience => 'How many stars would you give us?';
 
   @override
-  String get inProgress => 'In Progress';
+  String get tapNumberOfStars =>
+      'Tap the number of stars that represents your experience';
 
   @override
-  String get start => 'Start';
+  String get maybeLater => 'Maybe Later';
 
   @override
-  String get complete => 'Complete';
+  String get helpUsImprove => 'Help Us Improve';
 
   @override
-  String get done => 'Done';
+  String get feedbackMessage =>
+      'We\'d love to hear your feedback to make the app better for you!';
 
   @override
-  String get description => 'Description';
+  String get sendFeedback => 'Send Feedback';
 
   @override
-  String get keyConcepts => 'Key Concepts';
+  String get feedbackEmailError =>
+      'Cannot open email app. Please copy the email address.';
 
   @override
-  String get aiExplanation => 'AI Explanation';
+  String get copyEmail => 'Copy Email';
 
   @override
-  String get practiceProblems => 'Practice Problems';
+  String get supportEmail => 'Support Email';
 
   @override
-  String get prerequisites => 'Prerequisites';
+  String get contactSupport => 'Contact Support';
 
   @override
-  String get unknownTopic => 'Unknown Topic';
+  String get appPreferences => 'App Preferences';
 
   @override
-  String get startTopic => 'Start Topic';
+  String get premium => 'Premium';
 
   @override
-  String get markComplete => 'Mark Complete';
+  String get supportAndFeedback => 'Support & Feedback';
 
   @override
-  String get markIncomplete => 'Mark Incomplete';
+  String get legal => 'Legal';
 
   @override
-  String get enterStudyMaterialText => 'Enter your study material text:';
-
-  @override
-  String get processingTextMaterial => 'Processing text material...';
-
-  @override
-  String get generatingComprehensiveQuiz =>
-      'Generating comprehensive quiz from all your study materials...';
-
-  @override
-  String get chooseStudyPlanForQuiz =>
-      'Choose which study plan to generate the quiz from:';
-
-  @override
-  String get generatingQuiz => 'Generating quiz...';
-
-  @override
-  String get completeTheseTopicsFirst => 'Complete these topics first:';
-
-  @override
-  String get topicCompleted => 'Topic Completed!';
-
-  @override
-  String get allMaterialsQuizDescription =>
-      '12 questions • 25 min • All study materials included';
-
-  @override
-  String get allStudyMaterials => 'All Study Materials';
-
-  @override
-  String get generateFromAllMaterials =>
-      'Generate quiz from all uploaded materials';
-
-  @override
-  String get overallProgress => 'Overall Progress';
-
-  @override
-  String get continueText => 'Continue';
-
-  @override
-  String get topicStarted => '📚 Topic started!';
-
-  @override
-  String get materialCaptured =>
-      '📷 Material captured! Starting AI analysis...';
-
-  @override
-  String errorCapturingPhoto(Object error) {
-    return 'Error capturing photo: $error';
-  }
-
-  @override
-  String materialsUploaded(Object count) {
-    return '📱 $count material(s) uploaded! Starting AI analysis...';
-  }
-
-  @override
-  String errorUploadingFromGallery(Object error) {
-    return 'Error uploading from gallery: $error';
-  }
-
-  @override
-  String studyMaterialTitle(Object number) {
-    return 'Study Material $number';
-  }
-
-  @override
-  String textMaterialTitle(Object number) {
-    return 'Text Material $number';
-  }
-
-  @override
-  String get materialAnalyzedSuccess =>
-      '✅ Material analyzed successfully! Study plan created!';
-
-  @override
-  String errorProcessingMaterial(Object error) {
-    return 'Error processing material: $error';
-  }
-
-  @override
-  String permissionRequiredTitle(Object permission) {
-    return '$permission Permission Required';
-  }
-
-  @override
-  String permissionRequiredMessage(Object permission) {
-    return 'Please enable $permission access in your device settings to upload study materials.';
-  }
-
-  @override
-  String get pasteOrTypeHint =>
-      'Paste or type your math content here...\n\nExample:\n• Chapter 5: Quadratic Equations\n• Solving ax² + bx + c = 0\n• Practice problems 1-15';
-
-  @override
-  String generatingQuizWithCount(Object count) {
-    return 'Generating quiz with $count questions...';
-  }
-
-  @override
-  String errorGeneratingQuiz(Object error) {
-    return 'Error generating quiz: $error';
-  }
-
-  @override
-  String errorGeneratingComprehensiveQuiz(Object error) {
-    return 'Error generating comprehensive quiz: $error';
-  }
-
-  @override
-  String planTitle(Object title) {
-    return 'Plan: $title';
-  }
-
-  @override
-  String get process => 'Process';
-
-  @override
-  String progressUpdated(Object progress) {
-    return 'Progress updated: $progress%';
-  }
-
-  @override
-  String errorUpdatingProgress(Object error) {
-    return 'Error updating progress: $error';
-  }
-
-  @override
-  String get topicMarkedComplete => '✅ Topic marked as complete!';
-
-  @override
-  String errorMarkingTopicComplete(Object error) {
-    return 'Error marking topic complete: $error';
-  }
-
-  @override
-  String errorStartingTopic(Object error) {
-    return 'Error starting topic: $error';
-  }
-
-  @override
-  String get comprehensiveQuizTitle => 'Comprehensive Quiz - All Materials';
-
-  @override
-  String daysAgoFormat(Object days) {
-    return '$days days ago';
-  }
-
-  @override
-  String dateFormat(Object day, Object month, Object year) {
-    return '$day/$month/$year';
-  }
-
-  @override
-  String maxMaterialsReached(Object count) {
-    return 'Maximum of $count study materials allowed';
-  }
-
-  @override
-  String maxMaterialsHint(Object count) {
-    return 'Select up to $count of your most important study materials for best results';
-  }
-
-  @override
-  String reviewMainConcepts(Object topic) {
-    return 'Review and understand the main concepts of $topic';
-  }
-
-  @override
-  String practiceExercisesFocusing(Object concepts) {
-    return 'Practice exercises focusing on $concepts';
-  }
-
-  @override
-  String workThroughProblems(Object concepts) {
-    return 'Work through problems involving $concepts';
-  }
-
-  @override
-  String completeWorksheets(Object topic) {
-    return 'Complete practice worksheets or textbook exercises on $topic';
-  }
-
-  @override
-  String get takeTopicQuiz => 'Take a quiz or self-assessment on this topic';
-
-  @override
-  String get errorAnalyzingContent =>
-      'Error analyzing content. Please try again.';
-
-  @override
-  String get analyzingContent => 'Analyzing content...';
-
-  @override
-  String get unableToAnalyzeContent => 'Unable to analyze content';
-
-  @override
-  String unableToAnalyzeImage(Object error) {
-    return 'Unable to analyze image content: $error';
-  }
-
-  @override
-  String targetCompletionDate(Object date) {
-    return 'Target completion date: $date';
-  }
-
-  @override
-  String get noSpecificTargetDate => 'No specific target date';
-
-  @override
-  String get unableToGenerateStudyPlan => 'Unable to generate study plan';
-
-  @override
-  String studyPlanSingle(Object title) {
-    return 'Study Plan: $title';
-  }
-
-  @override
-  String studyPlanMultiple(Object count) {
-    return 'Study Plan: $count Materials';
-  }
-
-  @override
-  String get aiGeneratedStudyPlanDescription =>
-      'AI-generated study plan based on your uploaded materials';
-
-  @override
-  String get total => 'Total';
-
-  @override
-  String get uploadFile => 'Upload File';
-
-  @override
-  String get uploadFileSubtitle => 'Select files from your device';
-
-  @override
-  String get extracting => 'Extracting';
-
-  @override
-  String get analyzing => 'Analyzing';
-
-  @override
-  String get generating => 'Generating';
-
-  @override
-  String get typeText => 'Type Text';
-
-  @override
-  String get typeTextSubtitle => 'Enter text directly or paste from clipboard';
-
-  @override
-  String get noRecentUploads => 'No Recent Uploads';
-
-  @override
-  String get studyPlanGeneratedSuccessfully =>
-      'Study plan generated successfully!';
-
-  @override
-  String get topicDetails => 'Topic Details';
-
-  @override
-  String estimatedTime(Object minutes) {
-    return 'Estimated time: $minutes minutes';
-  }
-
-  @override
-  String get topicDescription => 'Description';
-
-  @override
-  String get keyConceptsTitle => 'Key Concepts';
-
-  @override
-  String get aiExplanationTitle => 'AI Explanation';
-
-  @override
-  String get practiceProblemsTitle => 'Practice Problems';
-
-  @override
-  String get prerequisitesTitle => 'Prerequisites';
-
-  @override
-  String get noDescription => 'No description available';
-
-  @override
-  String get noPracticeProblems => 'No practice problems available';
-
-  @override
-  String get noPrerequisites => 'No prerequisites required';
-
-  @override
-  String get noAiExplanation => 'No AI explanation available';
+  String get account => 'Account';
 
   @override
   String get reportContent => 'Report Content';
@@ -1647,555 +604,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cropImage => 'Crop Image';
 
   @override
-  String get trackingPermissionTitle => 'Help Us Improve Your Experience';
-
-  @override
-  String get trackingPermissionDescription =>
-      'Allow us to collect app usage data to understand how you use the app and make it better for you.';
-
-  @override
-  String get allow => 'Allow';
-
-  @override
-  String get notNow => 'Not Now';
-
-  @override
-  String get yourPersonalAIMathTutor => 'Your Personal AI Math Tutor';
-
-  @override
-  String get solveMathInstantly => 'Solve any math problem instantly';
-
-  @override
-  String get takePhotoDescription =>
-      'Take a photo of math problems and get step-by-step solutions powered by Google Gemini AI. From basic arithmetic to advanced calculus.';
-
-  @override
-  String get photoRecognition => 'Photo Recognition';
-
-  @override
-  String get snapAnyMathProblem => 'Snap any math problem';
-
-  @override
-  String get aiPowered => 'AI-Powered';
-
-  @override
-  String get googleGeminiFlash => 'Advanced AI Technology';
-
-  @override
-  String get stepByStep => 'Step-by-Step';
-
-  @override
-  String get detailedExplanations => 'Detailed explanations';
-
-  @override
-  String get organizeAnalyzeContent => 'Organize & analyze your content';
-
-  @override
-  String get uploadStudyDescription =>
-      'Upload study materials and let AI extract key topics, assess difficulty, and create personalized learning paths just for you.';
-
-  @override
-  String get easyUpload => 'Easy Upload';
-
-  @override
-  String get imagesNotesUpload => 'Images, PDFs, notes';
-
-  @override
-  String get uploadPdf => 'Upload PDF';
-
-  @override
-  String get uploadPdfSubtitle => 'Upload math PDFs or documents';
-
-  @override
-  String get nonMathDocumentError =>
-      'This document does not contain mathematical material. Please upload a PDF with math problems, equations, or mathematical concepts.';
-
-  @override
-  String get aiAnalysis => 'AI Analysis';
-
-  @override
-  String get autoTopicExtraction => 'Auto topic extraction';
-
-  @override
-  String get progressTracking => 'Progress Tracking';
-
-  @override
-  String get monitorImprovement => 'Monitor improvement';
-
-  @override
-  String get testKnowledgeEffectively => 'Test your knowledge effectively';
-
-  @override
-  String get generatePersonalizedQuizzes =>
-      'Generate personalized quizzes from your study materials. Track performance, identify weak spots, and improve faster.';
-
-  @override
-  String get smartQuestions => 'Smart Questions';
-
-  @override
-  String get aiCreatesTests => 'AI creates relevant tests';
-
-  @override
-  String get performanceAnalytics => 'Performance Analytics';
-
-  @override
-  String get detailedProgressInsights => 'Detailed progress insights';
-
-  @override
-  String get adaptiveLearning => 'Adaptive Learning';
-
-  @override
-  String get questionsMatchLevel => 'Questions match your level';
-
-  @override
-  String get unlockMathPotential => 'Unlock Your Math Potential';
-
-  @override
-  String get joinThousandsStudents =>
-      'Get early access to unlimited AI tutoring, advanced features, and personalized learning designed to transform your math skills.';
-
-  @override
-  String get solveAsMany => 'Solve as many as you need';
-
-  @override
-  String get accessAnywhere => 'Access anywhere, anytime';
-
-  @override
-  String get detailedLearningInsights => 'Detailed learning insights';
-
-  @override
-  String get premiumBenefits => 'Premium Benefits';
-
-  @override
-  String get unlimitedMathProblemSolving => 'Unlimited math problem solving';
-
-  @override
-  String get aiGeneratedQuizzesFromMaterials =>
-      'AI-generated quizzes from your materials';
-
-  @override
-  String get advancedStudyOrganization =>
-      'Advanced study material organization';
-
-  @override
-  String get detailedPerformanceAnalytics =>
-      'Detailed performance analytics and insights';
-
-  @override
-  String get crossDeviceSynchronization => 'Cross-device synchronization';
-
-  @override
-  String get priorityCustomerSupport => 'Priority customer support';
-
-  @override
-  String get adFreeExperience => 'Ad-free experience';
-
-  @override
-  String get studentsImprovedGrades => 'Join the Community';
-
-  @override
-  String get testimonialCalculus =>
-      'Be among the first to experience AI-powered math learning';
-
-  @override
-  String get skip => 'Skip';
-
-  @override
-  String get startFreeTrial => 'Start Free Trial';
-
-  @override
-  String get continueWithFreeVersion => 'Continue with Free Version';
-
-  @override
-  String get tryYourFirstProblemFree => 'Solve Your First Problem Free';
-
-  @override
-  String get seeAiMagicInAction => 'See AI Magic in Action';
-
-  @override
-  String get solveAnyMathProblemInstantly =>
-      'Solve any math problem instantly with AI';
-
-  @override
-  String get aiDemoDescription => 'Watch AI solve complex problems in seconds';
-
-  @override
-  String get premiumFeature => 'Premium Feature';
-
-  @override
-  String get premiumFeatureDescription =>
-      'This feature is only available to premium subscribers. Would you like to upgrade to premium?';
-
-  @override
-  String get upgrade => 'Upgrade';
-
-  @override
-  String get unlockAllFeatures => 'Unlock all features and remove ads';
-
-  @override
-  String get startWithFreeTrial => 'Start with a 3-day free trial';
-
-  @override
-  String expiresOn(Object date) {
-    return 'Expires on $date';
-  }
-
-  @override
-  String get flashcards => 'Flashcards';
-
-  @override
-  String get flashcard => 'Flashcard';
-
-  @override
-  String get deck => 'Deck';
-
-  @override
-  String get decks => 'Decks';
-
-  @override
-  String get createDeck => 'Create Deck';
-
-  @override
-  String get editDeck => 'Edit Deck';
-
-  @override
-  String get deleteDeck => 'Delete Deck';
-
-  @override
-  String get deckName => 'Deck Name';
-
-  @override
-  String get deckDescription => 'Deck Description';
-
-  @override
-  String get addCard => 'Add Card';
-
-  @override
-  String get editCard => 'Edit Card';
-
-  @override
-  String get deleteCard => 'Delete Card';
-
-  @override
-  String get cardFront => 'Front';
-
-  @override
-  String get cardBack => 'Back';
-
-  @override
-  String get cardHint => 'Hint (Optional)';
-
-  @override
-  String get cardTags => 'Tags (Optional)';
-
-  @override
-  String get studyCards => 'Study Cards';
-
-  @override
-  String get reviewCards => 'Review Cards';
-
-  @override
-  String get startStudy => 'Start Study';
-
-  @override
-  String get generateFlashcardsWithAI => 'Generate Flashcards With AI';
-
-  @override
-  String get generateFlashcards => 'Generate Flashcards';
-
-  @override
-  String get generateFromMaterials => 'Generate From Materials';
-
-  @override
-  String get generateFromCamera => 'Generate From Camera';
-
-  @override
-  String get generateFromGallery => 'Generate From Gallery';
-
-  @override
-  String get generateFromFile => 'Generate From File';
-
-  @override
-  String get createManually => 'Create Manually';
-
-  @override
-  String get selectImage => 'Select Image';
-
-  @override
-  String get addNewFlashcard => 'Add New Flashcard';
-
-  @override
-  String get chooseCreationMethod =>
-      'Choose how you\'d like to create your flashcard';
-
-  @override
-  String get typeQuestionAndAnswer => 'Type your question and answer';
-
-  @override
-  String get captureContentWithCamera => 'Capture content with camera';
-
-  @override
-  String get selectImageFromGallery => 'Select image from gallery';
-
-  @override
-  String get importFromDocument => 'Import from document or PDF';
-
-  @override
-  String get noCardsYet => 'No Cards Yet';
-
-  @override
-  String get addFirstFlashcard => 'Add your first flashcard to start studying.';
-
-  @override
-  String get errorLoadingCards => 'Error Loading Cards';
-
-  @override
-  String get generatedFlashcards => 'Generated Flashcards';
-
-  @override
-  String aiGeneratedCards(int count, String plural) {
-    return 'AI generated $count flashcard$plural from your content. Review and select which ones to add.';
-  }
-
-  @override
-  String cardNumber(int number) {
-    return 'Card $number';
-  }
-
-  @override
-  String get question => 'Question:';
-
-  @override
-  String get answer => 'Answer:';
-
-  @override
-  String get hint => 'Hint:';
-
-  @override
-  String selectedCards(int selected, int total) {
-    return '$selected of $total cards selected';
-  }
-
-  @override
-  String get addSelected => 'Add Selected';
-
-  @override
-  String addedFlashcards(int count, String plural) {
-    return 'Added $count flashcard$plural successfully!';
-  }
-
-  @override
-  String failedToGenerateFlashcard(String error) {
-    return 'Failed to generate flashcard: $error';
-  }
-
-  @override
-  String failedToGenerateFlashcards(String error) {
-    return 'Failed to generate flashcards: $error';
-  }
-
-  @override
-  String get analyzingImageGeneratingFlashcard =>
-      'Analyzing image and generating flashcard...';
-
-  @override
-  String get processingFileGeneratingFlashcards =>
-      'Processing file and generating flashcards...';
-
-  @override
-  String get premiumFlashcardGeneration =>
-      'AI flashcard generation requires a premium subscription.';
-
-  @override
-  String get premiumSubscriptionRequired =>
-      'Premium subscription required for AI flashcard generation.';
-
-  @override
-  String get watchAdToSeeSolution => 'Watch Ad to See Solution';
-
-  @override
-  String get loadingAd => 'Loading ad...';
-
-  @override
-  String get adFailedToLoad => 'Ad failed to load. Please try again.';
-
-  @override
-  String get watchAdFirst => 'Please watch the ad to see your solution';
-
-  @override
-  String get adLoadingPleaseWait => 'Loading ad, please wait...';
-
-  @override
-  String get skipAdsForever => 'Skip ads forever with Premium';
-
-  @override
-  String get processingAfterAd => 'Processing your solution...';
-
-  @override
-  String get skipAdsWithPremium => 'Skip Ads with Premium';
-
-  @override
-  String get stopAdsForever => 'Stop ads forever with Premium';
-
-  @override
-  String get premiumNoAds => 'Get Premium to enjoy ad-free math solving!';
-
-  @override
-  String get unableToVerifySubscription =>
-      'Unable to verify subscription status.';
-
-  @override
-  String get unableToProcessSubscription =>
-      'Unable to process subscription. Please try again.';
-
-  @override
-  String get subscriptionServiceNotAvailable =>
-      'Subscription service not available.';
-
-  @override
-  String get deckUpdatedSuccessfully => 'Deck updated successfully!';
-
-  @override
-  String get cardDeletedSuccessfully => 'Card deleted successfully';
-
-  @override
-  String get confirmDeleteCard =>
-      'Are you sure you want to delete this flashcard? This action cannot be undone.';
-
-  @override
   String fileSizeExceedsLimit(String size, int limit) {
     return 'File size (${size}MB) exceeds the maximum allowed size of ${limit}MB';
   }
 
   @override
-  String get flashcardsDeck => 'Flashcards Deck';
-
-  @override
-  String get newCards => 'New';
-
-  @override
-  String get dueCards => 'Due';
-
-  @override
-  String get learningCards => 'Learning';
-
-  @override
-  String get totalCards => 'Total Cards';
-
-  @override
-  String get studyProgress => 'Study Progress';
-
-  @override
   String get edit => 'Edit';
-
-  @override
-  String get tagsExample => 'algebra, geometry, calculus';
-
-  @override
-  String get separateTagsComma => 'Separate tags with commas';
-
-  @override
-  String get deleteCardConfirmation =>
-      'Are you sure you want to delete this flashcard? This action cannot be undone.';
-
-  @override
-  String get reviewComplete => 'Review Complete!';
-
-  @override
-  String get accuracy => 'Accuracy';
-
-  @override
-  String get cards => 'Cards';
-
-  @override
-  String get time => 'Time';
-
-  @override
-  String get showAnswer => 'Show Answer';
-
-  @override
-  String get howWellDidYouKnow => 'How well did you know this?';
-
-  @override
-  String get reviewAgain => 'Again';
-
-  @override
-  String get reviewHard => 'Hard';
-
-  @override
-  String get reviewGood => 'Good';
-
-  @override
-  String get reviewEasy => 'Easy';
-
-  @override
-  String get enjoyingApp => 'Enjoying the App?';
-
-  @override
-  String get rateYourExperience => 'How many stars would you give us?';
-
-  @override
-  String get tapNumberOfStars =>
-      'Tap the number of stars that represents your experience';
-
-  @override
-  String get maybeLater => 'Maybe Later';
-
-  @override
-  String get helpUsImprove => 'Help Us Improve';
-
-  @override
-  String get feedbackMessage =>
-      'We\'d love to hear your feedback to make the app better for you!';
-
-  @override
-  String get sendFeedback => 'Send Feedback';
-
-  @override
-  String get feedbackEmailError =>
-      'Cannot open email app. Please copy the email address.';
-
-  @override
-  String get copyEmail => 'Copy Email';
-
-  @override
-  String get supportEmail => 'Support Email';
-
-  @override
-  String get contactSupport => 'Contact Support';
-
-  @override
-  String get tapToRevealAnswer => 'Tap to reveal answer';
-
-  @override
-  String get aiPreferences => 'AI Preferences';
-
-  @override
-  String get appPreferences => 'App Preferences';
-
-  @override
-  String get premium => 'Premium';
-
-  @override
-  String get supportAndFeedback => 'Support & Feedback';
-
-  @override
-  String get legal => 'Legal';
-
-  @override
-  String get account => 'Account';
-
-  @override
-  String get numbers => 'Numbers';
-
-  @override
-  String get algebra => 'Algebra';
-
-  @override
-  String get calculus => 'Calculus';
-
-  @override
-  String get symbols => 'Symbols';
 
   @override
   String get hide => 'Hide';

@@ -1,10 +1,8 @@
 /*
-TodoRepo is an abstract class that defines the methods that the TodoRepository class must implement.
+AccountRepo is an abstract class that defines the methods that the AccountRepository class must implement.
 
 Here we define what the app can do
 */
-
-// import '../../data/models/isar_todo.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

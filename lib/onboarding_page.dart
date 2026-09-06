@@ -71,15 +71,15 @@ class _OnboardingPageState extends State<OnboardingPage> {
         ],
       ),
       OnboardingItem(
-        title: l10n.unlockPotential,
-        subtitle: l10n.premiumFeaturesAwait,
-        description: l10n.joinThousandsStudents,
+        title: l10n.getPremium,
+        subtitle: l10n.premiumBenefits,
+        description: l10n.unlockAllFeatures,
         icon: FontAwesomeIcons.crown,
         isPremium: true,
         premiumBenefits: [
-          l10n.unlimitedProblems,
+          l10n.unlimitedAccess,
           l10n.cloudSync,
-          l10n.advancedAnalytics,
+          l10n.advancedFeatures,
           l10n.priorityCustomerSupport,
           l10n.adFreeExperience,
         ],
@@ -252,7 +252,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
                         ],
                         TitleMediumText(
                           _currentPage < _getOnboardingItems(context).length - 1
-                              ? AppLocalizations.of(context)!.continueText
+                              ? AppLocalizations.of(context)!.continueAction
                               : AppLocalizations.of(
                                 context,
                               )!.getStarted,
@@ -543,7 +543,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
           const SizedBox(height: 8),
 
           TitleSmallText(
-            AppLocalizations.of(context)!.studentsImprovedGrades,
+            AppLocalizations.of(context)!.enjoyingApp,
             color: Theme.of(context).colorScheme.onSurface,
             fontWeight: FontWeight.w600,
             textAlign: TextAlign.center,
@@ -552,7 +552,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
           const SizedBox(height: 4),
 
           BodyMediumText(
-            AppLocalizations.of(context)!.testimonialCalculus,
+            AppLocalizations.of(context)!.rateYourExperience,
             color: Theme.of(
               context,
             ).colorScheme.onSurface.withValues(alpha: 0.6),

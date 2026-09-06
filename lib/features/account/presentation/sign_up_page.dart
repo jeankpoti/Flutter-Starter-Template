@@ -72,16 +72,8 @@ class _SignUpPageState extends State<SignUpPage> {
         // We can combine a BlocListener (for errors) + BlocBuilder (for UI)
         child: BlocListener<AccountCubit, AccountState>(
           listener: (context, accountState) {
-            // If there's an error message, show a SnackBar (optional)
             if (accountState.errorMsg != null) {
               AppSnackBar.showError(context, accountState.errorMsg!);
-            } else if (accountState.isSuccess) {
-              // context.goNamed(AppRoute.signInPage.name);
-
-              // SuccessMessageWidget.showSucess(
-              //   context,
-              //   'Account created successfully! An email was sent to your the email provided. Please click on the link to validate your email and sign in.',
-              // );
             }
           },
           child: BlocBuilder<AccountCubit, AccountState>(
@@ -203,12 +195,6 @@ class _SignUpPageState extends State<SignUpPage> {
                                                   context,
                                                 ).colorScheme.primary,
                                           ),
-
-                                      // ElevatedButtonWidget(
-                                      //   onPressed:
-                                      //       () => validateAndSave(context),
-                                      //   text: ' Sign Up',
-                                      // ),
                                       const SizedBox(height: 25),
                                       Row(
                                         mainAxisAlignment:

@@ -6,7 +6,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:posthog_flutter/posthog_flutter.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
-// import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_starter/features/account/presentation/sign_up_page.dart';
 import 'package:flutter_starter/l10n/app_localizations.dart';
 import 'package:flutter_starter/core/services/analytics_service.dart';

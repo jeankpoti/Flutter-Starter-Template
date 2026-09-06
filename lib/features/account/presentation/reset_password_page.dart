@@ -33,12 +33,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   void validateAndSend(BuildContext buildContext) {
     final FormState form = _formKey.currentState!;
     if (form.validate()) {
-      // final accountCubit = context.read<AccountCubit>();
-      // accountCubit.resetPassword(
-      //   context,
-      //   _emailController.text.trim(),
-      // );
-    } else {}
+      // TODO: Implement password reset functionality
+    }
   }
 
   @override
@@ -106,11 +102,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                                       color:
                                           Theme.of(context).colorScheme.primary,
                                     ),
-
-                                // ElevatedButtonWidget(
-                                //   onPressed: () => validateAndSend(context),
-                                //   text: 'Send'.toUpperCase(),
-                                // ),
                               ],
                             ),
                           ),
