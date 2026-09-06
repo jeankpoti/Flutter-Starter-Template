@@ -83,3 +83,7 @@ lib/firebase_options.dart
 # Node modules
 node_modules/
 functions/node_modules/
+
+# Xcode auto-generated files
+**/xcshareddata/swiftpm/
+*.xcscheme.backup
