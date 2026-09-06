@@ -11,6 +11,7 @@ A production-ready Flutter starter template with Firebase, RevenueCat subscripti
 - **Localization**: Multi-language support (EN, FR, ES)
 - **Theme**: Dark/Light mode with persistence
 - **Cloud Functions**: Webhook handlers and email automation
+- **Admin Dashboard**: React admin panel for user management
 
 ## Screenshots
 
@@ -33,6 +34,7 @@ A production-ready Flutter starter template with Firebase, RevenueCat subscripti
 |----------|------------|
 | Frontend | Flutter (iOS, Android, Web, macOS) |
 | Backend | Firebase (Auth, Firestore, Storage, Functions) |
+| Admin Dashboard | React 19, Vite, TailwindCSS |
 | Subscriptions | RevenueCat |
 | AI | Firebase AI (Google Gemini) |
 | State Management | flutter_bloc (Cubit) |
@@ -114,6 +116,10 @@ lib/
 functions/              # Firebase Cloud Functions
 ├── index.js            # Webhook handlers, email automation
 
+dashboard/              # Admin Dashboard (React)
+├── src/                # React components and pages
+└── .env.example        # Firebase config template
+
 scripts/
 ├── rename_project.dart # Project rename utility
 ```
@@ -162,6 +168,30 @@ Set the Resend API key:
 ```bash
 firebase functions:secrets:set RESEND_API_KEY
 ```
+
+## Admin Dashboard
+
+A React admin panel for managing users, subscriptions, and content reports.
+
+### Dashboard Setup
+
+```bash
+cd dashboard
+npm install
+cp .env.example .env
+# Edit .env with your Firebase config
+npm run dev
+```
+
+### Dashboard Pages
+
+| Page | Description |
+|------|-------------|
+| Dashboard | Overview stats and charts |
+| Users | User management |
+| Subscriptions | Subscription tracking |
+| Reports | Content reports moderation |
+| Settings | Admin settings |
 
 ## Localization
 
